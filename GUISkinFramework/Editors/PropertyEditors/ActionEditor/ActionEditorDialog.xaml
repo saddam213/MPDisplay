@@ -1,0 +1,76 @@
+﻿<Window x:Class="GUISkinFramework.Editor.PropertyEditors.ActionEditorDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:xmlCommon="clr-namespace:GUISkinFramework.Common"
+		xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
+        Title="Action Editor" MinHeight="201" MinWidth="586"  Height="201" Width="586" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Name="UI">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
+        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="ActionTypes">
+            <ObjectDataProvider.MethodParameters>
+                <x:Type TypeName="xmlCommon:XmlActionType" />
+            </ObjectDataProvider.MethodParameters>
+        </ObjectDataProvider>
+
+		<ObjectDataProvider MethodName="GetNames" ObjectType="{x:Type sys:Enum}" x:Key="MPActionTypes">
+			<ObjectDataProvider.MethodParameters>
+				<x:Type TypeName="local:MediaPortalActions" />
+			</ObjectDataProvider.MethodParameters>
+		</ObjectDataProvider>
+
+		<local:ActionTypeToVisibilityConverter x:Key="ActionTypeToVisibilityConverter" />
+		<local:ActionTypeToDescription x:Key="ActionTypeToDescription" />
+	</Window.Resources>
+
+    <Grid DataContext="{Binding ElementName=UI}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="327*"/>
+            <ColumnDefinition Width="337*"/>
+        </Grid.ColumnDefinitions>
+
+
+
+		<TextBlock HorizontalAlignment="Left" Margin="6,5,0,0" TextWrapping="Wrap" Text="Actions" VerticalAlignment="Top" Height="16" Width="39"/>
+		<ListBox x:Name="list" ItemsSource="{Binding XmlActions}" SelectedItem="{Binding SelectedAction}" DisplayMemberPath="DisplayName" Margin="6,22,5,37"/>
+		<Button Margin="6,0,0,10" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="30"  Command="{Binding ItemAdd}" >
+			<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" />
+		</Button>
+		<Button Margin="41,0,0,10" HorizontalAlignment="Left" Width="30" Height="22" VerticalAlignment="Bottom"  Command="{Binding ItemRemove}" >
+			<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" Stretch="Uniform" />
+		</Button>
+		<Button Margin="0,0,40,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveUp}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
+			<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Up.png" Stretch="Uniform" />
+		</Button>
+		<Button Margin="0,0,5,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveDown}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
+			<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Down.png" Stretch="Uniform" />
+		</Button>
+
+
+
+
+		<StackPanel Margin="6,17,10,37" Grid.Column="1">
+            <TextBlock Text="ActionType"  />
+			<ComboBox ItemsSource="{Binding Source={StaticResource ActionTypes}}" SelectedItem="{Binding SelectedAction.ActionType}" />
+			<TextBlock Text="{Binding SelectedAction.ActionType, Converter={StaticResource ActionTypeToDescription}}" Margin="2,5,0,0" TextWrapping="Wrap" />
+			<TextBox Text="{Binding SelectedAction.Param1, UpdateSourceTrigger=PropertyChanged}" Visibility="{Binding SelectedAction.ActionType, Converter={StaticResource ActionTypeToVisibilityConverter}, ConverterParameter=False, FallbackValue=Collapsed}"    />
+			<ComboBox ItemsSource="{Binding Source={StaticResource MPActionTypes}}" SelectedItem="{Binding SelectedAction.Param1}" Visibility="{Binding SelectedAction.ActionType, Converter={StaticResource ActionTypeToVisibilityConverter}, ConverterParameter=True, FallbackValue=Collapsed}"  />
+            <StackPanel.Style>
+                <Style TargetType="{x:Type StackPanel}">
+                    <Setter Property="IsEnabled" Value="True" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding XmlActions.Count}" Value="0" >
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+						<DataTrigger Binding="{Binding SelectedAction}" Value="{x:Null}" >
+							<Setter Property="IsEnabled" Value="False" />
+						</DataTrigger>
+					</Style.Triggers>
+                </Style>
+            </StackPanel.Style>
+        </StackPanel>
+
+		<Button Content="OK" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Command="{Binding ResultOK}" Height="22" Grid.Column="1" />
+		<Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Command="{Binding ResultCancel}" Grid.Column="1" Height="22"/>
+	</Grid>
+</Window>

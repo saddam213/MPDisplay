@@ -1,0 +1,14 @@
+﻿<UserControl x:Class="MPDisplay.Common.Controls.AutoCompleteTextbox"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             Name="UI">
+    <Grid>
+        <ComboBox Name="comboBox" IsSynchronizedWithCurrentItem="True" IsTabStop="False" 
+                   SelectionChanged="comboBox_SelectionChanged" PreviewKeyDown="comboBox_KeyDown" />
+        <TextBox Foreground="{Binding ElementName=UI,Path=Foreground}" 
+                 Text="{Binding ElementName=UI, Path=Text, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
+                 TextWrapping="Wrap" Name="textbox"  TextChanged="textBox_TextChanged" PreviewKeyDown="textbox_KeyDown"  />
+    </Grid>
+</UserControl>

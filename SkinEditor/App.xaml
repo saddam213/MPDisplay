@@ -1,0 +1,16 @@
+﻿<Application x:Class="SkinEditor.App"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             StartupUri="MainWindow.xaml" xmlns:skin="clr-namespace:GUISkinFramework.Controls;assembly=GUISkinFramework"
+             xmlns:converters="clr-namespace:SkinEditor.BindingConverters" xmlns:xmlConverters="clr-namespace:GUISkinFramework.Converters;assembly=GUISkinFramework" >
+    <Application.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary Source="/SkinEditor;component/Themes/Generic.xaml" />
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+
+	
+
+	</Application.Resources>
+</Application>

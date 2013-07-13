@@ -1,0 +1,25 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+               
+    <ResourceDictionary.MergedDictionaries>
+        <ResourceDictionary Source="/MPDisplay.Common;component/Themes/Generic/Brushes.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Themes/Generic/Buttons.xaml" />
+      
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/Chromes/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/ButtonSpinner/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/CollectionEditors/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/ColorCanvas/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/ColorPicker/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/DropDownButton/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/MultiLineTextEditor/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/NumericUpDown/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/SplitButton/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/PropertyGrid/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/LoadingAdorner/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/WatermarkTextBox/Themes/Generic.xaml" />
+        <ResourceDictionary Source="/MPDisplay.Common;component/Controls/Surface3D/Themes/Generic.xaml" />
+		<ResourceDictionary Source="/MPDisplay.Common;component/Controls/MoveResizeControl/Themes/Generic.xaml" />
+		<ResourceDictionary Source="/MPDisplay.Common;component/Controls/ScrollingTextBlock/Themes/Generic.xaml" />
+	</ResourceDictionary.MergedDictionaries>
+
+</ResourceDictionary>

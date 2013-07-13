@@ -1,0 +1,30 @@
+﻿<UserControl x:Class="GUISkinFramework.Editor.PropertyEditors.AnimationValueEditor"
+             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common" 
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             Name="UI" Width="Auto">
+
+    <Grid DataContext="{Binding ElementName=UI}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="132*"/>
+            <ColumnDefinition>
+                <ColumnDefinition.Style>
+                    <Style TargetType="ColumnDefinition">
+                        <Setter Property="Width" Value="20" />
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsSetValueVisible}" Value="False">
+                                <Setter Property="Width" Value="0" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </ColumnDefinition.Style>
+            </ColumnDefinition>
+        </Grid.ColumnDefinitions>
+        <Controls:IntegerUpDown Grid.Column="0" Margin="1" Value="{Binding Value, Mode=TwoWay}" Minimum="{Binding MinValue}" Maximum="{Binding MaxValue}"   />
+        <Button Grid.Column="1" Margin="1" ToolTip="Set current value" Click="Button_Click" >
+            <Image Source="/GUISkinFramework;component/Images/Style11.png" />
+        </Button>
+    </Grid>
+</UserControl>

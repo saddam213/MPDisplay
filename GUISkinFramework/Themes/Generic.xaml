@@ -1,0 +1,12 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" 
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:converters="clr-namespace:GUISkinFramework.Converters">
+    <ResourceDictionary.MergedDictionaries>
+        <!--<ResourceDictionary Source="/GUISkinFramework;component/Themes/Generic/Brushes.xaml" />
+        <ResourceDictionary Source="/GUISkinFramework;component/Themes/Generic/Buttons.xaml" />-->
+
+ 
+    </ResourceDictionary.MergedDictionaries>    
+    
+  
+</ResourceDictionary>

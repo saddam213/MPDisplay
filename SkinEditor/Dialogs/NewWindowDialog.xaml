@@ -1,0 +1,51 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:System="clr-namespace:System;assembly=mscorlib" 
+    xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common" x:Class="SkinEditor.Dialogs.NewWindowDialog"
+        Title="Add Window" Height="218" Width="262" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Name="UI">
+    <Grid DataContext="{Binding ElementName=UI}">
+        <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,89,8" VerticalAlignment="Bottom" Width="75" Click="Button_OK_Click">
+            <Button.Style>
+                <Style TargetType="{x:Type Button}">
+                    <Setter Property="IsEnabled" Value="True" />
+                    <Style.Triggers>
+						<DataTrigger Binding="{Binding WindowName}" Value="" >
+							<Setter Property="IsEnabled" Value="False" />
+						</DataTrigger>
+
+						<DataTrigger Binding="{Binding CurrentOption}" Value="None" >
+                            <Setter Property="IsEnabled" Value="False" />
+                        </DataTrigger>
+                    </Style.Triggers>
+                </Style>
+            </Button.Style>
+        </Button>
+        <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,9,8" VerticalAlignment="Bottom" Width="75" Click="Button_Cancel_Click"/>
+        <StackPanel Margin="10,10,9,35">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="12*"/>
+					<ColumnDefinition Width="7*"/>
+				</Grid.ColumnDefinitions>
+				<StackPanel Grid.Column="0">
+					<TextBlock Text="Name" />
+					<TextBox Text="{Binding ElementName=UI, Path=WindowName}" />
+				</StackPanel>
+				<StackPanel Margin="5,0,0,0" Grid.Column="1">
+					<TextBlock Text="Id" />
+					<Controls:IntegerUpDown Height="22" Value="{Binding ElementName=UI, Path=WindowId}" />
+				</StackPanel>
+			
+			</Grid>
+
+			<TextBlock Margin="0,5,0,0" Text="Window/Dialog Type"/>
+			<RadioButton Margin="20,4,0,0" Content="MPDisplay Window" GroupName="Options1" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPDWindow}"  />
+			<RadioButton Margin="20,4,0,0" Content="MPDisplay Dialog" GroupName="Options2" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPDDialog}"  />
+			<RadioButton Margin="20,4,0,0" Content="MediaPortal Window" GroupName="Options3" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPWindow}"  />
+			<RadioButton Margin="20,4,0,0" Content="MediaPortal Dialog" GroupName="Options4" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPDialog}"  />
+
+		</StackPanel>
+
+    </Grid>
+</Window>

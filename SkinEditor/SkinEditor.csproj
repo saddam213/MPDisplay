@@ -1,0 +1,310 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{169D2C74-DAF4-4386-8FE5-44109DE4632E}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>SkinEditor</RootNamespace>
+    <AssemblyName>SkinEditor</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="BindingConverters\ContextMenuTemplateSelector.cs" />
+    <Compile Include="BindingConverters\SkinEditorProgressValueConverter.cs" />
+    <Compile Include="BindingConverters\SnapToGridConverter.cs" />
+    <Compile Include="BindingConverters\DummyListItemsConverter.cs" />
+    <Compile Include="BindingConverters\SkinEditorInfoManager.cs" />
+    <Compile Include="BindingConverters\TreeItemConverters.cs" />
+    <Compile Include="BindingConverters\SkinEditorXmlBrushConverter.cs" />
+    <Compile Include="BindingConverters\SkinEditorXmlImageConverter.cs" />
+    <Compile Include="BindingConverters\SkinEditorXmlLabelConverter.cs" />
+    <Compile Include="Controls\CoverFlowListBox\CoverFlowListBox.xaml.cs">
+      <DependentUpon>CoverFlowListBox.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Controls\CoverFlowListBox\CoverFlowListBoxItem.cs" />
+    <Compile Include="Helpers\ExtensionMethods.cs" />
+    <Compile Include="Helpers\FileSystemHelper.cs" />
+    <Compile Include="SkinEditorSettings.cs" />
+    <Compile Include="Themes\BaseViews\EditorViewModelSettings.cs" />
+    <Compile Include="Dialogs\PreviewWindow.xaml.cs">
+      <DependentUpon>PreviewWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SkinInfoEditorDialog.xaml.cs">
+      <DependentUpon>SkinInfoEditorDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TextBoxDialog.xaml.cs">
+      <DependentUpon>TextBoxDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Themes\BaseViews\EditorViewModel.cs" />
+    <Compile Include="Views\SkinInfoEditorView\SkinInfoEditorView.xaml.cs">
+      <DependentUpon>SkinInfoEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SkinInfoEditorView\SkinInfoEditorViewSettings.cs" />
+    <Compile Include="Views\TestEditorView\TestEditorView.xaml.cs">
+      <DependentUpon>TestEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\TestEditorView\TestEditorViewSettings.cs" />
+    <Compile Include="Views\ImageEditorView\ImageEditorViewSettings.cs" />
+    <Compile Include="Views\SkinEditorView\SkinEditorViewSettings.cs" />
+    <Compile Include="Views\StyleEditorView\StyleEditorView.xaml.cs">
+      <DependentUpon>StyleEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\NewSkinDialog.xaml.cs">
+      <DependentUpon>NewSkinDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\NewWindowDialog.xaml.cs">
+      <DependentUpon>NewWindowDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SkinEditorView\SkinEditorView.xaml.cs">
+      <DependentUpon>SkinEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ImageEditorView\ImageEditorView.xaml.cs">
+      <DependentUpon>ImageEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\StyleEditorView\StyleEditorViewSettings.cs" />
+    <Page Include="Controls\CoverFlowListBox\CoverFlowListBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="BindingConverters\ColorConverter.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Dialogs\PreviewWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\SkinInfoEditorDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\TextBoxDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\SkinInfoEditorView\SkinInfoEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\TestEditorView\TestEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\StyleEditorView\StyleEditorView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\NewSkinDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Dialogs\NewWindowDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SkinEditorView\SkinEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ImageEditorView\ImageEditorView.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{c6a8f1c0-8b75-425d-90ce-0e455e80844a}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GUIFramework\GUIFramework.csproj">
+      <Project>{6ab49b23-6f99-4f91-9b69-5672c5abf4b7}</Project>
+      <Name>GUIFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GUISkinFramework\GUISkinFramework.csproj">
+      <Project>{c05087c6-9d6b-4dc5-a8bb-c3270654b4f7}</Project>
+      <Name>GUISkinFramework</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GUICommon\GUICommon.csproj">
+      <Project>{1f9acdee-fc03-4e2b-98db-632d4d64bffb}</Project>
+      <Name>GUICommon</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Add.png" />
+    <Resource Include="Images\Copy.png" />
+    <Resource Include="Images\Cut.png" />
+    <Resource Include="Images\Paste.png" />
+    <Resource Include="Images\Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\MoveDown.png" />
+    <Resource Include="Images\MoveUp.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Exit.PNG" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\New.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\SaveAs.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlButton.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlGroup.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlMPDWindow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlLabel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlMPDDialog.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlList.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlMPWindow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlProgressBar.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlRectangle.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlImage.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlGuide.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlMPDialog.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\MPLogo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\DVDCover.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="DesignerStyle.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\XmlEqualizer.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

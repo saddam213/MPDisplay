@@ -1,0 +1,104 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes"
+                    xmlns:local="clr-namespace:MPDisplay.Common.Controls">
+                  
+
+    <Style TargetType="{x:Type local:Surface3D}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type local:Surface3D}">
+
+                    <Grid>
+                        <!-- anti-aliasing is off here, but fear not... -->
+						<Viewport3D x:Name="PART_Viewport" ClipToBounds="False" RenderOptions.EdgeMode="Aliased" RenderOptions.BitmapScalingMode="LowQuality" >
+                            <Viewport3D.Children>
+
+                                <!-- directional lights -->
+                                <ModelVisual3D x:Name="PART_DirectionalLights" >
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup>
+                                            <DirectionalLight Color="White" Direction="0 0 -1" />
+                                            <DirectionalLight Color="White" Direction="0.1 -0.1 1" />
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+
+                                <!-- ambient lights -->
+                                <ModelVisual3D x:Name="PART_AmbientLights">
+                                    <ModelVisual3D.Content>
+                                        <Model3DGroup>
+                                            <AmbientLight Color="White" />
+                                        </Model3DGroup>
+                                    </ModelVisual3D.Content>
+                                </ModelVisual3D>
+
+                                <!-- back -->
+								<Viewport2DVisual3D x:Name="PART_BackModel" RenderOptions.CachingHint="Cache" RenderOptions.CacheInvalidationThresholdMaximum="2" RenderOptions.CacheInvalidationThresholdMinimum=".5"  >
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D Positions="0 0 0, 0 1 0, 1 1 0, 1 0 0" TextureCoordinates="0 1, 0 0, 1 0, 1 1" TriangleIndices="1 2 0, 2 3 0" />
+                                    </Viewport2DVisual3D.Geometry>
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <ScaleTransform3D ScaleX="{Binding ElementName=PART_Scale, Path=ScaleX}" ScaleY="{Binding ElementName=PART_Scale, Path=ScaleY}" ScaleZ="{Binding ElementName=PART_Scale, Path=ScaleZ}"/>
+                                            <RotateTransform3D CenterX="{Binding ElementName=PART_Rotate, Path=CenterX}" CenterY="{Binding ElementName=PART_Rotate, Path=CenterY}" CenterZ="{Binding ElementName=PART_Rotate, Path=CenterZ}">
+                                                <RotateTransform3D.Rotation>
+                                                    <QuaternionRotation3D Quaternion="{Binding ElementName=PART_Quaternion, Path=Quaternion}" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True" Brush="White"/>
+                                    </Viewport2DVisual3D.Material>
+                                    <Viewport2DVisual3D.Visual>
+										<Border />
+									</Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+
+                                <!-- front -->
+								<Viewport2DVisual3D x:Name="PART_FrontModel" RenderOptions.CachingHint="Cache" RenderOptions.CacheInvalidationThresholdMaximum="2" RenderOptions.CacheInvalidationThresholdMinimum=".5"  >
+                                    <Viewport2DVisual3D.Geometry>
+                                        <MeshGeometry3D Positions="0 0 0, 0 1 0, 1 1 0, 1 0 0" TextureCoordinates="0 1, 0 0, 1 0, 1 1" TriangleIndices="0 2 1, 0 3 2" />
+                                    </Viewport2DVisual3D.Geometry>
+                                    <Viewport2DVisual3D.Transform>
+                                        <Transform3DGroup>
+                                            <ScaleTransform3D x:Name="PART_Scale" />
+                                            <RotateTransform3D x:Name="PART_Rotate">
+                                                <RotateTransform3D.Rotation>
+                                                    <QuaternionRotation3D x:Name="PART_Quaternion" />
+                                                </RotateTransform3D.Rotation>
+                                            </RotateTransform3D>
+                                        </Transform3DGroup>
+                                    </Viewport2DVisual3D.Transform>
+                                    <Viewport2DVisual3D.Material>
+                                        <DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True" Brush="White"/>
+                                    </Viewport2DVisual3D.Material>
+                                    <Viewport2DVisual3D.Visual>
+										<Border x:Name="PART_FrontContent" BorderThickness="1" BorderBrush="Transparent"  >
+										    <ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
+										</Border>
+                                    </Viewport2DVisual3D.Visual>
+                                </Viewport2DVisual3D>
+
+                            </Viewport3D.Children>
+
+                            <Viewport3D.Camera>
+                                <PerspectiveCamera x:Name="PART_Camera" UpDirection="0 1 0" LookDirection="0 0 -1" />
+                            </Viewport3D.Camera>
+
+                        </Viewport3D>
+
+                        <!-- fixed content -->
+                        <Border x:Name="PART_FixedContainer">
+                            <Border.RenderTransform>
+                                <RotateTransform x:Name="PART_FixedTransform" />
+                            </Border.RenderTransform>
+                        </Border>
+
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

@@ -1,0 +1,133 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Xml.Serialization;
+using GUISkinFramework.Common;
+using GUISkinFramework.Common.Brushes;
+using GUISkinFramework.Editor.PropertyEditors;
+using MPDisplay.Common.Controls.PropertyGrid.Attributes;
+using MPDisplay.Common.Controls.PropertyGrid.Editors;
+using GUISkinFramework.Skin;
+using GUISkinFramework.Styles;
+
+namespace GUISkinFramework.Controls
+{
+    [Serializable]
+    [XmlType(TypeName = "Label")]
+    public class XmlLabel : XmlControl
+    {
+        private string _labelText;
+        private TextAlignment _labelTextAlignment;
+        private bool _isScrollingEnabled;
+        private XmlLabelStyle _controlStyle;
+        private bool _isScrollWrapEnabled;
+        private int _scrollDelay = 3;
+        private int _scrollSpeed = 2;
+        private string _scrollSeperator = " | ";
+
+
+    
+         [EditorCategory("Appearance", 3)]
+         [DisplayName("Style")]
+         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
+        [XmlElement("LabelStyle")]
+        public XmlLabelStyle ControlStyle
+        {
+            get { return _controlStyle; }
+            set { _controlStyle = value; NotifyPropertyChanged("ControlStyle"); }
+        }
+        
+
+
+        [DefaultValue(""), Editor(typeof(LabelEditor), typeof(ITypeEditor))]
+        [PropertyOrder(10)]
+        [EditorCategory("Label", 4)]
+        public string LabelText
+        {
+            get { return _labelText; }
+            set { _labelText = value; NotifyPropertyChanged("LabelText"); }
+        }
+      
+       
+
+        [DefaultValue(TextAlignment.Left)]
+        [PropertyOrder(20)]
+        [EditorCategory("Label", 4)]
+        public TextAlignment LabelTextAlignment
+        {
+            get { return _labelTextAlignment; }
+            set { _labelTextAlignment = value; NotifyPropertyChanged("LabelTextAlignment"); }
+        }
+
+
+     
+
+        private bool _isVertical;
+
+        [DefaultValue(false)]
+        [PropertyOrder(40)]
+        [EditorCategory("Label", 4)]
+        public bool IsVertical
+        {
+            get { return _isVertical; }
+            set { _isVertical = value;NotifyPropertyChanged("IsVertical"); }
+        }
+
+
+        [DefaultValue(true)]
+        [PropertyOrder(10)]
+        [EditorCategory("Scrolling", 5)]
+        public bool IsScrollingEnabled
+        {
+            get { return _isScrollingEnabled; }
+            set { _isScrollingEnabled = value; NotifyPropertyChanged("IsScrollingEnabled"); }
+        }
+
+
+        [DefaultValue(3)]
+        [PropertyOrder(11)]
+        [EditorCategory("Scrolling", 5)]
+        public int ScrollDelay
+        {
+            get { return _scrollDelay; }
+            set { _scrollDelay = value; NotifyPropertyChanged("ScrollDelay"); }
+        }
+
+        [DefaultValue(3)]
+        [PropertyOrder(12)]
+        [EditorCategory("Scrolling", 5)]
+        public int ScrollSpeed
+        {
+            get { return _scrollSpeed; }
+            set { _scrollSpeed = value; NotifyPropertyChanged("ScrollSpeed"); }
+        }
+
+        [DefaultValue(true)]
+        [PropertyOrder(13)]
+        [EditorCategory("Scrolling", 5)]
+        public bool IsScrollWrapEnabled
+        {
+            get { return _isScrollWrapEnabled; }
+            set { _isScrollWrapEnabled = value; NotifyPropertyChanged("IsScrollWrapEnabled"); }
+        }
+
+        [DefaultValue(" | ")]
+        [PropertyOrder(14)]
+        [EditorCategory("Scrolling", 5)]
+        public string ScrollSeperator
+        {
+            get { return _scrollSeperator; }
+            set { _scrollSeperator = value; NotifyPropertyChanged("ScrollSeperator"); }
+        }
+
+        public override void ApplyStyle(XmlStyleCollection style)
+        {
+            base.ApplyStyle(style);
+            ControlStyle = style.GetControlStyle<XmlLabelStyle>(ControlStyle);
+        }
+    }
+}

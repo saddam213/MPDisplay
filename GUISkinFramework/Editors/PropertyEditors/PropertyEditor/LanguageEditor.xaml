@@ -1,0 +1,70 @@
+﻿<UserControl x:Class="GUISkinFramework.Editor.PropertyEditors.PropertyEditor.LanguageEditor"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:language="clr-namespace:GUISkinFramework.Language"
+             xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors.PropertyEditor"
+             xmlns:sys="clr-namespace:System;assembly=mscorlib"
+			   xmlns:cmp="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+             mc:Ignorable="d" Name="UI" MinWidth="458" MinHeight="398" >
+    <UserControl.Resources>
+        <Style TargetType="TextBox">
+            <Style.Triggers>
+                <Trigger Property="Validation.HasError" Value="true">
+                    <Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+		<CollectionViewSource x:Key="languageEntries" Source="{Binding  SkinInfo.Language.LanguageEntries, ElementName=UI}">
+			<CollectionViewSource.SortDescriptions>
+				<cmp:SortDescription Direction="Ascending" PropertyName="SkinTag" />
+			</CollectionViewSource.SortDescriptions>
+		</CollectionViewSource>
+	</UserControl.Resources>
+    
+    <Grid DataContext="{Binding ElementName=UI}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="115*"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel >
+            <TextBlock Text="Language Entries" />
+			<ListBox SelectedIndex="0" ItemsSource="{Binding Source={StaticResource languageEntries}}" SelectedItem="{Binding SelectedEntry}" Height="356"  >
+            <ListBox.Resources>
+                <DataTemplate DataType="{x:Type language:XmlLanguageEntry}">
+                    <StackPanel Orientation="Horizontal">
+                        <Image Width="16" Height="16" Source="/GUISkinFramework;component/Images/XmlLabel.png" />
+                        <TextBlock Margin="3,0,0,0" Text="{Binding SkinTag}" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.Resources>
+        </ListBox>
+            <StackPanel Orientation="Horizontal" Margin="0,3,29,0">
+                <Button Width="23" Height="23" Click="Button_LanguageAdd_Click">
+                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" />
+                </Button>
+                <Button Margin="3,0,0,0" Width="23" Height="23" Click="Button_LanguageRemove_Click">
+                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" />
+                </Button>
+            </StackPanel>
+        </StackPanel>
+
+		<DockPanel Margin="10,16,0,27" Grid.Column="1" Height="356">
+            <TextBlock DockPanel.Dock="Top" TextWrapping="Wrap" Text="Language Tag"/>
+			<TextBox DockPanel.Dock="Top"   TextWrapping="Wrap">
+                <TextBox.Text>
+					<Binding Path="SelectedEntry.SkinTag" UpdateSourceTrigger="PropertyChanged" >
+                        <Binding.ValidationRules>
+                            <local:LanguageTagValidationRule ValidatesOnTargetUpdated="True" />
+                        </Binding.ValidationRules>
+                    </Binding>
+                </TextBox.Text>
+            </TextBox>
+			<TextBlock DockPanel.Dock="Top"  TextWrapping="Wrap" Text="Language Values"/>
+			<DataGrid ItemsSource="{Binding SelectedEntry.Values}" ColumnWidth="Auto" />
+		</DockPanel>
+
+    </Grid>
+</UserControl>

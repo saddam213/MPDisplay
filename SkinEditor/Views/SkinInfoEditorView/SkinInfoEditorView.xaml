@@ -1,0 +1,158 @@
+﻿<local:EditorViewModel
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+			    xmlns:local="clr-namespace:SkinEditor.Views"
+				xmlns:gui="clr-namespace:GUIFramework;assembly=GUIFramework"
+				xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+          xmlns:fileSystemHelpers="clr-namespace:SkinEditor.Helpers" 
+             x:Class="SkinEditor.Views.SkinInfoEditorView"
+             mc:Ignorable="d" 
+             d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >
+
+	<Grid DataContext="{Binding ElementName=UI}">
+		<!--Skin Settings-->
+		<GroupBox  DataContext="{Binding SkinInfo}" Header="Skin Settings" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="210">
+			<StackPanel Grid.Column="0" Margin="5">
+				<!--Name-->
+				<TextBlock Text="Skin Name" />
+				<TextBox Text="{Binding SkinName, UpdateSourceTrigger=PropertyChanged}"/>
+				<!--Author-->
+				<TextBlock Text="Author" Margin="0,3,0,0" />
+				<TextBox Text="{Binding Author, UpdateSourceTrigger=PropertyChanged}"/>
+				<!--Size-->
+				<Grid Margin="0,3,0,0">
+					<Grid.ColumnDefinitions>
+						<ColumnDefinition Width="84*"/>
+						<ColumnDefinition Width="85*"/>
+					</Grid.ColumnDefinitions>
+					<StackPanel Grid.Column="0" Margin="0,0,2,0">
+						<TextBlock Text="Skin Width" />
+						<TextBox IsEnabled="False" Text="{Binding SkinWidth, UpdateSourceTrigger=PropertyChanged}"/>
+					</StackPanel>
+					<StackPanel Grid.Column="1" Margin="2,0,0,0">
+						<TextBlock Text="Skin Height" />
+						<TextBox IsEnabled="False" Text="{Binding SkinHeight, UpdateSourceTrigger=PropertyChanged}"/>
+					</StackPanel>
+				</Grid>
+				<!--Language-->
+				<TextBlock Text="Language" Margin="0,3,0,0" />
+				<ComboBox ItemsSource="{Binding Languages}" SelectedItem="{Binding CurrentLanguage}" />
+				<!--Style-->
+				<TextBlock Text="Style" Margin="0,3,0,0" />
+				<ComboBox ItemsSource="{Binding Styles}" DisplayMemberPath="Key" SelectedValuePath="Key" SelectedValue="{Binding CurrentStyle}"/>
+			</StackPanel>
+		</GroupBox>
+
+		<!--Text Settings-->
+		<GroupBox DataContext="{Binding SkinInfo}" Header="Text Settings" HorizontalAlignment="Left" Margin="225,10,0,0" VerticalAlignment="Top" Width="293">
+			<StackPanel Margin="5">
+				<CheckBox x:Name="enableScroll" Content="Enable Text Scrolling" IsChecked="{Binding TextEnableScrolling}" />
+				<UniformGrid Margin="10,3,0,0" Columns="3" Rows="5" IsEnabled="{Binding IsChecked, ElementName=enableScroll}"  >
+					<TextBlock Text="" />
+					<TextBlock Text="Horizontal" VerticalAlignment="Bottom"/>
+					<TextBlock Text="Vertical" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
+					<!--ScrollSpeed-->
+					<TextBlock Text="Scroll Speed" />
+					<commonControls:IntegerUpDown Value="{Binding TextHorizontalScrollSpeed}" Margin="0,0,2,0"/>
+					<commonControls:IntegerUpDown Value="{Binding TextVerticalScrollSpeed}" Margin="2,0,0,0"/>
+					<!--ScrollDelay-->
+					<TextBlock Text="Scroll Delay" />
+					<commonControls:IntegerUpDown Value="{Binding TextHorizontalScrollDelay}" Margin="0,0,2,0"/>
+					<commonControls:IntegerUpDown Value="{Binding TextVerticalScrollDelay}" Margin="2,0,0,0"/>
+					<!--ScrollWrap-->
+					<TextBlock Text="Scroll Wrap" />
+					<CheckBox x:Name="scrollWrapHorz" IsChecked="{Binding TextHorizontalScrollWrap}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					<CheckBox x:Name="scrollWrapVert" IsChecked="{Binding TextVerticalScrollWrap}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					<!--ScrollSeparator-->
+					<TextBlock Text="Scroll Separator" />
+					<TextBox Margin="0,0,2,0" Text="{Binding TextHorizontalScrollSeperator}" IsEnabled="{Binding IsChecked, ElementName=scrollWrapHorz}"/>
+					<TextBox Margin="2,0,0,0" Text="{Binding TextVerticalScrollSeperator}" IsEnabled="{Binding IsChecked, ElementName=scrollWrapVert}"/>
+				</UniformGrid>
+			</StackPanel>
+		</GroupBox>
+
+		<!--SkinOptions-->
+		<GroupBox DataContext="{Binding SkinInfo}" Header="Skin Options" HorizontalAlignment="Left" Height="408" Margin="523,10,0,0" VerticalAlignment="Top" Width="501">
+			<Grid>
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="210*"/>
+					<ColumnDefinition Width="269*"/>
+				</Grid.ColumnDefinitions>
+				<DockPanel Grid.Column="0" Margin="5">
+					<TextBlock Text="Options" DockPanel.Dock="Top"/>
+					<Grid DockPanel.Dock="Bottom">
+						<StackPanel Orientation="Horizontal" >
+							<Button Margin="0,2,0,0"  Height="22" HorizontalAlignment="Left" Width="22"  Command="{Binding SkinOptionItemAdd, ElementName=UI}" >
+								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" />
+							</Button>
+							<Button Margin="2,2,0,0"  HorizontalAlignment="Left" Width="22" Height="22" Command="{Binding SkinOptionItemRemove, ElementName=UI}" >
+								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" Stretch="Uniform" />
+							</Button>
+						</StackPanel>
+						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+							<Button Margin="0,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveUp, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=skinOptionList}">
+								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Up.png" Stretch="Uniform" />
+							</Button>
+							<Button Margin="2,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveDown, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=skinOptionList}">
+								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Down.png" Stretch="Uniform" />
+							</Button>
+						</StackPanel>
+					</Grid>
+					<ListBox x:Name="skinOptionList" ItemsSource="{Binding SkinOptions}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedSkinOption, ElementName=UI}"/>
+				</DockPanel>
+
+				<Grid Grid.Column="1" Margin="5,20,5,5">
+					<StackPanel >
+						<CheckBox Content="IsEnabled" IsChecked="{Binding SelectedSkinOption.IsEnabled,ElementName=UI}"/>
+
+						<TextBlock Text="Option Name" Margin="0,3,0,0" />
+						<TextBox >
+							<TextBox.Text>
+								<Binding Path="SelectedSkinOption.Name" ElementName="UI" UpdateSourceTrigger="PropertyChanged" >
+									<Binding.ValidationRules>
+										<local:SkinOptionNameValidationRule ValidatesOnTargetUpdated="True"  />
+									</Binding.ValidationRules>
+								</Binding>
+							</TextBox.Text>
+							<TextBox.Style>
+								<Style TargetType="TextBox">
+									<Style.Triggers>
+										<Trigger Property="Validation.HasError" Value="true">
+											<Setter Property="ToolTip" Value="{Binding RelativeSource={RelativeSource Self}, Path=(Validation.Errors)[0].ErrorContent}"/>
+										</Trigger>
+									</Style.Triggers>
+								</Style>
+							</TextBox.Style>
+						
+						</TextBox>
+
+						<TextBlock Text="Description" Margin="0,3,0,0" />
+						<TextBox Text="{Binding SelectedSkinOption.Description, ElementName=UI,UpdateSourceTrigger=PropertyChanged}" MinHeight="100"/>
+						<CheckBox x:Name="previewImageEnabled" IsChecked="{Binding SelectedSkinOption.IsPreviewImageEnabled,ElementName =UI}" Margin="0,3,0,0" Content="Enable Preview Image" />
+						<StackPanel Margin="10,0,0,0" IsEnabled="{Binding IsChecked, ElementName=previewImageEnabled}">
+							<TextBlock Text="PreviewImage" Margin="0,3,0,0" />
+							<ComboBox x:Name="imageCombo" ItemsSource="{Binding Images}" DisplayMemberPath="DisplayName" SelectedValuePath="XmlName" SelectedValue="{Binding SelectedSkinOption.PreviewImage, ElementName=UI}" />
+						</StackPanel>
+						<Image Margin="5" MaxHeight="100" Source="{Binding SelectedItem.FileName, ElementName=imageCombo}" Stretch="Uniform"/>
+					</StackPanel>
+					<Grid.Style>
+						<Style TargetType="Grid">
+							<Setter Property="IsEnabled" Value="True" />
+							<Style.Triggers>
+								<DataTrigger Binding="{Binding SelectedItem, ElementName=skinOptionList}" Value="{x:Null}">
+									<Setter Property="IsEnabled" Value="False" />
+								</DataTrigger>
+							</Style.Triggers>
+						</Style>
+					</Grid.Style>
+				</Grid>
+
+			</Grid>
+		</GroupBox>
+
+
+	</Grid>
+
+</local:EditorViewModel>

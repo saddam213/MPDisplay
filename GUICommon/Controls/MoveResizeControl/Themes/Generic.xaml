@@ -1,0 +1,75 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:local="clr-namespace:MPDisplay.Common.Controls"
+                    xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes"
+                    xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters"
+					xmlns:MoveResize="clr-namespace:MPDisplay.Common.Controls">
+
+	
+
+
+	<Style TargetType="{x:Type MoveResize:MoveResizeControl}">
+		<Setter Property="Visibility" Value="Visible" />
+		<Setter Property="Template">
+			<Setter.Value>
+				<ControlTemplate TargetType="{x:Type MoveResize:MoveResizeControl}">
+					<Grid DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
+						<MoveResize:MoveThumb  Cursor="SizeAll" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}">
+							<MoveResize:MoveThumb.Template>
+								<ControlTemplate TargetType="{x:Type MoveResize:MoveThumb}">
+									<Rectangle Fill="Transparent" />
+								</ControlTemplate>
+							</MoveResize:MoveThumb.Template>
+						</MoveResize:MoveThumb>
+						<ContentControl x:Name="resizer">
+							<Grid>
+								<Grid Opacity="0" Margin="-3">
+									
+									<MoveResize:ResizeThumb Height="3" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Width="3" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Width="3" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Height="3" Cursor="SizeNS" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNWSE" VerticalAlignment="Top" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNESW" VerticalAlignment="Top" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNESW" VerticalAlignment="Bottom" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNWSE" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+								</Grid>
+								<Grid IsHitTestVisible="False" Opacity="1" Margin="-3">
+									<Rectangle SnapsToDevicePixels="True" StrokeThickness="2" Margin="0" Stroke="{TemplateBinding ResizeHighlightColor}" />
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Left" VerticalAlignment="Top"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Bottom"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Center" VerticalAlignment="Top"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+									<Rectangle Margin="-4" Stroke="Black" StrokeThickness="1" Fill="{TemplateBinding ResizeHighlightColor}" Width="8" Height="8" HorizontalAlignment="Right" VerticalAlignment="Center"/>
+								</Grid>
+							</Grid>
+						</ContentControl>
+						<Grid x:Name="sizeInfo" SnapsToDevicePixels="True">
+							<Path Stroke="{TemplateBinding ResizeSizeInfoColor}" StrokeThickness="2" Height="10" VerticalAlignment="Bottom" Margin="-2,0,-2,-18" Stretch="Fill" Data="M0,0 0,10 M 0,5 100,5 M 100,0 100,10"/>
+							<TextBlock Text="{Binding Width}" FontWeight="Bold" Background="{TemplateBinding ResizeHighlightColor}" Padding="3,0,3,0" Foreground="{TemplateBinding ResizeSizeInfoColor}" Margin="0,0,0,-25" HorizontalAlignment="Center" VerticalAlignment="Bottom"/>
+							<Path Stroke="{TemplateBinding ResizeSizeInfoColor}" StrokeThickness="2" Width="10" HorizontalAlignment="Right" Margin="0,-2,-18,-2" Stretch="Fill" Data="M5,0 5,100 M 0,0 10,0 M 0,100 10,100"/>
+							<TextBlock Text="{Binding Height}" FontWeight="Bold" Background="{TemplateBinding ResizeHighlightColor}" Foreground="{TemplateBinding ResizeSizeInfoColor}" Padding="3,0,3,0" Margin="0,0,-25,0" HorizontalAlignment="Right" VerticalAlignment="Center">
+								<TextBlock.LayoutTransform>
+									<RotateTransform Angle="90" CenterX="1" CenterY="0.5"/>
+								</TextBlock.LayoutTransform>
+							</TextBlock>
+						</Grid>
+						<ContentPresenter Content="{TemplateBinding Content}"/>
+					</Grid>
+					<ControlTemplate.Triggers>
+						<Trigger  Property="IsMouseOver" Value="True">
+							<Setter TargetName="sizeInfo" Property="Visibility" Value="Visible" />
+						</Trigger>
+						<Trigger  Property="IsMouseOver" Value="False">
+							<Setter TargetName="sizeInfo" Property="Visibility" Value="Hidden" />
+						</Trigger>
+					</ControlTemplate.Triggers>
+				</ControlTemplate>
+			</Setter.Value>
+		</Setter>
+	</Style>
+
+</ResourceDictionary>
