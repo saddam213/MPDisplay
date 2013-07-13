@@ -20,28 +20,30 @@ namespace GUIConfig.ViewModels
     /// <summary>
     /// Interaction logic for BasicSettingsView.xaml
     /// </summary>
-    public partial class BasicSettingsView : ViewModelBase
+    public partial class GUISettingsView : ViewModelBase
     {
-        private Log Log = LoggingManager.GetLog(typeof(BasicSettingsView));
+        private Log Log = LoggingManager.GetLog(typeof(GUISettingsView));
 
-        public BasicSettingsView()
+        public GUISettingsView()
         {
             InitializeComponent();
         }
 
         public override string Title
         {
-            get { return "Settings"; }
+            get { return "MPDisplay"; }
         }
 
         public override void OnModelOpen()
         {
             base.OnModelOpen();
+            Log.Message(LogLevel.Debug, "{0} ViewModel opened.", Title);
         }
 
         public override void OnModelClose()
         {
             base.OnModelClose();
+            Log.Message(LogLevel.Debug, "{0} ViewModel closed.", Title);
         }
     }
 }

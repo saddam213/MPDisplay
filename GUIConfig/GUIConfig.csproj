@@ -53,8 +53,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ViewModels\BasicSettingsView.xaml.cs">
-      <DependentUpon>BasicSettingsView.xaml</DependentUpon>
+    <Compile Include="ViewModels\GUISettingsView.xaml.cs">
+      <DependentUpon>GUISettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\PluginSettingsView.xaml.cs">
+      <DependentUpon>PluginSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="MainWindow.xaml">
@@ -69,9 +72,13 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="ViewModels\BasicSettingsView.xaml">
-      <SubType>Designer</SubType>
+    <Page Include="ViewModels\GUISettingsView.xaml">
       <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="ViewModels\PluginSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
   </ItemGroup>
   <ItemGroup>

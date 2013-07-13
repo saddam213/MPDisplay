@@ -51,8 +51,11 @@ namespace GUIConfig
 
         private void LoadViews()
         {
-            Views.Add(new BasicSettingsView { DataObject = MPDisplaySettings });
-           // Views.Add(new SkinSettingsView { DataObject = SkinSettings });
+            if (RegistrySettings.InstallType != MPDisplayInstallType.GUI)
+            {
+                Views.Add(new PluginSettingsView { DataObject = MPDisplaySettings.PluginSettings });
+            }
+            Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
         }
 
         protected override void OnClosing(CancelEventArgs e)
