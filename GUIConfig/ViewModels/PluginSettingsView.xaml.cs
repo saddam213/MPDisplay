@@ -25,7 +25,7 @@ namespace GUIConfig.ViewModels
         private Log Log = LoggingManager.GetLog(typeof(PluginSettingsView));
 
         public PluginSettingsView()
-        {
+        {            
             InitializeComponent();
         }
 

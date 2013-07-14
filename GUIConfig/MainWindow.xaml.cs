@@ -64,7 +64,8 @@ namespace GUIConfig
             {
                 if (MessageBox.Show("save changes?", "Save?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    //SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
+                    SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
+                    //SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, @"C:\temp\settings.xml"); // my MPDisplay settings reg key is null since I've only done the config.
                 }
             }
             base.OnClosing(e);

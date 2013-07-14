@@ -40,7 +40,7 @@ namespace GUIConfig.ViewModels
         public SettingsBase DataObject
         {
             get { return _dataObject; }
-            set { _dataObject = value; NotifyPropertyChanged(); }
+            set { _dataObject = value; NotifyPropertyChanged(); HasPendingChanges = true; }
         }
 
         public bool HasPendingChanges

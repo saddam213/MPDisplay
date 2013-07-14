@@ -37,7 +37,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
@@ -110,6 +112,10 @@
     <ProjectReference Include="..\Common\Common.csproj">
       <Project>{c6a8f1c0-8b75-425d-90ce-0e455e80844a}</Project>
       <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GUICommon\GUICommon.csproj">
+      <Project>{1F9ACDEE-FC03-4E2B-98DB-632D4D64BFFB}</Project>
+      <Name>GUICommon</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

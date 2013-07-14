@@ -5,8 +5,15 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-		<TextBlock Text="{Binding Title}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-	</Grid>
+             d:DesignHeight="300" d:DesignWidth="300" x:Name="UI">
+    <Grid DataContext="{Binding ElementName=UI}">
+        <TextBlock Text="{Binding Title}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" Width="108"/>
+        <TextBox Text="{Binding DataObject.ConnectionSettings.Port, FallbackValue=Port, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,31,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ConnectionSettings.IpAddress, FallbackValue=IpAddress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,51,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ConnectionSettings.ConnectionName, FallbackValue=ConnectionName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,71,0,0" Width="120"/>
+        <TextBlock Text="Port" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,31,0,0" Width="120"/>
+        <TextBlock Text="IpAddress" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,51,0,0" Width="120"/>
+        <TextBlock Text="ConnectionName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,71,0,0" Width="120"/>
+        <!--<Button Content="Save" HorizontalAlignment="Left" Margin="10,91,0,0" VerticalAlignment="Top" Width="75" Click="Button_Click"/>-->
+    </Grid>
 </Views:ViewModelBase>

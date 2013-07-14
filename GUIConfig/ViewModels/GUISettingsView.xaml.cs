@@ -43,6 +43,10 @@ namespace GUIConfig.ViewModels
         public override void OnModelClose()
         {
             base.OnModelClose();
+            if (base.HasPendingChanges)
+            {
+
+            }
             Log.Message(LogLevel.Debug, "{0} ViewModel closed.", Title);
         }
     }

@@ -4,9 +4,38 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300">
-    <Grid>
-		<TextBlock Text="{Binding Title}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-	</Grid>
+             mc:Ignorable="d" d:DesignHeight="500" d:DesignWidth="300" x:Name="UI">
+    <Grid DataContext="{Binding ElementName=UI}">
+        <TextBlock Text="{Binding Title}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" Width="108"/>
+        <TextBox Text="{Binding DataObject.ConnectionSettings.Port, FallbackValue=Port, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,31,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ConnectionSettings.IpAddress, FallbackValue=IpAddress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,51,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ConnectionSettings.ConnectionName, FallbackValue=ConnectionName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,71,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.SkinName, FallbackValue=SkinName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,91,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.Display, FallbackValue=Display, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,111,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.CustomResolution, FallbackValue=CustomResolution, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,131,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ScreenWidth, FallbackValue=ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,151,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ScreenHeight, FallbackValue=ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,171,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ScreenOffSetX, FallbackValue=ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,191,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ScreenOffSetY, FallbackValue=ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,211,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.DesktopMode, FallbackValue=DesktopMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,231,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.CursorStyle, FallbackValue=CursorStyle, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,251,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.Priority, FallbackValue=Priority, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,271,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.RestartOnError, FallbackValue=RestartOnError, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,291,0,0" Width="120"/>
+        <TextBox Text="{Binding DataObject.ResumeConnectDelay, FallbackValue=ResumeConnectDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,311,0,0" Width="120"/>
+        <TextBlock Text="Port" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,31,0,0" Width="120"/>
+        <TextBlock Text="IpAddress" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,51,0,0" Width="120"/>
+        <TextBlock Text="ConnectionName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,71,0,0" Width="120"/>
+        <TextBlock Text="SkinName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,91,0,0" Width="120"/>
+        <TextBlock Text="Display" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,111,0,0" Width="120"/>
+        <TextBlock Text="CustomResolution" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,131,0,0" Width="120"/>
+        <TextBlock Text="ScreenWidth" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,151,0,0" Width="120"/>
+        <TextBlock Text="ScreenHeight" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,171,0,0" Width="120"/>
+        <TextBlock Text="ScreenOffSetX" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,191,0,0" Width="120"/>
+        <TextBlock Text="ScreenOffSetY" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,211,0,0" Width="120"/>
+        <TextBlock Text="DesktopMode" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,231,0,0" Width="120"/>
+        <TextBlock Text="CursorStyle" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,251,0,0" Width="120"/>
+        <TextBlock Text="Priority" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,271,0,0" Width="120"/>
+        <TextBlock Text="RestartOnError" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,291,0,0" Width="120"/>
+        <TextBlock Text="ResumeConnectDelay" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,311,0,0" Width="120"/>
+    </Grid>
 </Views:ViewModelBase>
