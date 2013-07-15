@@ -7,9 +7,7 @@
              mc:Ignorable="d" d:DesignHeight="500" d:DesignWidth="300" x:Name="UI">
     <Grid DataContext="{Binding ElementName=UI}">
         <TextBlock Text="{Binding Title}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" Width="108"/>
-        <TextBox Text="{Binding DataObject.ConnectionSettings.Port, FallbackValue=Port, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,31,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ConnectionSettings.IpAddress, FallbackValue=IpAddress, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,51,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ConnectionSettings.ConnectionName, FallbackValue=ConnectionName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,71,0,0" Width="120"/>
+        <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Margin="3,20,0,0" VerticalAlignment="Top"/>
         <TextBox Text="{Binding DataObject.SkinName, FallbackValue=SkinName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,91,0,0" Width="120"/>
         <TextBox Text="{Binding DataObject.Display, FallbackValue=Display, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,111,0,0" Width="120"/>
         <TextBox Text="{Binding DataObject.CustomResolution, FallbackValue=CustomResolution, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,131,0,0" Width="120"/>
@@ -22,9 +20,6 @@
         <TextBox Text="{Binding DataObject.Priority, FallbackValue=Priority, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,271,0,0" Width="120"/>
         <TextBox Text="{Binding DataObject.RestartOnError, FallbackValue=RestartOnError, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,291,0,0" Width="120"/>
         <TextBox Text="{Binding DataObject.ResumeConnectDelay, FallbackValue=ResumeConnectDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,311,0,0" Width="120"/>
-        <TextBlock Text="Port" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,31,0,0" Width="120"/>
-        <TextBlock Text="IpAddress" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,51,0,0" Width="120"/>
-        <TextBlock Text="ConnectionName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,71,0,0" Width="120"/>
         <TextBlock Text="SkinName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,91,0,0" Width="120"/>
         <TextBlock Text="Display" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,111,0,0" Width="120"/>
         <TextBlock Text="CustomResolution" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,131,0,0" Width="120"/>

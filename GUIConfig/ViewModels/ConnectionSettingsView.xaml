@@ -1,0 +1,17 @@
+﻿<UserControl x:Class="GUIConfig.ViewModels.ConnectionSettingsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="80" d:DesignWidth="270" x:Name="UI">
+    <Grid DataContext="{Binding ElementName=UI}">
+        <TextBox Text="{Binding ConnectionSettings.Port, FallbackValue=Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="128,10,0,0" Width="120"/>
+        <TextBox Text="{Binding ConnectionSettings.IpAddress, FallbackValue=IpAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="128,30,0,0" Width="120"/>
+        <TextBox Text="{Binding ConnectionSettings.ConnectionName, FallbackValue=ConnectionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="128,50,0,0" Width="120"/>
+        <TextBlock Text="Port" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,10,0,0" Width="120"/>
+        <TextBlock Text="IpAddress" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,30,0,0" Width="120"/>
+        <TextBlock Text="ConnectionName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="7,50,0,0" Width="120"/>
+
+    </Grid>
+</UserControl>
