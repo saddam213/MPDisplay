@@ -23,9 +23,24 @@
                 BorderBrush="{Binding BaseXml.BorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderThickness="{Binding BaseXml.BorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding BaseXml.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
-		<Border x:Name="focusShading" Background="{Binding ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-			<Border x:Name="focusgloss" Background="{Binding BaseXml.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
-		</Border>
+		<commonControls:EqualizerCanvas x:Name="EqualizerCanvas"
+		                                Width="{Binding ActualWidth, ElementName=background, Mode=OneWay}" 
+				                        Height="{Binding ActualHeight, ElementName=background, Mode=OneWay}" 
+										FallOffColor="{Binding BaseXml.ControlStyle.FallOffColor, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
+		                                FallOffHeight="{Binding BaseXml.FallOffHeight, Mode=OneWay}" 
+										FalloffSpeed="{Binding BaseXml.FalloffSpeed, Mode=OneWay}"
+										BandCornerRadius="{Binding BaseXml.BandCornerRadius, Mode=OneWay}"
+										BandBorderColor="{Binding BaseXml.ControlStyle.BandBorderColor, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
+										BandBorderSize="{Binding BaseXml.BandBorderSize, Mode=OneWay}" 
+										BandSpacing="{Binding BaseXml.BandSpacing, Mode=OneWay}" 
+										BandCount="{Binding BaseXml.BandCount, Mode=OneWay}"
+										EQStyle="{Binding BaseXml.EQStyle, Converter={StaticResource EQStyleEnumConverter}, Mode=OneWay}"
+										LowRangeValue="{Binding BaseXml.LowRangeValue, Mode=OneWay}"
+										MedRangeValue="{Binding BaseXml.MedRangeValue, Mode=OneWay}"
+										LowRangeColor="{Binding BaseXml.ControlStyle.LowRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+										MedRangeColor="{Binding BaseXml.ControlStyle.MedRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+										MaxRangeColor="{Binding BaseXml.ControlStyle.MaxRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+										ShowDummyData="{Binding BaseXml.ShowDummyData, Mode=OneWay}"/>
 	</Border>
 
 

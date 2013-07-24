@@ -7,6 +7,7 @@ using System.Threading;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
+using MPDisplay.Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -39,9 +40,11 @@ namespace MediaPortalPlugin.InfoManagers
 
         private List<APIPropertyMessage> _properties = new List<APIPropertyMessage>();
         private List<string> _registeredProperties = new List<string>();
-      
-        public void Initialize()
+        private PluginSettings _settings;
+
+        public void Initialize(PluginSettings settings)
         {
+            _settings = settings;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
         }
 

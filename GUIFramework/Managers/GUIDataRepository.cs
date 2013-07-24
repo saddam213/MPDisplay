@@ -1266,9 +1266,9 @@ namespace GUIFramework.Managers
         }
 
 
-        public static void RegisterEQData(Action<int[]> callback)
+        public static void RegisterEQData(Action<byte[]> callback)
         {
-            Instance.RegisterMessage<int[]>(GenericDataMessageType.EQData, callback);
+            Instance.RegisterMessage<byte[]>(GenericDataMessageType.EQData, callback);
         }
 
         public static void DegisterEQData(object owner)
@@ -1311,7 +1311,7 @@ namespace GUIFramework.Managers
                 switch (message.DataType)
                 {
                     case APIDataMessageType.EQData:
-                        _dataService.NotifyListeners(GenericDataMessageType.EQData, message.IntArray);
+                        _dataService.NotifyListeners(GenericDataMessageType.EQData, message.ByteArray);
                         break;
                     default:
                         break;

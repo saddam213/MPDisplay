@@ -20,6 +20,7 @@
 	<xmlConverters:XmlThicknessConverter  x:Key="ThicknessConverter" />
 	<xmlConverters:XmlFontConverter  x:Key="FontConverter" />
 	<xmlConverters:XmlCornerRadiusConverter x:Key="CornerRadiusConverter"/>
+	<xmlConverters:XmlEQStyleEnumConverter x:Key="EQStyleEnumConverter" />
 
 
 	<commonConverters:ColorToStringConverter x:Key="ColorToStringConverter" />
@@ -469,5 +470,41 @@
     </DataTemplate>
 
 
+	<DataTemplate DataType="{x:Type skinControls:XmlEqualizer}"  >
+		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
+			                    Height="{Binding Height,Mode=OneWay}"
+								RotationX="{Binding Pos3DX,Mode=OneWay}"
+								RotationY="{Binding Pos3DY,Mode=OneWay}"
+								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
+								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
+								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+			<Border x:Name="background" 
+			        Width="{Binding Width, Mode=OneWay}"
+					Height="{Binding Height, Mode=OneWay}"
+					Background="{Binding ControlStyle.BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+					BorderBrush="{Binding ControlStyle.BorderBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+					BorderThickness="{Binding ControlStyle.BorderThickness, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
+					CornerRadius="{Binding ControlStyle.CornerRadius, Converter={StaticResource CornerRadiusConverter}, Mode=OneWay}" >
+				<commonControls:EqualizerCanvas Width="{Binding ActualWidth, ElementName=background, Mode=OneWay}" 
+				                                Height="{Binding ActualHeight, ElementName=background, Mode=OneWay}" 
+											    FallOffColor="{Binding ControlStyle.FallOffColor, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
+		                                        FallOffHeight="{Binding FallOffHeight, Mode=OneWay}" 
+												FalloffSpeed="{Binding FalloffSpeed, Mode=OneWay}"
+												BandCornerRadius="{Binding BandCornerRadius, Mode=OneWay}"
+												BandBorderColor="{Binding ControlStyle.BandBorderColor, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
+												BandBorderSize="{Binding BandBorderSize, Mode=OneWay}" 
+												BandSpacing="{Binding BandSpacing, Mode=OneWay}" 
+												BandCount="{Binding BandCount, Mode=OneWay}"
+												EQStyle="{Binding EQStyle, Converter={StaticResource EQStyleEnumConverter}, Mode=OneWay}"
+												LowRangeValue="{Binding LowRangeValue, Mode=OneWay}"
+												MedRangeValue="{Binding MedRangeValue, Mode=OneWay}"
+												LowRangeColor="{Binding ControlStyle.LowRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+												MedRangeColor="{Binding ControlStyle.MedRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+												MaxRangeColor="{Binding ControlStyle.MaxRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+												ShowDummyData="{Binding ShowDummyData, Mode=OneWay}"/>
+			</Border>
+		</commonControls:Surface3D>
+	</DataTemplate>
 
 </ResourceDictionary>

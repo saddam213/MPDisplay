@@ -37,7 +37,9 @@ namespace MediaPortalPlugin
             if (_settings != null)
             {
                 MessageService.Instance.InitializeConnection(_settings.ConnectionSettings);
-                WindowManager.Instance.Initialize();
+                WindowManager.Instance.Initialize(_settings);
+
+             
             }
         }
 

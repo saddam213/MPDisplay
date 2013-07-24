@@ -55,6 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\XmlEQStyleEnumConverter.cs" />
     <Compile Include="Converters\XmlCornerRadiusConverter.cs" />
     <Compile Include="Converters\XmlPercentToWidthConverter.cs" />
     <Compile Include="Converters\ImageCacheConverter.cs" />
@@ -83,6 +84,9 @@
     </Compile>
     <Compile Include="Editors\PropertyEditors\BrushEditor\GradientBrushEditor.xaml.cs">
       <DependentUpon>GradientBrushEditor.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editors\PropertyEditors\CommonEditors\IntMinMaxValueEditor.xaml.cs">
+      <DependentUpon>IntMinMaxValueEditor.xaml</DependentUpon>
     </Compile>
     <Compile Include="Editors\PropertyEditors\CommonEditors\FourPointValueEditor.xaml.cs">
       <DependentUpon>FourPointValueEditor.xaml</DependentUpon>
@@ -176,7 +180,7 @@
     <Compile Include="Skin\Elements\Controls\Group\XmlGroup.cs" />
     <Compile Include="Skin\Elements\Controls\Rectangle\XmlRectangle.cs" />
     <Compile Include="Skin\Elements\Controls\XmlControlStyle.cs" />
-    <Compile Include="Skin\Elements\Controls\Equalizer\XMLEqualizerStyle.cs" />
+    <Compile Include="Skin\Elements\Controls\Equalizer\XmlEqualizerStyle.cs" />
     <Compile Include="Skin\Elements\Dialogs\XmlMPDialog.cs" />
     <Compile Include="Skin\Elements\Dialogs\XmlMPDDialog.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -247,6 +251,10 @@
     <Page Include="Editors\PropertyEditors\BrushEditor\GradientBrushEditor.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editors\PropertyEditors\CommonEditors\IntMinMaxValueEditor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="Editors\PropertyEditors\CommonEditors\FourPointValueEditor.xaml">
       <Generator>MSBuild:Compile</Generator>

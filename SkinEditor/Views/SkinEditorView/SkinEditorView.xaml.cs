@@ -429,10 +429,19 @@ namespace SkinEditor.Views
                     Id = id,
                     Name = "NewEqualizer",
                     Width = 400,
-                    Height = 80,
+                    Height = 400,
                     IsWindowOpenVisible = true,
                     WindowId = windowId,
-                    ControlStyle = controlStyle as XMLEqualizerStyle ?? new XMLEqualizerStyle(),
+                    EQStyle = XmlEQStyle.SingleBar,
+                    LowRangeValue = 100,
+                    MedRangeValue = 200,
+                    BandCount = 18,
+                    BandSpacing = 4,
+                    BandBorderSize = 1,
+                    BandCornerRadius = 0,
+                    FalloffSpeed = 4,
+                    FallOffHeight = 2,
+                    ControlStyle = controlStyle as XmlEqualizerStyle ?? new XmlEqualizerStyle(),
                 };
             }
 

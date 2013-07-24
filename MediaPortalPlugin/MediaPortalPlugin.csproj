@@ -30,6 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Bass.Net">
+      <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Bass.Net.dll</HintPath>
+    </Reference>
     <Reference Include="Common.Utils">
       <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Common.Utils.dll</HintPath>
       <Private>False</Private>
@@ -37,9 +40,6 @@
     <Reference Include="Core">
       <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Core.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="MP-TVSeries">
-      <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\plugins\Windows\MP-TVSeries.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="InfoManagers\DialogManager.cs" />
+    <Compile Include="InfoManagers\EqualizerManager.cs" />
     <Compile Include="InfoManagers\ListManager.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="InfoManagers\PropertyManager.cs" />

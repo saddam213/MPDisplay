@@ -6,107 +6,121 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using GUISkinFramework.Common.Brushes;
+using GUISkinFramework.Editor.PropertyEditors;
 using MPDisplay.Common.Controls.PropertyGrid.Attributes;
+using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
 namespace GUISkinFramework.Controls
 {
     [Serializable]
     [XmlType(TypeName = "EqualizerStyle")]
     [ExpandableObject]
-    public class XMLEqualizerStyle : XmlControlStyle
+    public class XmlEqualizerStyle : XmlControlStyle
     {
-     
-        private string _bandBorderColor;
-        private string _bandLowRangeColor;
-        private string _bandMedRangeColor;
-        private string _bandHighRangeColor;
-    
-        private string _fallOffColor;
-        private string _fallOffBorderColor;
-     
+        private string _borderThickness;
+        private string _borderCornerRadius;
+        private XmlBrush _backgroundBrush;
+        private XmlBrush _borderBrush;
+        private XmlBrush _lowRangeColor;
+        private XmlBrush _medRangeColor;
+        private XmlBrush _maxRangeColor;
+        private XmlBrush _bandBorderColor;
+        private XmlBrush _fallOffColor;
      
 
-      
-
-        [PropertyOrder(60)]
+        [DefaultValue("0")]
+        [PropertyOrder(50)]
         [EditorCategory("Appearance", 3)]
-        [DisplayName("Band Border Color ")]
-        [Description("The Color Of The Bands Border")]
-        public string BandBorderColor
+        [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
+        public string BorderThickness
+        {
+            get { return _borderThickness; }
+            set { _borderThickness = value; NotifyPropertyChanged("BorderThickness"); }
+        }
+
+        [DefaultValue("0")]
+        [PropertyOrder(51)]
+        [EditorCategory("Appearance", 3)]
+        [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
+        public string CornerRadius
+        {
+            get { return _borderCornerRadius; }
+            set { _borderCornerRadius = value; NotifyPropertyChanged("CornerRadius"); }
+        }
+
+        [PropertyOrder(52)]
+        [EditorCategory("Appearance", 3)]
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush BackgroundBrush
+        {
+            get { return _backgroundBrush; }
+            set { _backgroundBrush = value; NotifyPropertyChanged("BackgroundBrush"); }
+        }
+
+        [PropertyOrder(53)]
+        [EditorCategory("Appearance", 3)]
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush BorderBrush
+        {
+            get { return _borderBrush; }
+            set { _borderBrush = value; NotifyPropertyChanged("BorderBrush"); }
+        }
+
+
+        [PropertyOrder(70)]
+        [EditorCategory("Appearance", 3)]
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush LowRangeColor
+        {
+            get { return _lowRangeColor; }
+            set { _lowRangeColor = value; NotifyPropertyChanged("LowRangeColor"); }
+        }
+
+        [PropertyOrder(71)]
+        [EditorCategory("Appearance", 3)]
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush MedRangeColor
+        {
+            get { return _medRangeColor; }
+            set { _medRangeColor = value; NotifyPropertyChanged("MedRangeColor"); }
+        }
+
+        [PropertyOrder(72)]
+        [EditorCategory("Appearance", 3)]
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush MaxRangeColor
+        {
+            get { return _maxRangeColor; }
+            set { _maxRangeColor = value; NotifyPropertyChanged("MaxRangeColor"); }
+        }
+
+        [PropertyOrder(73)]
+        [EditorCategory("Appearance", 3)]
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush BandBorderColor
         {
             get { return _bandBorderColor; }
             set { _bandBorderColor = value; NotifyPropertyChanged("BandBorderColor"); }
         }
 
-        [PropertyOrder(70)]
+        [PropertyOrder(74)]
         [EditorCategory("Appearance", 3)]
-        [DisplayName("Band Minimum Color")]
-        [Description("The Color Of The Band Lower Region")]
-        public string BandLowRangeColor
-        {
-            get { return _bandLowRangeColor; }
-            set { _bandLowRangeColor = value; NotifyPropertyChanged("BandLowRangeColor"); }
-        }
-
-        [PropertyOrder(80)]
-        [EditorCategory("Appearance", 3)]
-        [DisplayName("Band Medium Color")]
-        [Description("The Color Of The Band Medium Region")]
-        public string BandMedRangeColor
-        {
-            get { return _bandMedRangeColor; }
-            set { _bandMedRangeColor = value; NotifyPropertyChanged("BandMedRangeColor"); }
-        }
-
-        [PropertyOrder(90)]
-        [EditorCategory("Appearance", 3)]
-        [DisplayName("Band Maximum Color")]
-        [Description("The Color Of The Band High Region")]
-        public string BandHighRangeColor
-        {
-            get { return _bandHighRangeColor; }
-            set { _bandHighRangeColor = value; NotifyPropertyChanged("BandHighRangeColor"); }
-        }
-
-     
-
-        [PropertyOrder(120)]
-        [EditorCategory("Appearance", 3)]
-        [DisplayName("FallOff Color")]
-        [Description("Color Of The FallOff")]
-        public string FallOffColor
+        [DefaultValue(null)]
+        [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
+        public XmlBrush FallOffColor
         {
             get { return _fallOffColor; }
             set { _fallOffColor = value; NotifyPropertyChanged("FallOffColor"); }
         }
-
-        [PropertyOrder(130)]
-        [EditorCategory("Appearance", 3)]
-        [DisplayName("FallOff BorderColor")]
-        [Description("Color Of The FallOff Border")]
-        public string FallOffBorderColor
-        {
-            get { return _fallOffBorderColor; }
-            set { _fallOffBorderColor = value; NotifyPropertyChanged("FallOffBorderColor"); }
-        }
-     
-
-    
      
     }
 
-    public enum XmlLEDShape
-    {
-        Rectangle,
-        RoundedRectangle,
-        Circle
-    }
-
-    public enum XmlEQStyle
-    {
-        SingleLED,
-        DoubleLED,
-        SingleBar,
-        DoubleBar
-    }
+  
+  
 }

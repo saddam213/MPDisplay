@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
+using MPDisplay.Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -32,16 +34,20 @@ namespace MediaPortalPlugin.InfoManagers
         #endregion
 
         private MPDisplay.Common.Log.Log Log;
+        private PluginSettings _settings;
 
-        public void Initialize()
+        public void Initialize(PluginSettings settings)
         {
-           
+            _settings = settings;
         }
-
-
 
         public void Shutdown()
         {
+        }
+
+        public void RegisterDialogInfo(APIWindowInfoMessage message)
+        {
+            
         }
     }
 }

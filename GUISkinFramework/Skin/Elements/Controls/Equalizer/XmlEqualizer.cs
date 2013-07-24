@@ -16,18 +16,19 @@ namespace GUISkinFramework.Controls
     [XmlType(TypeName = "Equalizer")]
     public class XmlEqualizer : XmlControl
     {
-        private int _bandCount;
-        private int _minRangeValue;
+
+        private XmlEqualizerStyle _controlStyle;
+        private XmlEQStyle _eqStyle;
+        private int _lowRangeValue;
         private int _medRangeValue;
+        private int _bandCount;
         private int _bandSpacing;
         private int _bandBorderSize;
+        private int _bandCornerRadius;
         private int _falloffSpeed;
-        private string _fallOffHeight;
-        private XmlEQStyle _eqStyle;
-        private XmlLEDShape _ledShape;
-        private int _ledHeight;
-        private int _ledSpacing;
-
+        private int _fallOffHeight;
+        private bool _showDummyData;
+    
         [XmlIgnore]
         [Browsable(false)]
         public string DisplayType
@@ -35,7 +36,7 @@ namespace GUISkinFramework.Controls
             get { return "Equalizer"; }
         }
 
-        private XMLEqualizerStyle _controlStyle;
+    
 
         [DefaultValue(null)]
         [PropertyOrder(100)]
@@ -43,129 +44,131 @@ namespace GUISkinFramework.Controls
         [DisplayName("Style")]
         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
         [XmlElement("EqualizerStyle")]
-        public XMLEqualizerStyle ControlStyle
+        public XmlEqualizerStyle ControlStyle
         {
             get { return _controlStyle; }
             set { _controlStyle = value; NotifyPropertyChanged("ControlStyle"); }
         }
 
-        [PropertyOrder(10)]
-        [EditorCategory("Band", 10)]
-        [DisplayName("Band Count")]
-        [Description("The Number Of Bands In The EQ")]
-        public int BandCount
-        {
-            get { return _bandCount; }
-            set { _bandCount = value; NotifyPropertyChanged("BandCount"); }
-        }
-
-        [PropertyOrder(20)]
-        [EditorCategory("Band", 10)]
-        [DisplayName("Minimum RangeValue")]
-        [Description("The % of the EQ Height to color with the 'Low Color'")]
-        public int MinRangeValue
-        {
-            get { return _minRangeValue; }
-            set { _minRangeValue = value; NotifyPropertyChanged("MinRangeValue"); }
-        }
-
-        [PropertyOrder(30)]
-        [EditorCategory("Band", 10)]
-        [DisplayName("Medium RangeValue")]
-        [Description("The % of the EQ Height to color with the 'Middle Color'")]
-        public int MedRangeValue
-        {
-            get { return _medRangeValue; }
-            set { _medRangeValue = value; NotifyPropertyChanged("MedRangeValue"); }
-        }
-
-        [PropertyOrder(40)]
-        [EditorCategory("Band", 10)]
-        [DisplayName("Band Spacing")]
-        [Description("The Space Between Bands")]
-        public int BandSpacing
-        {
-            get { return _bandSpacing; }
-            set { _bandSpacing = value; NotifyPropertyChanged("BandSpacing"); }
-        }
-
-        [PropertyOrder(50)]
-        [EditorCategory("Band", 10)]
-        [DisplayName("Band Border Size")]
-        [Description("The Size Of The Band Border")]
-        public int BandBorderSize
-        {
-            get { return _bandBorderSize; }
-            set { _bandBorderSize = value; NotifyPropertyChanged("BandBorderSize"); }
-        }
-
-        [PropertyOrder(100)]
-        [EditorCategory("FallOff", 11)]
-        [DisplayName("FallOff Speed")]
-        [Description("The Speed Of The FallOff Drop")]
-        public int FalloffSpeed
-        {
-            get { return _falloffSpeed; }
-            set { _falloffSpeed = value; NotifyPropertyChanged("FalloffSpeed"); }
-        }
-
-        [PropertyOrder(110)]
-        [EditorCategory("FallOff", 11)]
-        [DisplayName("FallOff Height")]
-        [Description("The Height Of The FallOff")]
-        public string FallOffHeight
-        {
-            get { return _fallOffHeight; }
-            set { _fallOffHeight = value; NotifyPropertyChanged("FallOffHeight"); }
-        }
-
-        [DefaultValue(XmlEQStyle.SingleLED)]
-        [PropertyOrder(140)]
-        [EditorCategory("EQ Style", 3)]
-        [DisplayName("Equalizer Style")]
-        [Description("The style of the Equalizer")]
+        [DefaultValue(XmlEQStyle.SingleBar)]
+        [PropertyOrder(200)]
+        [EditorCategory("Equalizer", 8)]
+        [DisplayName("EQStyle")]
         public XmlEQStyle EQStyle
         {
             get { return _eqStyle; }
             set { _eqStyle = value; NotifyPropertyChanged("EQStyle"); }
         }
 
-
-        [DefaultValue(XmlLEDShape.Rectangle)]
-        [PropertyOrder(150)]
-        [EditorCategory("L.E.D", 3)]
-        [DisplayName("L.E.D Shape")]
-        [Description("The shape of the L.E.D's")]
-        public XmlLEDShape LEDShape
+        [DefaultValue(100)]
+        [PropertyOrder(210)]
+        [EditorCategory("Equalizer", 8)]
+        [DisplayName("LowRange Value")]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(0, 255)]
+        public int LowRangeValue
         {
-            get { return _ledShape; }
-            set { _ledShape = value; NotifyPropertyChanged("LEDShape"); }
+            get { return _lowRangeValue; }
+            set { _lowRangeValue = value; NotifyPropertyChanged("LowRangeValue"); }
         }
 
-        [PropertyOrder(160)]
-        [EditorCategory("L.E.D", 3)]
-        [DisplayName("L.E.D Height")]
-        [Description("The height Of L.E.D's In a Band")]
-        public int LEDHeight
+        [DefaultValue(200)]
+        [PropertyOrder(211)]
+        [EditorCategory("Equalizer", 8)]
+        [DisplayName("MedRange Value")]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(0, 255)]
+        public int MedRangeValue
         {
-            get { return _ledHeight; }
-            set { _ledHeight = value; NotifyPropertyChanged("LEDHeight"); }
+            get { return _medRangeValue; }
+            set { _medRangeValue = value; NotifyPropertyChanged("MedRangeValue"); }
         }
 
-        [PropertyOrder(170)]
-        [EditorCategory("L.E.D", 3)]
-        [DisplayName("L.E.D Spacing")]
-        [Description("The Space Between LED's")]
-        public int LEDSpacing
+        [DefaultValue(20)]
+        [PropertyOrder(300)]
+        [EditorCategory("Band", 10)]
+        [DisplayName("Band Count")]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(0, 100)]
+        public int BandCount
         {
-            get { return _ledSpacing; }
-            set { _ledSpacing = value; NotifyPropertyChanged("LEDSpacing"); }
+            get { return _bandCount; }
+            set { _bandCount = value; NotifyPropertyChanged("BandCount"); }
+        }
+
+        [DefaultValue(2)]
+        [PropertyOrder(301)]
+        [EditorCategory("Band", 10)]
+        [DisplayName("Band Spacing")]
+        public int BandSpacing
+        {
+            get { return _bandSpacing; }
+            set { _bandSpacing = value; NotifyPropertyChanged("BandSpacing"); }
+        }
+
+        [DefaultValue(1)]
+        [PropertyOrder(302)]
+        [EditorCategory("Band", 10)]
+        [DisplayName("Band BorderSize")]
+        public int BandBorderSize
+        {
+            get { return _bandBorderSize; }
+            set { _bandBorderSize = value; NotifyPropertyChanged("BandBorderSize"); }
+        }
+
+        [DefaultValue(2)]
+        [PropertyOrder(303)]
+        [EditorCategory("Band", 10)]
+        [DisplayName("Band CornerRadius")]
+        public int BandCornerRadius
+        {
+            get { return _bandCornerRadius; }
+            set { _bandCornerRadius = value; NotifyPropertyChanged("BandCornerRadius"); }
+        }
+
+        [DefaultValue(8)]
+        [PropertyOrder(400)]
+        [EditorCategory("FallOff", 12)]
+        [DisplayName("Falloff Speed")]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(0, 20)]
+        public int FalloffSpeed
+        {
+            get { return _falloffSpeed; }
+            set { _falloffSpeed = value; NotifyPropertyChanged("FalloffSpeed"); }
+        }
+
+        [DefaultValue(3)]
+        [PropertyOrder(401)]
+        [EditorCategory("FallOff", 12)]
+        [DisplayName("FallOff Height")]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(0, 30)]
+        public int FallOffHeight
+        {
+            get { return _fallOffHeight; }
+            set { _fallOffHeight = value; NotifyPropertyChanged("FallOffHeight"); }
+        }
+
+        [XmlIgnore]
+        [DisplayName("Show DummyData")]
+        public bool ShowDummyData
+        {
+            get { return _showDummyData; }
+            set { _showDummyData = value; NotifyPropertyChanged("ShowDummyData"); }
         }
 
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XMLEqualizerStyle>(ControlStyle);
+            ControlStyle = style.GetControlStyle<XmlEqualizerStyle>(ControlStyle);
         }
+    }
+
+    public enum XmlEQStyle
+    {
+        SingleRectangle = 0,
+        SingleRoundedRectangle = 1,
+        SingleCircle = 2,
+        SingleBar = 3,
+        DoubleRectangle = 4,
+        DoubleRoundedRectangle = 5,
+        DoubleCircle = 6,
+        DoubleBar = 7
     }
 }

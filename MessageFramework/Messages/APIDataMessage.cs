@@ -14,6 +14,9 @@ namespace MessageFramework.DataObjects
 
         [DataMember]
         public int[] IntArray { get; set; }
+
+        [DataMember]
+        public byte[] ByteArray { get; set; }
     }
 
     public enum APIDataMessageType

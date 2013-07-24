@@ -163,6 +163,31 @@
       <Height>207</Height>
 	  <ItemMargin>1,1,1,1</ItemMargin>
     </ControlStyle>
-	
-  </ControlStyles>
+
+   <ControlStyle x:type="EqualizerStyle" StyleId="XmlEqualizer">
+     <BorderThickness>1,1,1,1</BorderThickness>
+     <CornerRadius>5,5,5,5</CornerRadius>
+     <BackgroundBrush x:type="ColorBrush" Color="#FF000000" />
+     <BorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <LowRangeColor x:type="GradientBrush">
+       <Angle>Vertical</Angle>
+       <GradientStops>
+         <GradientStop Color="#FF000000" Offset="1" />
+         <GradientStop Color="#FF7FFF00" Offset="0.237" />
+         <GradientStop Color="#FFFFFF00" Offset="0" />
+       </GradientStops>
+     </LowRangeColor>
+     <MedRangeColor x:type="GradientBrush">
+       <Angle>Vertical</Angle>
+       <GradientStops>
+         <GradientStop Color="#FFFFFF00" Offset="0.468" />
+         <GradientStop Color="#FFFF0000" Offset="0" />
+       </GradientStops>
+     </MedRangeColor>
+     <MaxRangeColor x:type="ColorBrush" Color="#FFFF0000" />
+     <BandBorderColor x:type="ColorBrush" Color="#FF00BFFF" />
+     <FallOffColor x:type="ColorBrush" Color="#FF00BFFF" />
+   </ControlStyle>
+
+ </ControlStyles>
 </StyleCollection>

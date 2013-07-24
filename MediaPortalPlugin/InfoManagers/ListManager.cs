@@ -7,6 +7,7 @@ using System.Threading;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
+using MPDisplay.Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -46,9 +47,11 @@ namespace MediaPortalPlugin.InfoManagers
         private List<GUIListControl> _listControls = new List<GUIListControl>();
         private List<GUIGroup> _groupControls = new List<GUIGroup>();
         private GUIMenuControl _menuControl;
+        private PluginSettings _settings;
 
-        public void Initialize()
-        { 
+        public void Initialize(PluginSettings settings)
+        {
+            _settings = settings;
             GUIWindowManager.OnNewAction += GUIWindowManager_OnNewAction;
             GUIWindowManager.Receivers += GUIWindowManager_Receivers;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;

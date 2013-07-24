@@ -35,6 +35,26 @@ namespace GUIFramework.GUI.Controls
             get { return BaseXml as XmlEqualizer; }
         }
 
-        public int EQDataLength { get; set; }
+        public int EQDataLength
+        {
+            get { return SkinXml != null ? SkinXml.BandCount : 0; }
+        }
+
+        public override void RegisterInfoData()
+        {
+            base.RegisterInfoData();
+            GenericDataRepository.RegisterEQData(EQDataReceived);
+        }
+
+        public override void DeregisterInfoData()
+        {
+            base.DeregisterInfoData();
+            GenericDataRepository.DegisterEQData(this);
+        }
+
+        private void EQDataReceived(byte[] data)
+        {
+            EqualizerCanvas.SetEQData(data);
+        }
     }
 }

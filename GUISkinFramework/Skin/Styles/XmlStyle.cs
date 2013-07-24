@@ -20,6 +20,7 @@ namespace GUISkinFramework.Styles
     [XmlInclude(typeof(XmlGuideStyle))]
     [XmlInclude(typeof(XmlImageStyle))]
     [XmlInclude(typeof(XmlListItemStyle))]
+    [XmlInclude(typeof(XmlEqualizerStyle))]
     public class XmlStyle : INotifyPropertyChanged
     {
         public XmlStyle()

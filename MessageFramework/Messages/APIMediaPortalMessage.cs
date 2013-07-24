@@ -66,11 +66,8 @@ namespace MessageFramework.DataObjects
 
     public class APIMediaPortalAction
     {
-        public APIMediaPortalActionType ActionType { get; set; }
+        public int ActionId { get; set; }
     }
 
-    public enum APIMediaPortalActionType
-    {
-        None
-    }
+   
 }

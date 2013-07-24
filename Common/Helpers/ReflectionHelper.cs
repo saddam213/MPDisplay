@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
@@ -123,5 +124,229 @@ namespace Common.Helpers
             }
             return false;
         }
+
+
+        #region Vars
+
+        private static Hashtable AssemblyReferences = new Hashtable();
+        private static Hashtable ClassReferences = new Hashtable();
+
+        #endregion
+
+        #region Public Members
+
+        /// <summary>
+        /// Execute An Object Method An Return The Value
+        /// </summary>
+        /// <typeparam name="T">The Return Type Of The Method</typeparam>
+        /// <param name="assemblyPath">The Assembly FilePath/Name</param>
+        /// <param name="className">The Assembly Class Name That Contains The Property</param>
+        /// <param name="methodName">The Method Name To Execute</param>
+        /// <param name="args">The Methods Arguments</param>
+        /// <param name="defaultValue">Default Return Value If Method Not Found or Can't Be Accessed</param>
+        /// <returns>The Method Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
+        public static T InvokeObjectMethod<T>(string assemblyPath, string className, string methodName, object[] args, T defalutValue)
+        {
+            try
+            {
+                var classInfo = GetClassReference(assemblyPath, className);
+                if (classInfo != null)
+                {
+                    return (T)classInfo.type.InvokeMember(methodName, BindingFlags.InvokeMethod, null, classInfo.ClassObject, args);
+                }
+            }
+            catch
+            { 
+            }
+            return defalutValue;
+        }
+
+        /// <summary>
+        /// Execute An Object Method An Return The Value
+        /// </summary>
+        /// <typeparam name="T">The Return Type Of The Method</typeparam>
+        /// <param name="assemblyPath">The Assembly FilePath/Name</param>
+        /// <param name="className">The Assembly Class Name That Contains The Property</param>
+        /// <param name="methodName">The Method Name To Execute</param>
+        /// <param name="defaultValue">Default Return Value If Method Not Found or Can't Be Accessed</param>
+        /// <returns>The Method Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
+        public static T InvokeObjectMethod<T>(string assemblyPath, string className, string methodName, T defalutValue)
+        {
+            try
+            {
+                var classInfo = GetClassReference(assemblyPath, className);
+                if (classInfo != null)
+                {
+                    return (T)classInfo.type.InvokeMember(methodName, BindingFlags.InvokeMethod, null, classInfo.ClassObject, null);
+                }
+            }
+            catch { }
+            return defalutValue;
+        }
+
+        /// <summary>
+        /// Execute An Method
+        /// </summary>
+        /// <param name="assemblyPath">The Assembly FilePath/Name</param>
+        /// <param name="className">The Assembly Class Name That Contains The Property</param>
+        /// <param name="methodName">The Method Name To Execute</param>
+        /// <param name="args">The Methods Arguments</param>
+        public static void InvokeMethod(string assemblyPath, string className, string methodName, object[] args)
+        {
+            try
+            {
+                var classInfo = GetClassReference(assemblyPath, className);
+                if (classInfo != null)
+                {
+                    classInfo.type.InvokeMember(methodName, BindingFlags.InvokeMethod, null, classInfo.ClassObject, args);
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Execute An Method
+        /// </summary>
+        /// <param name="assemblyPath">The Assembly FilePath/Name</param>
+        /// <param name="className">The Assembly Class Name That Contains The Property</param>
+        /// <param name="methodName">The Method Name To Execute</param>
+        public static void InvokeMethod(string assemblyPath, string className, string methodName)
+        {
+            try
+            {
+                var classInfo = GetClassReference(assemblyPath, className);
+                if (classInfo != null)
+                {
+                    classInfo.type.InvokeMember(methodName, BindingFlags.InvokeMethod, null, classInfo.ClassObject, null);
+                }
+            }
+            catch { }
+        }
+
+        /// <summary>
+        /// Get A Property Value From An Assembly Class
+        /// </summary>
+        /// <typeparam name="T">Property Type</typeparam>
+        /// <param name="assemblyPath">The Assembly FilePath/Name</param>
+        /// <param name="className">The Assembly Class Name That Contains The Property</param>
+        /// <param name="propertyName">The Property Name To Find</param>
+        /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
+        public static T GetPropertyValue<T>(string assemblyPath, string className, string propertyName, T defalutValue)
+        {
+            try
+            {
+                var classInfo = GetClassReference(assemblyPath, className);
+                if (classInfo != null)
+                {
+                    return (T)classInfo.type.InvokeMember(propertyName, BindingFlags.GetProperty, null, classInfo.ClassObject, null);
+                }
+            }
+            catch { }
+            return defalutValue;
+        }
+
+        /// <summary>
+        /// Get A Property Value From An Object
+        /// </summary>
+        /// <typeparam name="T">Property Type</typeparam>
+        /// <param name="obj">The Object To Find Property In</param>
+        /// <param name="property">The Property Name To Find</param>
+        /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
+        public static T GetPropertyValue<T>(object obj, string property, T defaultValue)
+        {
+            try
+            {
+                return (T)(obj.GetType().GetProperty(property).GetValue(obj, null));
+            }
+            catch
+            {
+                return defaultValue;
+            }
+        }
+
+        /// <summary>
+        /// Get A Feild Value From An Object
+        /// </summary>
+        /// <typeparam name="T">Property Type</typeparam>
+        /// <param name="obj">The Object To Find Property In</param>
+        /// <param name="field">The Field Name To Find</param>
+        /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
+        public static T GetFieldValue<T>(object obj, string field, T defaultValue, BindingFlags bindingFlags = 0)
+        {
+            try
+            {
+                return (T)(obj.GetType().GetField(field, bindingFlags).GetValue(obj));
+            }
+            catch (Exception ex)
+            {
+                return defaultValue;
+            }
+        }
+
+        #endregion
+
+        #region Private Methods
+
+        private static DynaClassInfo GetClassReference(string assemblyPath, string className)
+        {
+            if (File.Exists(assemblyPath))
+            {
+                try
+                {
+                    Assembly assembly;
+                    if (ClassReferences.ContainsKey(assemblyPath))
+                    {
+                        return (DynaClassInfo)ClassReferences[assemblyPath];
+                    }
+                    if (!AssemblyReferences.ContainsKey(assemblyPath))
+                    {
+                        AssemblyReferences.Add(assemblyPath, assembly = Assembly.LoadFrom(assemblyPath));
+                    }
+                    else
+                    {
+                        assembly = (Assembly)AssemblyReferences[assemblyPath];
+                    }
+                    if (assembly != null)
+                    {
+                        var classReference = assembly.GetTypes().ToList().Find(t => t.IsClass && t.FullName.EndsWith("." + className));
+                        if (classReference != null)
+                        {
+                            if (classReference.IsAbstract)
+                            {
+                                return new DynaClassInfo(classReference, null);
+                            }
+                            var info = new DynaClassInfo(classReference, Activator.CreateInstance(classReference));
+                            ClassReferences.Add(assemblyPath, info);
+                            return info;
+                        }
+                    }
+                }
+                catch { }
+            }
+            return null;
+        }
+
+        #endregion
+
+        #region DynaClassInfo
+
+        public class DynaClassInfo
+        {
+            public object ClassObject;
+            public Type type;
+
+            public DynaClassInfo() { }
+
+            public DynaClassInfo(Type t, object c)
+            {
+                this.type = t;
+                this.ClassObject = c;
+            }
+        }
+
+        #endregion
     }
 }
