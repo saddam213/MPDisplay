@@ -19,7 +19,7 @@ namespace MPDisplay.Common.Log
             string logLine = string.Format("[{0}] [{1}] - {2}", level, _owner.Name, logMessage);
             if (_logAction != null)
             {
-                _logAction.Invoke(level, logLine);
+                _logAction(level, logLine);
             }
         }
 
@@ -28,7 +28,7 @@ namespace MPDisplay.Common.Log
             string logLine = string.Format("[{0}] [{1}] - {2}{3}{4}", LogLevel.Error, _owner.Name, message, Environment.NewLine, ex.ToString());
             if (_logAction != null)
             {
-                _logAction.Invoke(LogLevel.Error, logLine);
+                _logAction(LogLevel.Error, logLine);
             }
         }
     }

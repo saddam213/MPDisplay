@@ -75,48 +75,49 @@ namespace GUIFramework.GUI.Controls
             ChangeLayout(XmlListLayout.Vertical);
         }
 
-        private ListRepository listRepo = GUIDataRepository.ListManager;
-
 
         public override void RegisterInfoData()
         {
             base.RegisterInfoData();
-            listRepo.RegisterList(SkinXml.ListType, OnPropertyChanging, OnSelectedItemReceived, OnListLayoutReceived);
-            this.OnPropertyChanged();
+            ListRepository.RegisterListMessage(this, SkinXml.ListType);
         }
 
         public override void DeregisterInfoData()
         {
             base.DeregisterInfoData();
-            listRepo.DeregisterList(this, SkinXml.ListType);
+            ListRepository.DeregisterListMessage(this, SkinXml.ListType);
         }
 
-        public override async void OnPropertyChanged()
+        public async override void UpdateInfoData()
         {
-            base.OnPropertyChanged();
-            ListItems = await listRepo.GetListItems(SkinXml.ListType);
+            base.UpdateInfoData();
+            ListItems = await ListRepository.GetCurrentListItems(SkinXml.ListType);
         }
 
         public override void ClearInfoData()
         {
             base.ClearInfoData();
             if (ListItems != null)
-            ListItems.Clear();
-        }
-
-
-
-        private void OnListLayoutReceived()
-        {
-            if (SkinXml.ListLayout == XmlListLayout.Auto)
             {
-                ChangeLayout(listRepo.GetMediaPortalListLayout());
+                ListItems.Clear();
             }
         }
 
-        private async void OnSelectedItemReceived()
+
+
+
+        public void OnListLayoutReceived()
         {
-            var selectedItem = await listRepo.GetSelectedListItem(SkinXml.ListType);
+            if (SkinXml.ListLayout == XmlListLayout.Auto)
+            {
+                ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout());
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+            }
+        }
+
+        public async void OnSelectedItemReceived()
+        {
+            var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
             if (selectedItem != null && ListItems != null)
             {
                 var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex);
@@ -178,7 +179,7 @@ namespace GUIFramework.GUI.Controls
             listbox.ScrollIntoView(item);
             ScrollItemToCenter(item);
             listbox.SelectedItem = item;
-            listRepo.FocusListControlItem(this,item);
+            ListRepository.Instance.FocusListControlItem(this,item);
         }
 
         /// <summary>
@@ -194,7 +195,7 @@ namespace GUIFramework.GUI.Controls
 
             if (_itemMouseDown && Math.Abs(newPos) < DragThreshold)
             {
-                listRepo.SelectListControlItem(this,listbox.SelectedItem as APIListItem);
+                ListRepository.Instance.SelectListControlItem(this, listbox.SelectedItem as APIListItem);
             }
         }
 
@@ -279,12 +280,15 @@ namespace GUIFramework.GUI.Controls
             switch (layout)
             {
                 case XmlListLayout.Vertical:
+                    ListLayoutType = XmlListLayout.Vertical;
                     CurrentLayout = SkinXml.VerticalItemStyle;
                     break;
                 case XmlListLayout.Horizontal:
+                    ListLayoutType = XmlListLayout.Horizontal;
                     CurrentLayout = SkinXml.HorizontalItemStyle;
                     break;
                 case XmlListLayout.CoverFlow:
+                    ListLayoutType = XmlListLayout.CoverFlow;
                     CurrentLayout = SkinXml.CoverFlowItemStyle;
                     break;
                 default:
@@ -417,5 +421,8 @@ namespace GUIFramework.GUI.Controls
         }
 
         #endregion
+
+
+    
     }
 }

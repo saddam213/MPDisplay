@@ -31,7 +31,7 @@ namespace GUIFramework.GUI
             {
                 if (_actions.Any())
                 {
-                    _actions.ForEach(action => action.Invoke());
+                    _actions.ForEach(action => action());
                 }
             });
         }

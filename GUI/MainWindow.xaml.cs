@@ -16,6 +16,7 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GUIFramework.Utils;
 using Microsoft.Win32;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
@@ -137,9 +138,8 @@ namespace GUI
         }
 
 
-   
 
-      
+ 
 
 
         #region Helpers

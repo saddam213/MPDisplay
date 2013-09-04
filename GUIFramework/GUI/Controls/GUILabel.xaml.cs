@@ -24,7 +24,7 @@ namespace GUIFramework.GUI.Controls
     /// Interaction logic for GUIButton.xaml
     /// </summary>
     [XmlSkinType(typeof(XmlLabel))]  
-    public partial class GUILabel : GUIControl, IPropertyControl
+    public partial class GUILabel : GUIControl
     {
         private string _label;
 
@@ -50,22 +50,23 @@ namespace GUIFramework.GUI.Controls
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.LabelText);
         }
 
-        public List<XmlProperty> RegisteredProperties {get;set;}
+     
 
-        public void RegisterProperties()
+        public override void RegisterInfoData()
         {
-            PropertyRepository.RegisterPropertyMessage(SkinXml.LabelText, () => OnPropertyChanging());
-            this.OnPropertyChanged();
+            base.RegisterInfoData();
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.LabelText);
         }
 
-        public void DergisterProperties()
+        public override void DeregisterInfoData()
         {
+            base.DeregisterInfoData();
             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelText);
         }
 
-        public override async void OnPropertyChanged()
+        public async override void UpdateInfoData()
         {
-            base.OnPropertyChanged();
+            base.UpdateInfoData();
             Label = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
         }
 
@@ -74,8 +75,6 @@ namespace GUIFramework.GUI.Controls
             base.ClearInfoData();
             Label = string.Empty;
         }
-
-
 
 
 

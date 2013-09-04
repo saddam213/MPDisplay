@@ -17,7 +17,8 @@
 			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
-			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}">
+			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
+			  Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 	<Border x:Name="border" 
                     Width="{Binding BaseXml.Width, Mode=OneWay}"
                     Height="{Binding BaseXml.Height, Mode=OneWay}" 

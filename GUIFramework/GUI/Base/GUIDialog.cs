@@ -90,7 +90,7 @@ namespace GUIFramework.GUI
 
         public override void CreateControls()
         {
-            Controls = new ObservableCollection<GUIControl>();
+            Controls = new List<GUIControl>();
             foreach (var xmlControl in BaseXml.Controls)
             {
                 if (Controls.Any(c => c.Id == xmlControl.Id))
@@ -103,6 +103,7 @@ namespace GUIFramework.GUI
            
                 Controls.Add(control);
             }
+            NotifyPropertyChanged("Controls");
         }
 
         
@@ -111,9 +112,9 @@ namespace GUIFramework.GUI
         {
             await Dispatcher.InvokeAsync(() =>
             {
-                GUIDataRepository.RegisterDialogData(this);
-                this.RegisterAction(XmlActionType.ControlVisible, action => this.ToggleControlVisibility(action.GetParam1As<int>(-1)));
-                this.RegisterControlVisibility();
+             //   GUIDataRepository.RegisterDialogData(this);
+              //  this.RegisterAction(XmlActionType.ControlVisible, action => this.ToggleControlVisibility(action.GetParam1As<int>(-1)));
+              //  this.RegisterControlVisibility();
                 foreach (var control in Controls.GetControls())
                 {
                     control.Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
@@ -128,7 +129,7 @@ namespace GUIFramework.GUI
             {
                 this.DeregisterAction(XmlActionType.ControlVisible);
 
-                this.DeregisterControlVisibility();
+              //  this.DeregisterControlVisibility();
                 foreach (var control in Controls.GetControls())
                 {
                     control.Animations.StartAnimation(XmlAnimationCondition.WindowClose);

@@ -6,6 +6,7 @@
 		     xmlns:base="clr-namespace:GUIFramework.GUI"
 			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
              mc:Ignorable="d" 
+			 ClipToBounds="False"
              d:DesignHeight="300" d:DesignWidth="300" 
 			 Canvas.Left="{Binding BaseXml.PosX,Mode=OneWay}"
 			 Canvas.Top="{Binding BaseXml.PosY,Mode=OneWay}"
@@ -17,7 +18,8 @@
 			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
-			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}">
+			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
+			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 	<Border x:Name="focus"  
 		        Width="{Binding BaseXml.Width,Mode=OneWay}" 
 			    Height="{Binding BaseXml.Height,Mode=OneWay}"

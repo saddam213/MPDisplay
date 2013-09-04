@@ -54,11 +54,9 @@ namespace GUIFramework.Converters
             else if (value is XmlImageBrush)
             {
                 var background = value as XmlImageBrush;
-                var imageName = GUIDataRepository.Instance.SkinInfo.Images.FirstOrDefault(i => i.XmlName.Equals(background.ImageName));
-                if (imageName != null && !string.IsNullOrEmpty(imageName.FileName) && File.Exists(imageName.FileName))
-                {
-                    return new ImageBrush(new BitmapImage(new Uri(imageName.FileName, UriKind.RelativeOrAbsolute))) { Stretch = background.ImageStretch };
-                }
+            
+                    return GUIImageManager.GetImage(background);
+             
             }
             return null;
         }

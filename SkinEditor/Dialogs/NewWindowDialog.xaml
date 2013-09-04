@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:System="clr-namespace:System;assembly=mscorlib" 
     xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common" x:Class="SkinEditor.Dialogs.NewWindowDialog"
-        Title="Add Window" Height="218" Width="262" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Name="UI">
+        Title="Add Window" Height="238" Width="262" WindowStartupLocation="CenterOwner" ResizeMode="NoResize" Name="UI">
     <Grid DataContext="{Binding ElementName=UI}">
         <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,89,8" VerticalAlignment="Bottom" Width="75" Click="Button_OK_Click">
             <Button.Style>
@@ -44,6 +44,7 @@
 			<RadioButton Margin="20,4,0,0" Content="MPDisplay Dialog" GroupName="Options2" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPDDialog}"  />
 			<RadioButton Margin="20,4,0,0" Content="MediaPortal Window" GroupName="Options3" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPWindow}"  />
 			<RadioButton Margin="20,4,0,0" Content="MediaPortal Dialog" GroupName="Options4" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=MPDialog}"  />
+			<RadioButton Margin="20,4,0,0" Content="Now Playing Window" GroupName="Options5" IsChecked="{Binding Path=CurrentOption, Mode=TwoWay, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter=PlayerWindow}"  />
 
 		</StackPanel>
 

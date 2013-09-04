@@ -29,7 +29,7 @@ namespace SkinEditor.Dialogs
         private XmlSkinInfo _skinInfo;
         private IXmlControlHost _newElement;
         private XmlStyleCollection _designerStyle;
-        public enum WindowOption { None, MPDWindow, MPDDialog, MPWindow, MPDialog }
+        public enum WindowOption { None, MPDWindow, MPDDialog, MPWindow, MPDialog, PlayerWindow }
         private WindowOption _currentOption;
         private int _windowId;
         private string _windowName = "New...";
@@ -100,6 +100,9 @@ namespace SkinEditor.Dialogs
                     break;
                 case WindowOption.MPDialog:
                     NewWindow = CreateDialog<XmlMPDialog>();
+                    break;
+                case WindowOption.PlayerWindow:
+                    NewWindow = CreateWindow<XmlPlayerWindow>();
                     break;
                 default:
                     break;

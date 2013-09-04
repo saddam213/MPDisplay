@@ -12,6 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using GUIFramework.Managers;
+using GUISkinFramework.Common;
 using GUISkinFramework.Windows;
 
 namespace GUIFramework.GUI.Windows
@@ -27,6 +29,7 @@ namespace GUIFramework.GUI.Windows
             InitializeComponent();
         }
 
-        public bool IsLocked { get; set; }
+    
+
     }
 }

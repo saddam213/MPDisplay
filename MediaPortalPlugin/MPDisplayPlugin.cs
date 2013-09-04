@@ -47,7 +47,7 @@ namespace MediaPortalPlugin
         {
           
             WindowManager.Instance.Shutdown();
-            MessageService.Instance.Disconnect();
+            MessageService.Instance.Shutdown();
             LoggingManager.Destroy();
         }
 

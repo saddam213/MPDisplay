@@ -113,6 +113,9 @@
 						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
 							<ContentControl />
 						</HierarchicalDataTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlPlayerWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
 						<HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
 							<ContentControl />
 						</HierarchicalDataTemplate>

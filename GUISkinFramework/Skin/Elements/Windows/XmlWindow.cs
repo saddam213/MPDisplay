@@ -22,6 +22,7 @@ namespace GUISkinFramework.Windows
     [XmlInclude(typeof(XmlMPDWindow))]
     [XmlInclude(typeof(XmlMPDDialog))]
     [XmlInclude(typeof(XmlMPWindow))]
+    [XmlInclude(typeof(XmlPlayerWindow))]
     [XmlInclude(typeof(XmlMPDialog))]
     [XmlInclude(typeof(XmlControl))]
     [XmlType("Window")]

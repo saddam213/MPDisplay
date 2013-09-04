@@ -24,7 +24,7 @@ namespace GUIFramework.GUI.Controls
     /// Interaction logic for GUIButton.xaml
     /// </summary>
     [XmlSkinType(typeof(XmlImage))]
-    public partial class GUIImage : GUIControl, IPropertyControl
+    public partial class GUIImage : GUIControl
     {
         private byte[] _image;
         public GUIImage()
@@ -43,7 +43,7 @@ namespace GUIFramework.GUI.Controls
             set { _image = value; NotifyPropertyChanged("Image"); }
         }
 
-        public List<XmlProperty> RegisteredProperties { get; set; }
+    
 
         public override void CreateControl()
         {
@@ -51,27 +51,31 @@ namespace GUIFramework.GUI.Controls
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.Image);
         }
 
-        public void RegisterProperties()
+
+        public override void RegisterInfoData()
         {
-            PropertyRepository.RegisterPropertyMessage(SkinXml.Image, () => OnPropertyChanging());
-            this.OnPropertyChanged();
+            base.RegisterInfoData();
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.Image);
         }
 
-        public void DergisterProperties()
+        public override void DeregisterInfoData()
         {
-            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
+            base.DeregisterInfoData();
+             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
         }
 
-        public override async void OnPropertyChanged()
+        public async override void UpdateInfoData()
         {
-            base.OnPropertyChanged();
-            Image = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image);
+            base.UpdateInfoData();
+             Image = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image);
         }
-    
+
         public override void ClearInfoData()
         {
             base.ClearInfoData();
             Image = null;
         }
+
+
     }
 }

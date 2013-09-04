@@ -192,6 +192,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="Skin\Elements\IXmlControlHost.cs" />
+    <Compile Include="Skin\Elements\Windows\XmlPlayerWindow.cs" />
     <Compile Include="Skin\Language\XmlLanguage.cs" />
     <Compile Include="Skin\Language\XmlLanguageEntry.cs" />
     <Compile Include="Skin\Property\XmlProperty.cs" />

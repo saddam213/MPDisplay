@@ -722,7 +722,7 @@ namespace SkinEditor.Views
             menuItem.Icon = new Image { Margin = new Thickness(2), Stretch = System.Windows.Media.Stretch.Uniform, Width = 16, Height = 16, Source = new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", icon), UriKind.RelativeOrAbsolute)) };
             if (handler != null)
             {
-                menuItem.Click += (s, e) => handler.Invoke();
+                menuItem.Click += (s, e) => handler();
             }
             return menuItem;
         }

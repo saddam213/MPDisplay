@@ -55,7 +55,7 @@ namespace MPDisplay.Common.Log
                 // Write queue
                 while (queueCopy.Count > 0)
                 {
-                    queueCopy.Dequeue().Invoke();
+                    queueCopy.Dequeue()();
                 }
             }
         }

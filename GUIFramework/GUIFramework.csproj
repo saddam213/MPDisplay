@@ -61,7 +61,6 @@
     </Compile>
     <Compile Include="GUI\Base\GUIDialog.cs" />
     <Compile Include="GUI\Base\GUISurfaceElement.cs" />
-    <Compile Include="GUI\Base\IPropertyControl.cs" />
     <Compile Include="GUI\Controls\GUIEqualizer.xaml.cs">
       <DependentUpon>GUIEqualizer.xaml</DependentUpon>
     </Compile>
@@ -98,7 +97,6 @@
     </Compile>
     <Compile Include="GUI\GUIActionCollection.cs" />
     <Compile Include="GUI\GUIAnimationCollection.cs" />
-    <Compile Include="GUI\GUIExtensions.cs" />
     <Compile Include="GUI\GUIVisibleCondition.cs" />
     <Compile Include="GUI\Windows\GUIMPWindow.xaml.cs">
       <DependentUpon>GUIMPWindow.xaml</DependentUpon>
@@ -107,9 +105,14 @@
       <DependentUpon>GUIMPDWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="GUI\GUIAnimationFactory.cs" />
-    <Compile Include="Managers\GUIDataRepository.cs" />
-    <Compile Include="Managers\GUIMessageManager.cs" />
+    <Compile Include="Managers\GUIImageManager.cs" />
+    <Compile Include="Repositories\GenericRepository.cs" />
+    <Compile Include="Repositories\InfoRepository.cs" />
+    <Compile Include="Repositories\IRepository.cs" />
+    <Compile Include="Repositories\ListRepository.cs" />
+    <Compile Include="Repositories\PropertyRepository.cs" />
     <Compile Include="ServiceProxy.cs" />
+    <Compile Include="Utils\FocusHelper.cs" />
     <Compile Include="Utils\GenericExtensions.cs" />
     <Compile Include="GUI\GUIElementFactory.cs" />
     <Compile Include="GUI\Base\GUIControl.cs" />

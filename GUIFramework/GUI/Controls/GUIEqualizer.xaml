@@ -17,7 +17,8 @@
 			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
-			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}">
+			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
+			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 	<Border x:Name="background" Width="{Binding BaseXml.Width, Mode=OneWay}" Height="{Binding BaseXml.Height, Mode=OneWay}"
                 Background="{Binding BaseXml.BackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding BaseXml.BorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
@@ -26,20 +27,20 @@
 		<commonControls:EqualizerCanvas x:Name="EqualizerCanvas"
 		                                Width="{Binding ActualWidth, ElementName=background, Mode=OneWay}" 
 				                        Height="{Binding ActualHeight, ElementName=background, Mode=OneWay}" 
-										FallOffColor="{Binding BaseXml.ControlStyle.FallOffColor, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
+										FallOffColor="{Binding BaseXml.ControlStyle.FallOffColor, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" 
 		                                FallOffHeight="{Binding BaseXml.FallOffHeight, Mode=OneWay}" 
 										FalloffSpeed="{Binding BaseXml.FalloffSpeed, Mode=OneWay}"
 										BandCornerRadius="{Binding BaseXml.BandCornerRadius, Mode=OneWay}"
-										BandBorderColor="{Binding BaseXml.ControlStyle.BandBorderColor, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
+										BandBorderColor="{Binding BaseXml.ControlStyle.BandBorderColor, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" 
 										BandBorderSize="{Binding BaseXml.BandBorderSize, Mode=OneWay}" 
 										BandSpacing="{Binding BaseXml.BandSpacing, Mode=OneWay}" 
 										BandCount="{Binding BaseXml.BandCount, Mode=OneWay}"
-										EQStyle="{Binding BaseXml.EQStyle, Converter={StaticResource EQStyleEnumConverter}, Mode=OneWay}"
+										EQStyle="{Binding BaseXml.EQStyle, Converter={StaticResource GUIEQStyleEnumConverter}, Mode=OneWay}"
 										LowRangeValue="{Binding BaseXml.LowRangeValue, Mode=OneWay}"
 										MedRangeValue="{Binding BaseXml.MedRangeValue, Mode=OneWay}"
-										LowRangeColor="{Binding BaseXml.ControlStyle.LowRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
-										MedRangeColor="{Binding BaseXml.ControlStyle.MedRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
-										MaxRangeColor="{Binding BaseXml.ControlStyle.MaxRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+										LowRangeColor="{Binding BaseXml.ControlStyle.LowRangeColor, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
+										MedRangeColor="{Binding BaseXml.ControlStyle.MedRangeColor, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
+										MaxRangeColor="{Binding BaseXml.ControlStyle.MaxRangeColor, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
 										ShowDummyData="{Binding BaseXml.ShowDummyData, Mode=OneWay}"/>
 	</Border>
 

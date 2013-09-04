@@ -16,18 +16,25 @@ namespace GUISkinFramework.Controls
     [XmlType(TypeName = "Equalizer")]
     public class XmlEqualizer : XmlControl
     {
-
         private XmlEqualizerStyle _controlStyle;
-        private XmlEQStyle _eqStyle;
-        private int _lowRangeValue;
-        private int _medRangeValue;
-        private int _bandCount;
-        private int _bandSpacing;
-        private int _bandBorderSize;
-        private int _bandCornerRadius;
-        private int _falloffSpeed;
-        private int _fallOffHeight;
-        private bool _showDummyData;
+        private XmlEQStyle _eqStyle = XmlEQStyle.SingleBar;
+        private int _lowRangeValue = 100;
+        private int _medRangeValue = 200;
+        private int _bandCount = 20;
+        private int _bandSpacing = 1;
+        private int _bandBorderSize = 1;
+        private int _bandCornerRadius = 2;
+        private int _falloffSpeed = 10;
+        private int _fallOffHeight = 3;
+        private bool _showDummyData = false;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XmlEqualizer"/> class.
+        /// </summary>
+        public XmlEqualizer()
+        {
+            this.SetDefaultValues();
+        }
     
         [XmlIgnore]
         [Browsable(false)]
@@ -35,8 +42,6 @@ namespace GUISkinFramework.Controls
         {
             get { return "Equalizer"; }
         }
-
-    
 
         [DefaultValue(null)]
         [PropertyOrder(100)]

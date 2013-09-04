@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Media;
+using GUIFramework.GUI.Controls;
 using GUIFramework.Managers;
+using GUIFramework.Utils;
 using GUISkinFramework.Animations;
+using GUISkinFramework.Common;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Property;
 using MPDisplay.Common.Controls;
@@ -18,99 +13,200 @@ using MPDisplay.Common.Log;
 
 namespace GUIFramework.GUI
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [XmlSkinType(typeof(XmlControl))]
     public class GUIControl : Surface3D
     {
-        private XmlControl _baseXml;
-        //protected Log Log = LoggingManager.GetLog(typeof(GUIControl));
+        #region Fields
 
+        protected Log Log = LoggingManager.GetLog(typeof(GUIControl));
+        private XmlControl _baseXml;
+        private bool _isWindowOpenVisible = true;
+        private bool _isControlVisible = false;
+        private bool _isVisibleToggled = false;
+        private bool _isControlfocused = false;
+        private GUIVisibleCondition _visibleCondition;
+        private AnimationCollection _animations;
+        private List<int> _focusedControlIds;
+     
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUIControl"/> class.
+        /// </summary>
         public GUIControl()
         {
             DataContext = this;
             ClipToBounds = true;
-        }
+        } 
 
-        public void Initialize(int parentId, XmlControl skinXml)
-        {
-            BaseXml = skinXml;
-            Id = BaseXml.Id;
-            IsWindowOpenVisible = BaseXml.IsWindowOpenVisible;
-            FocusedControlIds = skinXml.MediaPortalFocusControls.ToList();
-            ParentId = parentId;
-            CreateControl();
-            CreateVisibleConditions();
-            CreateAnimations();
-            OnInitialized();
-            SetControlVisibility(IsWindowOpenVisible);
-        }
+        #endregion
 
-        public virtual void OnInitialized()
-        {
-           
-        }
+        #region Properties
 
-        public virtual void CreateControl()
-        {
-           
-        }
-
-     
-
+        /// <summary>
+        /// Gets or sets the base XML.
+        /// </summary>
         public XmlControl BaseXml
         {
             get { return _baseXml; }
             set { _baseXml = value; NotifyPropertyChanged("BaseXml"); }
         }
 
-        public int ParentId { get; set; }
+        /// <summary>
+        /// Gets or sets the id.
+        /// </summary>
         public int Id { get; set; }
-        public GUIVisibleCondition VisibleCondition { get; set; }
-        public AnimationCollection Animations { get; set; }
-       // public List<XmlProperty> RegisteredProperties { get; set; }
-        public List<int> FocusedControlIds { get; set; }
+
+        /// <summary>
+        /// Gets or sets the parent id.
+        /// </summary>
+        public int ParentId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the registered properties.
+        /// </summary>
+        public List<XmlProperty> RegisteredProperties { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is control visible.
+        /// </summary>
         public bool IsControlVisible
         {
-            get { return _isVisible; }
+            get { return _isControlVisible; }
         }
-        public bool IsWindowOpenVisible { get; set; }
 
-        private bool _isVisible = true;
-        private bool _isfocused;
-
-
-        protected Log Log = LoggingManager.GetLog(typeof(GUIControl));
-    
-        public virtual void CreateVisibleConditions()
+        /// <summary>
+        /// Gets a value indicating whether this instance is window open visible.
+        /// </summary>
+        public bool IsWindowOpenVisible
         {
-            VisibleCondition = new GUIVisibleCondition(ParentId, BaseXml.VisibleCondition);
+            get { return _isWindowOpenVisible; }
         }
 
-        public virtual void CreateAnimations()
+        /// <summary>
+        /// Gets the animations.
+        /// </summary>
+        public AnimationCollection Animations
         {
-            Animations = new AnimationCollection(this, BaseXml.Animations, (condition) => OnAnimationStarted(condition), (condition) => OnAnimationCompleted(condition)); 
+            get { return _animations; }
         }
 
+      
+
+        #endregion
+
+        #region Initialize
+
+        /// <summary>
+        /// Initializes the control.
+        /// </summary>
+        /// <param name="parentId">The parent id.</param>
+        /// <param name="skinXml">The skin XML.</param>
+        public void Initialize(int parentId, XmlControl skinXml)
+        {
+            Is3DControl = skinXml.Pos3DX != 0 || skinXml.Pos3DY != 0 || skinXml.Pos3DZ != 0 || skinXml.Animations.OfType<XmlRotateAnimation>().Any();
+            BaseXml = skinXml;
+            Id = BaseXml.Id;
+            ParentId = parentId;
+            _isWindowOpenVisible = BaseXml.IsWindowOpenVisible;
+            _focusedControlIds = skinXml.MediaPortalFocusControls.ToList();
+            CreateControl();
+            _visibleCondition = new GUIVisibleCondition(ParentId, BaseXml.VisibleCondition);
+            CreateAnimations();
+            OnInitialized();
+        }
+
+        /// <summary>
+        /// Creates the control.
+        /// </summary>
+        public virtual void CreateControl()
+        {
+        }
+
+        /// <summary>
+        /// Called when [initialized].
+        /// </summary>
+        public virtual void OnInitialized()
+        {
+        }
+
+        /// <summary>
+        /// Called when [window close].
+        /// </summary>
+        public virtual void OnWindowClose()
+        {
+            Animations.StartAnimation(XmlAnimationCondition.WindowClose);
+            GUIVisibilityManager.DeregisterMessage(VisibleMessageType.ControlVisibilityChanged, this);
+            GUIActionManager.DeregisterAction(XmlActionType.ControlVisible, this);
+            DeregisterInfoData();
+        }
+
+        /// <summary>
+        /// Called when [window open].
+        /// </summary>
+        public virtual void OnWindowOpen()
+        {
+            _isVisibleToggled = false;
+            _isControlVisible = _isWindowOpenVisible;
+            NotifyPropertyChanged("IsControlVisible");
+
+            if (_isControlVisible)
+            {
+                Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
+                RegisterInfoData();
+                UpdateInfoData();
+            }
+
+            GUIActionManager.RegisterAction(XmlActionType.ControlVisible, ToggleControlVisibility);
+            GUIVisibilityManager.RegisterMessage(VisibleMessageType.ControlVisibilityChanged, UpdateControlVisibility);
+            UpdateControlVisibility();
+        } 
+
+        #endregion
+
+        #region Animations
+
+        /// <summary>
+        /// Creates the animations.
+        /// </summary>
+        public void CreateAnimations()
+        {
+            _animations = new AnimationCollection(this, BaseXml.Animations, (condition) => OnAnimationStarted(condition), (condition) => OnAnimationCompleted(condition));
+        }
+
+        /// <summary>
+        /// Called when [animation started].
+        /// </summary>
+        /// <param name="condition">The condition.</param>
         public virtual void OnAnimationStarted(XmlAnimationCondition condition)
         {
             Log.Message(LogLevel.Verbose, "OnAnimationStarted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
             switch (condition)
             {
                 case XmlAnimationCondition.VisibleTrue:
-                    Visibility = Visibility.Visible;
+                    NotifyPropertyChanged("IsControlVisible");
                     break;
                 default:
                     break;
             }
         }
 
-
+        /// <summary>
+        /// Called when [animation completed].
+        /// </summary>
+        /// <param name="condition">The condition.</param>
         public virtual void OnAnimationCompleted(XmlAnimationCondition condition)
         {
             Log.Message(LogLevel.Verbose, "OnAnimationCompleted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
             switch (condition)
             {
                 case XmlAnimationCondition.VisibleFalse:
-                    Visibility = System.Windows.Visibility.Hidden;
+                    NotifyPropertyChanged("IsControlVisible");
                     ClearInfoData();
                     break;
                 case XmlAnimationCondition.WindowClose:
@@ -124,83 +220,165 @@ namespace GUIFramework.GUI
             }
         }
 
-        public virtual void OnPropertyChanging()
+        #endregion
+
+        #region Info/Property Data
+
+        /// <summary>
+        /// Called when [property changing].
+        /// </summary>
+        public void OnPropertyChanging()
         {
             Animations.StartAnimation(XmlAnimationCondition.PropertyChanging);
         }
 
-        public virtual void OnPropertyChanged()
+        /// <summary>
+        /// Called when [property changed].
+        /// </summary>
+        public void OnPropertyChanged()
         {
             Animations.StartAnimation(XmlAnimationCondition.PropertyChanged);
+            UpdateInfoData();
         }
 
-        public virtual void OnFocusFalse()
+        /// <summary>
+        /// Registers the info data.
+        /// </summary>
+        public virtual void RegisterInfoData()
+        {
+        }
+
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
+        public virtual void DeregisterInfoData()
+        {
+        }
+
+        /// <summary>
+        /// Updates the info data.
+        /// </summary>
+        public virtual void UpdateInfoData()
+        {
+        }
+
+        /// <summary>
+        /// Clears the info data.
+        /// </summary>
+        public virtual void ClearInfoData()
+        {
+        }
+
+        #endregion
+
+        #region Visibility
+
+        /// <summary>
+        /// Called when [visible false].
+        /// </summary>
+        public void OnVisibleFalse()
+        {
+            Animations.StartAnimation(XmlAnimationCondition.VisibleFalse);
+            DeregisterInfoData();
+        }
+
+        /// <summary>
+        /// Called when [visible true].
+        /// </summary>
+        public void OnVisibleTrue()
+        {
+            Animations.StartAnimation(XmlAnimationCondition.VisibleTrue);
+            RegisterInfoData();
+            UpdateInfoData();
+        }
+
+        /// <summary>
+        /// Toggles the control visibility.
+        /// </summary>
+        /// <param name="action">The action.</param>
+        private void ToggleControlVisibility(XmlAction action)
+        {
+            if (action != null && action.GetParam1As<int>(-1) == Id)
+            {
+                _isVisibleToggled = !_isVisibleToggled;
+                SetControlVisibility(!_isControlVisible);
+            }
+        }
+
+        /// <summary>
+        /// Updates the control visibility.
+        /// </summary>
+        private void UpdateControlVisibility()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (!_isVisibleToggled)
+                {
+                    if (_visibleCondition.HasCondition)
+                    {
+                        SetControlVisibility(_visibleCondition.ShouldBeVisible());
+                    }
+                    else
+                    {
+                        SetControlVisibility(_isWindowOpenVisible);
+                    }
+                }
+            });
+        }
+
+        /// <summary>
+        /// Sets the control visibility.
+        /// </summary>
+        /// <param name="visible">if set to <c>true</c> [visible].</param>
+        private void SetControlVisibility(bool visible)
+        {
+            if (visible != _isControlVisible)
+            {
+                _isControlVisible = visible;
+                GUIVisibilityManager.UpdateControlVisibility(this);
+                if (_isControlVisible)
+                {
+                    OnVisibleTrue();
+                }
+                else
+                {
+                    OnVisibleFalse();
+                }
+            }
+        }
+
+        #endregion
+
+        #region Focus
+
+        /// <summary>
+        /// Called when [focus false].
+        /// </summary>
+        public void OnFocusFalse()
         {
             Animations.StartAnimation(XmlAnimationCondition.FocusFalse);
         }
 
-        public virtual void OnFocusTrue()
+        /// <summary>
+        /// Called when [focus true].
+        /// </summary>
+        public void OnFocusTrue()
         {
             Animations.StartAnimation(XmlAnimationCondition.FocusTrue);
         }
 
-        public virtual void OnVisibleFalse()
-        {
-            Animations.StartAnimation(XmlAnimationCondition.VisibleFalse);
-            if (_isInfoDataRegistered)
-            {
-                DeregisterInfoData();
-            }
-        }
-
-        public virtual void OnVisibleTrue()
-        {
-            Animations.StartAnimation(XmlAnimationCondition.VisibleTrue);
-            if (!_isInfoDataRegistered)
-            {
-                RegisterInfoData();
-            }
-        }
-
-        public virtual void OnTouchUp()
-        {
-            Animations.StartAnimation(XmlAnimationCondition.TouchUp);
-        }
-
-        public virtual void OnTouchDown()
-        {
-            Animations.StartAnimation(XmlAnimationCondition.TouchDown);
-        }
-
-        public virtual void OnWindowClose()
-        {
-            Animations.StartAnimation(XmlAnimationCondition.WindowClose);
-            if (_isInfoDataRegistered)
-            {
-                DeregisterInfoData();
-            }
-        }
-
-        public virtual void OnWindowOpen()
-        {
-            Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
-            if (!_isInfoDataRegistered)
-            {
-                RegisterInfoData();
-            }
-        }
-
-     
-
-
+        /// <summary>
+        /// Sets the focused control id.
+        /// </summary>
+        /// <param name="focusedControlId">The focused control id.</param>
         public void SetFocusedControlId(int focusedControlId)
         {
-            if (FocusedControlIds != null && FocusedControlIds.Any())
+            if (_focusedControlIds != null && _focusedControlIds.Any())
             {
-                bool shouldFocus = FocusedControlIds.Contains(focusedControlId);
-                if (shouldFocus != _isfocused)
+                bool shouldFocus = _focusedControlIds.Contains(focusedControlId);
+                if (shouldFocus != _isControlfocused)
                 {
-                    if (_isfocused)
+                    if (_isControlfocused)
                     {
                         OnFocusFalse();
                     }
@@ -208,59 +386,50 @@ namespace GUIFramework.GUI
                     {
                         OnFocusTrue();
                     }
-                    _isfocused = shouldFocus;
+                    _isControlfocused = shouldFocus;
                 }
             }
         }
 
-        public void SetControlVisibility(bool value)
+        #endregion
+
+        #region Touch Interaction
+
+        /// <summary>
+        /// Called when [touch up].
+        /// </summary>
+        public virtual void OnTouchUp()
         {
-            if (value != _isVisible)
-            {
-                if (_isVisible)
-                {
-                    OnVisibleFalse();
-                }
-                else
-                {
-                    OnVisibleTrue();
-                }
-                _isVisible = value;
-            }
+            Animations.StartAnimation(XmlAnimationCondition.TouchUp);
         }
 
-
-        private bool _isInfoDataRegistered = false;
-
-        public virtual void RegisterInfoData()
+        /// <summary>
+        /// Called when [touch down].
+        /// </summary>
+        public virtual void OnTouchDown()
         {
-            _isInfoDataRegistered = true;
+            Animations.StartAnimation(XmlAnimationCondition.TouchDown);
         }
-
-        public virtual void DeregisterInfoData()
-        {
-            _isInfoDataRegistered = false;
-        }
-
-
-        public virtual void ClearInfoData()
-        {
-
-        }
-
-
 
         protected override void OnPreviewMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
-            OnTouchDown();
+            if (!(this is GUIList))
+            {
+                OnTouchDown();
+            }
             base.OnPreviewMouseDown(e);
         }
 
         protected override void OnPreviewMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
-            OnTouchUp();
+            if (!(this is GUIList))
+            {
+                OnTouchUp();
+                FocusHelper.ActivateApplication("MediaPortal");
+            }
             base.OnPreviewMouseUp(e);
         }
 
+        #endregion
     }
 }

@@ -16,7 +16,7 @@ namespace GUISkinFramework.Windows
 {
     [Serializable]
     [XmlType(TypeName = "MPDisplayWindow")]
-    public class XmlMPDWindow : XmlWindow
+    public partial class XmlMPDWindow : XmlWindow
     {
 
         public override string DisplayType

@@ -11,9 +11,9 @@ using MPDisplay.Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {
-    class EqualizerManager
+    public class EqualizerManager
     {
-         #region Singleton Implementation
+        #region Singleton Implementation
 
         private static EqualizerManager instance;
 
@@ -65,7 +65,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void RegisterEqualizer(int eqLength)
         {
-            if (eqLength != 0)
+            if (eqLength > 0)
             {
                 StopEQThread();
                 _eqDataLength = eqLength;
@@ -126,8 +126,6 @@ namespace MediaPortalPlugin.InfoManagers
                 StopEQThread();
             }
         }
-
-     
 
         /// <summary>
         /// Starts the EQ thread.
@@ -209,7 +207,5 @@ namespace MediaPortalPlugin.InfoManagers
             return false;
         }
 
-      
-     
     }
 }

@@ -88,7 +88,7 @@ namespace MediaPortalPlugin.InfoManagers
         private void GUIPropertyManager_OnPropertyChanged(string tag, string tagValue)
         {
          //   Log.Message(LogLevel.Debug, "[GUIPropertyManager_OnPropertyChanged] - Tag: {0}, TagValue: {1}", tag, tagValue);
-            // Log.Message(LogLevel.Verbose,"Property: {0}, Value: {1}",tag,tagValue);
+           // Log.Message(LogLevel.Verbose,"Property: {0}, Value: {1}",tag,tagValue);
             ThreadPool.QueueUserWorkItem((o) => ProcessProperty(tag, tagValue));
         }
 
@@ -128,8 +128,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendImageProperty(string tag, string tagValue)
         {
-            if (!string.IsNullOrEmpty(tagValue))
-            {
+            //if (!string.IsNullOrEmpty(tagValue))
+            //{
                 MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
                 {
                     SkinTag = tag,
@@ -140,7 +140,7 @@ namespace MediaPortalPlugin.InfoManagers
                         Image = GetImageBytes(tagValue)
                     }
                 });
-            }
+           // }
         }
 
         private void SendNumberProperty(string tag, string tagValue)

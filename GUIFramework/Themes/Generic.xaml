@@ -16,7 +16,7 @@
 	<xmlConverters:XmlFontConverter  x:Key="GUIFontConverter" />
 	<xmlConverters:XmlPercentToWidthConverter x:Key="GUIPercentToWidth" />
 	<xmlConverters:XmlCornerRadiusConverter x:Key="GUICornerRadiusConverter"/>
-
+	<xmlConverters:XmlEQStyleEnumConverter x:Key="GUIEQStyleEnumConverter" />
 
 	<guiConverters:GUIBrushConverter x:Key="GUIBrushConverter" />
 	<guiConverters:CoverFlowGreaterThanSelectedIndexConverter  x:Key="GreaterThanSelectedIndexConverter" />

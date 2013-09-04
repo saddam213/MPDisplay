@@ -59,7 +59,7 @@ namespace GUIFramework.GUI
                 {
                     if (_completedCallback != null)
                     {
-                        _completedCallback.Invoke(condition);
+                        _completedCallback(condition);
                     }
                 }
             }
@@ -71,7 +71,7 @@ namespace GUIFramework.GUI
             {
                 if (_animations.ContainsKey(condition))
                 {
-                    _completedCallback.Invoke(condition);
+                    _completedCallback(condition);
                 }
             }
         }

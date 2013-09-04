@@ -26,7 +26,7 @@ namespace GUIFramework.GUI.Controls
     [XmlSkinType(typeof(XmlGroup))]  
     public partial class GUIGroup : GUIControl, IControlHost
     {
-        private ObservableCollection<GUIControl> _controls = new ObservableCollection<GUIControl>();
+        private List<GUIControl> _controls = new List<GUIControl>();
        
         public GUIGroup()
         {
@@ -44,7 +44,7 @@ namespace GUIFramework.GUI.Controls
             CreateControls();
         }
 
-        public ObservableCollection<GUIControl> Controls
+        public List<GUIControl> Controls
         {
             get { return _controls; }
             set { _controls = value; NotifyPropertyChanged("Controls"); }
@@ -61,6 +61,7 @@ namespace GUIFramework.GUI.Controls
                 }
                 Controls.Add(GUIElementFactory.CreateControl(ParentId, xmlControl));
             }
+            NotifyPropertyChanged("Controls");
         }
 
       

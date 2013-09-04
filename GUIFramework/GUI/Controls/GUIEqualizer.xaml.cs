@@ -54,7 +54,7 @@ namespace GUIFramework.GUI.Controls
 
         private void EQDataReceived(byte[] data)
         {
-            EqualizerCanvas.SetEQData(data);
+            Dispatcher.BeginInvoke((Action)delegate { EqualizerCanvas.SetEQData(data); });
         }
     }
 }

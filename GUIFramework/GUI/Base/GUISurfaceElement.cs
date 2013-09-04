@@ -17,9 +17,9 @@ namespace GUIFramework.GUI
 
       
 
-        private ObservableCollection<GUIControl> _controls = new ObservableCollection<GUIControl>();
+        private List<GUIControl> _controls = new List<GUIControl>();
 
-        public ObservableCollection<GUIControl> Controls
+        public List<GUIControl> Controls
         {
             get { return _controls; }
             set { _controls = value; NotifyPropertyChanged(); }
@@ -43,9 +43,40 @@ namespace GUIFramework.GUI
             DependencyProperty.Register("FocusedControlId", typeof(int), typeof(GUISurfaceElement), new PropertyMetadata(0));
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         public event PropertyChangedEventHandler PropertyChanged;
-
-
         public void NotifyPropertyChanged([CallerMemberName]string property = "")
         {
             if (PropertyChanged != null)

@@ -35,15 +35,85 @@ namespace GUIFramework.GUI
             RenderTransformOrigin = new Point(0.5, 0.5);
         }
 
-        #region Animations
+     
+
+      
+
+        public XmlWindow BaseXml
+        {
+            get { return _baseXml; }
+            set { _baseXml = value; NotifyPropertyChanged("BaseXml"); } 
+        }
+        
+        public bool IsDefault { get; private set; }
+        public AnimationCollection Animations { get; set; }
+        public GUIVisibleCondition VisibleCondition { get; set; }
 
         public virtual void Initialize(XmlWindow skinXml)
         {
             BaseXml = skinXml;
             Id = BaseXml.Id;
             IsDefault = BaseXml.IsDefault;
-            Animations = new AnimationCollection(this, BaseXml.Animations, (condition) => OnAnimationStarted(condition), (condition) => OnAnimationCompleted(condition)); 
+            VisibleCondition = new GUIVisibleCondition(BaseXml.VisibleCondition);
+            CreateAnimations();
             CreateControls();
+            NotifyPropertyChanged("Controls");
+        }
+
+        public override void CreateControls()
+        {
+            foreach (var xmlControl in BaseXml.Controls)
+            {
+                var control = GUIElementFactory.CreateControl(Id, xmlControl);
+                control.ParentId = Id;
+                Controls.Add(control);
+            }
+        }
+        
+        public virtual Task WindowOpen()
+        {
+            return Dispatcher.InvokeAsync(() =>
+                {
+                    GUIVisibilityManager.RegisterControlVisibility(this);
+                 
+                    InfoRepository.RegisterMessage<int>(InfoMessageType.FocusedWindowControlId, OnMediaPortalFocusedControlChanged);
+                    foreach (var control in Controls.GetControls())
+                    {
+                        control.OnWindowOpen();
+                    }
+                    Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
+                }).Task;
+        }
+
+        public virtual Task WindowClose()
+        {
+            return Dispatcher.InvokeAsync(() =>
+               {
+                   GUIVisibilityManager.DeregisterControlVisibility(this);
+                
+                   InfoRepository.DeregisterMessage(InfoMessageType.FocusedWindowControlId, this);
+
+                   foreach (var control in Controls.GetControls())
+                   {
+                       control.OnWindowClose();
+                   }
+                   Animations.StartAnimation(XmlAnimationCondition.WindowClose);
+               }).Task;
+        }
+
+        public void OnMediaPortalFocusedControlChanged(int controlId)
+        {
+            foreach (var control in Controls.GetControls())
+            {
+                control.SetFocusedControlId(controlId);
+            }
+        }
+
+        #region Animations
+
+        private void CreateAnimations()
+        {
+            Animations = new AnimationCollection(this, BaseXml.Animations, OnAnimationStarted, OnAnimationCompleted);
         }
 
         private void OnAnimationCompleted(XmlAnimationCondition condition)
@@ -54,6 +124,10 @@ namespace GUIFramework.GUI
                     break;
                 case XmlAnimationCondition.WindowClose:
                     Visibility = System.Windows.Visibility.Hidden;
+                    foreach (var control in Controls.GetControls())
+                    {
+                        control.ClearInfoData();
+                    }
                     break;
             }
         }
@@ -71,95 +145,6 @@ namespace GUIFramework.GUI
         }
 
         #endregion
-
-        public XmlWindow BaseXml
-        {
-            get { return _baseXml; }
-            set { _baseXml = value; NotifyPropertyChanged("BaseXml"); } 
-        }
-        
-        public bool IsDefault { get; private set; }
-    
-        public AnimationCollection Animations { get; set; }
-
-      
-
-
-        public override void CreateControls()
-        {
-            foreach (var xmlControl in BaseXml.Controls)
-            {
-                if (Controls.Any(c => c.Id == xmlControl.Id))
-                {
-                    Log.Message(LogLevel.Warn, "Duplicate Control - Window '{0}' already contains a control with Id:{1}, Duplicate control '{2}' id cannot be added to window.",BaseXml.Name, xmlControl.Id, xmlControl.Name);
-                    continue;
-                }
-                var control = GUIElementFactory.CreateControl(Id, xmlControl);
-                control.ParentId = Id;
-                Controls.Add(control);
-            }
-        }
-
-        
-
-        public async Task WindowOpen()
-        {
-           // await this.RegisterWindowInfo();
-            await Dispatcher.InvokeAsync(() =>
-            {
-                GUIDataRepository.RegisterWindowData(this);
-                this.RegisterAction(XmlActionType.ControlVisible, action => this.ToggleControlVisibility(action.GetParam1As<int>(-1)));
-                InfoRepository.RegisterMessage<int>(InfoMessageType.FocusedWindowControlId, OnMediaPortalFocusedControlChanged);
-
-                this.RegisterControlVisibility();
-                foreach (var control in Controls.GetControls())
-                {
-                    if (control is IPropertyControl)
-                    {
-                        (control as IPropertyControl).RegisterProperties();
-                    }
-                    control.OnWindowOpen();
-                }
-                Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
-                GUIVisibilityManager.RegisterMessage(VisibleMessageType.ControlVisibilityChanged, this.RefreshControlVisibility);
-            });
-        }
-
-        public async Task WindowClose()
-        {
-           await Dispatcher.InvokeAsync(() =>
-           {
-               this.DeregisterAction(XmlActionType.ControlVisible);
-               InfoRepository.DeregisterMessage(InfoMessageType.FocusedWindowControlId, this);
-               GUIVisibilityManager.DeregisterMessage(VisibleMessageType.ControlVisibilityChanged,this);
-
-               this.DeregisterControlVisibility();
-               foreach (var control in Controls.GetControls())
-               {
-                   if (control is IPropertyControl)
-                   {
-                       (control as IPropertyControl).DergisterProperties();
-                   }
-                   control.OnWindowClose();
-               }
-               Animations.StartAnimation(XmlAnimationCondition.WindowClose);
-           });
-        }
-
-  
-
-
-
-        public void OnMediaPortalFocusedControlChanged(int controlId)
-        {
-            foreach (var control in Controls.GetControls())
-            {
-                control.SetFocusedControlId(controlId);
-            }
-        }
-
-     
-
-
+       
     }
 }

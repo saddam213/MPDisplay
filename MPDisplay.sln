@@ -21,6 +21,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MediaPortalPlugin", "MediaP
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUIConfig", "GUIConfig\GUIConfig.csproj", "{851471A3-420D-4BAA-A652-9FE5D0A403FC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinHelper", "SkinHelper\SkinHelper.csproj", "{48728737-8B50-42C9-8947-57DE9CF25ADF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -131,6 +133,16 @@ Global
 		{851471A3-420D-4BAA-A652-9FE5D0A403FC}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{851471A3-420D-4BAA-A652-9FE5D0A403FC}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{851471A3-420D-4BAA-A652-9FE5D0A403FC}.Release|x86.ActiveCfg = Release|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{48728737-8B50-42C9-8947-57DE9CF25ADF}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

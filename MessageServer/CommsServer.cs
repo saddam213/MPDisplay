@@ -241,6 +241,7 @@ namespace MessageServer
                 if (connectionToRemove != null)
                 {
                     MessageEvent -= connectionToRemove;
+                    MessageEvent -= _callbackEventHandler;
                     var e = new MessageEventArgs();
                     e.MessageType = MessageType.SessionDisconnected;
                     e.Connection = _apiConnection;
@@ -443,35 +444,39 @@ namespace MessageServer
         {
             try
             {
-                switch (e.MessageType)
+                if (_messageCallback != null)
                 {
-                    case MessageType.ReceiveAPIPropertyMessage:
-                        await _messageCallback.ReceiveAPIPropertyMessage(e.PropertyMessage);
-                        break;
-                    case MessageType.ReceiveAPIListMessage:
-                        await _messageCallback.ReceiveAPIListMessage(e.ListMessage);
-                        break;
-                    case MessageType.ReceiveAPIInfoMessage:
-                        await _messageCallback.ReceiveAPIInfoMessage(e.InfoMessage);
-                        break;
-                    case MessageType.ReceiveAPIDataMessage:
-                        await _messageCallback.ReceiveAPIDataMessage(e.DataMessage);
-                        break;
-                    case MessageType.ReceiveMediaPortalMessage:
-                        await _messageCallback.ReceiveMediaPortalMessage(e.MediaPortalMessage);
-                        break;
-                    case MessageType.ReceiveTVServerMessage:
-                        await _messageCallback.ReceiveTVServerMessage(e.TVServerMessage);
-                        break;
-                    case MessageType.SessionConnected:
-                        await _messageCallback.SessionConnected(e.Connection);
-                        break;
-                    case MessageType.SessionDisconnected:
-                        await _messageCallback.SessionDisconnected(e.Connection);
-                        break;
-                    default:
-                        break;
+                    switch (e.MessageType)
+                    {
+                        case MessageType.ReceiveAPIPropertyMessage:
+                            await _messageCallback.ReceiveAPIPropertyMessage(e.PropertyMessage);
+                            break;
+                        case MessageType.ReceiveAPIListMessage:
+                            await _messageCallback.ReceiveAPIListMessage(e.ListMessage);
+                            break;
+                        case MessageType.ReceiveAPIInfoMessage:
+                            await _messageCallback.ReceiveAPIInfoMessage(e.InfoMessage);
+                            break;
+                        case MessageType.ReceiveAPIDataMessage:
+                            await _messageCallback.ReceiveAPIDataMessage(e.DataMessage);
+                            break;
+                        case MessageType.ReceiveMediaPortalMessage:
+                            await _messageCallback.ReceiveMediaPortalMessage(e.MediaPortalMessage);
+                            break;
+                        case MessageType.ReceiveTVServerMessage:
+                            await _messageCallback.ReceiveTVServerMessage(e.TVServerMessage);
+                            break;
+                        case MessageType.SessionConnected:
+                            await _messageCallback.SessionConnected(e.Connection);
+                            break;
+                        case MessageType.SessionDisconnected:
+                            await _messageCallback.SessionDisconnected(e.Connection);
+                            break;
+                        default:
+                            break;
+                    }
                 }
+                return;
             }
             catch (ObjectDisposedException ex)
             {
@@ -479,8 +484,9 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Exception("[CallbackHandler] - An exception occured while invoking callback.", ex);
+                Log.Message(LogLevel.Error, "[CallbackHandler] - An exception occured while invoking callback.", ex.Message);
             }
+            await Disconnect();
         }
 
         /// <summary>

@@ -23,7 +23,7 @@ namespace GUIFramework.GUI.Controls
     /// Interaction logic for GUIButton.xaml
     /// </summary>
     [XmlSkinType(typeof(XmlButton))]
-    public partial class GUIButton : GUIControl, IPropertyControl
+    public partial class GUIButton : GUIControl
     {
         private string _label;
         private byte[] _image;
@@ -53,7 +53,7 @@ namespace GUIFramework.GUI.Controls
             set { _image = value; NotifyPropertyChanged("Image"); }
         }
 
-        public List<XmlProperty> RegisteredProperties { get; set; }
+ 
 
         public override void CreateControl()
         {
@@ -63,31 +63,32 @@ namespace GUIFramework.GUI.Controls
             RegisteredProperties.AddRange(PropertyRepository.GetRegisteredProperties(this, SkinXml.Image));
         }
 
-        public void RegisterProperties()
-        {
-            PropertyRepository.RegisterPropertyMessage(SkinXml.LabelText, () => OnPropertyChanging());
-            PropertyRepository.RegisterPropertyMessage(SkinXml.Image, () => OnPropertyChanging());
-            this.OnPropertyChanged();
-        }
-
-        public void DergisterProperties()
-        {
-            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelText);
-            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
-        }
-
-        public override async void OnPropertyChanged()
-        {
-            base.OnPropertyChanged();
-            Label = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
-            Image = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image);
-        }
-
-
 
         public override async void OnTouchUp()
         {
             await ActionCollection.ExecuteActions();
+            base.OnTouchUp();
+        }
+
+        public override void RegisterInfoData()
+        {
+            base.RegisterInfoData();
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.LabelText);
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.Image);
+        }
+
+        public override void DeregisterInfoData()
+        {
+            base.DeregisterInfoData();
+            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelText);
+            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
+        }
+
+        public async override void UpdateInfoData()
+        {
+            base.UpdateInfoData();
+            Label = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
+            Image = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image);
         }
 
         public override void ClearInfoData()

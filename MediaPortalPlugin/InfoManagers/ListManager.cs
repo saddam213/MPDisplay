@@ -314,8 +314,8 @@ namespace MediaPortalPlugin.InfoManagers
                 DateTime timeout = DateTime.Now.AddSeconds(5);
                 while (currentFacade.SelectedListItem == null && DateTime.Now < timeout)
                 {
-                    Thread.Sleep(100);
-                    Log.Message(LogLevel.Verbose, "Facade not ready, Waiting 100ms");
+                    Log.Message(LogLevel.Verbose, "Facade not ready, Waiting 250ms");
+                    Thread.Sleep(250);
                 }
                 SendFacadeList();
             }
@@ -684,23 +684,32 @@ namespace MediaPortalPlugin.InfoManagers
                     ListLayout = layout
                 }
             });
-            Log.Message(LogLevel.Verbose, "{0} items sent, Count: {1}", listType, items != null ? items.Count() : 0);
+            Log.Message(LogLevel.Debug, "[SendList] - ListType: {0}, ItemCount: {1}", listType, items != null ? items.Count() : 0);
         }
+
+        private APIListAction _lastSelectedAction;
 
         private void SendSelectedItem(APIListType listType, string text, int index)
         {
-            MessageService.Instance.SendListMessage(new APIListMessage
-            {
-                MessageType = APIListMessageType.Action,
-                Action = new APIListAction
+            var action = new APIListAction
                 {
                     ActionType = APIListActionType.SelectedItem,
                     ItemListType = listType,
                     ItemIndex = index,
                     ItemText = text
-                }
-            });
-            Log.Message(LogLevel.Verbose, "{0} selected item sent, Item: {1} - {2}", listType, index, text);
+                };
+
+            if (!action.Equals(_lastSelectedAction))
+            {
+
+                MessageService.Instance.SendListMessage(new APIListMessage
+                {
+                    MessageType = APIListMessageType.Action,
+                    Action = action
+                });
+                _lastSelectedAction = action;
+                Log.Message(LogLevel.Debug, "[SendSelectedItem] - ListType: {0}, Index: {1}, Text: {2}", listType, index, text);
+            }
         }
 
         private void SendLayout(APIListLayout layout)
@@ -714,7 +723,7 @@ namespace MediaPortalPlugin.InfoManagers
                     ItemLayout = layout
                 }
             });
-            Log.Message(LogLevel.Verbose, "Layout change sent, Layout: {0}", layout);
+            Log.Message(LogLevel.Debug, "[SendLayout] - Layout: {0}", layout);
         }
 
         #endregion

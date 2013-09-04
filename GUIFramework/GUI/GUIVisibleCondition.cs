@@ -10,12 +10,19 @@ namespace GUIFramework.GUI
 {
     public class GUIVisibleCondition
     {
-        private MethodInfo _condition = null;
+        private Func<bool> _condition = null;
         private string _xmlString = string.Empty;
 
         public GUIVisibleCondition(int windowId, string xmlString)
         {
-            _condition = GUIVisibilityManager.CreateVisibleCondition(windowId, xmlString);
+            _xmlString = xmlString;
+           _condition = GUIVisibilityManager.CreateVisibleCondition(true, windowId, xmlString);
+        }
+
+        public GUIVisibleCondition(string xmlString)
+        {
+            _xmlString = xmlString;
+            _condition = GUIVisibilityManager.CreateVisibleCondition(false, 0, xmlString);
         }
 
         public string XmlString
@@ -28,13 +35,13 @@ namespace GUIFramework.GUI
             get { return _condition != null; }
         }
 
-        public bool ShouldBeVisible(bool currentVisibility)
+        public bool ShouldBeVisible()
         {
             if (HasCondition)
             {
-                return (bool)_condition.Invoke(null, null);
+                return _condition();
             }
-            return currentVisibility;
+            return true;
         }
 
         public override string ToString()

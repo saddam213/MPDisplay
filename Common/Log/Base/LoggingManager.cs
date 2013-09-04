@@ -11,12 +11,17 @@ namespace MPDisplay.Common.Log
     /// </summary>
     public static class LoggingManager
     {
+        private static Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>();
+        private static Dictionary<string, Dictionary<Type, Log>> _logss = new Dictionary<string, Dictionary<Type, Log>>();
+
+
         private static Logger _logger = new ConsoleLogger();
         private static Dictionary<Type, Log> _logs = new Dictionary<Type, Log>();
         private static List<LogLevel> _levels = new List<LogLevel>();
 
         static LoggingManager()
         {
+           
             string levels = System.Configuration.ConfigurationManager.AppSettings["LogLevel"] ?? "Verbose,Debug,Info,Warn,Error";
             var logLevels = levels.Contains(',')
                 ? Enum.GetValues(typeof(LogLevel)).Cast<LogLevel>().Where(e => levels.Split(',').Select(x => x.Trim()).Contains(e.ToString()))
@@ -27,8 +32,20 @@ namespace MPDisplay.Common.Log
 
         public static void AddLog(Logger logger)
         {
-            Destroy();
+            if (_logger != null)
+            {
+                _logger.Dispose();
+            }
             _logger = logger;
+        }
+
+        public static void AddLog(Logger logger, string logname)
+        {
+            if (!_loggers.ContainsKey(logname))
+            {
+                _loggers.Add(logname, logger);
+                _logss.Add(logname, new Dictionary<Type, Log>());
+            }
         }
 
         /// <summary>
@@ -51,6 +68,24 @@ namespace MPDisplay.Common.Log
             return _logs[owner];
         }
 
+        public static Log GetLog(Type owner, string logName)
+        {
+            if (_loggers.ContainsKey(logName) && _logss.ContainsKey(logName))
+            {
+                if (!_logss[logName].ContainsKey(owner))
+                {
+                    _logss[logName].Add(owner, new Log(owner, (l, s) =>
+                    {
+                        if (_levels.Contains(l))
+                        {
+                            _loggers[logName].QueueLogMessage(s);
+                        }
+                    }));
+                }
+            }
+            return _logss[logName][owner];
+        }
+
         /// <summary>
         /// Destroys the logging manager
         /// </summary>
@@ -59,6 +94,17 @@ namespace MPDisplay.Common.Log
             if (_logger != null)
             {
                 _logger.Dispose();
+                _logs.Clear();
+            }
+
+            if (_loggers.Any())
+            {
+                foreach (var logger in _loggers.Values)
+                {
+                    logger.Dispose();
+                }
+                _loggers.Clear();
+                _logss.Clear();
             }
         }
     }

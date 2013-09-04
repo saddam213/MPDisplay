@@ -397,6 +397,7 @@ namespace MPDisplay.Common.Controls
                 return;
             }
 
+          
             // Determine if we're showing the backside.
             bool isBackShowing = IsBackShowingRotation(RotationX, RotationY, RotationZ);
 
@@ -420,6 +421,8 @@ namespace MPDisplay.Common.Controls
                 UpdateRotationCenter();
             }
             _lastIsBackShowing = isBackShowing;
+
+        
         }
 
         /// <summary>
@@ -527,8 +530,20 @@ namespace MPDisplay.Common.Controls
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
-        
-        
+
+
+
+
+
+        public bool Is3DControl
+        {
+            get { return (bool)GetValue(Is3DControlProperty); }
+            set { SetValue(Is3DControlProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for Is3DControl.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty Is3DControlProperty =
+            DependencyProperty.Register("Is3DControl", typeof(bool), typeof(Surface3D),new FrameworkPropertyMetadata(true));
 
         
         

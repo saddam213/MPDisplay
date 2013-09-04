@@ -8,6 +8,20 @@ namespace MediaPortalPlugin
 {
     public static class PluginHelpers
     {
+
+        public static void GUISafeInvoke(System.Action action)
+        {
+            try
+            {
+                GUIGraphicsContext.form.Invoke(action);
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+
         #region MPTVSeries
 
         public static string GetMPTVSeriesItemFilename(this GUIListItem item)

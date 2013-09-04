@@ -13,6 +13,7 @@ using GUISkinFramework.Controls;
 using MessageFramework.DataObjects;
 using Microsoft.CSharp;
 using MPDisplay.Common;
+using MPDisplay.Common.Log;
 
 namespace GUIFramework.Managers
 {
@@ -25,7 +26,8 @@ namespace GUIFramework.Managers
 
     public static class GUIVisibilityManager   
     {
-
+        private static Log Log = LoggingManager.GetLog(typeof(GUIVisibilityManager));
+        private static Dictionary<int, Dictionary<int, bool>> _controlVisibilityMap = new Dictionary<int, Dictionary<int, bool>>();
         private static MessengerService<VisibleMessageType> _visibilityService = new MessengerService<VisibleMessageType>();
         public static MessengerService<VisibleMessageType> VisibilityService
         {
@@ -56,88 +58,65 @@ namespace GUIFramework.Managers
             }
         }
 
-        static GUIVisibilityManager()
+     
+
+     
+
+        public static void RegisterControlVisibility(IControlHost controlHost)
         {
-           
-        }
-
-        private static Dictionary<int, Dictionary<int, bool>> _controlVisibilityMap = new Dictionary<int, Dictionary<int, bool>>();
-
-
-        public static void RegisterControlVisibility(this IControlHost controlHost)
-        {
-            controlHost.DeregisterControlVisibility();
-            _controlVisibilityMap.Add(controlHost.Id, controlHost.Controls.GetControls().DistinctBy(c => c.Id).ToDictionary(k => k.Id, v => v.IsWindowOpenVisible));
-            controlHost.RefreshControlVisibility();
-        }
-
-
-
-        public static void DeregisterControlVisibility(this IControlHost controlHost)
-        {
-            if (_controlVisibilityMap.ContainsKey(controlHost.Id))
+            DeregisterControlVisibility(controlHost);
+            lock (_controlVisibilityMap)
             {
-                _controlVisibilityMap.Remove(controlHost.Id);
+                _controlVisibilityMap.Add(controlHost.Id, controlHost.Controls.GetControls().DistinctBy(c => c.Id).ToDictionary(k => k.Id, v => v.IsWindowOpenVisible));
             }
         }
 
-
-        public static void RefreshControlVisibility(this IControlHost controlHost)
+        public static void DeregisterControlVisibility(IControlHost controlHost)
         {
-            UpdateControlVisibilityMap(controlHost);
-            SetControlVisibility(controlHost);
+            lock (_controlVisibilityMap)
+            {
+                if (_controlVisibilityMap.ContainsKey(controlHost.Id))
+                {
+                    _controlVisibilityMap.Remove(controlHost.Id);
+                }
+            }
         }
 
-
-        private static void UpdateControlVisibilityMap(IControlHost controlHost)
+        public static void UpdateControlVisibility(GUIControl control)
         {
-            if (_controlVisibilityMap.ContainsKey(controlHost.Id))
+            if (control != null)
             {
-                foreach (var control in controlHost.Controls.GetControls())
+                if (_controlVisibilityMap.ContainsKey(control.ParentId))
                 {
-                    if (_controlVisibilityMap[controlHost.Id].ContainsKey(control.Id))
+                    if (_controlVisibilityMap[control.ParentId].ContainsKey(control.Id))
                     {
-                        bool current = _controlVisibilityMap[controlHost.Id][control.Id];
-                        if (current != control.VisibleCondition.ShouldBeVisible(current))
+                        if (_controlVisibilityMap[control.ParentId][control.Id] != control.IsControlVisible)
                         {
-                            _controlVisibilityMap[controlHost.Id][control.Id] = !_controlVisibilityMap[controlHost.Id][control.Id];
-                            UpdateControlVisibilityMap(controlHost);
-                            return;
+                            lock (_controlVisibilityMap)
+                            {
+                                _controlVisibilityMap[control.ParentId][control.Id] = control.IsControlVisible;
+                            }
+                            NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                         }
                     }
                 }
             }
         }
 
-        private static void SetControlVisibility(IControlHost controlHost)
-        {
-            if (_controlVisibilityMap.ContainsKey(controlHost.Id))
-            {
-                // set controls based on map
-                foreach (var control in controlHost.Controls.GetControls())
-                {
-                    if (_controlVisibilityMap[controlHost.Id].ContainsKey(control.Id))
-                    {
-                        control.SetControlVisibility(_controlVisibilityMap[controlHost.Id][control.Id]);
-                    }
-                }
-            }
-        }
-
-
-
-
-        public static void ToggleControlVisibility(this IControlHost controlHost, int controlid)
-        {
-            if (_controlVisibilityMap.ContainsKey(controlHost.Id))
-            {
-                if (_controlVisibilityMap[controlHost.Id].ContainsKey(controlid))
-                {
-                    _controlVisibilityMap[controlHost.Id][controlid] = !_controlVisibilityMap[controlHost.Id][controlid];
-                    controlHost.RefreshControlVisibility();
-                }
-            }
-        }
+        //public static void ToggleControlVisibility(this IControlHost controlHost, int controlid)
+        //{
+        //    lock (_controlVisibilityMap)
+        //    {
+        //        if (_controlVisibilityMap.ContainsKey(controlHost.Id))
+        //        {
+        //            if (_controlVisibilityMap[controlHost.Id].ContainsKey(controlid))
+        //            {
+        //                _controlVisibilityMap[controlHost.Id][controlid] = !_controlVisibilityMap[controlHost.Id][controlid];
+        //                NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+        //            }
+        //        }
+        //    }
+        //}
 
 
         #region Condition Checks
@@ -156,67 +135,71 @@ namespace GUIFramework.Managers
              
         public static bool IsPluginEnabled(string pluginName)
         {
-            return GUIDataRepository.InfoManager.EnabledPluginMap.Contains(pluginName.ToLower());
+            return InfoRepository.Instance.EnabledPluginMap.Contains(pluginName.ToLower());
         }
 
-        public static bool IsPlayer(int playerId)
+        public static bool IsPlayer(int playerId, bool isWindow)
         {
-            return playerId.Equals((int)GUIDataRepository.InfoManager.PlayerType);
+            if (isWindow)
+            {
+                return playerId.Equals((int)InfoRepository.Instance.PlayerType) && InfoRepository.Instance.IsFullscreenVideo;
+            }
+            return playerId.Equals((int)InfoRepository.Instance.PlayerType);
         }
 
         public static bool IsTvRecording()
         {
-            return  GUIDataRepository.InfoManager.IsTvRecording;
+            return InfoRepository.Instance.IsTvRecording;
         }
 
         public static bool IsFullscreenVideo(bool value)
         {
-            return value == GUIDataRepository.InfoManager.IsFullscreenVideo;
+            return value == InfoRepository.Instance.IsFullscreenVideo;
         }
 
         public static bool IsMediaPortalWindow(int windowId)
         {
-            return windowId == GUIDataRepository.InfoManager.WindowId;
+            return windowId == InfoRepository.Instance.WindowId;
         }
 
         public static bool IsMediaPortalDialog(int dialogId)
         {
-            return dialogId == GUIDataRepository.InfoManager.DialogId;
+            return dialogId == InfoRepository.Instance.DialogId;
         }
 
         public static bool IsMediaPortalPreviousWindow(int windowId)
         {
-            return windowId == GUIDataRepository.InfoManager.PreviousWindowId;
+            return windowId == InfoRepository.Instance.PreviousWindowId;
         }
 
         public static bool IsMediaPortalControlFocused(int controlId)
         {
-            return controlId == GUIDataRepository.InfoManager.FocusedWindowControlId;
+            return controlId == InfoRepository.Instance.FocusedWindowControlId;
         }
 
         public static bool IsMediaPortalConnected()
         {
-            return GUIMessageService.Instance.IsMediaPortalConnected;
+            return InfoRepository.Instance.IsMediaPortalConnected;
         }
 
         public static bool IsTVServerConnected()
         {
-            return GUIMessageService.Instance.IsTVServerConnected;
+            return InfoRepository.Instance.IsTVServerConnected;
         }
 
         public static bool IsMPDisplayConnected()
         {
-            return GUIMessageService.Instance.IsMPDisplayConnected;
+            return InfoRepository.Instance.IsMPDisplayConnected;
         }
 
         public static bool IsSkinOptionEnabled(string option)
         {
-            return GUIDataRepository.InfoManager.IsSkinOptionEnabled(option);
+            return InfoRepository.Instance.IsSkinOptionEnabled(option);
         }
 
         public static bool IsMediaPortalListLayout(int layout)
         {
-            return (int)GUIDataRepository.ListManager.GetMediaPortalListLayout() == layout;
+            return (int)ListRepository.GetCurrentMediaPortalListLayout() == layout;
         }
 
         #endregion
@@ -227,33 +210,50 @@ namespace GUIFramework.Managers
         private static CSharpCodeProvider _codeProvider;
         private static bool _compilerLoaded = false;
 
-        public static MethodInfo CreateVisibleCondition(int windowId, string xmlVisibleString)
+        public static Func<bool> CreateVisibleCondition(bool isControl, int windowId, string xmlVisibleString)
         {
             xmlVisibleString = xmlVisibleString.Replace("++", "&&");
-            xmlVisibleString = xmlVisibleString.Replace("IsControlVisible(", "GUIVisibilityManager.IsControlVisible("+windowId+",");
 
-            if (xmlVisibleString.Contains("IsPlayer("))
+            if (isControl)
             {
-                foreach (var playtype in Enum.GetValues(typeof(APIPlaybackType)))
+                xmlVisibleString = xmlVisibleString.Replace("IsControlVisible(", "GUIVisibilityManager.IsControlVisible(" + windowId + ",");
+
+                if (xmlVisibleString.Contains("IsPlayer("))
                 {
-                    xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0})", (int)playtype));
+                    foreach (var playtype in Enum.GetValues(typeof(APIPlaybackType)))
+                    {
+                        xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0}, {1})", (int)playtype, (!isControl).ToString().ToLower()));
+                    }
                 }
-            }
 
-            if (xmlVisibleString.Contains("IsMediaPortalListLayout("))
-            {
-                foreach (var layout in Enum.GetValues(typeof(XmlListLayout)))
+                if (xmlVisibleString.Contains("IsMediaPortalListLayout("))
                 {
-                    xmlVisibleString = xmlVisibleString.Replace(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("GUIVisibilityManager.IsMediaPortalListLayout({0})", (int)layout));
+                    foreach (var layout in Enum.GetValues(typeof(XmlListLayout)))
+                    {
+                        xmlVisibleString = xmlVisibleString.Replace(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("GUIVisibilityManager.IsMediaPortalListLayout({0})", (int)layout));
+                    }
                 }
+
+                if (xmlVisibleString.Contains("IsPluginEnabled("))
+                {
+                    // \(([^)]*)\)
+                    xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsPluginEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsPluginEnabled(""$1"")");
+                    //xmlVisibleString.Replace("IsPluginEnabled(", "GUIVisibilityManager.IsPluginEnabled(");
+                }
+
+
+
+                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalConnected", "GUIVisibilityManager.IsMediaPortalConnected()");
+                xmlVisibleString = xmlVisibleString.Replace("IsTVServerConnected", "GUIVisibilityManager.IsTVServerConnected()");
+                xmlVisibleString = xmlVisibleString.Replace("IsMPDisplayConnected", "GUIVisibilityManager.IsMPDisplayConnected()");
+                xmlVisibleString = xmlVisibleString.Replace("IsTvRecording", "GUIVisibilityManager.IsTvRecording()");
+            
+
+                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlFocused(", "GUIVisibilityManager.IsMediaPortalControlFocused(");
+                //  xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlVisible(", "GUIVisibilityManager.IsMediaPortalControlVisible(");
+
             }
 
-            if (xmlVisibleString.Contains("IsPluginEnabled("))
-            {
-                // \(([^)]*)\)
-                xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsPluginEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsPluginEnabled(""$1"")");
-                //xmlVisibleString.Replace("IsPluginEnabled(", "GUIVisibilityManager.IsPluginEnabled(");
-            }
 
             if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
             {
@@ -262,19 +262,12 @@ namespace GUIFramework.Managers
                 //xmlVisibleString.Replace("IsPluginEnabled(", "GUIVisibilityManager.IsPluginEnabled(");
             }
 
-
-            xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalConnected", "GUIVisibilityManager.IsMediaPortalConnected()");
-            xmlVisibleString = xmlVisibleString.Replace("IsTVServerConnected", "GUIVisibilityManager.IsTVServerConnected()");
-            xmlVisibleString = xmlVisibleString.Replace("IsMPDisplayConnected", "GUIVisibilityManager.IsMPDisplayConnected()");
-            xmlVisibleString = xmlVisibleString.Replace("IsTvRecording", "GUIVisibilityManager.IsTvRecording()");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalWindow(", "GUIVisibilityManager.IsMediaPortalWindow(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalPreviousWindow(", "GUIVisibilityManager.IsMediaPortalPreviousWindow(");
-         
-            xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlFocused(", "GUIVisibilityManager.IsMediaPortalControlFocused(");
-          //  xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlVisible(", "GUIVisibilityManager.IsMediaPortalControlVisible(");
 
-       
+
+          
 
             //GUIWindowManager
             if (!string.IsNullOrWhiteSpace(xmlVisibleString))
@@ -289,7 +282,7 @@ namespace GUIFramework.Managers
         /// </summary>
         /// <param name="xmlVisibleString">The XML visible string.</param>
         /// <returns></returns>
-        private static MethodInfo CompileCondition(string xmlVisibleString)
+        private static Func<bool> CompileCondition(string xmlVisibleString)
         {
             if (!string.IsNullOrEmpty(xmlVisibleString))
             {
@@ -298,15 +291,18 @@ namespace GUIFramework.Managers
                 CompilerResults compileResults = _codeProvider.CompileAssemblyFromSource(_compilerParams, code);
                 if (compileResults.Errors.HasErrors)
                 {
-                    // LOG
+                    Log.Message(LogLevel.Error, "Invalid VisibleCondition Detected, VisibleString: {0}, Error: {1}", xmlVisibleString, compileResults.Errors[0]);
                     return null;
                 }
-                return compileResults.CompiledAssembly.GetModules()[0].GetType("Visibility.VisibleMethodClass").GetMethod("ShouldBeVisible");
+                var method = compileResults.CompiledAssembly.GetModules()[0].GetType("Visibility.VisibleMethodClass").GetMethod("ShouldBeVisible");
+
+                return (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), method);
             }
             return null;
         }
 
     
+  
 
         /// <summary>
         /// Loads the compiler settings.

@@ -239,7 +239,7 @@ namespace GUISkinFramework.Controls
       
    
 
-        public void NotifyPropertyChanged(string property)
+        public virtual void NotifyPropertyChanged(string property)
         {
             if (PropertyChanged != null)
             {

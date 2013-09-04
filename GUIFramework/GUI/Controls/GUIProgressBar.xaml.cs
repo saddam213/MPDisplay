@@ -24,7 +24,7 @@ namespace GUIFramework.GUI.Controls
     /// Interaction logic for GUIButton.xaml
     /// </summary>
     [XmlSkinType(typeof(XmlProgressBar))]  
-    public partial class GUIProgressBar : GUIControl, IPropertyControl
+    public partial class GUIProgressBar : GUIControl
     {
         private int _progress;
      
@@ -45,7 +45,7 @@ namespace GUIFramework.GUI.Controls
             set { _progress = value; NotifyPropertyChanged("Progress"); }
         }
 
-        public List<XmlProperty> RegisteredProperties { get; set; }
+    
 
         public override void CreateControl()
         {
@@ -53,23 +53,24 @@ namespace GUIFramework.GUI.Controls
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.ProgressValue);
         }
 
-        public void RegisterProperties()
+        public override void RegisterInfoData()
         {
-            PropertyRepository.RegisterPropertyMessage(SkinXml.ProgressValue, () => OnPropertyChanging());
-            this.OnPropertyChanged();
+            base.RegisterInfoData();
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.ProgressValue);
         }
 
-        public void DergisterProperties()
+        public override void DeregisterInfoData()
         {
+            base.DeregisterInfoData();
             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.ProgressValue);
         }
 
-        public override async void OnPropertyChanged()
+        public async override void UpdateInfoData()
         {
-            base.OnPropertyChanged();
+            base.UpdateInfoData();
             Progress = await PropertyRepository.GetProperty<int>(SkinXml.ProgressValue);
         }
-   
+
         public override void ClearInfoData()
         {
             base.ClearInfoData();

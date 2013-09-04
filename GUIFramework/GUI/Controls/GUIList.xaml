@@ -19,7 +19,8 @@
 			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
-			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}">
+			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
+			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 	<Border x:Name="background" Width="{Binding BaseXml.Width, Mode=OneWay}" Height="{Binding BaseXml.Height, Mode=OneWay}"  
                 Background="{Binding BaseXml.ControlStyle.BackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding BaseXml.ControlStyle.BorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
@@ -27,7 +28,7 @@
                 CornerRadius="{Binding BaseXml.ControlStyle.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
 		<Border x:Name="focusShading" Background="{Binding BaseXml.ControlStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
 			<ListBox x:Name="listbox" ItemsSource="{Binding ListItems}"
-		         VirtualizingPanel.VirtualizationMode="Recycling" 
+		         VirtualizingPanel.VirtualizationMode="Standard" 
 				 VirtualizingPanel.IsContainerVirtualizable="True" 
 				 VirtualizingPanel.IsVirtualizing="True" 
 				 VirtualizingPanel.ScrollUnit="Pixel" 

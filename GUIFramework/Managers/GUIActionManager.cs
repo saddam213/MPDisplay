@@ -30,6 +30,8 @@ namespace GUIFramework.Managers
             ActionService.Deregister(action, owner);
         }
 
+
+
         public static void DeregisterAction(this IControlHost window, XmlActionType action)
         {
             ActionService.Deregister(action, window);
@@ -75,5 +77,9 @@ namespace GUIFramework.Managers
             }
             return defaultValue;
         }
+
+      
     }
+
+  
 }

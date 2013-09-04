@@ -43,7 +43,8 @@ namespace MessageFramework.DataObjects
     public enum APIActionMessageType
     {
         MediaPortalAction,
-        ListAction
+        ListAction,
+        MediaPortalWindow
     }
 
 
@@ -54,6 +55,27 @@ namespace MessageFramework.DataObjects
         public int ItemIndex { get; set; }
         public string ItemText { get; set; }
         public APIListLayout ItemLayout { get; set; }
+
+        public override bool Equals(object obj)
+        {
+             var lObj = obj as APIListAction;
+            if (lObj == null || this == null)
+            {
+                return this == null && lObj == null;
+            }
+
+
+
+            if (ActionType == lObj.ActionType
+                && ItemListType == lObj.ItemListType
+                && ItemText == lObj.ItemText
+                && ItemIndex == lObj.ItemIndex)
+            {
+                return true;
+            }
+
+            return base.Equals(obj);
+        }
     }
 
     public enum APIListActionType
