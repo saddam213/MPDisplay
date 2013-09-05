@@ -40,6 +40,7 @@ namespace MessageFramework.DataObjects
         public int WindowId { get; set; }
         public int FocusedControlId { get; set; }
         public List<string> EnabledPlugins { get; set; }
+        public bool IsFullscreenVideo { get; set; }
     }
 
     public enum APIWindowMessageType

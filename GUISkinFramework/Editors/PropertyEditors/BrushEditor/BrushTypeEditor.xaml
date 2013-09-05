@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
              xmlns:converters="clr-namespace:GUISkinFramework.Converters"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
              xmlns:BrushEditors="clr-namespace:GUISkinFramework.Editors.PropertyEditors"
              Name="UI"  >

@@ -47,6 +47,9 @@ namespace MediaPortalPlugin.InfoManagers
         private bool _isFullscreenVideo;
         private GUIWindow _currentWindow;
         private PluginSettings _settings;
+        private int _previousFocusedControlId = -1;
+       
+        private Dictionary<int, APIPlaybackType> _playerWindows = new Dictionary<int, APIPlaybackType>();
     
 
         public GUIWindow CurrentWindow
@@ -85,7 +88,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (action.wID != MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_MOVE)
             {
-                SendFocusedControlId();
+                SendFocusedControlMessage();
             }
         }
 
@@ -174,12 +177,12 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-
+        public bool IsWindowChanging { get; set; }
 
         public void SendFullUpdate()
         {
             SendWindowMessage();
-            SendFocusedControlId();
+            SendFocusedControlMessage();
             SendPlayerMessage();
         }
     
@@ -187,26 +190,35 @@ namespace MediaPortalPlugin.InfoManagers
         private void SetCurrentWindow(int windowId)
         {
             ListManager.Instance.ClearWindowListControls();
-            while (GUIWindowManager.IsSwitchingToNewWindow)
+            PropertyManager.Instance.Suspend = true;
+            int retry = 0;
+            while (GUIWindowManager.IsSwitchingToNewWindow || !GUIWindowManager.Initalized)
             {
-                Thread.Sleep(100);
+                Log.Message(LogLevel.Verbose, "[SetCurrentWindow] - Waiting 100ms for window to initalize, WindowId: {0}", windowId);
+                Thread.Sleep(200);
+                if (retry > 100)
+                {
+                    Log.Message(LogLevel.Error, "[SetCurrentWindow] - I've been waiting for ages... So I am giving up.., WindowId: {0}", windowId);
+                    break;
+                }
+                retry++;
             }
-            Thread.Sleep(250);
-            _isFullscreenVideo = (windowId == 2005 || windowId == 602);
+            _isFullscreenVideo = (windowId == 2005 || windowId == 602 || GUIGraphicsContext.IsFullScreenVideo);
             if (!_isFullscreenVideo)
             {
                 _currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindow);
                 SendWindowMessage();
                 ListManager.Instance.SetWindowListControls();
             }
+            SendFocusedControlMessage();
         }
 
         private void SendWindowMessage()
         {
             if (_currentWindow != null)
             {
-                //Log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
-                //   , _currentWindow.GetID, _currentWindow.GetFocusControlId());
+                Log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
+                   , _currentWindow.GetID, _currentWindow.GetFocusControlId());
                 MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
                     MessageType = APIInfoMessageType.WindowMessage,
@@ -214,16 +226,13 @@ namespace MediaPortalPlugin.InfoManagers
                     {
                         WindowId = _currentWindow.GetID,
                         FocusedControlId = _currentWindow.GetFocusControlId(),
+                        IsFullscreenVideo = _isFullscreenVideo
                     }
                 });
             }
         }
 
-
-        private int _previousFocusedControlId = -1;
-
-
-        private void SendFocusedControlId()
+        private void SendFocusedControlMessage()
         {
             int focusId = CurrentWindowFocusedControlId;
             if (focusId != _previousFocusedControlId)
@@ -261,11 +270,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
-        private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
-        private APIPlaybackType _currentPlayerPlugin = APIPlaybackType.None;
-        private int _currentPlayerPluginId = -1;
-        private Dictionary<int, APIPlaybackType> _playerWindows = new Dictionary<int, APIPlaybackType>();
+     
 
         private void LoadPlayerPluginIds(IEnumerable<PlayerPlugin> pluginInfo)
         {
@@ -286,25 +291,45 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+
+
+
+        private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
+        private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
+        private APIPlaybackType _currentPlayerPlugin = APIPlaybackType.None;
      
 
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-         //   Log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
+             Log.Message(LogLevel.Verbose, "[Player_PlayBackEnded] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Stopped;
-          
+            _currentPlaybackType = APIPlaybackType.None;
+            _currentPlayerPlugin = APIPlaybackType.None;
+            SendPlayerMessage();
         }
 
         private void Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename)
         {
-         //   Log.Message(LogLevel.Debug, "[Player_PlayBackStopped] - PlayType: {0}", type);
+            Log.Message(LogLevel.Verbose, "[Player_PlayBackStopped] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Stopped;
+            _currentPlaybackType = APIPlaybackType.None;
+            _currentPlayerPlugin = APIPlaybackType.None;
+            SendPlayerMessage();
         }
 
-       
+        void Player_PlayBackChanged(g_Player.MediaType type, int stoptime, string filename)
+        {
+            Log.Message(LogLevel.Verbose, "[Player_PlayBackChanged] - PlayType: {0}", type);
+        }
 
         private void Player_PlayBackStarted(g_Player.MediaType type, string filename)
         {
+            Log.Message(LogLevel.Verbose, "[Player_PlayBackStarted] - PlayType: {0}", type);
+
+            _currentPlaybackState = APIPlaybackState.Started;
+            _currentPlaybackType = GetPlaybackType(type);
+            _currentPlayerPlugin = _currentPlaybackType;
+
             if (ListManager.Instance.LastSelectedItem != null)
             {
                 bool isLastSelectedPlaying = false;
@@ -330,10 +355,12 @@ namespace MediaPortalPlugin.InfoManagers
 
                 if (isLastSelectedPlaying)
                 {
-                    _currentPlayerPluginId = ListManager.Instance.LastSelectedItemWindowId;
-                    Log.Message(LogLevel.Debug, "[Player_PlayBackStarted] - PlayerPlugin: {0}", _currentPlayerPluginId);
+                    _currentPlayerPlugin = GetPluginPlayerType(ListManager.Instance.LastSelectedItemWindowId, type);
                 }
             }
+
+         
+            SendPlayerMessage();
         }
 
 
@@ -341,10 +368,7 @@ namespace MediaPortalPlugin.InfoManagers
     
 
 
-        void Player_PlayBackChanged(g_Player.MediaType type, int stoptime, string filename)
-        {
-            Log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
-        }
+    
 
 
         private APIPlaybackType GetPlaybackType(g_Player.MediaType type)
@@ -371,18 +395,13 @@ namespace MediaPortalPlugin.InfoManagers
             return APIPlaybackType.None;
         }
 
-        private APIPlaybackType GetPluginPlayerType(g_Player.MediaType type)
+        private APIPlaybackType GetPluginPlayerType(int windowId, g_Player.MediaType defaultType)
         {
-            if (_currentWindow != null)
+            if (windowId != -1 && _playerWindows.ContainsKey(windowId))
             {
-                if (_playerWindows.ContainsKey(_currentWindow.GetID))
-                {
-                    return _playerWindows[_currentWindow.GetID];
-                }
-
-                return GetPlaybackType(type);
+                return _playerWindows[windowId];
             }
-            return APIPlaybackType.None;
+            return GetPlaybackType(defaultType);
         }
 
 

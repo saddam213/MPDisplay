@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes;assembly=MPDisplay.Common"
+             xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes;assembly=MPDisplay.UICommon"
              xmlns:Converters="clr-namespace:GUISkinFramework.Converters"
              mc:Ignorable="d" 
              Name="UI" Width="Auto" >
@@ -17,7 +17,7 @@
 
         <ComboBox Grid.Column="0" IsReadOnly="True"  Name="txtbx" ItemsSource="{Binding ElementName=UI, Path=NumberProperties, Mode=OneWay}" SelectedItem="{Binding ElementName=UI, Path=Value}" />
         <Button  Grid.Column="1" Click="Button_Click">
-            <Image Margin="1" Stretch="Uniform" Source="/MPDisplay.Common;component/Controls/Images/Edit.png" />
+            <Image Margin="1" Stretch="Uniform" Source="/MPDisplay.UICommon;component/Controls/Images/Edit.png" />
         </Button>
     </Grid>
 </UserControl>

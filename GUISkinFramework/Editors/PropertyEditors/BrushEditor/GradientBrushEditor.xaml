@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                xmlns:sys="clr-namespace:System;assembly=mscorlib"
                xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
 			 xmlns:brushes="clr-namespace:GUISkinFramework.Common.Brushes"
              mc:Ignorable="d"  Name="UI">
     <UserControl.Resources>
@@ -82,10 +82,10 @@
 
         <StackPanel Orientation="Horizontal" Grid.Row="1">
             <Button Width="23" Height="23" Click="GradientStopAdd_Click">
-                <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" />
+                <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
             </Button>
             <Button Margin="3,0,0,0" Width="23" Height="23" Click="GradientStopRemove_Click">
-                <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" />
+                <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
             </Button>
         </StackPanel>
     </Grid>

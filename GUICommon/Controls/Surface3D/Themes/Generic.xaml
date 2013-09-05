@@ -10,7 +10,7 @@
 				<Setter Property="Template">
 					<Setter.Value>
 						<ControlTemplate TargetType="{x:Type local:Surface3D}">
-							<Border x:Name="PART_FrontContent" BorderThickness="2" BorderBrush="Yellow"  >
+							<Border x:Name="PART_FrontContent" BorderThickness="1" BorderBrush="Transparent"  >
 								<ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
 							</Border>
 						</ControlTemplate>
@@ -89,7 +89,7 @@
 												<DiffuseMaterial Viewport2DVisual3D.IsVisualHostMaterial="True" Brush="White"/>
 											</Viewport2DVisual3D.Material>
 											<Viewport2DVisual3D.Visual>
-												<Border x:Name="PART_FrontContent" BorderThickness="2" BorderBrush="Purple"  >
+												<Border x:Name="PART_FrontContent" BorderThickness="1" BorderBrush="Transparent"  >
 													<ContentPresenter Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" />
 												</Border>
 											</Viewport2DVisual3D.Visual>

@@ -3,15 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:propGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.Common"
+             xmlns:propGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
            
              xmlns:converters="clr-namespace:SkinEditor.BindingConverters"
              xmlns:local="clr-namespace:SkinEditor.Views"
 			 xmlns:xmlWindows="clr-namespace:GUISkinFramework.Windows;assembly=GUISkinFramework"
 			 xmlns:xmlControls="clr-namespace:GUISkinFramework.Controls;assembly=GUISkinFramework"
 			 xmlns:xmlDialogs="clr-namespace:GUISkinFramework.Dialogs;assembly=GUISkinFramework"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common" 
-			 xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.Common"
+             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
+			 xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" d:DesignWidth="1256" x:Name="UI"  >
 	<local:EditorViewModel.Resources>
      

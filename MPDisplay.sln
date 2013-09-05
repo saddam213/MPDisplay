@@ -23,6 +23,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GUIConfig", "GUIConfig\GUIC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinHelper", "SkinHelper\SkinHelper.csproj", "{48728737-8B50-42C9-8947-57DE9CF25ADF}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SolutionItems", "SolutionItems", "{DA9FD625-DF2F-4CF1-81A8-01E70AE905F4}"
+	ProjectSection(SolutionItems) = preProject
+		GlobalAssembly.cs = GlobalAssembly.cs
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

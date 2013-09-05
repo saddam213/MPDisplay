@@ -54,7 +54,7 @@
 									</Style.Triggers>
 								</Style>
 							</Button.Style>
-							<Image Margin="2,3,2,1" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" >
+							<Image Margin="2,3,2,1" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" >
 								<Image.Style>
 									<Style TargetType="{x:Type Image}">
 										<Setter Property="Opacity" Value="1"/>
@@ -112,7 +112,7 @@
 									</Style.Triggers>
 								</Style>
 							</Button.Style>
-							<Image Margin="2,3,2,1" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" >
+							<Image Margin="2,3,2,1" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" >
 								<Image.Style>
 									<Style TargetType="{x:Type Image}">
 										<Setter Property="Opacity" Value="1"/>
@@ -149,7 +149,7 @@
 									</Style.Triggers>
 								</Style>
 							</Button.Style>
-							<Image Margin="2,3,2,1" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" >
+							<Image Margin="2,3,2,1" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" >
 								<Image.Style>
 									<Style TargetType="{x:Type Image}">
 										<Setter Property="Opacity" Value="1"/>
@@ -188,7 +188,7 @@
 							</Style.Triggers>
 						</Style>
 					</Button.Style>
-					<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" Stretch="Uniform" >
+					<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" Stretch="Uniform" >
 						<Image.Style>
 							<Style TargetType="{x:Type Image}">
 								<Setter Property="Opacity" Value="1"/>

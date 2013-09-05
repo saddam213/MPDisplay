@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			    xmlns:local="clr-namespace:SkinEditor.Views"
 				xmlns:gui="clr-namespace:GUIFramework;assembly=GUIFramework"
-				xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+				xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
           xmlns:fileSystemHelpers="clr-namespace:SkinEditor.Helpers" 
              x:Class="SkinEditor.Views.SkinInfoEditorView"
              mc:Ignorable="d" 
@@ -85,18 +85,18 @@
 					<Grid DockPanel.Dock="Bottom">
 						<StackPanel Orientation="Horizontal" >
 							<Button Margin="0,2,0,0"  Height="22" HorizontalAlignment="Left" Width="22"  Command="{Binding SkinOptionItemAdd, ElementName=UI}" >
-								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" />
+								<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" />
 							</Button>
 							<Button Margin="2,2,0,0"  HorizontalAlignment="Left" Width="22" Height="22" Command="{Binding SkinOptionItemRemove, ElementName=UI}" >
-								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" Stretch="Uniform" />
+								<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" Stretch="Uniform" />
 							</Button>
 						</StackPanel>
 						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
 							<Button Margin="0,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveUp, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=skinOptionList}">
-								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Up.png" Stretch="Uniform" />
+								<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Up.png" Stretch="Uniform" />
 							</Button>
 							<Button Margin="2,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveDown, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=skinOptionList}">
-								<Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Down.png" Stretch="Uniform" />
+								<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Down.png" Stretch="Uniform" />
 							</Button>
 						</StackPanel>
 					</Grid>

@@ -5,7 +5,7 @@
                     xmlns:themes="clr-namespace:MPDisplay.Common.Controls.Themes">
 
     <ResourceDictionary.MergedDictionaries>
-        <ResourceDictionary Source="/MPDisplay.Common;component/Themes/Generic/Glyphs.xaml" />
+        <ResourceDictionary Source="/MPDisplay.UICommon;component/Themes/Generic/Glyphs.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <!-- =============================================================================== -->

@@ -42,6 +42,8 @@ namespace MediaPortalPlugin.InfoManagers
         private List<string> _registeredProperties = new List<string>();
         private PluginSettings _settings;
 
+        public bool Suspend { get; set; }
+
         public void Initialize(PluginSettings settings)
         {
             _settings = settings;
@@ -55,8 +57,10 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void RegisterWindowProperties(List<APIPropertyMessage> properties)
         {
+            Suspend = true;
             if (properties != null && properties.Any())
             {
+               
                 lock (_properties)
                 {
                     _properties.Clear();
@@ -74,6 +78,7 @@ namespace MediaPortalPlugin.InfoManagers
                     }
                     Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Registering MPDisplay skin property tags complete.");
                 }
+             
                 _registeredProperties.ForEach(prop => ProcessProperty(prop, GUIPropertyManager.GetProperty(prop)));
             }
             else
@@ -83,13 +88,15 @@ namespace MediaPortalPlugin.InfoManagers
                     _registeredProperties.Clear();
                 }
             }
+            Suspend = false;
         }
 
         private void GUIPropertyManager_OnPropertyChanged(string tag, string tagValue)
         {
-         //   Log.Message(LogLevel.Debug, "[GUIPropertyManager_OnPropertyChanged] - Tag: {0}, TagValue: {1}", tag, tagValue);
-           // Log.Message(LogLevel.Verbose,"Property: {0}, Value: {1}",tag,tagValue);
-            ThreadPool.QueueUserWorkItem((o) => ProcessProperty(tag, tagValue));
+            if (!Suspend)
+            {
+                ThreadPool.QueueUserWorkItem((o) => ProcessProperty(tag, tagValue));
+            }
         }
 
         private void ProcessProperty(string tag, string tagValue)
@@ -174,5 +181,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
             return null;
         }
+
+     
     }
 }

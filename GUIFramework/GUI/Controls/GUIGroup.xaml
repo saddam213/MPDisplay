@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 		     xmlns:base="clr-namespace:GUIFramework.GUI"
-			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" 
 			 Canvas.Left="{Binding BaseXml.PosX,Mode=OneWay}"

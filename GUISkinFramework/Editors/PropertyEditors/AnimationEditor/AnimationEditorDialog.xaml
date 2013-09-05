@@ -1,10 +1,10 @@
-﻿<Window xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"  x:Class="GUISkinFramework.Editor.PropertyEditors.AnimationEditorDialog"
+﻿<Window xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"  x:Class="GUISkinFramework.Editor.PropertyEditors.AnimationEditorDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         xmlns:xmlAnimations="clr-namespace:GUISkinFramework.Animations"
     xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
-        xmlns:PropertyGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.Common" 
+        xmlns:PropertyGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon" 
        
         Title="Action Editor"  Width="1200" Height="580" WindowStartupLocation="CenterOwner" x:Name="UI">
     <Window.Resources>
@@ -78,16 +78,16 @@
                 </StackPanel.Resources>
                 
                 <Button  Height="22"  Width="24" Click="Button_Add_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" Stretch="Uniform" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" />
                 </Button>
                 <Button Margin="2,0,0,0" Width="24" Height="22"  Click="Button_Remove_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" Stretch="Uniform" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" Stretch="Uniform" />
                 </Button>
                 <Button Margin="10,0,0,0" Width="24" Height="22"  Click="Button_MoveUp_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Up.png" Stretch="Uniform" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Up.png" Stretch="Uniform" />
                 </Button>
                 <Button Margin="2,0,0,0"  Width="24" Height="22" Click="Button_MoveDown_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Down.png" Stretch="Uniform" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Down.png" Stretch="Uniform" />
                 </Button>
              
             </StackPanel>

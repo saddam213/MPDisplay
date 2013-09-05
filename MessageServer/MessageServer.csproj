@@ -44,7 +44,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>C:\Users\Dev\Desktop\MPDisplay Installer\Server\</OutputPath>
+    <OutputPath>..\..\..\Release\MPDisplay\Server\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -66,6 +66,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssembly.cs">
+      <Link>Properties\GlobalAssembly.cs</Link>
+    </Compile>
     <Compile Include="CommsServer.cs" />
     <Compile Include="CommsService.cs">
       <SubType>Component</SubType>

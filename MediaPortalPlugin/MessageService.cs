@@ -71,11 +71,11 @@ namespace MediaPortalPlugin
                 _serverBinding.ReceiveTimeout = new TimeSpan(7, 0, 0, 0);//7 days should be enough :)
                 _serverBinding.SendTimeout = new TimeSpan(0, 10, 0);
                 _serverBinding.TransferMode = TransferMode.Buffered;
-                _serverBinding.ListenBacklog = 10;
-                _serverBinding.MaxConnections = 10;
+                _serverBinding.ListenBacklog = 100;
+                _serverBinding.MaxConnections = 100;
                 _serverBinding.MaxReceivedMessageSize = int.MaxValue;
-                _serverBinding.MaxBufferSize = 1000000;
-                _serverBinding.MaxBufferPoolSize = 1000000;
+                _serverBinding.MaxBufferSize = int.MaxValue;
+                _serverBinding.MaxBufferPoolSize = int.MaxValue;
 
                 // Message
                 _serverBinding.ReaderQuotas.MaxArrayLength = int.MaxValue;
@@ -117,10 +117,7 @@ namespace MediaPortalPlugin
             else
             {
                 Log.Message(LogLevel.Info, "[ConnectToService] - Connection to server successful.");
-                foreach (var connection in e.Result)
-                {
-                    
-                }
+                WindowManager.Instance.SendFullUpdate();
             }
         }
 

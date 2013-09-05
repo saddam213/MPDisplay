@@ -1,7 +1,7 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:PropertyGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.Common" x:Class="SkinEditor.Dialogs.SkinInfoEditorDialog"
+        xmlns:PropertyGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon" x:Class="SkinEditor.Dialogs.SkinInfoEditorDialog"
         Title="SkinInfoEditorDialog" Height="300" Width="300" Name="UI">
     <Grid DataContext="{Binding ElementName=UI}" >
 

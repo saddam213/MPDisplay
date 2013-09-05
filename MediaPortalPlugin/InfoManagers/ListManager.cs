@@ -106,6 +106,7 @@ namespace MediaPortalPlugin.InfoManagers
             _listFocused = false;
             _isRecheckingListItems = false;
             _isRecheckingListType = false;
+            _currentLayout = APIListLayout.Vertical;
         }
 
         public void OnActionMessageReceived(APIActionMessage actionMessage)
@@ -198,6 +199,7 @@ namespace MediaPortalPlugin.InfoManagers
                         break;
                     case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
                     case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_CLICK:
                         CheckForListItemChanges();
                         break;
                     default:
@@ -212,14 +214,7 @@ namespace MediaPortalPlugin.InfoManagers
             {
                 if (tag.Equals("#facadeview.layout"))
                 {
-                    if (_registeredListTypes.Contains(APIListType.List))
-                    {
-                        var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
-                        if (currentFacade != null)
-                        {
-                            SendLayout(GetAPIListLayout(currentFacade));
-                        }
-                    }
+                    SendFacadeLayout();
                 }
 
 
@@ -298,6 +293,10 @@ namespace MediaPortalPlugin.InfoManagers
                                 }
                             }
                         }
+
+                        SendFacadeLayout();
+
+                       
                     }
                     _isRecheckingListType = false;
                 });
@@ -350,6 +349,23 @@ namespace MediaPortalPlugin.InfoManagers
                     if (isSelect)
                     {
                         GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f));
+                    }
+                }
+            }
+        }
+
+        private void SendFacadeLayout()
+        {
+            if (_registeredListTypes.Contains(APIListType.List))
+            {
+                var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+                if (currentFacade != null)
+                {
+                    var layout = GetAPIListLayout(currentFacade);
+                    if (_currentLayout != layout)
+                    {
+                        _currentLayout = layout;
+                        SendLayout(_currentLayout);
                     }
                 }
             }
@@ -610,6 +626,8 @@ namespace MediaPortalPlugin.InfoManagers
                 }
             }
         }
+
+        private APIListLayout _currentLayout;
 
         public APIListLayout GetAPIListLayout(GUIFacadeControl facade)
         {

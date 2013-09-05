@@ -43,10 +43,10 @@
         </ListBox>
             <StackPanel Orientation="Horizontal" Margin="0,3,29,0">
                 <Button Width="23" Height="23" Click="Button_LanguageAdd_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
                 </Button>
                 <Button Margin="3,0,0,0" Width="23" Height="23" Click="Button_LanguageRemove_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
                 </Button>
             </StackPanel>
         </StackPanel>

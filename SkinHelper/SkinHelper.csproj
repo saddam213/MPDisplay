@@ -55,6 +55,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssembly.cs">
+      <Link>Properties\GlobalAssembly.cs</Link>
+    </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
       <DependentUpon>Resources.resx</DependentUpon>
       <AutoGen>True</AutoGen>

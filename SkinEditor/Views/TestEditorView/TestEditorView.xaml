@@ -6,7 +6,7 @@
              x:Class="SkinEditor.Views.TestEditorView" 
 			    xmlns:local="clr-namespace:SkinEditor.Views"
 				xmlns:gui="clr-namespace:GUIFramework;assembly=GUIFramework"
-				xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+				xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" 
              d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >
 	<local:EditorViewModel.Resources>

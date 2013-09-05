@@ -1,5 +1,5 @@
 ﻿<UserControl x:Class="GUISkinFramework.Editor.PropertyEditors.AnimationValueEditor"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common" 
+             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

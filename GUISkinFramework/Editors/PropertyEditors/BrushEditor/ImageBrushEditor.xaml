@@ -6,9 +6,9 @@
                xmlns:sys="clr-namespace:System;assembly=mscorlib"
                xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
                  xmlns:editors="clr-namespace:GUISkinFramework.Editor.PropertyEditors.PropertyEditor"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
 			 xmlns:common="clr-namespace:GUISkinFramework.Common"
-			 xmlns:extensions="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.Common"
+			 xmlns:extensions="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
              mc:Ignorable="d"  Name="UI" d:DesignHeight="152" >
     <UserControl.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="StretchValues">

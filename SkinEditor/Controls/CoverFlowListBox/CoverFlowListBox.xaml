@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-			 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
+			 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
 			 xmlns:local="clr-namespace:SkinEditor.Controls"
 	
              d:DesignHeight="300" d:DesignWidth="300" Name="UI" >

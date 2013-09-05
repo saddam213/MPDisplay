@@ -1,7 +1,7 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common" x:Class="SkinEditor.Dialogs.NewSkinDialog"
+        xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" x:Class="SkinEditor.Dialogs.NewSkinDialog"
         xmlns:fileSystemHelpers="clr-namespace:SkinEditor.Helpers"
         Title="NewSkinDialog" Height="226.667" Width="300" Name="UI" WindowStartupLocation="CenterOwner">
     <Window.Resources>

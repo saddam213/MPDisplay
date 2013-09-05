@@ -103,10 +103,13 @@ namespace GUIFramework.GUI
 
         public void OnMediaPortalFocusedControlChanged(int controlId)
         {
+            Dispatcher.BeginInvoke((Action)(() =>
+            {
             foreach (var control in Controls.GetControls())
             {
                 control.SetFocusedControlId(controlId);
             }
+            }));
         }
 
         #region Animations

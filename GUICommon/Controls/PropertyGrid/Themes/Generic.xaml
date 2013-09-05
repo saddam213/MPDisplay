@@ -347,15 +347,15 @@
                     </Border>
                     <ControlTemplate.Triggers>
                         <DataTrigger Binding="{Binding IsDataBound, RelativeSource={RelativeSource Self}}" Value="True">
-                            <Setter TargetName="_optionsImage" Property="Source" Value="/MPDisplay.Common;component/Controls/Images/Database11.png" />
+                            <Setter TargetName="_optionsImage" Property="Source" Value="/MPDisplay.UICommon;component/Controls/Images/Database11.png" />
                             <Setter TargetName="_optionsImage" Property="ToolTip" Value="Databinding" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding IsDynamicResource, RelativeSource={RelativeSource Self}}" Value="True">
-                            <Setter TargetName="_optionsImage" Property="Source" Value="/MPDisplay.Common;component/Controls/Images/Resource11.png" />
+                            <Setter TargetName="_optionsImage" Property="Source" Value="/MPDisplay.UICommon;component/Controls/Images/Resource11.png" />
                             <Setter TargetName="_optionsImage" Property="ToolTip" Value="Resource" />
                         </DataTrigger>
                         <DataTrigger Binding="{Binding HasResourceApplied, RelativeSource={RelativeSource Self}}" Value="True">
-                            <Setter TargetName="_optionsImage" Property="Source" Value="/MPDisplay.Common;component/Controls/Images/Resource11.png" />
+                            <Setter TargetName="_optionsImage" Property="Source" Value="/MPDisplay.UICommon;component/Controls/Images/Resource11.png" />
                             <Setter TargetName="_optionsImage" Property="ToolTip" Value="Resource" />
                         </DataTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -403,11 +403,11 @@
                                     <StackPanel Orientation="Horizontal" Margin="1" >
                                         <RadioButton IsChecked="{Binding IsCategorized, RelativeSource={RelativeSource TemplatedParent}}" VerticalAlignment="Center" 
                                                      Style="{StaticResource OptionsToggleButtonStyle}" ToolTip="Categorized">
-                                            <Image Source="/MPDisplay.Common;component/Controls/Images/Categorize16.png" Width="16" Height="16" />
+                                            <Image Source="/MPDisplay.UICommon;component/Controls/Images/Categorize16.png" Width="16" Height="16" />
                                         </RadioButton>
                                         <RadioButton IsChecked="{Binding IsCategorized, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource InverseBoolConverter}, Mode=OneWay}" VerticalAlignment="Center" 
                                                      Style="{StaticResource OptionsToggleButtonStyle}" ToolTip="Alphabetical">
-                                            <Image Source="/MPDisplay.Common;component/Controls/Images/SortAscending16.png" Width="16" Height="16"/>
+                                            <Image Source="/MPDisplay.UICommon;component/Controls/Images/SortAscending16.png" Width="16" Height="16"/>
                                         </RadioButton>
                                     </StackPanel>
                                 </Grid>
@@ -436,7 +436,7 @@
 
                                         <Button Grid.Column="1" Command="commands:PropertyGridCommands.ClearFilter" Style="{StaticResource ClearFilterButtonStyle}"
                                                 HorizontalAlignment="Left">
-                                            <Image Source="/MPDisplay.Common;component/Controls/Images/ClearFilter16.png" Width="16" Height="16"/>
+                                            <Image Source="/MPDisplay.UICommon;component/Controls/Images/ClearFilter16.png" Width="16" Height="16"/>
                                         </Button>
                                     </Grid>
                                 </Border>

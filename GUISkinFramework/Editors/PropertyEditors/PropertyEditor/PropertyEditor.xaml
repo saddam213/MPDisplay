@@ -6,7 +6,7 @@
              xmlns:property="clr-namespace:GUISkinFramework.Property"
              xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors.PropertyEditor"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
-			 xmlns:MPDCommon="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.Common"
+			 xmlns:MPDCommon="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
 			    xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
              mc:Ignorable="d" Name="UI" MinWidth="583" MinHeight="398" Width="583" >
     <UserControl.Resources>
@@ -58,10 +58,10 @@
         </ListBox>
             <StackPanel Orientation="Horizontal" Margin="0,3,29,0">
                 <Button Width="23" Height="23" Click="Button_PropertyAdd_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
                 </Button>
                 <Button Margin="3,0,0,0" Width="23" Height="23" Click="Button_PropertyRemove_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
                 </Button>
             </StackPanel>
         </StackPanel>
@@ -118,10 +118,10 @@
             </TextBox>
             <StackPanel Margin="0,3,0,0" Orientation="Horizontal">
                 <Button Width="23" Height="23" Click="Button_MediaPortalTagAdd_Click">
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Add2.png" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
                 </Button>
                 <Button Margin="3,0,0,0" Width="23" Height="23" Click="Button_MediaPortalTagRemove_Click" >
-                    <Image Margin="2" Source="/MPDisplay.Common;component/Controls/Images/Delete16.png" />
+                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
                 </Button>
             </StackPanel>
         </StackPanel>

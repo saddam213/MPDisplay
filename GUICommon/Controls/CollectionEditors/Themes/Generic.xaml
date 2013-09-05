@@ -69,7 +69,7 @@
                                     </Button>
                                     <Button Margin="0,7,0,0" Style="{StaticResource CollectionEditorButtonStyle}"
                                             Command="Delete" CommandParameter="{Binding SelectedItem, ElementName=_itemsListBox}">
-                                        <!--<Image Stretch="None" Height="16" Width="16" Margin="1" Source="/MPDisplay.Common;component/WPFControls/CollectionEditors/Images/Delete16.png" />-->
+                                        <!--<Image Stretch="None" Height="16" Width="16" Margin="1" Source="/MPDisplay.UICommon;component/WPFControls/CollectionEditors/Images/Delete16.png" />-->
                                     </Button>
                                 </StackPanel>
                             </Grid>

@@ -4,8 +4,8 @@
                     xmlns:skinWindows="clr-namespace:GUISkinFramework.Windows;assembly=GUISkinFramework" 
                     xmlns:skinDialogs="clr-namespace:GUISkinFramework.Dialogs;assembly=GUISkinFramework" 
                     xmlns:xmlConverters="clr-namespace:GUISkinFramework.Converters;assembly=GUISkinFramework"
-					xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.Common"
-					xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.Common"
+					xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+					xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
 					xmlns:skinSubControls="clr-namespace:SkinEditor.Controls"
             		xmlns:skinEditorConverters="clr-namespace:SkinEditor.BindingConverters" 
 					xmlns:views="clr-namespace:SkinEditor.Views" >

@@ -268,6 +268,7 @@ namespace GUIFramework.Managers
                 {
                     _focusedWindowControlId = value;
                     NotifiyValueChanged<int>(InfoMessageType.FocusedWindowControlId, value);
+                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
         }
@@ -391,6 +392,11 @@ namespace GUIFramework.Managers
                 if (message.MessageType == APIWindowMessageType.WindowId)
                 {
                     WindowId = message.WindowId;
+                    IsFullscreenVideo = message.IsFullscreenVideo;
+                }
+                else if (message.MessageType == APIWindowMessageType.FocusedControlId)
+                {
+                    FocusedWindowControlId = message.FocusedControlId;
                 }
             }
         }

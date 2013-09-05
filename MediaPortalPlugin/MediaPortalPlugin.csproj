@@ -8,7 +8,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>MediaPortalPlugin</RootNamespace>
-    <AssemblyName>MediaPortalPlugin</AssemblyName>
+    <AssemblyName>MPDisplay.Plugin</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -22,9 +22,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Release\MPDisplay\Plugin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -32,6 +32,7 @@
   <ItemGroup>
     <Reference Include="Bass.Net">
       <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Bass.Net.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Common.Utils">
       <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Common.Utils.dll</HintPath>
@@ -57,6 +58,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssembly.cs">
+      <Link>Properties\GlobalAssembly.cs</Link>
+    </Compile>
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="InfoManagers\DialogManager.cs" />
     <Compile Include="InfoManagers\EqualizerManager.cs" />
