@@ -8,7 +8,7 @@
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>GUIConfig</RootNamespace>
-    <AssemblyName>GUIConfig</AssemblyName>
+    <AssemblyName>MPDisplayConfig</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -30,7 +30,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\Release\MPDisplay\Config\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -41,6 +41,10 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
@@ -58,8 +62,15 @@
     <Compile Include="..\GlobalAssembly.cs">
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
+    <Compile Include="ConnectionTester.cs" />
+    <Compile Include="Dialogs\LanguageDialog.xaml.cs">
+      <DependentUpon>LanguageDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="ViewModels\ConnectionSettingsView.xaml.cs">
       <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\SkinSettingsView.xaml.cs">
+      <DependentUpon>SkinSettingsView.xaml</DependentUpon>
     </Compile>
     <Compile Include="ViewModels\GUISettingsView.xaml.cs">
       <DependentUpon>GUISettingsView.xaml</DependentUpon>
@@ -67,7 +78,12 @@
     <Compile Include="ViewModels\PluginSettingsView.xaml.cs">
       <DependentUpon>PluginSettingsView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\SkinInfo.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Page Include="Dialogs\LanguageDialog.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -83,6 +99,10 @@
     <Page Include="ViewModels\ConnectionSettingsView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ViewModels\SkinSettingsView.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
     </Page>
     <Page Include="ViewModels\GUISettingsView.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -126,6 +146,10 @@
     <ProjectReference Include="..\GUICommon\GUICommon.csproj">
       <Project>{1F9ACDEE-FC03-4E2B-98DB-632D4D64BFFB}</Project>
       <Name>GUICommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MessageFramework\MessageFramework.csproj">
+      <Project>{c3a683aa-2caf-4093-bf6e-0b47ff048096}</Project>
+      <Name>MessageFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

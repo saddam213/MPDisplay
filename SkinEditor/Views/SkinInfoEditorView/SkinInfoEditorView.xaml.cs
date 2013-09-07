@@ -39,10 +39,10 @@ namespace SkinEditor.Views
     {
         public SkinInfoEditorView()
         {
-            SkinOptionItemMoveUp = new RelayCommand(param => SkinInfo.SkinOptions.MoveItemUp((int)param), param => param == null ? false : SkinInfo.SkinOptions.CanItemMoveUp((int)param));
-            SkinOptionItemMoveDown = new RelayCommand(param => SkinInfo.SkinOptions.MoveItemDown((int)param), param => param == null ? false : SkinInfo.SkinOptions.CanItemMoveDown((int)param));
-            SkinOptionItemAdd = new RelayCommand(param => SkinInfo.SkinOptions.Add(new XmlSkinOption {  Name = "New..." }));
-            SkinOptionItemRemove = new RelayCommand(param => SkinInfo.SkinOptions.Remove(SelectedSkinOption), param => SelectedSkinOption != null);
+            SkinOptionItemMoveUp = new RelayCommand<int>(SkinInfo.SkinOptions.MoveItemUp, SkinInfo.SkinOptions.CanItemMoveUp);
+            SkinOptionItemMoveDown = new RelayCommand<int>(SkinInfo.SkinOptions.MoveItemDown, SkinInfo.SkinOptions.CanItemMoveDown);
+            SkinOptionItemAdd = new RelayCommand(() => SkinInfo.SkinOptions.Add(new XmlSkinOption {  Name = "New..." }));
+            SkinOptionItemRemove = new RelayCommand(() => SkinInfo.SkinOptions.Remove(SelectedSkinOption), () => SelectedSkinOption != null);
             InitializeComponent();
         }
 

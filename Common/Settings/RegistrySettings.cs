@@ -56,7 +56,7 @@ namespace MPDisplay.Common.Settings
             }
         }
 
-        public static string MPDisplayLanguageFolder
+        public static string MPDisplayLanguageFile
         {
             get
             {
@@ -64,7 +64,7 @@ namespace MPDisplay.Common.Settings
                 {
                     _programDataPath = GetRegistryValue("ProgramDataPath");
                 }
-                return string.IsNullOrEmpty(_programDataPath) ? _programDataPath : _programDataPath + "Language\\";
+                return string.IsNullOrEmpty(_programDataPath) ? _programDataPath : _programDataPath + "Language\\Language.xml";
             }
         }
 

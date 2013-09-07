@@ -40,13 +40,13 @@ namespace GUIConfig.ViewModels
         public SettingsBase DataObject
         {
             get { return _dataObject; }
-            set { _dataObject = value; NotifyPropertyChanged(); HasPendingChanges = true; }
+            set { _dataObject = value; NotifyPropertyChanged(); }
         }
 
         public bool HasPendingChanges
         {
             get { return _hasPendingChanges; }
-            set { _hasPendingChanges = value; NotifyPropertyChanged(); }
+            set { _hasPendingChanges = value; NotifyPropertyChanged();  }
         }
 
         public virtual string Title
@@ -56,6 +56,7 @@ namespace GUIConfig.ViewModels
 
         public virtual void OnModelOpen()
         {
+            
         }
 
         public virtual void OnModelClose()
@@ -74,5 +75,10 @@ namespace GUIConfig.ViewModels
         }
 
         #endregion
+
+        public virtual void SaveChanges()
+        {
+           
+        }
     }
 }

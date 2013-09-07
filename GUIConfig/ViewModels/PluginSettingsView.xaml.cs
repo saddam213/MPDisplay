@@ -27,6 +27,7 @@ namespace GUIConfig.ViewModels
         public PluginSettingsView()
         {            
             InitializeComponent();
+            HasPendingChanges = false;
         }
 
         public override string Title
@@ -44,6 +45,11 @@ namespace GUIConfig.ViewModels
         {
             base.OnModelClose();
             Log.Message(LogLevel.Debug, "{0} ViewModel closed.", Title);
+        }
+
+        private void ConnectionSettingsView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        {
+           
         }
     }
 }

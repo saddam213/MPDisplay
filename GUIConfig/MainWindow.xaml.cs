@@ -15,6 +15,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Common.Helpers;
+using Common.Settings.Language;
+using GUIConfig.Dialogs;
 using GUIConfig.ViewModels;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
@@ -32,7 +35,19 @@ namespace GUIConfig
 
         public MainWindow()
         {
+
+            LanguageHelper.LoadLanguage();
+            if (!LanguageHelper.HasLanguage(RegistrySettings.ConfigLanguage))
+            {
+                var dialog = new LanguageDialog();
+                dialog.ShowDialog();
+                RegistrySettings.SetRegistryValue(RegistrySettings.MPDisplayKeys.LanguageFile, dialog.SelectedLanguage);
+            }
+            LanguageHelper.SetLanguage(RegistrySettings.ConfigLanguage);
             InitializeComponent();
+
+         
+
             MPDisplaySettings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile) ?? new MPDisplaySettings();
             LoadViews();
         }
@@ -51,21 +66,39 @@ namespace GUIConfig
 
         private void LoadViews()
         {
+
+         
+
             if (RegistrySettings.InstallType != MPDisplayInstallType.GUI)
             {
                 Views.Add(new PluginSettingsView { DataObject = MPDisplaySettings.PluginSettings });
+                MPDisplaySettings.PluginSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
+                MPDisplaySettings.PluginSettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
             }
-            Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
+
+            if (RegistrySettings.InstallType != MPDisplayInstallType.Plugin)
+            {
+                Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
+                Views.Add(new SkinSettingsView { DataObject = MPDisplaySettings.GUISettings });
+                MPDisplaySettings.GUISettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
+                MPDisplaySettings.GUISettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
+            }
+        }
+
+        private bool _hasChanges = false;
+
+        void MPDisplaySettings_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            _hasChanges = true;
         }
 
         protected override void OnClosing(CancelEventArgs e)
         {
-            if (Views.Any(v => v.HasPendingChanges))
+            if (_hasChanges)
             {
-                if (MessageBox.Show("save changes?", "Save?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+                if (MessageBox.Show("Would you like to save changes?", "Save Changes?", MessageBoxButton.YesNo) == MessageBoxResult.Yes)
                 {
-                    SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
-                    //SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, @"C:\temp\settings.xml"); // my MPDisplay settings reg key is null since I've only done the config.
+                    SaveChanges();
                 }
             }
             base.OnClosing(e);
@@ -77,6 +110,16 @@ namespace GUIConfig
             LoggingManager.Destroy();
         }
 
+        private void SaveChanges()
+        {
+            foreach (var view in Views)
+            {
+                view.SaveChanges();
+            }
+            SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
+            _hasChanges = false;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged([CallerMemberName]string property = "")
         {
@@ -84,6 +127,19 @@ namespace GUIConfig
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
+        }
+
+        private void Button_Save_Click(object sender, RoutedEventArgs e)
+        {
+            SaveChanges();
+            Close();
+        }
+
+
+        private void Button_Cancel_Click(object sender, RoutedEventArgs e)
+        {
+            _hasChanges = false;
+            Close();
         }
     }
 }

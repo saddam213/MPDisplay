@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.ServiceModel;
 using System.Text;
 using System.Threading;
+using System.Windows.Forms;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
@@ -21,34 +23,64 @@ namespace MediaPortalPlugin
         private PluginSettings _settings;
         private MPDisplay.Common.Log.Log Log;
 
-        private void OnPluginStart()
+        public MPDisplayPlugin()
         {
-          
             LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin"));
             Log = LoggingManager.GetLog(typeof(MPDisplayPlugin));
+
+            Log.Message(LogLevel.Info, "[OnPluginStart] - Loading MPDisplay settings file: {0}", RegistrySettings.MPDisplaySettingsFile);
             var settings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (settings == null)
             {
+                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file not found, Loading defaults..");
                 settings = new MPDisplaySettings();
                 SettingsManager.Save<MPDisplaySettings>(settings, RegistrySettings.MPDisplaySettingsFile);
             }
             _settings = settings.PluginSettings;
+        }
 
+        private void OnPluginStart()
+        {
             if (_settings != null)
             {
-                MessageService.Instance.InitializeConnection(_settings.ConnectionSettings);
+                Log.Message(LogLevel.Info, "[OnPluginStart] - Starting MPDisplay Plugin...");
+                MessageService.InitializeMessageService(_settings.ConnectionSettings);
                 WindowManager.Instance.Initialize(_settings);
-
-             
+                Log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
+            }
+            else
+            {
+                Log.Message(LogLevel.Error, "[OnPluginStart] - Failed to create settings file, Stopping plugin.");
+                LoggingManager.Destroy();
             }
         }
 
         private void OnPluginStop()
         {
-          
-            WindowManager.Instance.Shutdown();
+            Log.Message(LogLevel.Info, "[OnPluginStop] - Stopping MPDisplay Plugin...");
             MessageService.Instance.Shutdown();
+            WindowManager.Instance.Shutdown();
+            Log.Message(LogLevel.Info, "[OnPluginStop] - MPDisplay Plugin stopped.");
             LoggingManager.Destroy();
+        }
+
+        private void OnShowConfigForm()
+        {
+            if (File.Exists(RegistrySettings.MPDisplayConfigExePath))
+            {
+                Log.Message(LogLevel.Info, "[OnShowConfigForm] - Launching MPDisplay configuration...");
+                Process.Start(RegistrySettings.MPDisplayConfigExePath);
+            }
+            else
+            {
+                Log.Message(LogLevel.Error, "[OnShowConfigForm] - Failed to start MPDisplay configuration, File not found: {0}", RegistrySettings.MPDisplayConfigExePath);
+                MessageBox.Show(string.Format("Failed to start MPDisplay configuration, File not found: {0}", RegistrySettings.MPDisplayConfigExePath), "Error");
+            }
+        }
+
+        private void OnCloseConfigForm()
+        {
+
         }
 
         #region IPlugin Implementation
@@ -142,7 +174,8 @@ namespace MediaPortalPlugin
         /// </summary>
         public void ShowPlugin()
         {
-           
+            OnShowConfigForm();
+            OnCloseConfigForm();
         }
 
 

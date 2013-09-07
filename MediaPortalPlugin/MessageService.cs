@@ -35,6 +35,11 @@ namespace MediaPortalPlugin
             }
         }
 
+        public static void InitializeMessageService(ConnectionSettings settings)
+        {
+            Instance.InitializeConnection(settings);
+        }
+
         #endregion
 
 

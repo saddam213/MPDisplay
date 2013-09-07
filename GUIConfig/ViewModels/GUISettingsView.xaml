@@ -4,33 +4,98 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" d:DesignHeight="500" d:DesignWidth="300" x:Name="UI">
+			 xmlns:System="clr-namespace:System;assembly=mscorlib"
+			    xmlns:Theading="clr-namespace:System.Threading;assembly=mscorlib"
+         xmlns:Cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
+		 xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+		 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+             mc:Ignorable="d" x:Name="UI" >
     <Grid DataContext="{Binding ElementName=UI}">
-        <TextBlock Text="{Binding Title}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" Width="108"/>
-        <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Margin="3,20,0,0" VerticalAlignment="Top"/>
-        <TextBox Text="{Binding DataObject.SkinName, FallbackValue=SkinName, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,91,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.Display, FallbackValue=Display, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,111,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.CustomResolution, FallbackValue=CustomResolution, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,131,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ScreenWidth, FallbackValue=ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,151,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ScreenHeight, FallbackValue=ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,171,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ScreenOffSetX, FallbackValue=ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,191,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ScreenOffSetY, FallbackValue=ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,211,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.DesktopMode, FallbackValue=DesktopMode, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,231,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.CursorStyle, FallbackValue=CursorStyle, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,251,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.Priority, FallbackValue=Priority, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,271,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.RestartOnError, FallbackValue=RestartOnError, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,291,0,0" Width="120"/>
-        <TextBox Text="{Binding DataObject.ResumeConnectDelay, FallbackValue=ResumeConnectDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="131,311,0,0" Width="120"/>
-        <TextBlock Text="SkinName" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,91,0,0" Width="120"/>
-        <TextBlock Text="Display" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,111,0,0" Width="120"/>
-        <TextBlock Text="CustomResolution" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,131,0,0" Width="120"/>
-        <TextBlock Text="ScreenWidth" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,151,0,0" Width="120"/>
-        <TextBlock Text="ScreenHeight" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,171,0,0" Width="120"/>
-        <TextBlock Text="ScreenOffSetX" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,191,0,0" Width="120"/>
-        <TextBlock Text="ScreenOffSetY" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,211,0,0" Width="120"/>
-        <TextBlock Text="DesktopMode" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,231,0,0" Width="120"/>
-        <TextBlock Text="CursorStyle" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,251,0,0" Width="120"/>
-        <TextBlock Text="Priority" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,271,0,0" Width="120"/>
-        <TextBlock Text="RestartOnError" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,291,0,0" Width="120"/>
-        <TextBlock Text="ResumeConnectDelay" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,311,0,0" Width="120"/>
-    </Grid>
+		<Grid.Resources>
+			<ObjectDataProvider x:Key="ThreadPriorities" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
+				<ObjectDataProvider.MethodParameters>
+					<x:Type TypeName="Theading:ThreadPriority"/>
+				</ObjectDataProvider.MethodParameters>
+			</ObjectDataProvider>
+
+			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
+				<ObjectDataProvider.MethodParameters>
+					<x:Type TypeName="Cursors:CursorType"/>
+				</ObjectDataProvider.MethodParameters>
+			</ObjectDataProvider>
+		</Grid.Resources>
+
+
+			<StackPanel>
+			<StackPanel Orientation="Horizontal">
+			
+					<Views:ConnectionSettingsView CanEditConnectionName="True" ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Width="218" />
+
+				<GroupBox Header="{Binding ., FallbackValue=Display, ConverterParameter=Display, Converter={StaticResource LanguageConverter}}" Width="200">
+					<StackPanel >
+						<TextBlock Text="{Binding ., FallbackValue=Avaliable Displays, ConverterParameter=Avaliable Displays, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
+						<ComboBox ItemsSource="{x:Static forms:Screen.AllScreens}" SelectedValuePath="DeviceName" SelectedValue="{Binding DataObject.Display}" SelectedItem="{Binding SelectedDisplay}">
+							<ComboBox.ItemTemplate>
+								<DataTemplate>
+									<TextBlock Text="{Binding DeviceName}" />
+								</DataTemplate>
+							</ComboBox.ItemTemplate>
+
+							<ComboBox.ItemContainerStyle>
+								<Style TargetType="{x:Type ComboBoxItem}">
+								
+									<Setter Property="Template" >
+										<Setter.Value>
+											<ControlTemplate TargetType="ComboBoxItem">
+												<Border CornerRadius="2"  Background="DarkGray"  Margin="2">
+													<StackPanel Margin="2">
+														<TextBlock Text="{Binding DeviceName, StringFormat=Name: {0}}" FontWeight="Black"/>
+														<TextBlock Text="{Binding Bounds.Location, StringFormat=Location: {0}}" FontSize="10"/>
+														<TextBlock Text="{Binding Bounds.Size, StringFormat=Size: {0}}" FontSize="10"/>
+													</StackPanel>
+												</Border>
+												
+
+											</ControlTemplate>
+										</Setter.Value>
+									</Setter>
+								</Style>
+							</ComboBox.ItemContainerStyle>
+						</ComboBox>
+
+						<CheckBox IsChecked="{Binding DataObject.DesktopMode}" Content="{Binding ., FallbackValue=DesktopMode, ConverterParameter=DesktopMode, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
+						<CheckBox IsChecked="{Binding DataObject.CustomResolution}" Content="{Binding ., FallbackValue=Custom Resolution, ConverterParameter=Custom Resolution, Converter={StaticResource LanguageConverter}}" Unchecked="CheckBox_Unchecked" Margin="0,5,0,0"/>
+						<UniformGrid Columns="2" IsEnabled="{Binding DataObject.CustomResolution}" >
+							<TextBlock Text="{Binding ., FallbackValue=Screen Width, ConverterParameter=Screen Width, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
+							<TextBlock Text="{Binding ., FallbackValue=Screen Height, ConverterParameter=Screen Height, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
+							<controls:IntegerUpDown Value="{Binding DataObject.ScreenWidth, FallbackValue=ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<controls:IntegerUpDown Value="{Binding DataObject.ScreenHeight, FallbackValue=ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+							<TextBlock Text="{Binding ., FallbackValue=Screen OffsetX, ConverterParameter=Screen OffsetX, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
+							<TextBlock Text="{Binding ., FallbackValue=Scrren OffsetY, ConverterParameter=Screen OffsetY, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
+							<controls:IntegerUpDown Value="{Binding DataObject.ScreenOffSetX, FallbackValue=ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<controls:IntegerUpDown Value="{Binding DataObject.ScreenOffSetY, FallbackValue=ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+				</UniformGrid>
+
+							
+							</StackPanel>
+				</GroupBox>
+
+
+				<GroupBox Header="Other"  Width="150">
+					<StackPanel >
+						<TextBlock Text="{Binding ., FallbackValue=Process Priority, ConverterParameter=Process Priority, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
+						<ComboBox ItemsSource="{Binding Source={StaticResource ThreadPriorities}}" SelectedItem="{Binding DataObject.Priority}"/>
+						<CheckBox Content="{Binding ., Converter={StaticResource LanguageConverter}, FallbackValue=Restart On Error, ConverterParameter=Restart On Error }"  IsChecked="{Binding DataObject.RestartOnError}" Margin="0,5,0,0"/>
+						<TextBlock Text="{Binding ., FallbackValue=Resume Delay, ConverterParameter=Resume Delay, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
+						<controls:IntegerUpDown Value="{Binding DataObject.ResumeConnectDelay}" />
+					</StackPanel>
+				</GroupBox>
+
+
+			</StackPanel>
+
+
+		</StackPanel>
+
+	</Grid>
 </Views:ViewModelBase>

@@ -484,11 +484,11 @@ namespace SkinEditor.Views
         /// </summary>
         private void CreateContextMenuCommands()
         {
-            AddControlCommand = new RelayCommand(param => AddControl((Type)param), param => CanExecuteAddControlCommand());
-            CopyControlCommand = new RelayCommand(param => CopyControl(bool.Parse(param.ToString())), param => CanExecuteCopyControlCommand());
-            PasteControlCommand = new RelayCommand(param => PasteControl(), param => CanExecutePasteControlCommand());
-            DeleteControlCommand = new RelayCommand(param => DeleteControl(), param => CanExecuteDeleteControlCommand());
-            MoveControlCommand = new RelayCommand(param => MoveControl(bool.Parse(param.ToString())), param => CanExecuteMoveControlCommand());
+            AddControlCommand = new RelayCommand<Type>(AddControl, param => CanExecuteAddControlCommand());
+            CopyControlCommand = new RelayCommand<string>(p => CopyControl(bool.Parse(p)), param => CanExecuteCopyControlCommand());
+            PasteControlCommand = new RelayCommand(PasteControl,CanExecutePasteControlCommand);
+            DeleteControlCommand = new RelayCommand(DeleteControl,CanExecuteDeleteControlCommand);
+            MoveControlCommand = new RelayCommand<string>(p => MoveControl(bool.Parse(p)), param => CanExecuteMoveControlCommand());
         }
 
         /// <summary>

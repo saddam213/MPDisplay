@@ -30,12 +30,12 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         public ActionEditorDialog(object instance)
         {
-            ItemMoveUp = new RelayCommand(param => XmlActions.MoveItemUp((int)param), param => param == null ? false : XmlActions.CanItemMoveUp((int)param));
-            ItemMoveDown = new RelayCommand(param => XmlActions.MoveItemDown((int)param), param => param == null ? false : XmlActions.CanItemMoveDown((int)param));
-            ItemAdd= new RelayCommand(param =>  XmlActions.Add(new XmlAction { ActionType = XmlActionType.Empty }));
-            ItemRemove = new RelayCommand(param =>  XmlActions.Remove(SelectedAction), param => SelectedAction != null);
-            ResultOK = new RelayCommand(param => DialogResult = true);
-            ResultCancel = new RelayCommand(param => DialogResult = false);
+            ItemMoveUp = new RelayCommand<int>(XmlActions.MoveItemUp,XmlActions.CanItemMoveUp);
+            ItemMoveDown = new RelayCommand<int>(XmlActions.MoveItemDown,XmlActions.CanItemMoveDown);
+            ItemAdd= new RelayCommand(() => XmlActions.Add(new XmlAction { ActionType = XmlActionType.Empty }));
+            ItemRemove = new RelayCommand(() => XmlActions.Remove(SelectedAction),() => SelectedAction != null);
+            ResultOK = new RelayCommand(() => DialogResult = true);
+            ResultCancel = new RelayCommand(() => DialogResult = false);
             Owner = Application.Current.MainWindow;
             InitializeComponent();
             Instance = instance;

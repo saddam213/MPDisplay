@@ -26,6 +26,16 @@ namespace GUISkinFramework.Common
             set { _name = value; NotifyPropertyChanged("Name"); }
         }
 
+        private string _group;
+        [DefaultValue("")]
+        [XmlAttribute(AttributeName = "Group")]
+        public string Group
+        {
+            get { return _group; }
+            set { _group = value; NotifyPropertyChanged("Group");  }
+        }
+        
+
         [DefaultValue(false)]
         [XmlAttribute(AttributeName = "IsEnabled")]
         public bool IsEnabled

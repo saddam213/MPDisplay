@@ -7,7 +7,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" x:Name="UI">
     <Grid DataContext="{Binding ElementName=UI}">
-        <TextBlock Text="{Binding Title}" VerticalAlignment="Top" HorizontalAlignment="Left" Margin="10,10,0,0" Width="108"/>
-        <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Margin="3,20,0,0" VerticalAlignment="Top"/>
+        <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" VerticalAlignment="Top" PropertyChanged="ConnectionSettingsView_PropertyChanged"/>
     </Grid>
 </Views:ViewModelBase>

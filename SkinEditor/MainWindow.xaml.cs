@@ -155,12 +155,12 @@ namespace SkinEditor
         /// </summary>
         private void CreateContextMenuCommands()
         {
-            NewSkinCommand = new RelayCommand(param => SkinNew());
-            OpenSkinCommand = new RelayCommand(param => SkinOpen());
-            SaveSkinCommand = new RelayCommand(param => SkinSave(), param => CanExecuteSaveSkinCommand());
-            SaveAsSkinCommand = new RelayCommand(param => SkinSaveAs(), param => CanExecuteSaveAsSkinCommand());
-            ExitCommand = new RelayCommand(param => SkinEditorExit());
-            RecentSkinCommand = new RelayCommand(param => SkinOpenRecent(param.ToString()));
+            NewSkinCommand = new RelayCommand(SkinNew);
+            OpenSkinCommand = new RelayCommand(SkinOpen);
+            SaveSkinCommand = new RelayCommand(SkinSave, CanExecuteSaveSkinCommand);
+            SaveAsSkinCommand = new RelayCommand(SkinSaveAs,  CanExecuteSaveAsSkinCommand);
+            ExitCommand = new RelayCommand( SkinEditorExit);
+            RecentSkinCommand = new RelayCommand<string>(SkinOpenRecent);
         }
      
         private bool CanExecuteSaveSkinCommand()

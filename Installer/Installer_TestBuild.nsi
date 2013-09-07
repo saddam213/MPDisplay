@@ -442,9 +442,11 @@ FunctionEnd
 Section "$(DESC_SECTION_FullInstall)" FullInstall
     SectionIn 1
 	# Install GUI
-	SetOutPath "$INSTDIR\MPDisplayGUI\"
-		CreateDirectory "$INSTDIR\MPDisplayGUI\"
+	SetOutPath "$INSTDIR\"
+		CreateDirectory "$INSTDIR\"
 			File "${BUILD_FOLDER}\GUI\*.*"
+			File "${BUILD_FOLDER}\Server\*.*"
+			File "${BUILD_FOLDER}\Config\*.*"
 	
 	# Install User Data		
 	SetOutPath "${PROGRAM_DATA}"
@@ -454,11 +456,6 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
 		File /r "${BUILD_FOLDER}\Data\*.*"
     
-	# Install Server
-	SetOutPath "$INSTDIR\MPDServer\"
-		CreateDirectory "$INSTDIR\MPDServer"
-			File "${BUILD_FOLDER}\Server\*.*"
-			
    		# Find MediaPortal InstallPath
     ReadRegDWORD $0 ${REG_HKLM} "${REG_MEDIAPORTAL_PATH}" InstallPath
     ${IF} $0 == ''
@@ -479,16 +476,16 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 			  
 	# Write Registry Entries
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\MPDisplayGUI\${MAIN_APP_EXE}"
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayGUI\MPDisplayConfig.exe"
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDServer\MPDisplayServer.exe"	
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDisplayServer.exe"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
     WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Full"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
 	 
 	# Install And Start Service
 	ReInstallService:
-	nsSCM::Install "MPDisplayServer" "MPDisplayServer" 16 2 "$INSTDIR\MPDServer\MPDisplayServer.exe" "" "" "" ""
+	nsSCM::Install "MPDisplayServer" "MPDisplayServer" 16 2 "$INSTDIR\MPDisplayServer.exe" "" "" "" ""
 	nsSCM::Start "MPDisplayServer"	
 		Pop $0 ; return error/success
 			${If} $0 == 'error'
@@ -513,9 +510,10 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
      SectionIn 1 RO
 	 
 		 # Install Server
-	SetOutPath "$INSTDIR\MPDServer\"
-		CreateDirectory "$INSTDIR\MPDServer"
+	SetOutPath "$INSTDIR\"
+		CreateDirectory "$INSTDIR\"
 			File "${BUILD_FOLDER}\Server\*.*"
+			File "${BUILD_FOLDER}\Config\*.*"
 			
   	# Install User Data		
 	SetOutPath "${PROGRAM_DATA}"
@@ -550,14 +548,15 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
 	
   	# Write Registry Entries
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDServer\MPDisplayServer.exe"	
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDisplayServer.exe"	
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
     WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Plugin"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
 	
 	# Install And Start Service
 	ReInstallService:
-	nsSCM::Install "MPDisplayServer" "MPDisplayServer" 16 2 "$INSTDIR\MPDServer\MPDisplayServer.exe" "" "" "" ""
+	nsSCM::Install "MPDisplayServer" "MPDisplayServer" 16 2 "$INSTDIR\MPDisplayServer.exe" "" "" "" ""
 	nsSCM::Start "MPDisplayServer"	
 		Pop $0 ; return error/success
 			${If} $0 == 'error'
@@ -581,9 +580,10 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
     SectionIn 1 RO
 	
 	# Install GUI
-	SetOutPath "$INSTDIR\MPDisplayGUI\"
-		CreateDirectory "$INSTDIR\MPDisplayGUI\"
+	SetOutPath "$INSTDIR\"
+		CreateDirectory "$INSTDIR\"
 			File "${BUILD_FOLDER}\GUI\*.*"
+			File "${BUILD_FOLDER}\Config\*.*"
 	
 	# Install User Data		
 	SetOutPath "${PROGRAM_DATA}"
@@ -596,8 +596,8 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
 	
 	# Write Registry Entries
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\MPDisplayGUI\${MAIN_APP_EXE}"
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayGUI\MPDisplayConfig.exe"
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
     WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "GUI"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
@@ -618,11 +618,11 @@ Section "$(DESC_SECTION_DesktopShortcutInstall)" DesktopShortcutInstall
   #do nothing
   ${Else}
     SetShellVarContext current	
-		CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\MPDisplayGUI\MPDisplay++.exe"
-		CreateShortCut "$DESKTOP\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayGUI\MPDisplayConfig.exe"
+		CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\MPDisplay++.exe"
+		CreateShortCut "$DESKTOP\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
 		CreateDirectory "$SMPROGRAMS\${APP_NAME}"
-		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\MPDisplayGUI\MPDisplay++.exe"
-		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayGUI\MPDisplayConfig.exe"
+		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\MPDisplay++.exe"
+		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
 		CreateShortCut "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
 	SetShellVarContext all	
   ${EndIf}
@@ -640,16 +640,16 @@ SectionEnd
 Section "$(DESC_SECTION_FirewallException)" FirewallException
  SectionIn 1
   ${If} ${SectionIsSelected} ${FullInstall}
-    SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDServer\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
-	SimpleFC::AdvAddRule "MPDisplayServer (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDServer\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
+    SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
+	SimpleFC::AdvAddRule "MPDisplayServer (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
   ${EndIf}
   ${If} ${SectionIsSelected} ${MPDisplayGUI}
-    SimpleFC::AdvAddRule "MPDisplay++ (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplayGUI\MPDisplay++.exe" "" "MPDisplay++" "" "" "" ""
-	SimpleFC::AdvAddRule "MPDisplay++ (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplayGUI\MPDisplay++.exe" "" "MPDisplay++" "" "" "" ""
+    SimpleFC::AdvAddRule "MPDisplay++ (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplay++.exe" "" "MPDisplay++" "" "" "" ""
+	SimpleFC::AdvAddRule "MPDisplay++ (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplay++.exe" "" "MPDisplay++" "" "" "" ""
   ${EndIf}
   ${If} ${SectionIsSelected} ${MediaPortalPlugin}
-	SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDServer\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
-	SimpleFC::AdvAddRule "MPDisplayServer (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDServer\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
+	SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
+	SimpleFC::AdvAddRule "MPDisplayServer (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
   ${EndIf}
 SectionEnd
 ##-------------------------------------------------------------------------------------------------##
@@ -729,9 +729,9 @@ FunctionEnd
 ##-------------------------------------------------------------------------------------------------##
 Section -WriteUninstaller
  	${If} ${SectionIsSelected} ${MediaPortalPlugin}
-		WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\MPDServer\MPDisplayServer.exe"
+		WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\MPDisplayServer.exe"
 	${Else}
-		WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\MPDisplayGUI\${MAIN_APP_EXE}"
+		WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\${MAIN_APP_EXE}"
 	${EndIf}
     WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayName" "${APP_NAME}" 
 	WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "UninstallString" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
@@ -794,8 +794,7 @@ Section Uninstall
 		# Remove GUI/Server Files/Directory -----------------------------------##
 		ReadRegDWORD $1 ${REG_HKLM} "${REG_APP_PATH}" MPDisplayPath
 		Delete "$1\${UNINSTALLER_EXE_NAME}"
-		RmDir /r "$1\MPDisplayGUI"
-		RmDir /r "$1\MPDServer"
+		RmDir /r "$1"
 		RmDir "$1" #Directory will not be removed if not empty,(user safe, incase some fucktard installed in C:\ or something)
 		##---------------------------------------------------------------------##
 		

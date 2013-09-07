@@ -236,13 +236,13 @@
 
 							<Separator />
 
-							<MenuItem Header="Cut" Command="{Binding CopyControlCommand}" CommandParameter="True">
+							<MenuItem Header="Cut" Command="{Binding CopyControlCommand}" CommandParameter="true">
 								<MenuItem.Icon>
 									<Image Source="/SkinEditor;component/Images/Cut.png" />
 								</MenuItem.Icon>
 							</MenuItem>
 
-							<MenuItem Header="Copy" Command="{Binding CopyControlCommand}" CommandParameter="False">
+							<MenuItem Header="Copy" Command="{Binding CopyControlCommand}" CommandParameter="false">
 								<MenuItem.Icon>
 									<Image Source="/SkinEditor;component/Images/Copy.png" />
 								</MenuItem.Icon>
@@ -262,13 +262,13 @@
 
 							<Separator />
 
-							<MenuItem Header="Move Up" Command="{Binding MoveControlCommand}" CommandParameter="True">
+							<MenuItem Header="Move Up" Command="{Binding MoveControlCommand}" CommandParameter="true">
 								<MenuItem.Icon>
 									<Image Source="/SkinEditor;component/Images/MoveUp.png" />
 								</MenuItem.Icon>
 							</MenuItem>
 
-							<MenuItem Header="Move Down" Command="{Binding MoveControlCommand}" CommandParameter="False">
+							<MenuItem Header="Move Down" Command="{Binding MoveControlCommand}" CommandParameter="false">
 								<MenuItem.Icon>
 									<Image Source="/SkinEditor;component/Images/MoveDown.png" />
 								</MenuItem.Icon>
