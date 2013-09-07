@@ -43,8 +43,30 @@
 			<StackPanel Orientation="Horizontal">
 
 				<StackPanel Width="150" >
-				
-					<ComboBox ItemsSource="{Binding Skins}" SelectedItem="{Binding SelectedSkin}" DisplayMemberPath="SkinName" SelectedValue="{Binding DataObject.SkinName}" SelectedValuePath="SkinName" />
+
+					<Grid>
+						<Grid.ColumnDefinitions>
+							<ColumnDefinition />
+							<ColumnDefinition Width="Auto"/>
+						</Grid.ColumnDefinitions>
+						<ComboBox ItemsSource="{Binding Skins}" SelectedItem="{Binding SelectedSkin}" DisplayMemberPath="SkinName" SelectedValue="{Binding DataObject.SkinName}" SelectedValuePath="SkinName" />
+						<Button Grid.Column="1" Width="22" Command="{Binding SkinEditorCommand}" Name="btn">
+							<Image Margin="2,3,2,1"  Stretch="Uniform" Source="/MPDisplayConfig;component/Images/Edit.png" IsEnabled="{Binding IsEnabled, ElementName=btn}" >
+								<Image.Style>
+									<Style TargetType="Image">
+										<Setter Property="Opacity" Value="1" />
+										<Style.Triggers>
+											<Trigger Property="IsEnabled" Value="False">
+												<Setter Property="Opacity" Value="0.4" />
+											</Trigger>
+										</Style.Triggers>
+									</Style>
+								</Image.Style>
+							</Image>
+						</Button>
+					</Grid>
+
+						
 					<TextBlock Margin="5,2,0,0" FontSize="10">
 						<TextBlock.Text>
 							<MultiBinding StringFormat="{}{0}: {1}">

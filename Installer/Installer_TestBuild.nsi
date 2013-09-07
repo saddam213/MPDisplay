@@ -101,8 +101,9 @@ LangString ChangelogTextTop ${LANG_ENGLISH} "Please review the Changelog below"
 
 
 LangString DESC_SECTION_FullInstall ${LANG_ENGLISH} "Full Installation"
-LangString DESC_SECTION_MediaPortalPlugin ${LANG_ENGLISH} "Mediaportal Plugin Only"
-LangString DESC_SECTION_MPDisplayGUI ${LANG_ENGLISH} "MPDisplay++ GUI Only"
+LangString DESC_SECTION_MediaPortalPlugin ${LANG_ENGLISH} "Plugin/Server Only"
+LangString DESC_SECTION_MPDisplayGUI ${LANG_ENGLISH} "MPDisplay++ Only"
+LangString DESC_SECTION_SkinEditorInstall ${LANG_ENGLISH} "SkinEditor"
 LangString DESC_SECTION_DesktopShortcutInstall ${LANG_ENGLISH} "Desktop Shortcuts"
 LangString DESC_SECTION_FirewallException  ${LANG_ENGLISH} "Configure Firewall"
 
@@ -113,6 +114,7 @@ LangString DESC_UnInstall_Full ${LANG_ENGLISH} "There is 3rd party skins install
 LangString DESC_LanguageFile ${LANG_ENGLISH} "Language_en"
 LangString DESC_MediaPortalPlugin ${LANG_ENGLISH} "MediaPortal Plugin/Server Only$\n$\nUse This Option If Your TouchScreen/Display Is On A Different PC"
 LangString DESC_MPDisplayGUI ${LANG_ENGLISH} "MPDisplay++ TouchScreen/Display Application Only$\n$\nUse This Option If You Are Installing MPDisplay++ On A Different PC To Mediaportal"
+LangString DESC_SkinEditorInstall ${LANG_ENGLISH} "Skin editor application for MPDisplay skins"
 LangString DESC_FullInstall ${LANG_ENGLISH} "MPDisplay++ Full Installation$\n$\nUse This Option If Your TouchScreen/Display Is Attached To Your MediaPortal HTPC"
 LangString DESC_DesktopShortcutInstall ${LANG_ENGLISH} "Desktop Shortcuts"
 LangString DESC_FirewallException ${LANG_ENGLISH} "Add Firewall Exceptions For MPDisplay++"
@@ -146,6 +148,7 @@ LangString ChangelogTextTop ${LANG_GERMAN} "Nachfolgend die Änderungsliste"
 LangString DESC_SECTION_FullInstall ${LANG_GERMAN} "Komplettinstalltion"
 LangString DESC_SECTION_MediaPortalPlugin ${LANG_GERMAN} "nur das Mediaportal Plugin"
 LangString DESC_SECTION_MPDisplayGUI ${LANG_GERMAN} "nur MPDisplay++"
+LangString DESC_SECTION_SkinEditorInstall ${LANG_GERMAN} "SkinEditor"
 LangString DESC_SECTION_DesktopShortcutInstall ${LANG_GERMAN} "Desktop Verknüpfungen"
 LangString DESC_SECTION_FirewallException  ${LANG_GERMAN} "Konfiguriere Firewall"
 
@@ -154,6 +157,7 @@ LangString DESC_UnInstall_Full ${LANG_GERMAN} "There is 3rd party skins installe
 LangString DESC_LanguageFile ${LANG_GERMAN} "Language_de"
 LangString DESC_MediaPortalPlugin ${LANG_GERMAN} "nur MediaPortal Plugin/Server$\n$\nVerwende diese Option, wenn Dein Touchscreen/Monitor sich auf einem anderen Computer befindet."
 LangString DESC_MPDisplayGUI ${LANG_GERMAN} "nur MPDisplay++ TouchScreen/Display Anwendung$\n$\nVerwende diese Option wenn Du MPD++ auf einem andere Computer ohne MediaPortal installieren willst."
+LangString DESC_SkinEditorInstall ${LANG_GERMAN} "Skin editor application for MPDisplay skins"
 LangString DESC_FullInstall ${LANG_GERMAN} "MPDisplay++ Komplettinstallation$\n$\nVerwende diese Option wenn Dein Touchscreen/Monitor direkt an Deinem MediaPortal HTPC angeschlossen ist."
 LangString DESC_DesktopShortcutInstall ${LANG_GERMAN} "Desktop Verknüpfungen"
 LangString DESC_FirewallException ${LANG_GERMAN} "Füge Firewall Ausnahmen für MPDisplay++ hinzu."
@@ -187,6 +191,7 @@ LangString ChangelogTextTop ${LANG_DUTCH} "Please review the Changelog below"
 LangString DESC_SECTION_FullInstall ${LANG_DUTCH} "Full Installation"
 LangString DESC_SECTION_MediaPortalPlugin ${LANG_DUTCH} "Mediaportal Plugin Only"
 LangString DESC_SECTION_MPDisplayGUI ${LANG_DUTCH} "MPDisplay++ GUI Only"
+LangString DESC_SECTION_SkinEditorInstall ${LANG_DUTCH} "SkinEditor"
 LangString DESC_SECTION_DesktopShortcutInstall ${LANG_DUTCH} "Desktop Shortcuts"
 LangString DESC_SECTION_FirewallException  ${LANG_DUTCH} "Configure Firewall"
 
@@ -195,6 +200,7 @@ LangString DESC_UnInstall_Full ${LANG_DUTCH} "There is 3rd party skins installed
 LangString DESC_LanguageFile ${LANG_DUTCH} "Language_nl"
 LangString DESC_MediaPortalPlugin ${LANG_DUTCH} "MediaPortal Plugin/Server Only$\n$\nUse This Option If Your TouchScreen/Display Is On A Different PC"
 LangString DESC_MPDisplayGUI ${LANG_DUTCH} "MPDisplay++ TouchScreen/Display Application Only$\n$\nUse This Option If You Are Installing MPDisplay++ On A Different PC To Mediaportal"
+LangString DESC_SkinEditorInstall ${LANG_DUTCH} "Skin editor application for MPDisplay skins"
 LangString DESC_FullInstall ${LANG_DUTCH} "MPDisplay++ Full Installation$\n$\nUse This Option If Your TouchScreen/Display Is Attached To Your MediaPortal HTPC"
 LangString DESC_DesktopShortcutInstall ${LANG_DUTCH} "Desktop Shortcuts"
 LangString DESC_FirewallException ${LANG_DUTCH} "Add Firewall Exceptions For MPDisplay++"
@@ -229,6 +235,7 @@ LangString ChangelogTextTop ${LANG_FRENCH} "Ci-dessous la liste des changements"
 LangString DESC_SECTION_FullInstall ${LANG_FRENCH} "Installation terminée"
 LangString DESC_SECTION_MediaPortalPlugin ${LANG_FRENCH} "que le plugin MediaPortal"
 LangString DESC_SECTION_MPDisplayGUI ${LANG_FRENCH} "que le plugin MediaPortal"
+LangString DESC_SECTION_SkinEditorInstall ${LANG_FRENCH} "SkinEditor"
 LangString DESC_SECTION_DesktopShortcutInstall ${LANG_FRENCH} "Raccourcis Bureau"
 LangString DESC_SECTION_FirewallException ${LANG_FRENCH} "configurer un pare-"
 
@@ -237,6 +244,7 @@ LangString DESC_UnInstall_Full ${LANG_FRENCH} "There is 3rd party skins installe
 LangString DESC_LanguageFile ${LANG_FRENCH} "Language_fr"
 LangString DESC_MediaPortalPlugin ${LANG_FRENCH} "que le plugin MediaPortal/serveur$\n$\nUtilisez cette option si votre écran / moniteur est sur ??un autre ordinateur."
 LangString DESC_MPDisplayGUI ${LANG_FRENCH} "seulement MPDisplay++ à écran tactile/affichage de l'application$\n$\nUtilisez cette option si vous souhaitez installer MPD++ sur un autre ordinateur sans Media Portal."
+LangString DESC_SkinEditorInstall ${LANG_FRENCH} "Skin editor application for MPDisplay skins"
 LangString DESC_FullInstall ${LANG_FRENCH} "MPDisplay + + installation complète$\n$\nUtilisez cette option si votre écran/moniteur directement à votre MediaPortal HTPC est connecté."
 LangString DESC_DesktopShortcutInstall ${LANG_FRENCH} "Raccourcis Bureau"
 LangString DESC_FirewallException ${LANG_FRENCH} "Ajouter des exceptions de pare-feu pour MPDisplay++ ajouté."
@@ -271,6 +279,7 @@ LangString ChangelogTextTop ${LANG_ITALIAN} "Si prega di verificare il changelog
 LangString DESC_SECTION_FullInstall ${LANG_ITALIAN} "Installazione Completa"
 LangString DESC_SECTION_MediaPortalPlugin ${LANG_ITALIAN} "Solo Plugin di MediaPortal"
 LangString DESC_SECTION_MPDisplayGUI ${LANG_ITALIAN} "Solo interfaccia grafica di MPDisplay++ (GUI)"
+LangString DESC_SECTION_SkinEditorInstall ${LANG_ITALIAN} "SkinEditor"
 LangString DESC_SECTION_DesktopShortcutInstall ${LANG_ITALIAN} "Collegamenti sul Desktop"
 LangString DESC_SECTION_FirewallException ${LANG_ITALIAN} "Configura Firewall"
 
@@ -279,6 +288,7 @@ LangString DESC_UnInstall_Full ${LANG_ITALIAN} "There is 3rd party skins install
 LangString DESC_LanguageFile ${LANG_ITALIAN} "Language_it"
 LangString DESC_MediaPortalPlugin ${LANG_ITALIAN} "Solo Plugin/Server MediaPortal$\n$\nScegli quest'opzione se il tuo TouchScreen/Display è su un altro PC."
 LangString DESC_MPDisplayGUI ${LANG_ITALIAN} "Solo applicazione TouchScreen/Display di MPDisplay++$\n$\nScegli questa opzione se stai installando MPDisplay++ su un PC diverso da quello dove è installato MediaPortal."
+LangString DESC_SkinEditorInstall ${LANG_ITALIAN} "Skin editor application for MPDisplay skins"
 LangString DESC_FullInstall ${LANG_ITALIAN} "Installazione completa di MPDisplay++$\n$\nScegli questa opzione se il tuo TouchScreen/Display è collegato al tuo HTPC MediaPortal."
 LangString DESC_DesktopShortcutInstall ${LANG_ITALIAN} "Collegamenti Desktop"
 LangString DESC_FirewallException ${LANG_ITALIAN} "Aggiungi eccezioni al firewall per MPDisplay++."
@@ -448,7 +458,12 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 			File "${BUILD_FOLDER}\Server\*.*"
 			File "${BUILD_FOLDER}\Config\*.*"
 	
-	# Install User Data		
+			# Install SkinEditor
+	SetOutPath "$INSTDIR\SkinEditor"
+		CreateDirectory "$INSTDIR\SkinEditor"
+			File /r "${BUILD_FOLDER}\SkinEditor\*.*"
+			
+		# Install User Data		
 	SetOutPath "${PROGRAM_DATA}"
 		CreateDirectory "${PROGRAM_DATA}"
 	# Set Access On Data Folder so we can edit files	
@@ -479,6 +494,7 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDisplayServer.exe"	
+    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor\SkinEditor.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
     WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Full"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
@@ -606,7 +622,23 @@ SectionEnd
 ##-------------------------------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------------------------------##
 
+##-------------------------------------------------------------------------------------------------##
+##---------*SkinEditor---------------------------------------------------------------------------##
+##-------------------------------------------------------------------------------------------------##
+##-------------------------------------------------------------------------------------------------##
+Section /o "$(DESC_SECTION_SkinEditorInstall)" SkinEditorInstall
+  SectionIn 1 RO
+	# Install SkinEditor
+	SetOutPath "$INSTDIR\SkinEditor"
+		CreateDirectory "$INSTDIR\SkinEditor"
+			File /r "${BUILD_FOLDER}\SkinEditor\*.*"
+			
 
+			
+	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor\SkinEditor.exe"
+SectionEnd
+##-------------------------------------------------------------------------------------------------##
+##-------------------------------------------------------------------------------------------------##
 
 ##-------------------------------------------------------------------------------------------------##
 ##---------*DesktopShortcutInstall-----------------------------------------------------------------##
@@ -678,11 +710,15 @@ Function .onSelChange
 	    !insertmacro ClearSectionFlag ${MediaPortalPlugin} ${SF_RO}
 		!insertmacro UnSelectSection ${MediaPortalPlugin}
 		!insertmacro SetSectionFlag ${MediaPortalPlugin} ${SF_RO}
+		!insertmacro ClearSectionFlag ${SkinEditorInstall} ${SF_RO}
+		!insertmacro UnSelectSection ${SkinEditorInstall}
+		!insertmacro SetSectionFlag ${SkinEditorInstall} ${SF_RO}
 		!insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
 	${EndIf}
 	${If} $R0 != ${SF_SELECTED}
 		!insertmacro ClearSectionFlag ${MPDisplayGUI} ${SF_RO}
 		!insertmacro ClearSectionFlag ${MediaPortalPlugin} ${SF_RO}	
+		!insertmacro ClearSectionFlag ${SkinEditorInstall} ${SF_RO}	
 	${EndIf}
 	${If} $R1 == ${SF_SELECTED}
 		!insertmacro UnSelectSection ${MediaPortalPlugin}
@@ -693,6 +729,9 @@ Function .onSelChange
 		!insertmacro UnSelectSection ${DesktopShortcutInstall}
 		!insertmacro SetSectionFlag ${DesktopShortcutInstall} ${SF_RO}
 		!insertmacro UnSelectSection ${MPDisplayGUI}
+		!insertmacro ClearSectionFlag ${SkinEditorInstall} ${SF_RO}
+		!insertmacro UnSelectSection ${SkinEditorInstall}
+		!insertmacro SetSectionFlag ${SkinEditorInstall} ${SF_RO}
 	${EndIf}
 FunctionEnd
 
@@ -713,6 +752,7 @@ FunctionEnd
   !insertmacro MUI_DESCRIPTION_TEXT ${MPDisplayGUI} $(DESC_MPDisplayGUI)
   !insertmacro MUI_DESCRIPTION_TEXT ${MediaPortalPlugin} $(DESC_MediaPortalPlugin)
   !insertmacro MUI_DESCRIPTION_TEXT ${FullInstall} $(DESC_FullInstall)
+  !insertmacro MUI_DESCRIPTION_TEXT ${SkinEditorInstall} $(DESC_SkinEditorInstall)
   !insertmacro MUI_DESCRIPTION_TEXT ${DesktopShortcutInstall} $(DESC_DesktopShortcutInstall)
 !insertmacro MUI_FUNCTION_DESCRIPTION_END
 

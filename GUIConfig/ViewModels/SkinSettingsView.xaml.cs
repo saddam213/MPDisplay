@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,6 +20,7 @@ using System.Xml.Linq;
 using Common.Helpers;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
+using MPDisplay.Common.Utils;
 
 namespace GUIConfig.ViewModels
 {
@@ -31,8 +33,19 @@ namespace GUIConfig.ViewModels
 
         public SkinSettingsView()
         {
+            SkinEditorCommand = new RelayCommand(LaunchSkinEditor, CanLaunchSkinEditor);
             InitializeComponent();
             LoadSkins();
+        }
+
+        private bool CanLaunchSkinEditor()
+        {
+            return File.Exists(RegistrySettings.SkinEditorExePath);
+        }
+
+        private void LaunchSkinEditor()
+        {
+            Process.Start(RegistrySettings.SkinEditorExePath);
         }
 
         public override string Title
@@ -92,6 +105,8 @@ namespace GUIConfig.ViewModels
             get { return _skins; }
             set { _skins = value; }
         }
+
+        public ICommand SkinEditorCommand { get; set; }
 
         private SkinInfo _selectedSkin;
 

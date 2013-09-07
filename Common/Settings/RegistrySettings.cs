@@ -23,6 +23,7 @@ namespace MPDisplay.Common.Settings
         private static string _mpdServerExePath = null;
         private static string _mpdisplayConfigExePath = null;
         private static string _mpdisplayExePath = null;
+        private static string _skinEditorExePath = null;
 
         #endregion
 
@@ -111,7 +112,7 @@ namespace MPDisplay.Common.Settings
         }
 
         /// <summary>
-        /// Gets the MPD server exe path.
+        /// Gets the MPD server exe path. SkinEditrorExePath
         /// </summary>
         public static string MPDServerExePath
         {
@@ -122,6 +123,21 @@ namespace MPDisplay.Common.Settings
                     _mpdServerExePath = GetRegistryValue("MPDServerExePath");
                 }
                 return _mpdServerExePath;
+            }
+        }
+
+        /// <summary>
+        /// Gets the skin editror exe path.
+        /// </summary>
+        public static string SkinEditorExePath
+        {
+            get
+            {
+                if (_skinEditorExePath == null)
+                {
+                    _skinEditorExePath = GetRegistryValue("SkinEditorExePath");
+                }
+                return _skinEditorExePath;
             }
         }
 
