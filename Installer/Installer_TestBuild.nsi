@@ -22,7 +22,7 @@
 
 # FileName Vars
 !define APP_NAME "MPDisplay++"
-!define MAIN_APP_EXE "MPDisplay++.exe"
+!define MAIN_APP_EXE "MPDisplay.exe"
 !define PROGRAM_DATA "$APPDATA\MPDisplay++\"
 !define INSTALLER_EXE_NAME "Setup_MPDisplay++_${VERSION}.exe"
 !define UNINSTALLER_EXE_NAME "Uninstall_${APP_NAME}.exe"
@@ -37,6 +37,7 @@ OutFile "${BUILD_FOLDER}\Packages\TestBuilds\${VERSION}\${INSTALLER_EXE_NAME}"
 !include "FileFunc.nsh"
 !include "MUI_EXTRAPAGES.nsh"
 !include "MUI_EXTRAPAGESCHANGELOG.nsh"
+!include "WinVer.nsh"
 
 
 # Other Shit
@@ -128,6 +129,7 @@ LangString MSGUnInstall ${LANG_ENGLISH} "The current version of MPDisplay++ must
 LangString MSGUnInstall_Cancel ${LANG_ENGLISH} "Setup Cannot Procced Until Existing MPDisplay++ Instance is Removed $\n$\nSetup Will Now Exit"
 LangString MSGDotNet_NeedRestart ${LANG_ENGLISH} "Failed To Install MPDisplay Server $\n$\nRetry?$\n$\nNote: If You Have Just Installed .NET Framework 4.5 a restart may be required before MPDisplay Server is installed"
 LangString MSGMediaPortalNotFound ${LANG_ENGLISH} "Installer Could Not Locate Your MediaPortal Installation, Please Select Your MediaPortal Directory  $\n$\n eg: C:\Program Files\Team MediaPortal\MediaPortal"
+LangString MSGXPWarn ${LANG_ENGLISH} "MPDisplay does not support Windows XP operating system"
 
 LangString MSGUAC_Retry ${LANG_ENGLISH} "This Application Requires Admin Privileges, Try Again?"
 LangString MSGUAC_Abort ${LANG_ENGLISH} "This Application Requires Admin Privileges, Aborting!"
@@ -172,6 +174,7 @@ LangString MSGUnInstall ${LANG_GERMAN} "Die aktuell installierte Version von MPD
 LangString MSGUnInstall_Cancel ${LANG_GERMAN} "Das Setup kann nicht fortgeführt werden sollange noch ein MPD++ Prozess durchgeführt wird. $\n$\nSetup wird beendet!"
 LangString MSGDotNet_NeedRestart ${LANG_GERMAN} "Fehler bei der Installation des MPDisplay++ Servers. $\n$\nWiederholen?$\n$\nHinweis: Wenn Du gerade erst das .NET Framework 4.5 installiert hast, muss der Rechner eventuell erst neu gestartet werden."
 LangString MSGMediaPortalNotFound ${LANG_GERMAN} "Der Installer kann das Installationsverzeichnis von MediaPortal nicht finden. Bitte suchen Sie es manuell.  $\n$\n z.B.: C:\Program Files\Team MediaPortal\MediaPortal"
+LangString MSGXPWarn ${LANG_GERMAN} "MPDisplay does not support Windows XP operating system"
 
 LangString MSGUAC_Retry ${LANG_GERMAN} "Diese Anwendung benötigt Administratorrechte, noch mal versuchen?"
 LangString MSGUAC_Abort ${LANG_GERMAN} "Diese Anwendung benötigt Administratorrechte, Abbruch!"
@@ -215,6 +218,7 @@ LangString MSGUnInstall ${LANG_DUTCH} "The current version of MPDisplay++ must b
 LangString MSGUnInstall_Cancel ${LANG_DUTCH} "Setup Cannot Procced Until Existing MPDisplay++ Instance is Removed $\n$\nSetup Will Now Exit"
 LangString MSGDotNet_NeedRestart ${LANG_DUTCH} "Failed To Install MPDisplay Server $\n$\nRetry?$\n$\nNote: If You Have Just Installed .NET Framework 4.5 a restart may be required before MPDisplay Server is installed"
 LangString MSGMediaPortalNotFound ${LANG_DUTCH} "Installer Could Not Locate Your MediaPortal Installation, Please Select Your MediaPortal Directory  $\n$\n eg: C:\Program Files\Team MediaPortal\MediaPortal"
+LangString MSGXPWarn ${LANG_DUTCH} "MPDisplay does not support Windows XP operating system"
 
 LangString MSGUAC_Retry ${LANG_DUTCH} "This Application Requires Admin Privileges, Try Again?"
 LangString MSGUAC_Abort ${LANG_DUTCH} "This Application Requires Admin Privileges, Aborting!"
@@ -259,6 +263,7 @@ LangString MSGUnInstall ${LANG_FRENCH} "La version actuellement installée de MPD
 LangString MSGUnInstall_Cancel ${LANG_FRENCH} "Ne devrait pas être la configuration de procéder dans un autre MPD++ processus est effectuée. $\n$\nL'installation est terminée!"
 LangString MSGDotNet_NeedRestart ${LANG_FRENCH} "Erreur lors de l'installation de la MPDisplay++ serveur. $\n$\nRépéter?$\n$\nRemarque:. Si vous avez juste le NET Framework 4.0 est installé, l'ordinateur doit être démarré avant toute nouvelle."
 LangString MSGMediaPortalNotFound ${LANG_FRENCH} "Le programme d'installation ne peut pas trouver le répertoire d'installation de MediaPortal. S'il vous plaît chercher manuellement. $\n$\n par exemple: C:\Program Files\Team MediaPortal\MediaPortal"
+LangString MSGXPWarn ${LANG_FRENCH} "MPDisplay does not support Windows XP operating system"
 
 LangString MSGUAC_Retry ${LANG_FRENCH} "Cette application nécessite des privilèges d'administrateur, essayez à nouveau?"
 LangString MSGUAC_Abort ${LANG_FRENCH} "Cette application nécessite des droits d'administrateur, de la démolition!"
@@ -303,6 +308,7 @@ LangString MSGUnInstall ${LANG_ITALIAN} "L'attuale versione di MPDisplay++ deve 
 LangString MSGUnInstall_Cancel ${LANG_ITALIAN} "Il setup non può procedere prima che l'attuale istanza di MPDisplay++ venga rimossa $\n$\nIl Setup si chiuderà ora"
 LangString MSGDotNet_NeedRestart ${LANG_ITALIAN} "Errore nell'installazione di MPDisplay Server $\n$\nRiprova?$\n$\nNota: se hai appena installato .NET Framework 4.5 potrebbe essere necessario un riavvio prima che MPDisplay Server venga installato"
 LangString MSGMediaPortalNotFound ${LANG_ITALIAN} "L'installer non ha individuato l'installazione di MediaPortal, selezionare a mano la cartella di installazione $\n$\n ES: C:\Program Files\Team MediaPortal\MediaPortal"
+LangString MSGXPWarn ${LANG_ITALIAN} "MPDisplay does not support Windows XP operating system"
 
 LangString MSGUAC_Retry ${LANG_ITALIAN} "Questa applicazione richiede privilegi amministrativi, riprovare?"
 LangString MSGUAC_Abort ${LANG_ITALIAN} "Questa applicazione richiede privilegi amministrativi, annullamento in corso!"
@@ -359,72 +365,78 @@ Function .onInit
     SetShellVarContext all	
 	SetOverwrite on
 	# Display the language selector #
-    !insertmacro MUI_LANGDLL_DISPLAY
+  
 FunctionEnd
 
 Function WelcomePagePre
    # Check UAC
    !insertmacro Check_UAC "Installer"
-    # Set Registry Permissons
-    AccessControl::GrantOnRegKey \
-    ${REG_HKLM} "${REG_UNINSTALL_PATH}" "(S-1-5-32-545)" "FullAccess"
-	AccessControl::GrantOnRegKey \
-    ${REG_HKLM} "${REG_APP_PATH}" "(S-1-5-32-545)" "FullAccess"
-	
-    # Check if MPDisplay++ Is Already Installed, and Uninstall
-	ReadRegDWORD $1 ${REG_HKLM} "${REG_UNINSTALL_PATH}" UnInstallString
-	${If} $1 != ''
-	
-		MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(MSGUnInstall)" IDYES UninstallYes IDNO UninstallNo
-	
-		UninstallNo:
-			MessageBox MB_OK|MB_ICONINFORMATION $(MSGUnInstall_Cancel)
-			Quit
-	
-		UninstallYes:
-			ExecWait '$1 _?=${PROGRAM_DATA}' $3
-			#If Uninstall was canceled(0) Exit installer
-			${If} $3 == 0
-		    	Quit
-			${EndIf}
-	${EndIf}
-	
-	
-	# .NET4.5
-	ClearErrors
-    ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Release"
-    IfErrors NotDetected
-    ${If} $0 >= 378389
-        DetailPrint "Microsoft .NET Framework 4.5 is installed ($0)"
-    ${Else}
-    NotDetected:
-        MessageBox MB_YESNO|MB_ICONINFORMATION $(MSGDotNet) IDYES InstallDotNet IDNO Cancel 
-        Cancel:
-         	MessageBox MB_OK|MB_ICONINFORMATION $(MSGDotNet_Cancel)
-				Quit
+   
+  !insertmacro MUI_LANGDLL_DISPLAY
 
-        ; Install .NET4.5.
-        InstallDotNet:
-            DetailPrint "Installing Microsoft .NET Framework 4.5"
-            SetDetailsPrint listonly
-            SetOutPath "$TEMP"	
-				File "${BUILD_FOLDER}\dotNetFx45_Full_setup.exe"
-			ExecWait "$TEMP\dotNetFx45_Full_setup.exe"	
-            ${If} $0 == 3010 
-            ${OrIf} $0 == 1641
-                DetailPrint "Microsoft .NET Framework 4.5 installer requested reboot."
-                SetRebootFlag true 
-            ${EndIf}
-            SetDetailsPrint lastused
-            DetailPrint "Microsoft .NET Framework 4.5 installer returned $0"
-    ${EndIf}
+
+
+    ${If} ${AtLeastWinVista}
+
+		# Set Registry Permissons
+		AccessControl::GrantOnRegKey \
+		${REG_HKLM} "${REG_UNINSTALL_PATH}" "(S-1-5-32-545)" "FullAccess"
+		AccessControl::GrantOnRegKey \
+		${REG_HKLM} "${REG_APP_PATH}" "(S-1-5-32-545)" "FullAccess"
+		
+		# Check if MPDisplay++ Is Already Installed, and Uninstall
+		ReadRegDWORD $1 ${REG_HKLM} "${REG_UNINSTALL_PATH}" UnInstallString
+		${If} $1 != ''
+		
+			MessageBox MB_YESNO|MB_ICONEXCLAMATION "$(MSGUnInstall)" IDYES UninstallYes IDNO UninstallNo
+		
+			UninstallNo:
+				MessageBox MB_OK|MB_ICONINFORMATION $(MSGUnInstall_Cancel)
+				Quit
+		
+			UninstallYes:
+				ExecWait '$1 _?=${PROGRAM_DATA}' $3
+				#If Uninstall was canceled(0) Exit installer
+				${If} $3 == 0
+					Quit
+				${EndIf}
+		${EndIf}
+		
+		
+		# .NET4.5
+		ClearErrors
+		ReadRegDWORD $0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v4\Full" "Release"
+		IfErrors NotDetected
+		${If} $0 >= 378389
+			DetailPrint "Microsoft .NET Framework 4.5 is installed ($0)"
+		${Else}
+		NotDetected:
+			MessageBox MB_YESNO|MB_ICONINFORMATION $(MSGDotNet) IDYES InstallDotNet IDNO Cancel 
+			Cancel:
+				MessageBox MB_OK|MB_ICONINFORMATION $(MSGDotNet_Cancel)
+					Quit
+
+			; Install .NET4.5.
+			InstallDotNet:
+				DetailPrint "Installing Microsoft .NET Framework 4.5"
+				SetDetailsPrint listonly
+				SetOutPath "$TEMP"	
+					File "${BUILD_FOLDER}\dotNetFx45_Full_setup.exe"
+				ExecWait "$TEMP\dotNetFx45_Full_setup.exe"	
+				${If} $0 == 3010 
+				${OrIf} $0 == 1641
+					DetailPrint "Microsoft .NET Framework 4.5 installer requested reboot."
+					SetRebootFlag true 
+					Quit
+				${EndIf}
+				SetDetailsPrint lastused
+				DetailPrint "Microsoft .NET Framework 4.5 installer returned $0"
+		${EndIf}
 	
 	
-	
-	
-	
-	
-	
+	${Else}
+	    MessageBox MB_OK|MB_ICONINFORMATION $(MSGXPWarn)
+    ${EndIf} 
 	
 	
 	
@@ -650,10 +662,10 @@ Section "$(DESC_SECTION_DesktopShortcutInstall)" DesktopShortcutInstall
   #do nothing
   ${Else}
     SetShellVarContext current	
-		CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\MPDisplay++.exe"
+		CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\MPDisplay.exe"
 		CreateShortCut "$DESKTOP\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
 		CreateDirectory "$SMPROGRAMS\${APP_NAME}"
-		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\MPDisplay++.exe"
+		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\MPDisplay.exe"
 		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
 		CreateShortCut "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
 	SetShellVarContext all	
@@ -676,8 +688,8 @@ Section "$(DESC_SECTION_FirewallException)" FirewallException
 	SimpleFC::AdvAddRule "MPDisplayServer (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
   ${EndIf}
   ${If} ${SectionIsSelected} ${MPDisplayGUI}
-    SimpleFC::AdvAddRule "MPDisplay++ (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplay++.exe" "" "MPDisplay++" "" "" "" ""
-	SimpleFC::AdvAddRule "MPDisplay++ (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplay++.exe" "" "MPDisplay++" "" "" "" ""
+    SimpleFC::AdvAddRule "MPDisplay++ (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplay.exe" "" "MPDisplay++" "" "" "" ""
+	SimpleFC::AdvAddRule "MPDisplay++ (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplay.exe" "" "MPDisplay++" "" "" "" ""
   ${EndIf}
   ${If} ${SectionIsSelected} ${MediaPortalPlugin}
 	SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""

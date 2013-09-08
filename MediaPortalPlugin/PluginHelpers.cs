@@ -15,10 +15,7 @@ namespace MediaPortalPlugin
             {
                 GUIGraphicsContext.form.Invoke(action);
             }
-            catch (Exception ex)
-            {
-
-            }
+            catch { }
         }
 
 

@@ -13,16 +13,22 @@ namespace GUIFramework.GUI
         private Func<bool> _condition = null;
         private string _xmlString = string.Empty;
 
-        public GUIVisibleCondition(int windowId, string xmlString)
+        public GUIVisibleCondition(GUIControl control)
         {
-            _xmlString = xmlString;
-           _condition = GUIVisibilityManager.CreateVisibleCondition(true, windowId, xmlString);
+            _xmlString = control.BaseXml.VisibleCondition;
+            _condition = GUIVisibilityManager.CreateVisibleCondition(control, _xmlString);
         }
 
-        public GUIVisibleCondition(string xmlString)
+        public GUIVisibleCondition(GUIWindow window)
         {
-            _xmlString = xmlString;
-            _condition = GUIVisibilityManager.CreateVisibleCondition(false, 0, xmlString);
+            _xmlString = window.BaseXml.VisibleCondition;
+            _condition = GUIVisibilityManager.CreateVisibleCondition(window, _xmlString);
+        }
+
+        public GUIVisibleCondition(GUIDialog dialog)
+        {
+            _xmlString = dialog.BaseXml.VisibleCondition;
+            _condition = GUIVisibilityManager.CreateVisibleCondition(dialog, _xmlString);
         }
 
         public string XmlString

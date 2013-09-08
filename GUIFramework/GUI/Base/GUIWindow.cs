@@ -54,7 +54,7 @@ namespace GUIFramework.GUI
             BaseXml = skinXml;
             Id = BaseXml.Id;
             IsDefault = BaseXml.IsDefault;
-            VisibleCondition = new GUIVisibleCondition(BaseXml.VisibleCondition);
+            VisibleCondition = new GUIVisibleCondition(this);
             CreateAnimations();
             CreateControls();
             NotifyPropertyChanged("Controls");

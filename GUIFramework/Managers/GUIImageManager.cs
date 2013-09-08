@@ -10,12 +10,13 @@ using GUISkinFramework;
 using GUISkinFramework.Common;
 using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Controls;
+using MPDisplay.Common.Log;
 
 namespace GUIFramework.Managers
 {
     public class GUIImageManager
     {
-
+        private static Log Log = LoggingManager.GetLog(typeof(GUIImageManager));
         private static Dictionary<string, ImageBrush> _cache = new Dictionary<string, ImageBrush>();
         private static Dictionary<string, ImageBrush> _styleCache = new Dictionary<string, ImageBrush>();
         private static Dictionary<string, XmlImageFile> _xmlImages = new Dictionary<string, XmlImageFile>();
@@ -77,6 +78,7 @@ namespace GUIFramework.Managers
             }
             catch (Exception ex)
             {
+                Log.Exception("[GetImageNonCached] - ", ex);
             }
             return null;
         }

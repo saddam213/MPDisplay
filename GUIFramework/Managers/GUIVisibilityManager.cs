@@ -8,6 +8,7 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
 using GUIFramework.GUI;
+using GUIFramework.GUI.Windows;
 using GUISkinFramework.Common;
 using GUISkinFramework.Controls;
 using MessageFramework.DataObjects;
@@ -58,10 +59,6 @@ namespace GUIFramework.Managers
             }
         }
 
-     
-
-     
-
         public static void RegisterControlVisibility(IControlHost controlHost)
         {
             DeregisterControlVisibility(controlHost);
@@ -103,58 +100,16 @@ namespace GUIFramework.Managers
             }
         }
 
-        //public static void ToggleControlVisibility(this IControlHost controlHost, int controlid)
-        //{
-        //    lock (_controlVisibilityMap)
-        //    {
-        //        if (_controlVisibilityMap.ContainsKey(controlHost.Id))
-        //        {
-        //            if (_controlVisibilityMap[controlHost.Id].ContainsKey(controlid))
-        //            {
-        //                _controlVisibilityMap[controlHost.Id][controlid] = !_controlVisibilityMap[controlHost.Id][controlid];
-        //                NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-        //            }
-        //        }
-        //    }
-        //}
-
-
         #region Condition Checks
 
+     
         public static bool IsControlVisible(int windowId, int controlId)
         {
-            if (_controlVisibilityMap.ContainsKey(windowId))
+            if (_controlVisibilityMap.ContainsKey(windowId) && _controlVisibilityMap[windowId].ContainsKey(controlId))
             {
-                if (_controlVisibilityMap[windowId].ContainsKey(controlId))
-                {
-                    return _controlVisibilityMap[windowId][controlId];
-                }
+                return _controlVisibilityMap[windowId][controlId];
             }
             return false;
-        }
-             
-        public static bool IsPluginEnabled(string pluginName)
-        {
-            return InfoRepository.Instance.EnabledPluginMap.Contains(pluginName.ToLower());
-        }
-
-        public static bool IsPlayer(int playerId, bool isWindow)
-        {
-            if (isWindow)
-            {
-                return playerId.Equals((int)InfoRepository.Instance.PlayerType) && InfoRepository.Instance.IsFullscreenVideo;
-            }
-            return playerId.Equals((int)InfoRepository.Instance.PlayerType);
-        }
-
-        public static bool IsTvRecording()
-        {
-            return InfoRepository.Instance.IsTvRecording;
-        }
-
-        public static bool IsFullscreenVideo(bool value)
-        {
-            return value == InfoRepository.Instance.IsFullscreenVideo;
         }
 
         public static bool IsMediaPortalWindow(int windowId)
@@ -175,6 +130,26 @@ namespace GUIFramework.Managers
         public static bool IsMediaPortalControlFocused(int controlId)
         {
             return controlId == InfoRepository.Instance.FocusedWindowControlId;
+        }
+
+        public static bool IsPluginEnabled(string pluginName)
+        {
+            return InfoRepository.Instance.EnabledPluginMap.Contains(pluginName.ToLower());
+        }
+
+        public static bool IsPlayer(int playerId)
+        {
+            return playerId.Equals((int)InfoRepository.Instance.PlayerType);
+        }
+
+        public static bool IsTvRecording()
+        {
+            return InfoRepository.Instance.IsTvRecording;
+        }
+
+        public static bool IsFullscreenVideo(bool value)
+        {
+            return value == InfoRepository.Instance.IsFullscreenVideo;
         }
 
         public static bool IsMediaPortalConnected()
@@ -210,50 +185,9 @@ namespace GUIFramework.Managers
         private static CSharpCodeProvider _codeProvider;
         private static bool _compilerLoaded = false;
 
-        public static Func<bool> CreateVisibleCondition(bool isControl, int windowId, string xmlVisibleString)
+        public static Func<bool> CreateVisibleCondition(GUIControl control, string xmlVisibleString)
         {
             xmlVisibleString = xmlVisibleString.Replace("++", "&&");
-
-            if (isControl)
-            {
-                xmlVisibleString = xmlVisibleString.Replace("IsControlVisible(", "GUIVisibilityManager.IsControlVisible(" + windowId + ",");
-
-                if (xmlVisibleString.Contains("IsPlayer("))
-                {
-                    foreach (var playtype in Enum.GetValues(typeof(APIPlaybackType)))
-                    {
-                        xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0}, {1})", (int)playtype, (!isControl).ToString().ToLower()));
-                    }
-                }
-
-                if (xmlVisibleString.Contains("IsMediaPortalListLayout("))
-                {
-                    foreach (var layout in Enum.GetValues(typeof(XmlListLayout)))
-                    {
-                        xmlVisibleString = xmlVisibleString.Replace(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("GUIVisibilityManager.IsMediaPortalListLayout({0})", (int)layout));
-                    }
-                }
-
-                if (xmlVisibleString.Contains("IsPluginEnabled("))
-                {
-                    // \(([^)]*)\)
-                    xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsPluginEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsPluginEnabled(""$1"")");
-                    //xmlVisibleString.Replace("IsPluginEnabled(", "GUIVisibilityManager.IsPluginEnabled(");
-                }
-
-
-
-                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalConnected", "GUIVisibilityManager.IsMediaPortalConnected()");
-                xmlVisibleString = xmlVisibleString.Replace("IsTVServerConnected", "GUIVisibilityManager.IsTVServerConnected()");
-                xmlVisibleString = xmlVisibleString.Replace("IsMPDisplayConnected", "GUIVisibilityManager.IsMPDisplayConnected()");
-                xmlVisibleString = xmlVisibleString.Replace("IsTvRecording", "GUIVisibilityManager.IsTvRecording()");
-            
-
-                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlFocused(", "GUIVisibilityManager.IsMediaPortalControlFocused(");
-                //  xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlVisible(", "GUIVisibilityManager.IsMediaPortalControlVisible(");
-
-            }
-
 
             if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
             {
@@ -262,27 +196,108 @@ namespace GUIFramework.Managers
                 //xmlVisibleString.Replace("IsPluginEnabled(", "GUIVisibilityManager.IsPluginEnabled(");
             }
 
+            xmlVisibleString = xmlVisibleString.Replace("IsControlVisible(", "GUIVisibilityManager.IsControlVisible(" + control.ParentId + ",");
+
+            if (xmlVisibleString.Contains("IsPlayer("))
+            {
+                foreach (var playtype in Enum.GetValues(typeof(APIPlaybackType)))
+                {
+                    xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0})", (int)playtype));
+                }
+            }
+
+            if (xmlVisibleString.Contains("IsMediaPortalListLayout("))
+            {
+                foreach (var layout in Enum.GetValues(typeof(XmlListLayout)))
+                {
+                    xmlVisibleString = xmlVisibleString.Replace(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("GUIVisibilityManager.IsMediaPortalListLayout({0})", (int)layout));
+                }
+            }
+
+            if (xmlVisibleString.Contains("IsPluginEnabled("))
+            {
+                xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsPluginEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsPluginEnabled(""$1"")");
+            }
+
+            xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalConnected", "GUIVisibilityManager.IsMediaPortalConnected()");
+            xmlVisibleString = xmlVisibleString.Replace("IsTVServerConnected", "GUIVisibilityManager.IsTVServerConnected()");
+            xmlVisibleString = xmlVisibleString.Replace("IsMPDisplayConnected", "GUIVisibilityManager.IsMPDisplayConnected()");
+            xmlVisibleString = xmlVisibleString.Replace("IsTvRecording", "GUIVisibilityManager.IsTvRecording()");
+            xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlFocused(", "GUIVisibilityManager.IsMediaPortalControlFocused(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalWindow(", "GUIVisibilityManager.IsMediaPortalWindow(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalPreviousWindow(", "GUIVisibilityManager.IsMediaPortalPreviousWindow(");
 
 
-          
+            //GUIWindowManager
+            if (!string.IsNullOrWhiteSpace(xmlVisibleString))
+            {
+                return CompileCondition(control.Id, control.ParentId, xmlVisibleString);
+            }
+            return null;
+        }
+
+
+        public static Func<bool> CreateVisibleCondition(GUIWindow window, string xmlVisibleString)
+        {
+            xmlVisibleString = xmlVisibleString.Replace("++", "&&");
+            if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
+            {
+                xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsSkinOptionEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsSkinOptionEnabled(""$1"")");
+
+            }
+
+            if (window is GUIPlayerWindow)
+            {
+                if (xmlVisibleString.Contains("IsPlayer("))
+                {
+                    foreach (var playtype in Enum.GetValues(typeof(APIPlaybackType)))
+                    {
+                        xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0})", (int)playtype));
+                    }
+                }
+            }
+
+            if (window is GUIMPWindow)
+            {
+                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalWindow(", "GUIVisibilityManager.IsMediaPortalWindow(");
+                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
+                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalPreviousWindow(", "GUIVisibilityManager.IsMediaPortalPreviousWindow(");
+            }
 
             //GUIWindowManager
             if (!string.IsNullOrWhiteSpace(xmlVisibleString))
             {
-                return CompileCondition(xmlVisibleString);
+                return CompileCondition(-1, window.Id, xmlVisibleString);
             }
             return null;
-        } 
+        }
+
+        public static Func<bool> CreateVisibleCondition(GUIDialog dialog, string xmlVisibleString)
+        {
+            xmlVisibleString = xmlVisibleString.Replace("++", "&&");
+            if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
+            {
+                xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsSkinOptionEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsSkinOptionEnabled(""$1"")");
+
+            }
+
+            xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
+
+            //GUIWindowManager
+            if (!string.IsNullOrWhiteSpace(xmlVisibleString))
+            {
+                return CompileCondition(-1, dialog.Id, xmlVisibleString);
+            }
+            return null;
+        }
 
         /// <summary>
         /// Creates a complex visible condition.
         /// </summary>
         /// <param name="xmlVisibleString">The XML visible string.</param>
         /// <returns></returns>
-        private static Func<bool> CompileCondition(string xmlVisibleString)
+        private static Func<bool> CompileCondition(int controlId, int windowId,string xmlVisibleString)
         {
             if (!string.IsNullOrEmpty(xmlVisibleString))
             {
@@ -291,7 +306,16 @@ namespace GUIFramework.Managers
                 CompilerResults compileResults = _codeProvider.CompileAssemblyFromSource(_compilerParams, code);
                 if (compileResults.Errors.HasErrors)
                 {
-                    Log.Message(LogLevel.Error, "Invalid VisibleCondition Detected, VisibleString: {0}, Error: {1}", xmlVisibleString, compileResults.Errors[0]);
+                    if (controlId == -1)
+                    {
+                        Log.Message(LogLevel.Error, "Invalid Window VisibleCondition Detected, WindowId: {0}, VisibleString: {1}, Error: {2}"
+                            , windowId, xmlVisibleString, compileResults.Errors[0].ErrorText);
+                    }
+                    else
+                    {
+                        Log.Message(LogLevel.Error, "Invalid Control VisibleCondition Detected, WindowId: {0}, ControlId: {1}, VisibleString: {2}, Error: {3}"
+                            , windowId, controlId, xmlVisibleString,  compileResults.Errors[0].ErrorText);
+                    }
                     return null;
                 }
                 var method = compileResults.CompiledAssembly.GetModules()[0].GetType("Visibility.VisibleMethodClass").GetMethod("ShouldBeVisible");
@@ -316,9 +340,9 @@ namespace GUIFramework.Managers
                 _compilerParams.TreatWarningsAsErrors = false;
                 _compilerParams.GenerateExecutable = false;
                 _compilerParams.CompilerOptions = "/optimize";
-                string[] references = { "System.dll", "GUIFramework.dll" };
+                string[] references = { "System.dll", typeof(GUIFramework.GenericExtensions).Assembly.Location };
                 _compilerParams.ReferencedAssemblies.AddRange(references);
-                _codeProvider = new CSharpCodeProvider();
+                _codeProvider = new CSharpCodeProvider( new Dictionary<String, String>{{ "CompilerVersion","v3.5" }});
                 _compilerLoaded = true;
             }
         }

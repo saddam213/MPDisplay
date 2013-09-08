@@ -39,11 +39,12 @@ namespace MediaPortalPlugin.InfoManagers
 
         private MPDisplay.Common.Log.Log Log;
         private bool _isEQRunning;
-        private byte[] _eqFftData = new byte[50];
+        private float[] _eqFftData = new float[1280];
         private System.Threading.Timer _eqThread;
         private int _eqDataLength = 50;
         private bool _isMusicPlaying = false;
-        private int _refreshRate = 33;
+        private int _refreshRate = 60;
+        private int _eqMultiplier = 255;
         private PluginSettings _settings;
 
 
@@ -69,10 +70,6 @@ namespace MediaPortalPlugin.InfoManagers
             {
                 StopEQThread();
                 _eqDataLength = eqLength;
-                lock (_eqFftData)
-                {
-                    _eqFftData = new byte[_eqDataLength];
-                }
                 StartEQThread();
             }
             else
@@ -159,6 +156,10 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+
+       
+
+     
         /// <summary>
         /// Gets the Bass.Net FFT data.
         /// </summary>
@@ -171,10 +172,18 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     if (g_Player.CurrentAudioStream != 0 && g_Player.CurrentAudioStream != -1)
                     {
-                        int channel = Un4seen.Bass.Bass.BASS_ChannelGetData((int)g_Player.CurrentAudioStream, _eqFftData, _eqFftData.Length);
-                        if (channel > 0)
+                        lock (_eqFftData)
                         {
-                            MessageService.Instance.SendDataMessage(new APIDataMessage { DataType = APIDataMessageType.EQData, ByteArray = _eqFftData });
+                            int channel = Un4seen.Bass.Bass.BASS_ChannelGetData((int)g_Player.CurrentAudioStream, _eqFftData, int.MinValue);
+                            if (channel > 0)
+                            {
+                                byte[] eqData = new byte[_eqDataLength];
+                                for (int i = 0; i < _eqDataLength; i++)
+                                {
+                                    eqData[i] = (byte)Math.Min(255, Math.Max(Math.Sqrt((_eqFftData[i]) * 2) * _eqMultiplier, 1));
+                                }
+                                MessageService.Instance.SendDataMessage(new APIDataMessage { DataType = APIDataMessageType.EQData, ByteArray = eqData });
+                            }
                         }
                     }
                 }

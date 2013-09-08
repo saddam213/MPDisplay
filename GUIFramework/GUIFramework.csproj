@@ -101,6 +101,9 @@
     <Compile Include="GUI\GUIActionCollection.cs" />
     <Compile Include="GUI\GUIAnimationCollection.cs" />
     <Compile Include="GUI\GUIVisibleCondition.cs" />
+    <Compile Include="GUI\Windows\GUIPlayerWindow.xaml.cs">
+      <DependentUpon>GUIPlayerWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="GUI\Windows\GUIMPWindow.xaml.cs">
       <DependentUpon>GUIMPWindow.xaml</DependentUpon>
     </Compile>
@@ -166,6 +169,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="GUI\Dialogs\GUIMPDialog.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="GUI\Windows\GUIPlayerWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -44,6 +44,7 @@ namespace GUIFramework
         private ObservableCollection<IControlHost> _surfaceElements = new ObservableCollection<IControlHost>();
         private GUIWindow _currentWindow;
         private GUIMPDialog _currentMediaPortalDialog;
+        private GUIPlayerWindow _currentPlayerWindow;
         private List<GUIMPDDialog> _currentMPDisplayDialogs = new List<GUIMPDDialog>();
         private bool _currentWindowIsLocked;
         private Queue<int> _previousMPDisplayWindows = new Queue<int>();
@@ -80,6 +81,11 @@ namespace GUIFramework
         public IEnumerable<GUIMPWindow> MediaPortalWindows
         {
             get { return _surfaceElements.OfType<GUIMPWindow>(); }
+        }
+
+        public IEnumerable<GUIPlayerWindow> PlayerWindows
+        {
+            get { return _surfaceElements.OfType<GUIPlayerWindow>(); }
         }
 
         public IEnumerable<GUIMPDDialog> MPDisplayDialogs
@@ -342,7 +348,30 @@ namespace GUIFramework
             }
         }
 
-
+        private async Task UpdatePlayerWindow()
+        {
+            if (InfoRepository.Instance.PlaybackState == APIPlaybackState.Started)
+            {
+                var playerWindow = PlayerWindows.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible());
+                if (playerWindow != null && playerWindow != _currentPlayerWindow)
+                {
+                    if (_currentPlayerWindow != null)
+                    {
+                        await _currentPlayerWindow.WindowClose();
+                    }
+                    await RegisterWindowData(playerWindow);
+                    _currentPlayerWindow = playerWindow;
+                    await _currentPlayerWindow.WindowOpen();
+                }
+            }
+            else if (InfoRepository.Instance.PlaybackState == APIPlaybackState.Stopped)
+            {
+                if (_currentPlayerWindow != null)
+                {
+                    await _currentPlayerWindow.WindowClose();
+                }
+            }
+        }
 
 
 
@@ -374,8 +403,12 @@ namespace GUIFramework
             GUIActionManager.RegisterAction(XmlActionType.SwitchTheme, action => CurrentSkin.CycleTheme());
 
             InfoRepository.RegisterMessage<int>(InfoMessageType.WindowId, async windowId => await OpenMediaPortalWindow(windowId));
-
+            InfoRepository.RegisterMessage<int>(InfoMessageType.PlaybackState, async windowId => await UpdatePlayerWindow());
+            InfoRepository.RegisterMessage<int>(InfoMessageType.PlaybackType, async windowId => await UpdatePlayerWindow());
+            InfoRepository.RegisterMessage<int>(InfoMessageType.PlayerType, async windowId => await UpdatePlayerWindow());
         }
+
+      
 
       
 
@@ -616,7 +649,7 @@ namespace GUIFramework
             }
             catch (Exception ex)
             {
-                
+                Log.Exception("[SendMediaPortalAction] - ", ex);
             }
             return Task.FromResult<object>(null);
         }

@@ -116,7 +116,7 @@ namespace GUIFramework.GUI
             _isWindowOpenVisible = BaseXml.IsWindowOpenVisible;
             _focusedControlIds = skinXml.MediaPortalFocusControls.ToList();
             CreateControl();
-            _visibleCondition = new GUIVisibleCondition(ParentId, BaseXml.VisibleCondition);
+            _visibleCondition = new GUIVisibleCondition(this);
             CreateAnimations();
             OnInitialized();
         }
@@ -159,7 +159,7 @@ namespace GUIFramework.GUI
             {
                 Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
                 RegisterInfoData();
-                UpdateInfoData();
+                UpdateInfoData(); 
             }
 
             GUIActionManager.RegisterAction(XmlActionType.ControlVisible, ToggleControlVisibility);

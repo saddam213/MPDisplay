@@ -15,6 +15,7 @@ using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
 
+
 namespace MediaPortalPlugin
 {
     [PluginIcons("MediaPortalPlugin.Resources.Enabled.png", "MediaPortalPlugin.Resources.Disable.png")]
@@ -44,6 +45,21 @@ namespace MediaPortalPlugin
             if (_settings != null)
             {
                 Log.Message(LogLevel.Info, "[OnPluginStart] - Starting MPDisplay Plugin...");
+                if (_settings.LaunchMPDisplayOnStart)
+                {
+                    var processes = Process.GetProcessesByName("MPDisplay");
+
+                    if (_settings.RestartMPDisplayOnStart)
+                    {
+                        processes.CloseAll();
+                    }
+
+                    if (!processes.Any())
+                    {
+                        Process.Start(RegistrySettings.MPDisplayExePath);
+                    }
+                }
+
                 MessageService.InitializeMessageService(_settings.ConnectionSettings);
                 WindowManager.Instance.Initialize(_settings);
                 Log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
@@ -58,6 +74,10 @@ namespace MediaPortalPlugin
         private void OnPluginStop()
         {
             Log.Message(LogLevel.Info, "[OnPluginStop] - Stopping MPDisplay Plugin...");
+            if (_settings.CloseMPDisplayOnExit)
+            {
+                Process.GetProcessesByName("MPDisplay").CloseAll();
+            }
             MessageService.Instance.Shutdown();
             WindowManager.Instance.Shutdown();
             Log.Message(LogLevel.Info, "[OnPluginStop] - MPDisplay Plugin stopped.");

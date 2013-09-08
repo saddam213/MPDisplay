@@ -56,26 +56,27 @@ namespace MessageFramework.DataObjects
         public string ItemText { get; set; }
         public APIListLayout ItemLayout { get; set; }
 
-        public override bool Equals(object obj)
+        public bool IsEqual(APIListAction action)
         {
-             var lObj = obj as APIListAction;
-            if (lObj == null || this == null)
+            if (action == null || this == null)
             {
-                return this == null && lObj == null;
+                return this == null && action == null;
             }
 
-
-
-            if (ActionType == lObj.ActionType
-                && ItemListType == lObj.ItemListType
-                && ItemText == lObj.ItemText
-                && ItemIndex == lObj.ItemIndex)
+            if (ActionType == action.ActionType
+                && ItemListType == action.ItemListType
+                && ItemText == action.ItemText
+                && ItemIndex == action.ItemIndex)
             {
                 return true;
             }
 
-            return base.Equals(obj);
+            return false;
         }
+
+     
+
+
     }
 
     public enum APIListActionType

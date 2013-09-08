@@ -717,7 +717,7 @@ namespace MediaPortalPlugin.InfoManagers
                     ItemText = text
                 };
 
-            if (!action.Equals(_lastSelectedAction))
+            if (!action.IsEqual(_lastSelectedAction))
             {
 
                 MessageService.Instance.SendListMessage(new APIListMessage

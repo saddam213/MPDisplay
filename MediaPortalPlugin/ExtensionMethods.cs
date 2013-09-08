@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using MediaPortal.GUI.Library;
@@ -45,6 +46,28 @@ namespace MediaPortalPlugin
                     foreach (var item in (conrol as GUIGroup).Children.GetControls())
                     {
                         yield return item;
+                    }
+                }
+            }
+        }
+
+        public static void CloseAll(this Process[] processes, bool closeMainWindow = true, bool killProcess = false)
+        {
+            if (processes != null)
+            {
+                foreach (var process in processes)
+                {
+                    if (killProcess)
+                    {
+                        process.Kill();
+                    }
+                    else if (closeMainWindow)
+                    {
+                        process.CloseMainWindow();
+                    }
+                    else
+                    {
+                        process.Close();
                     }
                 }
             }
