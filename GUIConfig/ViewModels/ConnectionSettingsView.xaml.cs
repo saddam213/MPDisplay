@@ -16,7 +16,7 @@ using MPDisplay.Common.Settings;
 using System.ComponentModel;
 using MPDisplay.Common.Utils;
 using Common.Helpers;
-using Common.Settings.Language;
+using GUIConfig.Settings.Language;
 
 namespace GUIConfig.ViewModels
 {

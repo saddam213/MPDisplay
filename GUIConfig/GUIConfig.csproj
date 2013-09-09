@@ -70,6 +70,8 @@
     <Compile Include="Dialogs\LanguageDialog.xaml.cs">
       <DependentUpon>LanguageDialog.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Settings\Language\LanguageConverter.cs" />
+    <Compile Include="Settings\Language\LanguageHelper.cs" />
     <Compile Include="ViewModels\ConnectionSettingsView.xaml.cs">
       <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
     </Compile>

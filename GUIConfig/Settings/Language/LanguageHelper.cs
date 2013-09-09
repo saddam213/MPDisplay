@@ -6,7 +6,7 @@ using System.Text;
 using Common.Helpers;
 using MPDisplay.Common.Settings;
 
-namespace Common.Settings.Language
+namespace GUIConfig.Settings.Language
 {
    public class LanguageHelper
     {
@@ -66,6 +66,10 @@ namespace Common.Settings.Language
 
         public static string GetLanguageValue(string key)
         {
+            if (key == null)
+            {
+                return "";
+            }
             if (!_currentLanguage.LanguageKeys.Any(k => k.Key == key))
             {
                 _currentLanguage.LanguageKeys.Add(new LanguageKey { Key = key, Value = key });
@@ -73,7 +77,7 @@ namespace Common.Settings.Language
 
             }
 
-            return _currentLanguage.LanguageKeys.FirstOrDefault(k => k.Key == key).Value;;
+            return _currentLanguage.LanguageKeys.FirstOrDefault(k => k.Key == key).Value ?? "";;
         }
     }
 

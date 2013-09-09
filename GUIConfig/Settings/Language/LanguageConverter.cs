@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Windows.Data;
 
-namespace Common.Settings.Language
+namespace GUIConfig.Settings.Language
 {
     public class LanguageConverter : IValueConverter
     {

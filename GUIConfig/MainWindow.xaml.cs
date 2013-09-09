@@ -16,7 +16,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using Common.Helpers;
-using Common.Settings.Language;
+using GUIConfig.Settings.Language;
 using GUIConfig.Dialogs;
 using GUIConfig.ViewModels;
 using MPDisplay.Common.Log;

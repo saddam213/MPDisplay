@@ -2,9 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml"
-			 xmlns:common="clr-namespace:Common.Settings.Language;assembly=MPDisplay.Common">
+			 xmlns:language="clr-namespace:GUIConfig.Settings.Language;assembly=">
     <Application.Resources>
-		<common:LanguageConverter x:Key="LanguageConverter" />
+        <language:LanguageConverter x:Key="LanguageConverter" />
 		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </Application.Resources>
 </Application>
