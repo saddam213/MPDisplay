@@ -3,6 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:settings="clr-namespace:GUIConfig.Settings;assembly="
              mc:Ignorable="d" 
              Name="UI" MinWidth="218">
 	<UserControl.Style>
@@ -17,9 +18,6 @@
 	</UserControl.Style>
 
 	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ., FallbackValue=Connection, ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}">
-	
-
-
 			<StackPanel>
 			<Grid Margin="0,5,0,0">
 				<Grid.ColumnDefinitions>
@@ -28,8 +26,16 @@
 				</Grid.ColumnDefinitions>
 				<StackPanel Margin="0,0,5,0">
 					<TextBlock Text="{Binding ., FallbackValue=IPAddress, ConverterParameter=IPAddress, Converter={StaticResource LanguageConverter}}" />
-					<TextBox Text="{Binding ConnectionSettings.IpAddress, FallbackValue=IpAddress, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-				</StackPanel>
+                    <TextBox>
+                        <TextBox.Text>
+                            <Binding Path="ConnectionSettings.IpAddress" FallbackValue="IpAddress" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" >
+                                <Binding.ValidationRules>
+                                    <settings:IpAddressValidationRule ValidatesOnTargetUpdated="True"  />
+                                </Binding.ValidationRules>
+                            </Binding>
+                        </TextBox.Text>
+                    </TextBox>
+                </StackPanel>
 
 				<StackPanel Grid.Column="1">
 					<TextBlock Text="{Binding ., FallbackValue=Port, ConverterParameter=Port, Converter={StaticResource LanguageConverter}}" />
