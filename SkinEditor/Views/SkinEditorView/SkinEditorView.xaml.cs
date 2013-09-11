@@ -484,12 +484,14 @@ namespace SkinEditor.Views
         /// </summary>
         private void CreateContextMenuCommands()
         {
-            AddControlCommand = new RelayCommand<Type>(AddControl, param => CanExecuteAddControlCommand());
+            AddControlCommand = new RelayCommand(param => AddControl((Type)param), CanExecuteAddControlCommand);
             CopyControlCommand = new RelayCommand<string>(p => CopyControl(bool.Parse(p)), param => CanExecuteCopyControlCommand());
             PasteControlCommand = new RelayCommand(PasteControl,CanExecutePasteControlCommand);
             DeleteControlCommand = new RelayCommand(DeleteControl,CanExecuteDeleteControlCommand);
             MoveControlCommand = new RelayCommand<string>(p => MoveControl(bool.Parse(p)), param => CanExecuteMoveControlCommand());
         }
+
+    
 
         /// <summary>
         /// Determines whether AddControlCommand can execute.

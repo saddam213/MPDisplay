@@ -5,6 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 using MPDisplay.Common.Log;
+using MPDisplay.Common.Settings;
 
 namespace GUIConfig
 {
@@ -15,12 +16,7 @@ namespace GUIConfig
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-#if DEBUG
-            LoggingManager.AddLog(new WindowLogger("Config"));
-#else
-            LoggingManager.AddLog(new FileLogger(Environment.CurrentDirectory + "\\Logs", "Config"));
-#endif
-            base.OnStartup(e);
+            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Config"));
         }
     }
 }

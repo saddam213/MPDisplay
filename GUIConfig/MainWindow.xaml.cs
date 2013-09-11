@@ -35,7 +35,6 @@ namespace GUIConfig
 
         public MainWindow()
         {
-
             LanguageHelper.LoadLanguage();
             if (!LanguageHelper.HasLanguage(RegistrySettings.ConfigLanguage))
             {

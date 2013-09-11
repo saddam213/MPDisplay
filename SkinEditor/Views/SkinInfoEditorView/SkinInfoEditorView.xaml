@@ -128,6 +128,12 @@
 						
 						</TextBox>
 
+						<TextBlock Text="Group Name" Margin="0,3,0,0" />
+						<TextBox Text="{Binding SelectedSkinOption.Group, ElementName=UI,UpdateSourceTrigger=PropertyChanged}" />
+						
+					
+
+
 						<TextBlock Text="Description" Margin="0,3,0,0" />
 						<TextBox Text="{Binding SelectedSkinOption.Description, ElementName=UI,UpdateSourceTrigger=PropertyChanged}" MinHeight="100"/>
 						<CheckBox x:Name="previewImageEnabled" IsChecked="{Binding SelectedSkinOption.IsPreviewImageEnabled,ElementName =UI}" Margin="0,3,0,0" Content="Enable Preview Image" />

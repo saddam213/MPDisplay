@@ -42,6 +42,12 @@ namespace GUISkinFramework.Dialogs
         private XmlBrush _borderBrush;
         private XmlBrush _backgroundBrush;
 
+        public XmlDialog()
+        {
+            this.SetDefaultValues();
+        }
+
+
         [XmlIgnore]
         [Browsable(false)]
         public string DisplayName

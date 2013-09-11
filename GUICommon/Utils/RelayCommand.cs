@@ -15,7 +15,7 @@ namespace MPDisplay.Common.Utils
    {
        #region Fields 
 
-       readonly Action _execute;
+       readonly Action<object> _execute;
        private readonly Func<bool> _canExecute;
 
        #endregion 
@@ -28,6 +28,8 @@ namespace MPDisplay.Common.Utils
        /// <param name="execute">The execute.</param>
        public RelayCommand(Action execute) : this(execute, null) { }
 
+       public RelayCommand(Action<object> execute) : this(execute, null) { }
+
        /// <summary>
        /// Initializes a new instance of the <see cref="RelayCommand"/> class.
        /// </summary>
@@ -39,6 +41,15 @@ namespace MPDisplay.Common.Utils
            if (execute == null)
                throw new ArgumentNullException("execute");
            
+           _execute = p => execute();
+           _canExecute = canExecute;
+       }
+
+       public RelayCommand(Action<object> execute, Func<bool> canExecute)
+       {
+           if (execute == null)
+               throw new ArgumentNullException("execute");
+
            _execute = execute;
            _canExecute = canExecute;
        } 
@@ -75,7 +86,7 @@ namespace MPDisplay.Common.Utils
        /// <param name="parameter">Data used by the command.  If the command does not require data to be passed, this object can be set to null.</param>
        public void Execute(object parameter)
        {
-           _execute(); 
+           _execute(parameter); 
        } 
        
        #endregion 
@@ -124,7 +135,7 @@ namespace MPDisplay.Common.Utils
        /// <returns>
        /// true if this command can be executed; otherwise, false.
        /// </returns>
-      // [DebuggerStepThrough]
+       [DebuggerStepThrough]
        public bool CanExecute(object parameter)
        {
            if (_canExecute == null)

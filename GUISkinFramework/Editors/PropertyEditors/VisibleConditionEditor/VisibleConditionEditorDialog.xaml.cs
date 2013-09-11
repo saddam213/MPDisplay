@@ -124,10 +124,6 @@ namespace GUISkinFramework.Editor.PropertyEditors
             AutoCompleteList.Add(new AutoCompleteEntry("&&", "&&", "&&", "&", " "));
             AutoCompleteList.Add(new AutoCompleteEntry("||", "||", "||", "|", " "));
 
-         
-
-            AutoCompleteList.Add(new AutoCompleteEntry("IsSkinOptionEnabled(skinOption)", "IsSkinOptionEnabled(skinOption)", "skin", "iss", "option"));
-            AutoCompleteList.Add(new AutoCompleteEntry("!IsSkinOptionEnabled(skinOption)", "!IsSkinOptionEnabled(skinOption)", "!", "!skin", "!iss", "!option"));
             foreach (var option in SkinInfo.SkinOptions)
             {
                 AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsSkinOptionEnabled({0})", option.Name), string.Format("IsSkinOptionEnabled({0})", option.Name), "skin", "iss", "option"));
@@ -142,49 +138,58 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalWindow(windowId)", "IsMediaPortalWindow(windowId)", "MP", "ism", "media", "window", "win"));
                 AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalWindow(windowId)", "!IsMediaPortalWindow(windowId)", "!", "!MP", "!ism", "!media", "!window", "!win"));
             }
-            else if (_instance is XmlDialog)
+
+            if (_instance is XmlMPDialog)
             {
                 AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalDialog(windowId)", "IsMediaPortalDialog(windowId)", "MP", "ism", "media", "dialog", "dia"));
                 AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalDialog(windowId)", "!IsMediaPortalDialog(windowId)", "!", "!MP", "!ism", "!media", "!dialog", "!dia"));
             }
-            else if (_instance is XmlMPDialog || _instance is XmlMPDWindow || _instance is XmlPlayerWindow)
+
+            if (_instance is XmlPlayerWindow)
             {
                 foreach (var playType in Enum.GetNames(typeof(PlaybackType)))
                 {
                     AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsPlayer({0})", playType), string.Format("IsPlayer({0})", playType), "play", "isp", "player"));
                     AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsPlayer({0})", playType), string.Format("!IsPlayer({0})", playType), "!", "!play", "!isp", "!player"));
                 }
-
-                if (!(_instance is XmlPlayerWindow))
-                {
-
-                    foreach (var layout in Enum.GetNames(typeof(XmlListLayout)).Where(x => !x.Equals("Auto")))
-                    {
-                        AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("IsMediaPortalListLayout({0})", layout), "MP", "ism", "lay", "list"));
-                        AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsMediaPortalListLayout({0})", layout), string.Format("!IsMediaPortalListLayout({0})", layout), "!", "!MP", "!ism", "!lay", "!list"));
-                    }
-
-
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsControlVisible(controlId)", "IsControlVisible(controlId)", "control", "isc", "visible", "vis"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsControlVisible(controlId)", "!IsControlVisible(controlId)", "!", "!control", "!isc", "!visible", "!vis"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalControlFocused(controlId)", "IsMediaPortalControlFocused(controlId)", "MP", "media", "control", "ism", "focused", "foc"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalControlFocused(controlId)", "!IsMediaPortalControlFocused(controlId)", "!", "!MP", "!media", "!control", "!ism", "!focused", "!foc"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsPluginEnabled(pluginName)", "IsPluginEnabled(pluginName)", "MP", "media", "control", "ism", "focused", "foc"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsPluginEnabled(pluginName)", "!IsPluginEnabled(pluginName)", "!", "!MP", "!media", "!control", "!ism", "!focused", "!foc"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalPreviousWindow(windowId)", "IsMediaPortalPreviousWindow(windowId)", "MP", "ism", "media", "window", "win", "prev"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalPreviousWindow(windowId)", "!IsMediaPortalPreviousWindow(windowId)", "!", "!MP", "!ism", "!media", "!window", "!win", "!prev"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalWindow(windowId)", "IsMediaPortalWindow(windowId)", "MP", "ism", "media", "window", "win"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalWindow(windowId)", "!IsMediaPortalWindow(windowId)", "!", "!MP", "!ism", "!media", "!window", "!win"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsTvRecording", "IsTvRecording", "tv", "ist", "record", "rec"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsTvRecording", "!IsTvRecording", "!", "!tv", "!ist", "!record", "!rec"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalConnected", "IsMediaPortalConnected", "MP", "ism", "connect", "con"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalConnected", "!IsMediaPortalConnected", "!", "!MP", "!ism", "!connect", "!con"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsTVServerConnected", "IsTVServerConnected", "MP", "ist", "connect", "tv"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsTVServerConnected", "!IsTVServerConnected", "!", "!MP", "!ist", "!connect", "!tv"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("IsMPDisplayConnected", "IsMPDisplayConnected", "MP", "ist", "connect", "tv"));
-                    AutoCompleteList.Add(new AutoCompleteEntry("!IsMPDisplayConnected", "!IsMPDisplayConnected", "!", "!MP", "!ist", "!connect", "!tv"));
-                }
             }
+
+
+            if (_instance is XmlControl)
+            {
+
+                foreach (var playType in Enum.GetNames(typeof(PlaybackType)))
+                {
+                    AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsPlayer({0})", playType), string.Format("IsPlayer({0})", playType), "play", "isp", "player"));
+                    AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsPlayer({0})", playType), string.Format("!IsPlayer({0})", playType), "!", "!play", "!isp", "!player"));
+                }
+
+                foreach (var layout in Enum.GetNames(typeof(XmlListLayout)).Where(x => !x.Equals("Auto")))
+                {
+                    AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("IsMediaPortalListLayout({0})", layout), "MP", "ism", "lay", "list"));
+                    AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsMediaPortalListLayout({0})", layout), string.Format("!IsMediaPortalListLayout({0})", layout), "!", "!MP", "!ism", "!lay", "!list"));
+                }
+
+                AutoCompleteList.Add(new AutoCompleteEntry("IsControlVisible(controlId)", "IsControlVisible(controlId)", "control", "isc", "visible", "vis"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsControlVisible(controlId)", "!IsControlVisible(controlId)", "!", "!control", "!isc", "!visible", "!vis"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalControlFocused(controlId)", "IsMediaPortalControlFocused(controlId)", "MP", "media", "control", "ism", "focused", "foc"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalControlFocused(controlId)", "!IsMediaPortalControlFocused(controlId)", "!", "!MP", "!media", "!control", "!ism", "!focused", "!foc"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsPluginEnabled(pluginName)", "IsPluginEnabled(pluginName)", "MP", "media", "control", "ism", "focused", "foc"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsPluginEnabled(pluginName)", "!IsPluginEnabled(pluginName)", "!", "!MP", "!media", "!control", "!ism", "!focused", "!foc"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalPreviousWindow(windowId)", "IsMediaPortalPreviousWindow(windowId)", "MP", "ism", "media", "window", "win", "prev"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalPreviousWindow(windowId)", "!IsMediaPortalPreviousWindow(windowId)", "!", "!MP", "!ism", "!media", "!window", "!win", "!prev"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalWindow(windowId)", "IsMediaPortalWindow(windowId)", "MP", "ism", "media", "window", "win"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalWindow(windowId)", "!IsMediaPortalWindow(windowId)", "!", "!MP", "!ism", "!media", "!window", "!win"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsTvRecording", "IsTvRecording", "tv", "ist", "record", "rec"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsTvRecording", "!IsTvRecording", "!", "!tv", "!ist", "!record", "!rec"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsMediaPortalConnected", "IsMediaPortalConnected", "MP", "ism", "connect", "con"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsMediaPortalConnected", "!IsMediaPortalConnected", "!", "!MP", "!ism", "!connect", "!con"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsTVServerConnected", "IsTVServerConnected", "MP", "ist", "connect", "tv"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsTVServerConnected", "!IsTVServerConnected", "!", "!MP", "!ist", "!connect", "!tv"));
+                AutoCompleteList.Add(new AutoCompleteEntry("IsMPDisplayConnected", "IsMPDisplayConnected", "MP", "ist", "connect", "tv"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsMPDisplayConnected", "!IsMPDisplayConnected", "!", "!MP", "!ist", "!connect", "!tv"));
+            }
+
         }
 
 
