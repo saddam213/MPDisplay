@@ -393,6 +393,8 @@ namespace GUIFramework.Managers
                 {
                     WindowId = message.WindowId;
                     IsFullscreenVideo = message.IsFullscreenVideo;
+                    FocusedWindowControlId = -1;
+                    FocusedWindowControlId = message.FocusedControlId;
                 }
                 else if (message.MessageType == APIWindowMessageType.FocusedControlId)
                 {
@@ -428,5 +430,6 @@ namespace GUIFramework.Managers
         IsMPDisplayConnected,
         IsMediaPortalConnected,
         IsTVServerConnected,
+        SendListItem,
     }
 }

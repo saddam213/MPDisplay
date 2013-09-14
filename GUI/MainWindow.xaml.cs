@@ -28,6 +28,8 @@ namespace GUI
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        private Log Log = LoggingManager.GetLog(typeof(MainWindow));
+        private GUISettings _settings;
 
         #region Constructor
 
@@ -38,12 +40,12 @@ namespace GUI
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
-         //   Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),   new FrameworkPropertyMetadata { DefaultValue = 30 });
+            //   Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),   new FrameworkPropertyMetadata { DefaultValue = 30 });
             RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
             RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
-            RenderOptions.SetCachingHint(this, CachingHint.Cache);
-            RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
-            TextOptions.SetTextFormattingMode(this, TextFormattingMode.Ideal);
+            //     RenderOptions.SetCachingHint(this, CachingHint.Cache);
+            // RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
+            TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
             TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
             TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
             InitializeComponent();
@@ -52,36 +54,32 @@ namespace GUI
 
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
-        
+            Log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
+            e.Handled = true;
+            RestartMPDisplay();
         }
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-          
+            Log.Message(LogLevel.Error, "[UnhandledException] - An unknown exception occured{0}{1}", Environment.NewLine, e);
+            RestartMPDisplay();
         }
 
         #endregion
-     
 
-        /// <summary>
-        /// On MPDisplay Loaded
-        /// </summary>
-        void MainWindow_Loaded(object sender, EventArgs e)
+
+
+
+
+
+        public GUISettings Settings
         {
-        
+            get { return _settings; }
+            set { _settings = value; NotifyPropertyChanged("Settings"); }
         }
 
-     
-  private GUISettings _settings;
 
-	public GUISettings Settings
-	{
-		get { return _settings;}
-        set { _settings = value; NotifyPropertyChanged("Settings"); }
-	}
-	
 
-    
         /// <summary>
         /// Load MPDisplay.xml
         /// </summary>
@@ -100,15 +98,15 @@ namespace GUI
                 Close();
             }
             Settings = settings.GUISettings;
-         
+
 
             // Set base screen size/location, scaled to screens DPI
             var screen = GetDisplayByDeviceName(_settings.Display);
-            double left = _settings.CustomResolution ?screen.Bounds.X + _settings.ScreenOffSetX :screen.Bounds.X;
+            double left = _settings.CustomResolution ? screen.Bounds.X + _settings.ScreenOffSetX : screen.Bounds.X;
             double top = _settings.CustomResolution ? screen.Bounds.Y + _settings.ScreenOffSetY : screen.Bounds.Y;
             double width = _settings.CustomResolution ? (double)_settings.ScreenWidth : screen.Bounds.Width;
             double height = _settings.CustomResolution ? (double)_settings.ScreenHeight : screen.Bounds.Height;
-        
+
             PresentationSource source = PresentationSource.FromVisual(this);
             if (source != null)
             {
@@ -127,7 +125,7 @@ namespace GUI
             this.Width = width;
             this.Height = height;
 
-            if (_settings.DesktopMode)
+            if (!_settings.DesktopMode)
             {
                 this.WindowStyle = WindowStyle.None;
                 this.ResizeMode = System.Windows.ResizeMode.NoResize;
@@ -138,35 +136,56 @@ namespace GUI
         }
 
 
+        private void RestartMPDisplay()
+        {
+            try
+            {
+                surface.CloseDown();
+            }
+            catch (Exception ex)
+            {
+                Log.Exception("[CloseDown] - Error occured closing down GUISurface", ex);
+            }
 
- 
+            surface = null;
+            if (_settings.RestartOnError)
+            {
+                Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError is enabled, Waiting for user input...");
+                if (MessageBox.Show("An exception occured, Would you likr to restart?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                {
+                    Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError requested, Attempting to restart MPDisplay...");
+                    GC.Collect();
+                    GC.WaitForPendingFinalizers();
+                    GC.Collect();
+                    LoadSettings();
+                    return;
+                }
+
+                Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError declined, Shutting down MPDisplay.");
+            }
+            Close();
+        }
+
 
 
         #region Helpers
 
         private System.Windows.Forms.Screen GetDisplayByDeviceName(string name)
         {
-            return System.Windows.Forms.Screen.AllScreens.ToList().Find(d => d.DeviceName.Equals(name))
-                ?? System.Windows.Forms.Screen.AllScreens.ToList().Find(d => d.DeviceName.Equals(System.Windows.Forms.Screen.PrimaryScreen.DeviceName));
+            return System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.DeviceName.Equals(name))
+                ?? System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.Primary);
         }
 
         private void SetThreadPriority(string priority)
         {
-            if (Thread.CurrentThread.Priority.ToString() != priority)
-            {
-                foreach (ThreadPriority option in Enum.GetValues(typeof(ThreadPriority)))
-                {
-                    if (option.ToString() == priority)
-                    {
-                        Thread.CurrentThread.Priority = (ThreadPriority)(option);
-                    }
-                }
-            }
+            ThreadPriority option = ThreadPriority.Normal;
+            Enum.TryParse<ThreadPriority>(priority, out option);
+            Thread.CurrentThread.Priority = option;
         }
 
         #endregion
 
- 
+
 
         #region INotifyPropertyChanged
 
@@ -179,7 +198,7 @@ namespace GUI
             }
         }
 
-      
+
 
         #endregion
     }

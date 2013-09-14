@@ -45,6 +45,7 @@ namespace GUIFramework.GUI
         {
             BaseXml = skinXml;
             Id = BaseXml.Id;
+            VisibleCondition = new GUIVisibleCondition(this);
             Animations = new AnimationCollection(this, BaseXml.Animations, (condition) => OnAnimationStarted(condition), (condition) => OnAnimationCompleted(condition)); 
             CreateControls();
         }
@@ -83,7 +84,7 @@ namespace GUIFramework.GUI
 
         public bool CloseOnWindowChanged { get; set; }
 
-       
+        public GUIVisibleCondition VisibleCondition { get; set; }
 
         public AnimationCollection Animations { get; set; }
 

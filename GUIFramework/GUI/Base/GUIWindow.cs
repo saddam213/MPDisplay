@@ -75,22 +75,28 @@ namespace GUIFramework.GUI
             return Dispatcher.InvokeAsync(() =>
                 {
                     GUIVisibilityManager.RegisterControlVisibility(this);
-                 
+                    GUIActionManager.RegisterAction(XmlActionType.ControlVisible, ToggleControlVisibility);
+                    GUIVisibilityManager.RegisterMessage(VisibleMessageType.ControlVisibilityChanged, UpdateControlVisibility);
                     InfoRepository.RegisterMessage<int>(InfoMessageType.FocusedWindowControlId, OnMediaPortalFocusedControlChanged);
                     foreach (var control in Controls.GetControls())
                     {
                         control.OnWindowOpen();
                     }
                     Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
+                    OnMediaPortalFocusedControlChanged(InfoRepository.Instance.FocusedWindowControlId);
                 }).Task;
         }
 
+
+
+    
         public virtual Task WindowClose()
         {
             return Dispatcher.InvokeAsync(() =>
                {
                    GUIVisibilityManager.DeregisterControlVisibility(this);
-                
+                   GUIVisibilityManager.DeregisterMessage(VisibleMessageType.ControlVisibilityChanged, this);
+                   GUIActionManager.DeregisterAction(XmlActionType.ControlVisible, this);
                    InfoRepository.DeregisterMessage(InfoMessageType.FocusedWindowControlId, this);
 
                    foreach (var control in Controls.GetControls())
@@ -103,14 +109,19 @@ namespace GUIFramework.GUI
 
         public void OnMediaPortalFocusedControlChanged(int controlId)
         {
-            Dispatcher.BeginInvoke((Action)(() =>
-            {
-            foreach (var control in Controls.GetControls())
-            {
-                control.SetFocusedControlId(controlId);
-            }
-            }));
+            Dispatcher.InvokeAsync(() => Controls.ForAllControls(c => c.SetFocusedControlId(controlId)));
         }
+
+        private void UpdateControlVisibility()
+        {
+            Dispatcher.InvokeAsync(() => Controls.ForAllControls(c => c.UpdateControlVisibility()));
+        }
+
+        private void ToggleControlVisibility(XmlAction obj)
+        {
+            Dispatcher.InvokeAsync(() => Controls.ForAllControls(c => c.ToggleControlVisibility(obj)));
+        }
+
 
         #region Animations
 

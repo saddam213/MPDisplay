@@ -33,12 +33,12 @@ namespace GUIFramework.Managers
 
         public static void RegisterEQData(Action<byte[]> callback)
         {
-            Instance.RegisterMessage<byte[]>(GenericDataMessageType.EQData, callback);
+            Instance.DataService.Register<byte[]>(GenericDataMessageType.EQData, callback);
         }
 
         public static void DegisterEQData(object owner)
         {
-            Instance.DeregisterMessage(owner, GenericDataMessageType.EQData);
+            Instance.DataService.Deregister(GenericDataMessageType.EQData, owner);
         }
 
         public static int GetEQDataLength(IControlHost host)
@@ -46,7 +46,28 @@ namespace GUIFramework.Managers
             return Instance.GetMaxEQSize(host);
         }
 
+
+        public static void RegisterMessage(GenericDataMessageType message, Action callback)
+        {
+            Instance.DataService.Register(message, callback);
+        }
+
+        public static void RegisterMessage<T>(GenericDataMessageType message, Action<T> callback)
+        {
+            Instance.DataService.Register<T>(message, callback);
+        }
+
+        public static void DeregisterMessage(GenericDataMessageType message, object owner)
+        {
+            Instance.DataService.Deregister(message, owner);
+        }
+
         #endregion
+
+        public MessengerService<GenericDataMessageType> DataService
+        {
+            get { return _dataService; }
+        }
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -75,8 +96,16 @@ namespace GUIFramework.Managers
             {
                 switch (message.DataType)
                 {
+                    case APIDataMessageType.KeepAlive:
+                        break;
                     case APIDataMessageType.EQData:
-                        _dataService.NotifyListeners(GenericDataMessageType.EQData, message.ByteArray);
+                        DataService.NotifyListeners(GenericDataMessageType.EQData, message.ByteArray);
+                        break;
+                    case APIDataMessageType.ResetIteraction:
+                        DataService.NotifyListeners(GenericDataMessageType.ResetIteraction);
+                        break;
+                    case APIDataMessageType.MPActionId:
+                        DataService.NotifyListeners(GenericDataMessageType.MPActionId, message.IntValue);
                         break;
                     default:
                         break;
@@ -84,15 +113,7 @@ namespace GUIFramework.Managers
             }
         }
 
-        private void RegisterMessage<T>(GenericDataMessageType messageType, Action<T> callback)
-        {
-            _dataService.Register<T>(messageType, callback);
-        }
-
-        private void DeregisterMessage(object owner, GenericDataMessageType messageType)
-        {
-            _dataService.Deregister(messageType, owner);
-        }
+   
 
         public int GetMaxEQSize(IControlHost controlHost)
         {
@@ -110,6 +131,10 @@ namespace GUIFramework.Managers
 
     public enum GenericDataMessageType
     {
-        EQData
+        EQData,
+        LastMPAction,
+        LastUserMPAction,
+        ResetIteraction,
+        MPActionId
     }
 }

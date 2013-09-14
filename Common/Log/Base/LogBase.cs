@@ -63,10 +63,7 @@ namespace MPDisplay.Common.Log
         /// <summary>
         /// Gets the log time.
         /// </summary>
-        public string LogTime
-        {
-            get { return string.Format("{0} {1} ", DateTime.Now.ToShortDateString(), TimeSpan.FromTicks(DateTime.Now.TimeOfDay.Ticks)); }
-        }
+      
 
         /// <summary>
         /// Queues the log message.
@@ -76,7 +73,7 @@ namespace MPDisplay.Common.Log
         {
             lock (queue)
             {
-                queue.Enqueue(() => LogQueuedMessage(LogTime + message));
+                queue.Enqueue(() => LogQueuedMessage(message));
             }
             hasNewItems.Set();
         }

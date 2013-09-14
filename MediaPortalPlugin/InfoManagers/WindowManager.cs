@@ -48,10 +48,11 @@ namespace MediaPortalPlugin.InfoManagers
         private GUIWindow _currentWindow;
         private PluginSettings _settings;
         private int _previousFocusedControlId = -1;
-       
         private Dictionary<int, APIPlaybackType> _playerWindows = new Dictionary<int, APIPlaybackType>();
+        private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
+        private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
+        private APIPlaybackType _currentPlayerPlugin = APIPlaybackType.None;
     
-
         public GUIWindow CurrentWindow
         {
             get { return _currentWindow; }
@@ -84,31 +85,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         }
 
-        void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
-        {
-            if (action.wID != MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_MOVE)
-            {
-                SendFocusedControlMessage();
-            }
-        }
-
-        private void GUIWindowManager_OnActivateWindow(int windowId)
-        {
-            ThreadPool.QueueUserWorkItem((o) => SetCurrentWindow(windowId));
-        }
-     
-
-        void GUIWindowManager_Receivers(GUIMessage message)
-        {
-            //Log.Message(LogLevel.Debug, "[GUIWindowManager_Receivers] - Message: {0}, SenderControlId: {1}, SendToTargetWindow: {2}, TargetControlId: {3}, TargetWindowId: {4}"
-            //    + ", TargetWindowId: {5}, TargetWindowId: {6}, TargetWindowId: {7}, TargetWindowId: {8}"
-            //    +", TargetWindowId: {9}, TargetWindowId: {10}"
-            //    +", TargetWindowId: {11}, TargetWindowId: {12}, TargetWindowId: {13}, TargetWindowId: {14}"
-            //  , message.Message, message.SenderControlId, message.SendToTargetWindow, message.TargetControlId, message.TargetWindowId
-            //  ,message.Label, message.Label2, message.Label3, message.Label4
-            //  , message.Object, message.Object2
-            //  , message.Param1, message.Param2, message.Param3, message.Param4);
-        }
+      
 
       
 
@@ -123,11 +100,59 @@ namespace MediaPortalPlugin.InfoManagers
             PropertyManager.Instance.Shutdown();
         }
 
+        private void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
+        {
+            switch (action.wID)
+            {
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_DOWN:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_LEFT:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_RIGHT:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_UP:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_SHOW_ACTIONMENU:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
+                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_CLICK:
+                    SendInteractionMessage();
+                    break;
+                default:
+                    break;
+            }
+
+            SendFocusedControlMessage();
+
+            if (action.wID != MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_MOVE)
+            {
+                SendActionIdMessage((int)action.wID);
+            }
+        }
+
+        private void GUIWindowManager_OnActivateWindow(int windowId)
+        {
+            ThreadPool.QueueUserWorkItem((o) => SetCurrentWindow(windowId));
+        }
+
+
+        private void GUIWindowManager_Receivers(GUIMessage message)
+        {
+            //Log.Message(LogLevel.Debug, "[GUIWindowManager_Receivers] - Message: {0}, SenderControlId: {1}, SendToTargetWindow: {2}, TargetControlId: {3}, TargetWindowId: {4}"
+            //    + ", TargetWindowId: {5}, TargetWindowId: {6}, TargetWindowId: {7}, TargetWindowId: {8}"
+            //    +", TargetWindowId: {9}, TargetWindowId: {10}"
+            //    +", TargetWindowId: {11}, TargetWindowId: {12}, TargetWindowId: {13}, TargetWindowId: {14}"
+            //  , message.Message, message.SenderControlId, message.SendToTargetWindow, message.TargetControlId, message.TargetWindowId
+            //  ,message.Label, message.Label2, message.Label3, message.Label4
+            //  , message.Object, message.Object2
+            //  , message.Param1, message.Param2, message.Param3, message.Param4);
+        }
 
         public void OnMediaPortalMessageReceived(APIMediaPortalMessage message)
         {
             if (message != null)
             {
+                if (message.MessageType == APIMediaPortalMessageType.KeepAlive)
+                {
+                    return;
+                }
+
                 Log.Message(LogLevel.Verbose, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
                 if (message.MessageType == APIMediaPortalMessageType.WindowInfoMessage)
                 {
@@ -177,16 +202,23 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        public bool IsWindowChanging { get; set; }
-
         public void SendFullUpdate()
         {
-            SendWindowMessage();
-            SendFocusedControlMessage();
+            bool reset = _currentWindow == null;
+            Log.Message(LogLevel.Info, "[SendFullUpdate] - Sending full information update, Reset Window: {0}", reset);
+            if (reset) 
+            {
+                SetCurrentWindow(GUIWindowManager.ActiveWindow); 
+            }
+            else
+            {
+                SendWindowMessage();
+                SendFocusedControlMessage();
+            }
+           
             SendPlayerMessage();
         }
     
-
         private void SetCurrentWindow(int windowId)
         {
             ListManager.Instance.ClearWindowListControls();
@@ -213,11 +245,14 @@ namespace MediaPortalPlugin.InfoManagers
             SendFocusedControlMessage();
         }
 
+
+
+
         private void SendWindowMessage()
         {
             if (_currentWindow != null)
             {
-                Log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
+                Log.Message(LogLevel.Info, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
                    , _currentWindow.GetID, _currentWindow.GetFocusControlId());
                 MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
@@ -234,20 +269,23 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendFocusedControlMessage()
         {
-            int focusId = CurrentWindowFocusedControlId;
-            if (focusId != _previousFocusedControlId)
+            if (_currentWindow != null)
             {
-                _previousFocusedControlId = focusId;
-                Log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
-                MessageService.Instance.SendInfoMessage(new APIInfoMessage
+                int focusId = CurrentWindowFocusedControlId;
+                if (focusId != _previousFocusedControlId)
                 {
-                    MessageType = APIInfoMessageType.WindowMessage,
-                    WindowMessage = new APIWindowMessage
+                    _previousFocusedControlId = focusId;
+                    Log.Message(LogLevel.Info, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
+                    MessageService.Instance.SendInfoMessage(new APIInfoMessage
                     {
-                        MessageType = APIWindowMessageType.FocusedControlId,
-                        FocusedControlId = focusId
-                    }
-                });
+                        MessageType = APIInfoMessageType.WindowMessage,
+                        WindowMessage = new APIWindowMessage
+                        {
+                            MessageType = APIWindowMessageType.FocusedControlId,
+                            FocusedControlId = focusId
+                        }
+                    });
+                }
             }
         }
 
@@ -255,7 +293,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_currentWindow != null)
             {
-                Log.Message(LogLevel.Debug, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}"
+                Log.Message(LogLevel.Info, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}"
                     , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin);
                 MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
@@ -270,7 +308,25 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-     
+        private void SendInteractionMessage()
+        {
+            MessageService.Instance.SendDataMessage(new APIDataMessage
+            {
+                DataType = APIDataMessageType.ResetIteraction
+            });
+        }
+
+        private void SendActionIdMessage(int actionId)
+        {
+            MessageService.Instance.SendDataMessage(new APIDataMessage
+            {
+                DataType = APIDataMessageType.MPActionId,
+                IntValue = actionId
+            });
+        }
+
+
+        #region Player
 
         private void LoadPlayerPluginIds(IEnumerable<PlayerPlugin> pluginInfo)
         {
@@ -291,17 +347,9 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-
-
-
-        private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
-        private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
-        private APIPlaybackType _currentPlayerPlugin = APIPlaybackType.None;
-     
-
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-             Log.Message(LogLevel.Verbose, "[Player_PlayBackEnded] - PlayType: {0}", type);
+            Log.Message(LogLevel.Info, "[Player_PlayBackEnded] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Stopped;
             _currentPlaybackType = APIPlaybackType.None;
             _currentPlayerPlugin = APIPlaybackType.None;
@@ -310,7 +358,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename)
         {
-            Log.Message(LogLevel.Verbose, "[Player_PlayBackStopped] - PlayType: {0}", type);
+            Log.Message(LogLevel.Info, "[Player_PlayBackStopped] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Stopped;
             _currentPlaybackType = APIPlaybackType.None;
             _currentPlayerPlugin = APIPlaybackType.None;
@@ -319,12 +367,12 @@ namespace MediaPortalPlugin.InfoManagers
 
         void Player_PlayBackChanged(g_Player.MediaType type, int stoptime, string filename)
         {
-            Log.Message(LogLevel.Verbose, "[Player_PlayBackChanged] - PlayType: {0}", type);
+            Log.Message(LogLevel.Info, "[Player_PlayBackChanged] - PlayType: {0}", type);
         }
 
         private void Player_PlayBackStarted(g_Player.MediaType type, string filename)
         {
-            Log.Message(LogLevel.Verbose, "[Player_PlayBackStarted] - PlayType: {0}", type);
+            Log.Message(LogLevel.Info, "[Player_PlayBackStarted] - PlayType: {0}", type);
 
             _currentPlaybackState = APIPlaybackState.Started;
             _currentPlaybackType = GetPlaybackType(type);
@@ -359,17 +407,8 @@ namespace MediaPortalPlugin.InfoManagers
                 }
             }
 
-         
             SendPlayerMessage();
         }
-
-
-     
-    
-
-
-    
-
 
         private APIPlaybackType GetPlaybackType(g_Player.MediaType type)
         {
@@ -404,9 +443,7 @@ namespace MediaPortalPlugin.InfoManagers
             return GetPlaybackType(defaultType);
         }
 
-
-
-
+        #endregion
    
     }
 

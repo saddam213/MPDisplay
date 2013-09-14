@@ -97,35 +97,45 @@ namespace GUIFramework.GUI.Controls
         public override void ClearInfoData()
         {
             base.ClearInfoData();
-            if (ListItems != null)
-            {
-                ListItems.Clear();
-            }
+            //if (ListItems != null)
+            //{
+            //    ListItems.Clear();
+            //}
+        }
+
+        public async void OnListItemsReceived()
+        {
+             await Dispatcher.InvokeAsync(OnPropertyChanging);
         }
 
 
-
-
-        public void OnListLayoutReceived()
+        public async void OnListLayoutReceived()
         {
-            if (SkinXml.ListLayout == XmlListLayout.Auto)
+            await Dispatcher.InvokeAsync(() =>
             {
-                ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout());
-                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-            }
+                if (SkinXml.ListLayout == XmlListLayout.Auto)
+                {
+                    ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout());
+                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+                }
+            });
         }
 
         public async void OnSelectedItemReceived()
         {
-            var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
-            if (selectedItem != null && ListItems != null)
-            {
-                var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex);
-                if (item != null)
-                {
-                    SelectItem(item);
-                }
-           }
+              var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
+              if (selectedItem != null && ListItems != null)
+              {
+                  var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex);
+                  if (item != null)
+                  {
+                      await  Dispatcher.InvokeAsync(() =>
+                      {
+                          SelectItem(item);
+                      });
+                  }
+              }
+        
         }
 
 
@@ -179,7 +189,6 @@ namespace GUIFramework.GUI.Controls
             listbox.ScrollIntoView(item);
             ScrollItemToCenter(item);
             listbox.SelectedItem = item;
-            ListRepository.Instance.FocusListControlItem(this,item);
         }
 
         /// <summary>
@@ -319,7 +328,7 @@ namespace GUIFramework.GUI.Controls
         {
             StopSelectionTimer();
             _selectionTimer = new DispatcherTimer();
-            _selectionTimer.Interval = TimeSpan.FromSeconds(4);
+            _selectionTimer.Interval = TimeSpan.FromSeconds(2);
             _selectionTimer.Tick += (s, e) =>
             {
                 StopSelectionTimer();
@@ -393,6 +402,7 @@ namespace GUIFramework.GUI.Controls
             if (Math.Abs(newPos) < DragThreshold)
             {
                 ScrollItemToCenter(listbox.SelectedItem as APIListItem);
+                ListRepository.Instance.FocusListControlItem(this, listbox.SelectedItem as APIListItem);
             }
         }
 
@@ -423,6 +433,8 @@ namespace GUIFramework.GUI.Controls
         #endregion
 
 
-    
+
+
+      
     }
 }

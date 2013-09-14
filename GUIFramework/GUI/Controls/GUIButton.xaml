@@ -7,6 +7,7 @@
 			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" 
 			 ClipToBounds="False"
+			 x:Name="UI"
              d:DesignHeight="300" d:DesignWidth="300" 
 			 Canvas.Left="{Binding BaseXml.PosX,Mode=OneWay}"
 			 Canvas.Top="{Binding BaseXml.PosY,Mode=OneWay}"
@@ -31,6 +32,10 @@
 				<Setter Property="BorderBrush" Value="{Binding BaseXml.ControlStyle.NoFocusBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
 				<Style.Triggers>
 					<DataTrigger Binding="{Binding IsMouseDown}" Value="True">
+						<Setter Property="Background" Value="{Binding BaseXml.ControlStyle.FocusBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
+						<Setter Property="BorderBrush" Value="{Binding BaseXml.ControlStyle.FocusBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
+					</DataTrigger>
+					<DataTrigger Binding="{Binding IsControlFocused}" Value="True">
 						<Setter Property="Background" Value="{Binding BaseXml.ControlStyle.FocusBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
 						<Setter Property="BorderBrush" Value="{Binding BaseXml.ControlStyle.FocusBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
 					</DataTrigger>
@@ -69,6 +74,9 @@
 									<DataTrigger Binding="{Binding IsMouseDown}" Value="True">
 										<Setter Property="Foreground" Value="{Binding BaseXml.ControlStyle.FocusFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
 									</DataTrigger>
+									<DataTrigger Binding="{Binding IsControlFocused}" Value="True">
+										<Setter Property="Foreground" Value="{Binding BaseXml.ControlStyle.FocusFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}" />
+									</DataTrigger>
 								</Style.Triggers>
 							</Style>
 						</TextBlock.Style>
@@ -83,25 +91,37 @@
 
 	<base:GUIControl.Style>
 		<Style TargetType="{x:Type base:GUIControl}">
-			<Style.Triggers>
-				<DataTrigger  Binding="{Binding IsMouseDown, RelativeSource={RelativeSource Self}}" Value="True">
+			<Style.Resources>
+				<Storyboard x:Key="scaleDown" >
+					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleX" To="0.98" />
+					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleY" To="0.98" />
+				</Storyboard>
+				<Storyboard x:Key="scaleUp" >
+					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" />
+					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" />
+				</Storyboard>
+			</Style.Resources>
+
+				<Style.Triggers>
+				<Trigger Property="IsMouseDown" Value="True">
+					<Trigger.EnterActions>
+						<BeginStoryboard Storyboard="{StaticResource scaleDown}" HandoffBehavior="SnapshotAndReplace" />
+					</Trigger.EnterActions>
+					<Trigger.ExitActions>
+						<BeginStoryboard Storyboard="{StaticResource scaleUp}" HandoffBehavior="SnapshotAndReplace" />
+					</Trigger.ExitActions>
+				</Trigger>
+
+
+				<DataTrigger Binding="{Binding IsControlFocused, ElementName=UI}" Value="True">
 					<DataTrigger.EnterActions>
-						<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-							<Storyboard >
-								<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleX" To="0.98" />
-								<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleY" To="0.98" />
-							</Storyboard>
-						</BeginStoryboard>
+						<BeginStoryboard Storyboard="{StaticResource scaleDown}" HandoffBehavior="SnapshotAndReplace" />
 					</DataTrigger.EnterActions>
 					<DataTrigger.ExitActions>
-						<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-							<Storyboard>
-								<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" />
-								<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" />
-							</Storyboard>
-						</BeginStoryboard>
+						<BeginStoryboard Storyboard="{StaticResource scaleUp}" HandoffBehavior="SnapshotAndReplace" />
 					</DataTrigger.ExitActions>
 				</DataTrigger>
+
 			</Style.Triggers>
 		</Style>
 	</base:GUIControl.Style>

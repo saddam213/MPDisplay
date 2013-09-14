@@ -17,11 +17,17 @@ namespace MessageFramework.DataObjects
 
         [DataMember]
         public byte[] ByteArray { get; set; }
+
+        [DataMember]
+        public int IntValue { get; set; }
     }
 
     public enum APIDataMessageType
     {
+        KeepAlive,
         EQData,
+        MPActionId,
+        ResetIteraction,
     }
 
 }

@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:guiFramework="clr-namespace:GUIFramework;assembly=GUIFramework"
         Title="MainWindow" Height="350" Width="525" Name="UI" Background="Black">
-	<Viewbox Stretch="Fill">
-		<guiFramework:GUISurface x:Name="surface" />
+	<Viewbox Stretch="Fill" Cursor="{Binding Settings.CursorStyle}">
+			<guiFramework:GUISurface x:Name="surface" />
 	</Viewbox>
 </Window>

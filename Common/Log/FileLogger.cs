@@ -103,7 +103,7 @@ namespace MPDisplay.Common.Log
         {
             get
             {
-                yield return "Log Started at: " + LogTime;
+                yield return "Log Started at: " + DateTime.Now;
                 yield return Environment.OSVersion.VersionString;
                 yield return Assembly.GetExecutingAssembly().GetName().ToString();
             }

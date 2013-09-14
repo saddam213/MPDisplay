@@ -96,7 +96,13 @@ namespace GUIFramework.GUI
             get { return _animations; }
         }
 
-      
+     
+        public bool IsControlFocused
+        {
+            get { return _isControlfocused; }
+            set { _isControlfocused = value; NotifyPropertyChanged("IsControlFocused"); }
+        }
+        
 
         #endregion
 
@@ -141,8 +147,6 @@ namespace GUIFramework.GUI
         public virtual void OnWindowClose()
         {
             Animations.StartAnimation(XmlAnimationCondition.WindowClose);
-            GUIVisibilityManager.DeregisterMessage(VisibleMessageType.ControlVisibilityChanged, this);
-            GUIActionManager.DeregisterAction(XmlActionType.ControlVisible, this);
             DeregisterInfoData();
         }
 
@@ -162,8 +166,6 @@ namespace GUIFramework.GUI
                 UpdateInfoData(); 
             }
 
-            GUIActionManager.RegisterAction(XmlActionType.ControlVisible, ToggleControlVisibility);
-            GUIVisibilityManager.RegisterMessage(VisibleMessageType.ControlVisibilityChanged, UpdateControlVisibility);
             UpdateControlVisibility();
         } 
 
@@ -176,7 +178,24 @@ namespace GUIFramework.GUI
         /// </summary>
         public void CreateAnimations()
         {
-            _animations = new AnimationCollection(this, BaseXml.Animations, (condition) => OnAnimationStarted(condition), (condition) => OnAnimationCompleted(condition));
+            _animations = new AnimationCollection(this, BaseXml.Animations, AnimationStarted, AnimationComplete);
+        }
+
+
+        private void AnimationStarted(XmlAnimationCondition condition)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                OnAnimationStarted(condition);
+            });
+        }
+
+        private void AnimationComplete(XmlAnimationCondition condition)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                OnAnimationCompleted(condition);
+            });
         }
 
         /// <summary>
@@ -185,7 +204,7 @@ namespace GUIFramework.GUI
         /// <param name="condition">The condition.</param>
         public virtual void OnAnimationStarted(XmlAnimationCondition condition)
         {
-            Log.Message(LogLevel.Verbose, "OnAnimationStarted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
+           // Log.Message(LogLevel.Verbose, "OnAnimationStarted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
             switch (condition)
             {
                 case XmlAnimationCondition.VisibleTrue:
@@ -202,7 +221,7 @@ namespace GUIFramework.GUI
         /// <param name="condition">The condition.</param>
         public virtual void OnAnimationCompleted(XmlAnimationCondition condition)
         {
-            Log.Message(LogLevel.Verbose, "OnAnimationCompleted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
+            //Log.Message(LogLevel.Verbose, "OnAnimationCompleted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
             switch (condition)
             {
                 case XmlAnimationCondition.VisibleFalse:
@@ -276,7 +295,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Called when [visible false].
         /// </summary>
-        public void OnVisibleFalse()
+        private void OnVisibleFalse()
         {
             Animations.StartAnimation(XmlAnimationCondition.VisibleFalse);
             DeregisterInfoData();
@@ -285,7 +304,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Called when [visible true].
         /// </summary>
-        public void OnVisibleTrue()
+        private void OnVisibleTrue()
         {
             Animations.StartAnimation(XmlAnimationCondition.VisibleTrue);
             RegisterInfoData();
@@ -296,7 +315,7 @@ namespace GUIFramework.GUI
         /// Toggles the control visibility.
         /// </summary>
         /// <param name="action">The action.</param>
-        private void ToggleControlVisibility(XmlAction action)
+        public void ToggleControlVisibility(XmlAction action)
         {
             if (action != null && action.GetParam1As<int>(-1) == Id)
             {
@@ -308,22 +327,19 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the control visibility.
         /// </summary>
-        private void UpdateControlVisibility()
+        public void UpdateControlVisibility()
         {
-            Dispatcher.Invoke(() =>
+            if (!_isVisibleToggled)
             {
-                if (!_isVisibleToggled)
+                if (_visibleCondition.HasCondition)
                 {
-                    if (_visibleCondition.HasCondition)
-                    {
-                        SetControlVisibility(_visibleCondition.ShouldBeVisible());
-                    }
-                    else
-                    {
-                        SetControlVisibility(_isWindowOpenVisible);
-                    }
+                    SetControlVisibility(_visibleCondition.ShouldBeVisible());
                 }
-            });
+                else
+                {
+                    SetControlVisibility(_isWindowOpenVisible);
+                }
+            }
         }
 
         /// <summary>
@@ -354,7 +370,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Called when [focus false].
         /// </summary>
-        public void OnFocusFalse()
+        private void OnFocusFalse()
         {
             Animations.StartAnimation(XmlAnimationCondition.FocusFalse);
         }
@@ -362,7 +378,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Called when [focus true].
         /// </summary>
-        public void OnFocusTrue()
+        private void OnFocusTrue()
         {
             Animations.StartAnimation(XmlAnimationCondition.FocusTrue);
         }
@@ -386,7 +402,7 @@ namespace GUIFramework.GUI
                     {
                         OnFocusTrue();
                     }
-                    _isControlfocused = shouldFocus;
+                    IsControlFocused = shouldFocus;
                 }
             }
         }

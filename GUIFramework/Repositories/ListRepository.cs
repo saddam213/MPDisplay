@@ -33,6 +33,12 @@ namespace GUIFramework.Managers
             }
         }
 
+
+        public static void RegisterMessage<T>(ListServiceMessage message, Action<T> callback)
+        {
+            Instance._listService.Register<T>(message, callback);
+        }
+
         public static void RegisterListMessage(GUIList listcontrol, XmlListType listType)
         {
             Instance.RegisterList(listcontrol, listType);
@@ -208,16 +214,16 @@ namespace GUIFramework.Managers
             switch (listType)
             {
                 case XmlListType.MediaPortalListControl:
-                    _listService.Register(ListServiceMessage.ListItems, listcontrol.OnPropertyChanging);
+                    _listService.Register(ListServiceMessage.ListItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.ListItemSelect, listcontrol.OnSelectedItemReceived);
                     _listService.Register(ListServiceMessage.ListItemLayout,  listcontrol.OnListLayoutReceived);
                     break;
                 case XmlListType.MediaPortalButtonGroup:
-                    _listService.Register(ListServiceMessage.GroupItems, listcontrol.OnPropertyChanging);
+                    _listService.Register(ListServiceMessage.GroupItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.GroupItemSelect, listcontrol.OnSelectedItemReceived);
                     break;
                 case XmlListType.MediaPortalMenuControl:
-                    _listService.Register(ListServiceMessage.MenuItems, listcontrol.OnPropertyChanging);
+                    _listService.Register(ListServiceMessage.MenuItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.MenuItemSelect, listcontrol.OnSelectedItemReceived);
                     break;
                 case XmlListType.MPDisplaySkins:
@@ -225,11 +231,11 @@ namespace GUIFramework.Managers
                     _listService.Register(ListServiceMessage.SkinItemSelect, listcontrol.OnSelectedItemReceived);
                     break;
                 case XmlListType.MPDisplayStyles:
-                    _listService.Register(ListServiceMessage.StyleItems, listcontrol.OnPropertyChanging);
+                    _listService.Register(ListServiceMessage.StyleItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.StyleItemSelect, listcontrol.OnSelectedItemReceived);
                     break;
                 case XmlListType.MPDisplayLanguages:
-                    _listService.Register(ListServiceMessage.LanguageItems, listcontrol.OnPropertyChanging);
+                    _listService.Register(ListServiceMessage.LanguageItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.LanguageItemSelect, listcontrol.OnSelectedItemReceived);
                     break;
                 default:
@@ -326,21 +332,16 @@ namespace GUIFramework.Managers
 
         private void SendListAction(APIListActionType actionType, APIListType listType, APIListItem item)
         {
-            //GUIMessageService.Instance.SendMediaPortalMessage(new APIMediaPortalMessage
-            //{
-            //    MessageType = APIMediaPortalMessageType.ActionMessage,
-            //    ActionMessage = new APIActionMessage
-            //    {
-            //        ActionType = APIActionMessageType.ListAction,
-            //        ListAction = new APIListAction
-            //        {
-            //            ActionType = actionType,
-            //            ItemListType = listType,
-            //            ItemText = item.Label,
-            //            ItemIndex = item.Index,
-            //        }
-            //    }
-            //});
+            var action = new APIListAction
+                     {
+                         ActionType = actionType,
+                         ItemListType = listType,
+                         ItemText = item.Label,
+                         ItemIndex = item.Index,
+                     };
+
+
+            _listService.NotifyListeners(ListServiceMessage.SendItem, action);
         }
 
 
@@ -418,22 +419,7 @@ namespace GUIFramework.Managers
             });
         }
 
-        public enum ListServiceMessage
-        {
-            ListItems,
-            ListItemSelect,
-            ListItemLayout,
-            MenuItems,
-            MenuItemSelect,
-            GroupItems,
-            GroupItemSelect,
-            SkinItems,
-            SkinItemSelect,
-            StyleItems,
-            StyleItemSelect,
-            LanguageItems,
-            LanguageItemSelect
-        }
+   
 
 
 
@@ -447,5 +433,23 @@ namespace GUIFramework.Managers
             }
             return new List<APIListType>();
         }
+    }
+
+    public enum ListServiceMessage
+    {
+        ListItems,
+        ListItemSelect,
+        ListItemLayout,
+        MenuItems,
+        MenuItemSelect,
+        GroupItems,
+        GroupItemSelect,
+        SkinItems,
+        SkinItemSelect,
+        StyleItems,
+        StyleItemSelect,
+        LanguageItems,
+        LanguageItemSelect,
+        SendItem
     }
 }

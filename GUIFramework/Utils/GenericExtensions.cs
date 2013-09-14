@@ -96,12 +96,25 @@ namespace GUIFramework
             }
         }
 
-        public static T DefaultWindow<T>(this IEnumerable<T> windows) where T : GUIWindow
+        public static void ForAllControls(this List<GUIControl> controls, Action<GUIControl> action)
         {
-            return windows.FirstOrDefault(w => w.IsDefault) ?? windows.FirstOrDefault();
+            foreach (var control in controls.GetControls())
+            {
+                action(control);
+            }
         }
 
+        public static T GetOrDefault<T>(this IEnumerable<T> windows, int id) where T : GUIWindow
+        {
+            return windows.FirstOrDefault(w => w.Id == id)
+                ?? windows.FirstOrDefault(w => w.IsDefault);
+        }
 
+        public static T GetOrDefault<T>(this IEnumerable<T> windows) where T : GUIWindow
+        {
+            return windows.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible())
+                ?? windows.FirstOrDefault(w => w.IsDefault);
+        }
 
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>
     (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
@@ -220,6 +233,33 @@ namespace GUIFramework
             if (second.Image != null)
             {
                 return second.Image.ImageEquals(first.Image);
+            }
+            return false;
+        }
+
+
+        public static bool IsMusic(this APIPlaybackType type)
+        {
+            return type != APIPlaybackType.None && !type.IsVideo();
+        }
+
+        public static bool IsVideo(this APIPlaybackType type)
+        {
+            switch (type)
+            {
+                case APIPlaybackType.IsTV:
+                case APIPlaybackType.IsDVD:
+                case APIPlaybackType.IsVideo:
+                case APIPlaybackType.IsTVRecording:
+                case APIPlaybackType.MyFilms:
+                case APIPlaybackType.MovingPictures:
+                case APIPlaybackType.MPTVSeries:
+                case APIPlaybackType.mvCentral:
+                case APIPlaybackType.OnlineVideos:
+                case APIPlaybackType.MyAnime:
+                    return true;
+                default:
+                    break;
             }
             return false;
         }

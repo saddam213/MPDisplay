@@ -494,23 +494,40 @@ namespace MPDisplay.Common.Controls
 
         #endregion
 
-        private bool _isMouseDown;
+        //private bool _isMouseDown;
+        //public bool IsMouseDown
+        //{
+        //    get { return _isMouseDown; }
+        //    set { _isMouseDown = value; NotifyPropertyChanged("IsMouseDown"); }
+        //}
+
+
+
+
         public bool IsMouseDown
         {
-            get { return _isMouseDown; }
-            set { _isMouseDown = value; NotifyPropertyChanged("IsMouseDown"); }
+            get { return (bool)GetValue(IsMouseDownProperty); }
+            set { SetValue(IsMouseDownProperty, value); }
         }
+
+        // Using a DependencyProperty as the backing store for IsMouseDown.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty IsMouseDownProperty =
+            DependencyProperty.Register("IsMouseDown", typeof(bool), typeof(Surface3D), new PropertyMetadata(false));
+
+        
 
         protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
             IsMouseDown = true;
             base.OnMouseDown(e);
+            e.Handled = true;
         }
 
         protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
             IsMouseDown = false;
             base.OnMouseUp(e);
+            e.Handled = true;
         }
 
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
