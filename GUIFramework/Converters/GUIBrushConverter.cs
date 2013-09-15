@@ -58,7 +58,7 @@ namespace GUIFramework.Converters
                     return GUIImageManager.GetImage(background);
              
             }
-            return null;
+            return new SolidColorBrush(Colors.Transparent);
         }
 
 

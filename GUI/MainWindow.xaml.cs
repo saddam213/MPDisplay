@@ -42,13 +42,15 @@ namespace GUI
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
             //   Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),   new FrameworkPropertyMetadata { DefaultValue = 30 });
             RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
-            RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
+          //  RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
             //     RenderOptions.SetCachingHint(this, CachingHint.Cache);
             // RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
-            TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
-            TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
-            TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
+         //   TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+         //   TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
+         //   TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
+            
             InitializeComponent();
+            DataContext = this;
             LoadSettings();
         }
 
@@ -140,7 +142,7 @@ namespace GUI
         {
             try
             {
-                surface.CloseDown();
+                surface.CloseDown(false);
             }
             catch (Exception ex)
             {
@@ -151,7 +153,7 @@ namespace GUI
             if (_settings.RestartOnError)
             {
                 Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError is enabled, Waiting for user input...");
-                if (MessageBox.Show("An exception occured, Would you likr to restart?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
+                if (MessageBox.Show("An exception occured, Would you like to restart?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
                     Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError requested, Attempting to restart MPDisplay...");
                     GC.Collect();
@@ -166,7 +168,19 @@ namespace GUI
             Close();
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
+            surface.CloseDown(false);
+            base.OnClosing(e);
+        }
 
+        protected override void OnClosed(EventArgs e)
+        {
+            Log.Message(LogLevel.Info, "[OnClosing] - Close complete.");
+            LoggingManager.Destroy();
+            base.OnClosed(e);
+        }
 
         #region Helpers
 

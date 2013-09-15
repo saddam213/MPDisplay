@@ -21,7 +21,9 @@
 	<guiConverters:GUIBrushConverter x:Key="GUIBrushConverter" />
 	<guiConverters:CoverFlowGreaterThanSelectedIndexConverter  x:Key="GreaterThanSelectedIndexConverter" />
 
-
+    <Style TargetType="ItemsControl">
+        <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="False" />
+    </Style>
 
 
 

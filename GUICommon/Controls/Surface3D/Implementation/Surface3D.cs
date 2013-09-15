@@ -494,12 +494,7 @@ namespace MPDisplay.Common.Controls
 
         #endregion
 
-        //private bool _isMouseDown;
-        //public bool IsMouseDown
-        //{
-        //    get { return _isMouseDown; }
-        //    set { _isMouseDown = value; NotifyPropertyChanged("IsMouseDown"); }
-        //}
+       
 
 
 
@@ -520,14 +515,12 @@ namespace MPDisplay.Common.Controls
         {
             IsMouseDown = true;
             base.OnMouseDown(e);
-            e.Handled = true;
         }
 
         protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
             IsMouseDown = false;
             base.OnMouseUp(e);
-            e.Handled = true;
         }
 
         protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
@@ -547,7 +540,6 @@ namespace MPDisplay.Common.Controls
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
-
 
 
 

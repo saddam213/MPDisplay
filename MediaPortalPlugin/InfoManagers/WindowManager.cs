@@ -204,18 +204,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void SendFullUpdate()
         {
-            bool reset = _currentWindow == null;
-            Log.Message(LogLevel.Info, "[SendFullUpdate] - Sending full information update, Reset Window: {0}", reset);
-            if (reset) 
-            {
-                SetCurrentWindow(GUIWindowManager.ActiveWindow); 
-            }
-            else
-            {
-                SendWindowMessage();
-                SendFocusedControlMessage();
-            }
-           
+            Log.Message(LogLevel.Info, "[SendFullUpdate] - Sending full information update");
+            SetCurrentWindow(GUIWindowManager.ActiveWindow); 
             SendPlayerMessage();
         }
     

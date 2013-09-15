@@ -89,6 +89,7 @@ namespace GUIFramework.Managers
             _previousWindowId = -1;
             _focusedDialogControlId = -1;
             _focusedWindowControlId = -1;
+           
         }
 
         public void ResetRepository()

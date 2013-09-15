@@ -76,7 +76,7 @@ namespace MediaPortalPlugin
             Log.Message(LogLevel.Info, "[OnPluginStop] - Stopping MPDisplay Plugin...");
             if (_settings.CloseMPDisplayOnExit)
             {
-                Process.GetProcessesByName("MPDisplay").CloseAll();
+                Process.GetProcessesByName("MPDisplay").CloseAll(true);
             }
             MessageService.Instance.Shutdown();
             WindowManager.Instance.Shutdown();

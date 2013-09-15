@@ -5,8 +5,17 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
-             d:DesignHeight="300" d:DesignWidth="300" x:Name="UI">
+             x:Name="UI">
     <Grid DataContext="{Binding ElementName=UI}">
-        <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" VerticalAlignment="Top" PropertyChanged="ConnectionSettingsView_PropertyChanged"/>
+        <StackPanel Orientation="Horizontal">
+            <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" VerticalAlignment="Top" PropertyChanged="ConnectionSettingsView_PropertyChanged"/>
+            <GroupBox Header="Settings">
+                <StackPanel Margin="0,5,0,0">
+                    <CheckBox IsChecked="{Binding DataObject.LaunchMPDisplayOnStart}" Content="{Binding ConverterParameter=Start MPDisplay when MediaPortal starts, Converter={StaticResource LanguageConverter}}" Margin="5,2,0,0"/>
+                    <CheckBox IsChecked="{Binding DataObject.RestartMPDisplayOnStart}" Content="{Binding ConverterParameter=Restart MPDisplay when MediaPortal starts, Converter={StaticResource LanguageConverter}}" Margin="5,2,0,0" />
+                    <CheckBox IsChecked="{Binding DataObject.CloseMPDisplayOnExit}" Content="{Binding ConverterParameter=Close MPDisplay when MediaPortal closes, Converter={StaticResource LanguageConverter}}" Margin="5,2,0,0" />
+                </StackPanel>
+            </GroupBox>
+        </StackPanel>
     </Grid>
 </Views:ViewModelBase>

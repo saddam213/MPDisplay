@@ -66,9 +66,9 @@ namespace GUIConfig.Settings.Language
 
         public static string GetLanguageValue(string key)
         {
-            if (key == null)
+            if (key == null || _currentLanguage == null)
             {
-                return "";
+                return key ?? string.Empty;
             }
             if (!_currentLanguage.LanguageKeys.Any(k => k.Key == key))
             {

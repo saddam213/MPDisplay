@@ -12,6 +12,9 @@ using System.Threading;
 
 namespace MediaPortalPlugin
 {
+    /// <summary>
+    /// 
+    /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     public class MessageService : IMessageCallback
     {
@@ -19,11 +22,17 @@ namespace MediaPortalPlugin
 
         private static MessageService instance;
 
+        /// <summary>
+        /// Prevents a default instance of the <see cref="MessageService"/> class from being created.
+        /// </summary>
         private MessageService()
         {
             Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(MessageService));
         }
 
+        /// <summary>
+        /// Gets the instance.
+        /// </summary>
         public static MessageService Instance
         {
             get
@@ -36,6 +45,10 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Initializes the message service.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
         public static void InitializeMessageService(ConnectionSettings settings)
         {
             Instance.InitializeConnection(settings);
@@ -58,13 +71,30 @@ namespace MediaPortalPlugin
 
         #region Properties
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [is connected].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [is connected]; otherwise, <c>false</c>.
+        /// </value>
         public bool IsConnected { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [is mp display connected].
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [is mp display connected]; otherwise, <c>false</c>.
+        /// </value>
         public bool IsMPDisplayConnected { get; set; } 
 
         #endregion
 
         #region Connection
 
+        /// <summary>
+        /// Initializes the connection.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
         public void InitializeConnection(ConnectionSettings settings)
         {
             try
@@ -105,14 +135,14 @@ namespace MediaPortalPlugin
                 InstanceContext site = new InstanceContext(this);
                 if (_messageClient != null)
                 {
-                    _messageClient.InnerChannel.Faulted -= ConnectionFaulted;
-                    _messageClient.ConnectCompleted -= ConnectCompleted;
+                    _messageClient.InnerChannel.Faulted -= OnConnectionFaulted;
+                    _messageClient.ConnectCompleted -= OnConnectCompleted;
                     _messageClient = null;
                 }
 
                 _messageClient = new MessageClient(site, _serverBinding, _serverEndpoint);
-                _messageClient.InnerChannel.Faulted += ConnectionFaulted;
-                _messageClient.ConnectCompleted += ConnectCompleted;
+                _messageClient.InnerChannel.Faulted += OnConnectionFaulted;
+                _messageClient.ConnectCompleted += OnConnectCompleted;
 
                 _connection = new APIConnection("MediaPortalPlugin");
                 ConnectToService();
@@ -124,22 +154,22 @@ namespace MediaPortalPlugin
             }
         }
 
-        private void ConnectCompleted(object sender, ConnectCompletedEventArgs e)
+        /// <summary>
+        /// Shutdowns this instance.
+        /// </summary>
+        public void Shutdown()
         {
-            if (e.Error != null)
-            {
-                Log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", e.Error.Message);
-            }
-            else
-            {
-                Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
-                foreach (var connection in e.Result.Where(c => !c.ConnectionName.Equals("MediaPortalPlugin")))
-                {
-                    SessionConnected(connection);
-                }
-            }
+            StopKeepAlive();
+            Log.Message(LogLevel.Info, "[Shutdown] - Shuting down connection instance.");
+            _isDisconnecting = true;
+            Disconnect();
         }
 
+     
+
+        /// <summary>
+        /// Starts the keep alive.
+        /// </summary>
         private void StartKeepAlive()
         {
             StopKeepAlive();
@@ -150,6 +180,9 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Stops the keep alive.
+        /// </summary>
         private void StopKeepAlive()
         {
             if (_keepAlive != null)
@@ -160,6 +193,10 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Sends the keep alive.
+        /// </summary>
+        /// <param name="state">The state.</param>
         private void SendKeepAlive(object state)
         {
             if (!IsConnected)
@@ -171,6 +208,9 @@ namespace MediaPortalPlugin
             SendDataMessage(new APIDataMessage { DataType = APIDataMessageType.KeepAlive });
         }
 
+        /// <summary>
+        /// Connects to service.
+        /// </summary>
         public void ConnectToService()
         {
             IsConnected = false;
@@ -182,14 +222,31 @@ namespace MediaPortalPlugin
             }
         }
 
-        public void Shutdown()
+        /// <summary>
+        /// Called when connect completes.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="ConnectCompletedEventArgs"/> instance containing the event data.</param>
+        private void OnConnectCompleted(object sender, ConnectCompletedEventArgs e)
         {
-            StopKeepAlive();
-            Log.Message(LogLevel.Info, "[Shutdown] - Shuting down connection instance.");
-            _isDisconnecting = true;
-            Disconnect();
+            if (e.Error != null)
+            {
+                Log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", e.Error.Message);
+            }
+            else
+            {
+                Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
+                foreach (var connection in e.Result)
+                {
+                    SessionConnected(connection);
+                }
+            }
         }
+     
 
+        /// <summary>
+        /// Reconnects this session.
+        /// </summary>
         public void Reconnect()
         {
             if (!_isDisconnecting)
@@ -200,6 +257,9 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Disconnects this session.
+        /// </summary>
         public void Disconnect()
         {
             IsConnected = false;
@@ -215,6 +275,10 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Called when a Session is connected.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
         public void SessionConnected(APIConnection connection)
         {
             if (connection != null)
@@ -236,6 +300,10 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Called when a Session is disconnected.
+        /// </summary>
+        /// <param name="connection">The connection.</param>
         public void SessionDisconnected(APIConnection connection)
         {
             if (connection != null)
@@ -258,7 +326,12 @@ namespace MediaPortalPlugin
             }
         }
 
-        private void ConnectionFaulted(object sender, EventArgs e)
+        /// <summary>
+        /// Called when connection faulted.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void OnConnectionFaulted(object sender, EventArgs e)
         {
             Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
             IsConnected = false;
@@ -269,6 +342,10 @@ namespace MediaPortalPlugin
 
         #region Send/Receive
 
+        /// <summary>
+        /// Receives the mediaportal message.
+        /// </summary>
+        /// <param name="message">The message.</param>
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
             Log.Message(LogLevel.Verbose, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
@@ -344,6 +421,10 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Sends the data message.
+        /// </summary>
+        /// <param name="dataMessage">The data message.</param>
         public void SendDataMessage(APIDataMessage dataMessage)
         {
             try

@@ -17,7 +17,7 @@
 		</Style>
 	</UserControl.Style>
 
-	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ., FallbackValue=Connection, ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}">
+	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}">
 			<StackPanel>
 			<Grid Margin="0,5,0,0">
 				<Grid.ColumnDefinitions>
@@ -25,7 +25,7 @@
 					<ColumnDefinition Width="1*"/>
 				</Grid.ColumnDefinitions>
 				<StackPanel Margin="0,0,5,0">
-					<TextBlock Text="{Binding ., FallbackValue=IPAddress, ConverterParameter=IPAddress, Converter={StaticResource LanguageConverter}}" />
+					<TextBlock Text="{Binding FallbackValue=IPAddress, ConverterParameter=IPAddress, Converter={StaticResource LanguageConverter}}" />
                     <TextBox>
                         <TextBox.Text>
                             <Binding Path="ConnectionSettings.IpAddress" FallbackValue="IpAddress" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" >
@@ -38,13 +38,13 @@
                 </StackPanel>
 
 				<StackPanel Grid.Column="1">
-					<TextBlock Text="{Binding ., FallbackValue=Port, ConverterParameter=Port, Converter={StaticResource LanguageConverter}}" />
+					<TextBlock Text="{Binding FallbackValue=Port, ConverterParameter=Port, Converter={StaticResource LanguageConverter}}" />
 					<TextBox Text="{Binding ConnectionSettings.Port, FallbackValue=Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				</StackPanel>
 			</Grid>
 
 			<StackPanel Margin="0,5,0,0" Visibility="{Binding CanEditConnectionName, Converter={StaticResource BooleanToVisibilityConverter}}">
-				<TextBlock Text="{Binding ., FallbackValue=MPDisplay, ConverterParameter=ConnectionName, Converter={StaticResource LanguageConverter}}" />
+				<TextBlock Text="{Binding FallbackValue=MPDisplay, ConverterParameter=ConnectionName, Converter={StaticResource LanguageConverter}}" />
 				<TextBox Text="{Binding ConnectionSettings.ConnectionName, FallbackValue=ConnectionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 			</StackPanel>
 
@@ -54,7 +54,7 @@
 					<ColumnDefinition Width="1*"/>
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0"  Margin="0,0,2,0">
-					<Button Content="{Binding ., FallbackValue=Test Connection, ConverterParameter=Test Connection, Converter={StaticResource LanguageConverter}}" Command="{Binding TestButtonCommand}" Height="30"/>
+					<Button Content="{Binding FallbackValue=Test Connection, ConverterParameter=Test Connection, Converter={StaticResource LanguageConverter}}" Command="{Binding TestButtonCommand}" Height="30"/>
 					<TextBlock Text="{Binding TestStatus, FallbackValue=OK}" Margin="0,5,0,0" TextAlignment="Center"/>
 				</StackPanel>
 				<StackPanel Grid.Column="1"  Margin="2,0,0,0">

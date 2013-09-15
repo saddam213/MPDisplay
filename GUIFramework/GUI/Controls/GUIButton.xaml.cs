@@ -97,5 +97,5 @@ namespace GUIFramework.GUI.Controls
             Image = null;
             Label = string.Empty;
         }
-    }
+     }
 }

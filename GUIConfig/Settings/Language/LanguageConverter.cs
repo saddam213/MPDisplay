@@ -10,12 +10,13 @@ namespace GUIConfig.Settings.Language
     {
         public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            return LanguageHelper.GetLanguageValue(parameter.ToString());
+            string key = parameter != null ? parameter.ToString() : string.Empty;
+            return LanguageHelper.GetLanguageValue(key);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
         {
-            throw new NotImplementedException();
+            return string.Empty;
         }
     }
 }

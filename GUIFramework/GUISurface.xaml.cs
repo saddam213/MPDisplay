@@ -369,7 +369,7 @@ namespace GUIFramework
         {
             if (_isUserInteracting)
             {
-                if (DateTime.Now > _lastUserInteraction.AddSeconds(10))
+                if (_lastUserInteraction != DateTime.MaxValue && DateTime.Now > _lastUserInteraction.AddSeconds(10))
                 {
                     _isUserInteracting = false;
                     await OpenMediaPortalWindow();
@@ -404,7 +404,7 @@ namespace GUIFramework
             GUIActionManager.RegisterAction(XmlActionType.MediaPortalWindow, async action => await SendMediaPortalAction(action));
             GUIActionManager.RegisterAction(XmlActionType.MediaPortalAction, async action => await SendMediaPortalAction(action));
             GUIActionManager.RegisterAction(XmlActionType.SwitchTheme, action => CurrentSkin.CycleTheme());
-            GUIActionManager.RegisterAction(XmlActionType.Exit, action => CloseDown());
+            GUIActionManager.RegisterAction(XmlActionType.Exit, action => CloseDown(true));
             GUIActionManager.RegisterAction(XmlActionType.NowPlaying, action => SetUserInteraction(false));
 
             InfoRepository.RegisterMessage<int>(InfoMessageType.WindowId, async windowId => await OpenMediaPortalWindow());
@@ -462,10 +462,11 @@ namespace GUIFramework
             });
         }
 
-        private DateTime _lastKeepAlive = DateTime.MinValue;
+        private DateTime _lastKeepAlive = DateTime.MaxValue;
+
         public async Task SendKeepAlive()
         {
-            if (DateTime.Now > _lastKeepAlive.AddSeconds(30))
+            if (_lastKeepAlive != DateTime.MaxValue && DateTime.Now > _lastKeepAlive.AddSeconds(30))
             {
                 _lastKeepAlive = DateTime.Now;
                 if (!InfoRepository.Instance.IsMPDisplayConnected)
@@ -488,8 +489,16 @@ namespace GUIFramework
         }
 
 
-        public void CloseDown()
+        public void CloseDown(bool exit)
         {
+            if (exit)
+            {
+                Log.Message(LogLevel.Info, "[CloseDown] - Exit requested from GUIAction");
+                Application.Current.MainWindow.Close();
+                return;
+            }
+
+          
             StopSecondTimer();
             _isDisconnecting = true;
             Disconnect();
@@ -499,10 +508,12 @@ namespace GUIFramework
 
         private void ClearRepositories()
         {
+            Log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
             InfoRepository.Instance.ClearRepository();
             ListRepository.Instance.ClearRepository();
             PropertyRepository.Instance.ClearRepository();
             GenericDataRepository.Instance.ClearRepository();
+            Log.Message(LogLevel.Info, "[CloseDown] - Repositories cleared");
         }
 
         private void StartSecondTimer()
@@ -530,7 +541,6 @@ namespace GUIFramework
         {
             await CheckUserInteraction();
             await SendKeepAlive();
-            
         }
 
 
@@ -604,6 +614,7 @@ namespace GUIFramework
             {
                 try
                 {
+                    _lastKeepAlive = DateTime.Now;
                     Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
                     InfoRepository.Instance.IsMPDisplayConnected = false;
                     InfoRepository.Instance.IsMediaPortalConnected = false;
@@ -615,6 +626,7 @@ namespace GUIFramework
                         InfoRepository.Instance.IsMPDisplayConnected = result.Any(x => x.ConnectionName.Equals(_settings.ConnectionSettings.ConnectionName));
                         InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionName.Equals("MediaPortalPlugin"));
                         InfoRepository.Instance.IsTVServerConnected = result.Any(x => x.ConnectionName.Equals("TVServerPlugin"));
+                       
                     }
                 }
                 catch (Exception ex)

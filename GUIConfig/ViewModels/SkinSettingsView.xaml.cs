@@ -121,6 +121,10 @@ namespace GUIConfig.ViewModels
             base.SaveChanges();
             foreach (var skin in Skins)
             {
+                foreach (var option in skin.SkinOptions)
+                {
+                    option.PreviewImage = option.PreviewImage.Replace(skin.SkinImageFolder, "");
+                }
                 SerializationHelper.Serialize<SkinInfo>(skin, skin.SkinInfoPath);
             }
         }
