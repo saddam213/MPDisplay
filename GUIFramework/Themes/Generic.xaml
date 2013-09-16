@@ -2,6 +2,8 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:xmlConverters="clr-namespace:GUISkinFramework.Converters;assembly=GUISkinFramework"
 			 	    xmlns:guiConverters="clr-namespace:GUIFramework.Converters"
+                    xmlns:xmlControls="clr-namespace:GUISkinFramework.Controls;assembly=GUISkinFramework"
+                    xmlns:guiControls="clr-namespace:GUIFramework.GUI.Controls"
   
    >
 
@@ -11,21 +13,11 @@
 
 
 	<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-	
 	<xmlConverters:XmlThicknessConverter  x:Key="GUIThicknessConverter" />
 	<xmlConverters:XmlFontConverter  x:Key="GUIFontConverter" />
-	<xmlConverters:XmlPercentToWidthConverter x:Key="GUIPercentToWidth" />
 	<xmlConverters:XmlCornerRadiusConverter x:Key="GUICornerRadiusConverter"/>
 	<xmlConverters:XmlEQStyleEnumConverter x:Key="GUIEQStyleEnumConverter" />
-
 	<guiConverters:GUIBrushConverter x:Key="GUIBrushConverter" />
 	<guiConverters:CoverFlowGreaterThanSelectedIndexConverter  x:Key="GreaterThanSelectedIndexConverter" />
-
-    <Style TargetType="ItemsControl">
-        <Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="False" />
-    </Style>
-
-
-
 
 </ResourceDictionary>

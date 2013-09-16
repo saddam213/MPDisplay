@@ -59,6 +59,7 @@
     </Compile>
     <Compile Include="Converters\CoverFlowGreaterThanSelectedIndexConverter.cs" />
     <Compile Include="Converters\GUIBrushConverter.cs" />
+    <Compile Include="Converters\ProgressValueConverter.cs" />
     <Compile Include="GUISurface.xaml.cs">
       <DependentUpon>GUISurface.xaml</DependentUpon>
     </Compile>
