@@ -37,6 +37,7 @@
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
     <Reference Include="System.ServiceProcess" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml.Linq" />
@@ -71,6 +72,8 @@
     <Compile Include="Settings\SettingsObjects\MPDisplaySettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginObjects\PluginPlayer.cs" />
     <Compile Include="Settings\SettingsObjects\PluginSettings.cs" />
+    <Compile Include="Status\SystemInfo.cs" />
+    <Compile Include="Status\ServerChecker.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
