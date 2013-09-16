@@ -152,8 +152,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendNumberProperty(string tag, string tagValue)
         {
-            int value = 0;
-            if (!string.IsNullOrEmpty(tagValue) && int.TryParse(tagValue, out value))
+            double value = 0;
+            if (!string.IsNullOrEmpty(tagValue) && double.TryParse(tagValue, out value))
             {
                 MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
                 {

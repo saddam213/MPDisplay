@@ -155,10 +155,14 @@ namespace GUIFramework
                 await SetSplashScreenText("Loading Windows...");
                 await Dispatcher.InvokeAsync(() =>
                 {
+                   
                     foreach (var window in CurrentSkin.Windows)
                     {
+                        DateTime start = DateTime.Now;
                         SurfaceElements.Add(GUIElementFactory.CreateWindow(window));
+                        Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
                     }
+               
                 });
 
 
@@ -309,7 +313,7 @@ namespace GUIFramework
                     var playerWindow = PlayerWindows.GetOrDefault();
                     if (playerWindow != null)
                     {
-                        if (InfoRepository.Instance.PlaybackType.IsMusic() && _isUserInteracting)
+                        if (InfoRepository.Instance.PlaybackState != APIPlaybackState.Started && InfoRepository.Instance.PlaybackType.IsMusic() && _isUserInteracting)
                         {
                             return;
                         }

@@ -22,7 +22,7 @@ namespace MessageFramework.DataObjects
         public APIImage Image { get; set; }
 
         [DataMember]
-        public int Number { get; set; }
+        public double Number { get; set; }
 
         [DataMember]
         public string Label { get; set; }

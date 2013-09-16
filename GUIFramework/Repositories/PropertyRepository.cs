@@ -47,7 +47,7 @@ namespace GUIFramework.Managers
             {
                 return (T)(object)await Instance.GetControlLabelValue(property);
             }
-            if (typeof(T) == typeof(int))
+            if (typeof(T) == typeof(double))
             {
                 return (T)(object)await Instance.GetControlNumberValue(property);
             }
@@ -195,9 +195,9 @@ namespace GUIFramework.Managers
               });
         }
 
-        public Task<int> GetControlNumberValue(string xmlstring)
+        public Task<double> GetControlNumberValue(string xmlstring)
         {
-            return Task.Factory.StartNew<int>(() =>
+            return Task.Factory.StartNew<double>(() =>
             {
                 return GetPropertyNumberValueOrDefault(xmlstring);
             });
@@ -263,16 +263,16 @@ namespace GUIFramework.Managers
             return SkinInfo.GetImageValue(_propertyDefaults.GetValueOrDefault(tag, string.Empty));
         }
 
-        private int GetPropertyNumberValueOrDefault(string tag)
+        private double GetPropertyNumberValueOrDefault(string tag)
         {
-            int returnValue = 0;
+            double returnValue = 0;
             var result = _propertyRepository.GetValueOrDefault(tag, null);
             if (result != null)
             {
                 return result.Number;
             }
 
-            if (int.TryParse(_propertyDefaults.GetValueOrDefault(tag, "0"), out returnValue))
+            if (double.TryParse(_propertyDefaults.GetValueOrDefault(tag, "0"), out returnValue))
             {
                 return returnValue;
             }
