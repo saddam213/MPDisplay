@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Common.Status;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
@@ -182,6 +183,11 @@ namespace MediaPortalPlugin.InfoManagers
             return null;
         }
 
-     
+        public void SendSystemInfo()
+        {
+            var sc = new ServerChecker();
+            SendLabelProperty("#MPD.SystemInfo.CPU", ((int)sc.SystemInformation.CurrentCPUPercent).ToString());
+            SendNumberProperty("#MPD.SystemInfo.CPU", ((int)sc.SystemInformation.CurrentCPUPercent).ToString());
+        }
     }
 }
