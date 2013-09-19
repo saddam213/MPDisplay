@@ -690,7 +690,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         #region Send Messages
 
-        private void SendList(APIListType listType, APIListLayout layout, IEnumerable<APIListItem> items)
+        public void SendList(APIListType listType, APIListLayout layout, IEnumerable<APIListItem> items)
         {
             MessageService.Instance.SendListMessage(new APIListMessage
             {
@@ -707,7 +707,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private APIListAction _lastSelectedAction;
 
-        private void SendSelectedItem(APIListType listType, string text, int index)
+        public void SendSelectedItem(APIListType listType, string text, int index)
         {
             var action = new APIListAction
                 {

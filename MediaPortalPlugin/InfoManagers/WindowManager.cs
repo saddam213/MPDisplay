@@ -13,6 +13,8 @@ using MediaPortal.Player;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
+using System.Xml.Linq;
+using MediaPortal.Profile;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -66,6 +68,11 @@ namespace MediaPortalPlugin.InfoManagers
         public void Initialize(PluginSettings settings)
         {
             _settings = settings;
+
+            if (_enabledlugins == null)
+            {
+                _enabledlugins = MPSettings.Instance.GetSection<string>("plugins").Where(kv => kv.Value == "yes").Select(kv => kv.Key).ToList();
+            }
 
             LoadPlayerPluginIds(_settings.PlayerPlugins);
 
@@ -175,9 +182,13 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     if (message.ActionMessage != null)
                     {
-                        if (message.ActionMessage.ActionType == APIActionMessageType.ListAction)
+                        if (message.ActionMessage.ActionType == APIActionMessageType.WindowListAction)
                         {
                             ListManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                        }
+                        else if (message.ActionMessage.ActionType == APIActionMessageType.DialogListAction)
+                        {
+                            DialogManager.Instance.OnActionMessageReceived(message.ActionMessage);
                         }
                         else
                         {
@@ -202,11 +213,15 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+        private List<string> _enabledlugins;
+
         public void SendFullUpdate()
         {
             Log.Message(LogLevel.Info, "[SendFullUpdate] - Sending full information update");
             SetCurrentWindow(GUIWindowManager.ActiveWindow); 
             SendPlayerMessage();
+
+        
         }
     
         private void SetCurrentWindow(int windowId)
@@ -249,9 +264,11 @@ namespace MediaPortalPlugin.InfoManagers
                     MessageType = APIInfoMessageType.WindowMessage,
                     WindowMessage = new APIWindowMessage
                     {
+                        
                         WindowId = _currentWindow.GetID,
                         FocusedControlId = _currentWindow.GetFocusControlId(),
-                        IsFullscreenVideo = _isFullscreenVideo
+                        IsFullscreenVideo = _isFullscreenVideo,
+                        EnabledPlugins = _enabledlugins
                     }
                 });
             }

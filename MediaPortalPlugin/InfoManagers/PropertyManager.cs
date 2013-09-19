@@ -124,7 +124,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private void SendLabelProperty(string tag, string tagValue)
+        public void SendLabelProperty(string tag, string tagValue)
         {
             MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
             {

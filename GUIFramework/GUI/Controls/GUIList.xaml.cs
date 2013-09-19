@@ -115,7 +115,7 @@ namespace GUIFramework.GUI.Controls
             {
                 if (SkinXml.ListLayout == XmlListLayout.Auto)
                 {
-                    ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout());
+                    ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout(SkinXml.ListType));
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             });

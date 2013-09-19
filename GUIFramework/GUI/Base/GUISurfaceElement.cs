@@ -15,7 +15,10 @@ namespace GUIFramework.GUI
     {
         public int Id { get; set; }
 
-      
+        public bool IsOpen
+        {
+            get { return Visibility == System.Windows.Visibility.Visible; }
+        }
 
         private List<GUIControl> _controls = new List<GUIControl>();
 
@@ -29,51 +32,6 @@ namespace GUIFramework.GUI
         public virtual void CreateControls()
         {
         }
-
-      
-
-        public int FocusedControlId
-        {
-            get { return (int)GetValue(FocusedControlIdProperty); }
-            set { SetValue(FocusedControlIdProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for FocusedControlId.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty FocusedControlIdProperty =
-            DependencyProperty.Register("FocusedControlId", typeof(int), typeof(GUISurfaceElement), new PropertyMetadata(0));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         public event PropertyChangedEventHandler PropertyChanged;

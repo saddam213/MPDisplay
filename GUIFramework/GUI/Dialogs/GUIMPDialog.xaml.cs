@@ -34,6 +34,8 @@ namespace GUIFramework.GUI.Controls
         {
             get { return BaseXml as XmlMPDialog; }
         }
-    
+
+
+      
     }
 }

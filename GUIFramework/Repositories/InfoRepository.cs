@@ -408,7 +408,16 @@ namespace GUIFramework.Managers
         {
             if (message != null)
             {
-
+                if (message.MessageType == APIDialogMessageType.DialogId)
+                {
+                    DialogId = message.DialogId;
+                    FocusedDialogControlId = -1;
+                    FocusedDialogControlId = message.FocusedControlId;
+                }
+                else if (message.MessageType == APIDialogMessageType.FocusedControlId)
+                {
+                    FocusedDialogControlId = message.FocusedControlId;
+                }
             }
         }
 

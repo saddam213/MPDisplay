@@ -12,8 +12,10 @@ namespace GUISkinFramework.Skin
         MediaPortalListControl,
         MediaPortalButtonGroup,
         MediaPortalMenuControl,
+          MediaPortalDialogList,
         MPDisplaySkins,
         MPDisplayStyles,
-        MPDisplayLanguages
+        MPDisplayLanguages,
+      
     }
 }

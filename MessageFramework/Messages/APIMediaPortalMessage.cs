@@ -44,8 +44,9 @@ namespace MessageFramework.DataObjects
     public enum APIActionMessageType
     {
         MediaPortalAction,
-        ListAction,
-        MediaPortalWindow
+        MediaPortalWindow,
+        WindowListAction,
+        DialogListAction,
     }
 
 

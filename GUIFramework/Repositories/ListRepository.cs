@@ -54,9 +54,9 @@ namespace GUIFramework.Managers
             return Instance.GetListItems(xmlListType);
         }
 
-        public static XmlListLayout GetCurrentMediaPortalListLayout()
+        public static XmlListLayout GetCurrentMediaPortalListLayout(XmlListType xmlListType = XmlListType.MediaPortalListControl)
         {
-            return Instance.GetMediaPortalListLayout();
+            return Instance.GetMediaPortalListLayout(xmlListType);
         }
 
         public static Task<APIListAction> GetCurrentSelectedListItem(XmlListType xmlListType)
@@ -121,6 +121,7 @@ namespace GUIFramework.Managers
                             AddList(XmlListType.MediaPortalButtonGroup, message.List.ListItems);
                             break;
                         case APIListType.DialogList:
+                            AddList(XmlListType.MediaPortalDialogList, message.List.ListItems);
                             break;
                         default:
                             break;
@@ -142,6 +143,7 @@ namespace GUIFramework.Managers
                                 AddListSelection(XmlListType.MediaPortalButtonGroup, message.Action);
                                 break;
                             case APIListType.DialogList:
+                                AddListSelection(XmlListType.MediaPortalDialogList, message.Action);
                                 break;
                             default:
                                 break;
@@ -193,18 +195,21 @@ namespace GUIFramework.Managers
             });
         }
 
-        public XmlListLayout GetMediaPortalListLayout()
+        public XmlListLayout GetMediaPortalListLayout(XmlListType listType)
         {
-            switch (_mediaPortalListLayout)
+            if (listType == XmlListType.MediaPortalListControl)
             {
-                case APIListLayout.Vertical:
-                    return XmlListLayout.Vertical;
-                case APIListLayout.Horizontal:
-                    return XmlListLayout.Horizontal;
-                case APIListLayout.CoverFlow:
-                    return XmlListLayout.CoverFlow;
-                default:
-                    break;
+                switch (_mediaPortalListLayout)
+                {
+                    case APIListLayout.Vertical:
+                        return XmlListLayout.Vertical;
+                    case APIListLayout.Horizontal:
+                        return XmlListLayout.Horizontal;
+                    case APIListLayout.CoverFlow:
+                        return XmlListLayout.CoverFlow;
+                    default:
+                        break;
+                }
             }
             return XmlListLayout.Vertical;
         }
@@ -225,6 +230,10 @@ namespace GUIFramework.Managers
                 case XmlListType.MediaPortalMenuControl:
                     _listService.Register(ListServiceMessage.MenuItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.MenuItemSelect, listcontrol.OnSelectedItemReceived);
+                    break;
+                case XmlListType.MediaPortalDialogList:
+                    _listService.Register(ListServiceMessage.DialogItems, listcontrol.OnListItemsReceived);
+                    _listService.Register(ListServiceMessage.DialogSelect, listcontrol.OnSelectedItemReceived);
                     break;
                 case XmlListType.MPDisplaySkins:
                     _listService.Register(ListServiceMessage.SkinItems, listcontrol.OnPropertyChanging);
@@ -260,6 +269,10 @@ namespace GUIFramework.Managers
                     _listService.Deregister(ListServiceMessage.MenuItems, control);
                     _listService.Deregister(ListServiceMessage.MenuItemSelect, control);
                     break;
+                case XmlListType.MediaPortalDialogList:
+                    _listService.Deregister(ListServiceMessage.DialogItems, control);
+                    _listService.Deregister(ListServiceMessage.DialogSelect, control);
+                    break;
                 case XmlListType.MPDisplaySkins:
                     _listService.Deregister(ListServiceMessage.SkinItems, control);
                     _listService.Deregister(ListServiceMessage.SkinItemSelect, control);
@@ -293,6 +306,9 @@ namespace GUIFramework.Managers
                     case XmlListType.MediaPortalMenuControl:
                         SendListAction(APIListActionType.FocusedItem, APIListType.Menu, item);
                         break;
+                    case XmlListType.MediaPortalDialogList:
+                        SendListAction(APIListActionType.FocusedItem, APIListType.DialogList, item);
+                        break;
                     default:
                         break;
                 }
@@ -315,6 +331,9 @@ namespace GUIFramework.Managers
                         break;
                     case XmlListType.MediaPortalMenuControl:
                         SendListAction(APIListActionType.SelectedItem, APIListType.Menu, item);
+                        break;
+                    case XmlListType.MediaPortalDialogList:
+                        SendListAction(APIListActionType.SelectedItem, APIListType.DialogList, item);
                         break;
                     case XmlListType.MPDisplaySkins:
                         break;
@@ -363,6 +382,9 @@ namespace GUIFramework.Managers
                     case XmlListType.MediaPortalMenuControl:
                         _listService.NotifyListeners(ListServiceMessage.MenuItems);
                         break;
+                    case XmlListType.MediaPortalDialogList:
+                        _listService.NotifyListeners(ListServiceMessage.DialogItems);
+                        break;
                     case XmlListType.MPDisplaySkins:
                         _listService.NotifyListeners(ListServiceMessage.SkinItems);
                         break;
@@ -394,6 +416,9 @@ namespace GUIFramework.Managers
                         break;
                     case XmlListType.MediaPortalMenuControl:
                         _listService.NotifyListeners(ListServiceMessage.MenuItemSelect);
+                        break;
+                    case XmlListType.MediaPortalDialogList:
+                        _listService.NotifyListeners(ListServiceMessage.DialogSelect);
                         break;
                     case XmlListType.MPDisplaySkins:
                         _listService.NotifyListeners(ListServiceMessage.SkinItemSelect);
@@ -450,6 +475,8 @@ namespace GUIFramework.Managers
         StyleItemSelect,
         LanguageItems,
         LanguageItemSelect,
-        SendItem
+        SendItem,
+        DialogItems,
+        DialogSelect
     }
 }
