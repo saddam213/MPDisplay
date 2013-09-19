@@ -113,11 +113,14 @@ namespace GUIFramework.Managers
             get { return _currentEnabledPluginMap; }
             set
             {
-                if (_currentEnabledPluginMap != value)
+                if (_currentEnabledPluginMap != null && value != null)
                 {
-                    _currentEnabledPluginMap = value;
-                    NotifiyValueChanged<List<string>>(InfoMessageType.EnabledPluginMap, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+                    if (!_currentEnabledPluginMap.SequenceEqual(value))
+                    {
+                        _currentEnabledPluginMap = value;
+                        NotifiyValueChanged<List<string>>(InfoMessageType.EnabledPluginMap, value);
+                        GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+                    }
                 }
             }
         }
@@ -396,6 +399,12 @@ namespace GUIFramework.Managers
                     IsFullscreenVideo = message.IsFullscreenVideo;
                     FocusedWindowControlId = -1;
                     FocusedWindowControlId = message.FocusedControlId;
+
+                    if (message.EnabledPlugins != null)
+                    {
+                        EnabledPluginMap = message.EnabledPlugins;
+                    }
+
                 }
                 else if (message.MessageType == APIWindowMessageType.FocusedControlId)
                 {
