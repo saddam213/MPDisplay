@@ -20,6 +20,7 @@ using GUIFramework.Utils;
 using Microsoft.Win32;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
+using System.Threading.Tasks;
 
 namespace GUI
 {
@@ -180,6 +181,14 @@ namespace GUI
             Log.Message(LogLevel.Info, "[OnClosing] - Close complete.");
             LoggingManager.Destroy();
             base.OnClosed(e);
+        }
+
+        protected async override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            await Task.Delay(250);
+            FocusHelper.ActivateApplication("MediaPortal");
         }
 
         #region Helpers

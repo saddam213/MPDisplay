@@ -441,7 +441,6 @@ namespace GUIFramework.GUI
             if (!(this is GUIList))
             {
                 OnTouchUp();
-                FocusHelper.ActivateApplication("MediaPortal");
             }
             base.OnPreviewMouseUp(e);
         }

@@ -23,6 +23,7 @@ using System.Windows.Media.Animation;
 using MPDisplay.Common.Utils;
 using MessageFramework.DataObjects;
 using GUISkinFramework.Skin;
+using GUISkinFramework.Common;
 
 namespace GUIFramework.GUI.Controls
 {
@@ -50,6 +51,7 @@ namespace GUIFramework.GUI.Controls
         {
             InitializeComponent();
             _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
+            _scrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             MouseTouchDevice.RegisterEvents(listbox.GetDescendantByType<VirtualizingStackPanel>());
         }
 
@@ -69,10 +71,19 @@ namespace GUIFramework.GUI.Controls
             set { _listItems = value; NotifyPropertyChanged("ListItems"); }
         }
 
+        public override void OnWindowOpen()
+        {
+            base.OnWindowOpen();
+            if (SkinXml.ListLayout != XmlListLayout.Auto)
+            {
+                ChangeLayout(SkinXml.ListLayout);
+            }
+        }
+
         public override void CreateControl()
         {
             base.CreateControl();
-            ChangeLayout(XmlListLayout.Vertical);
+            ChangeLayout(SkinXml.ListLayout == XmlListLayout.Auto ? XmlListLayout.Vertical : SkinXml.ListLayout);
         }
 
 
@@ -80,12 +91,15 @@ namespace GUIFramework.GUI.Controls
         {
             base.RegisterInfoData();
             ListRepository.RegisterListMessage(this, SkinXml.ListType);
+            GUIActionManager.RegisterAction(XmlActionType.ChangeListView, OnUserViewChange);
         }
 
+     
         public override void DeregisterInfoData()
         {
             base.DeregisterInfoData();
             ListRepository.DeregisterListMessage(this, SkinXml.ListType);
+            GUIActionManager.DeregisterAction(this, XmlActionType.ChangeListView);
         }
 
         public async override void UpdateInfoData()
@@ -97,10 +111,10 @@ namespace GUIFramework.GUI.Controls
         public override void ClearInfoData()
         {
             base.ClearInfoData();
-            //if (ListItems != null)
-            //{
-            //    ListItems.Clear();
-            //}
+            if (ListItems != null)
+            {
+                ListItems.Clear();
+            }
         }
 
         public async void OnListItemsReceived()
@@ -118,6 +132,7 @@ namespace GUIFramework.GUI.Controls
                     ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout(SkinXml.ListType));
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
+            
             });
         }
 
@@ -126,7 +141,8 @@ namespace GUIFramework.GUI.Controls
               var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
               if (selectedItem != null && ListItems != null)
               {
-                  var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex);
+                  var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex)
+                      ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText);
                   if (item != null)
                   {
                       await  Dispatcher.InvokeAsync(() =>
@@ -139,8 +155,22 @@ namespace GUIFramework.GUI.Controls
         }
 
 
-    
-   
+
+        private void OnUserViewChange(XmlAction action)
+        {
+            if (action != null)
+            {
+               Dispatcher.InvokeAsync(() =>
+               {
+                   XmlListLayout layout = XmlListLayout.Vertical;
+                   if (Enum.TryParse<XmlListLayout>(action.Param1, out layout))
+                   {
+                       ChangeLayout(layout);
+                   }
+               });
+            }
+        }
+
 
      
 

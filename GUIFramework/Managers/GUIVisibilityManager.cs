@@ -134,7 +134,7 @@ namespace GUIFramework.Managers
 
         public static bool IsPluginEnabled(string pluginName)
         {
-            return InfoRepository.Instance.EnabledPluginMap.Contains(pluginName.ToLower());
+            return InfoRepository.Instance.EnabledPluginMap.Any(plugin => plugin.ToLower() == pluginName.ToLower());
         }
 
         public static bool IsPlayer(int playerId)
