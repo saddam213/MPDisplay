@@ -180,9 +180,10 @@ namespace SkinEditor
                 if (SavePendingChanges())
                 {
                     ClearPendingChanges();
-                    var newSkinDialog = new NewSkinDialog();
+                    var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
                     if (newSkinDialog.ShowDialog() == true)
                     {
+                        Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
                         CurrentSkinInfo = newSkinDialog.NewSkinInfo;
                         Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
                         LoadSkin(CurrentSkinInfo);
@@ -202,13 +203,14 @@ namespace SkinEditor
                 if (SavePendingChanges())
                 {
                     ClearPendingChanges();
-                    var skinInfoFile = FileSystemHelper.OpenFileDialog("", "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
+                    var skinInfoFile = FileSystemHelper.OpenFileDialog(Settings.GlobalSettings.LastSkinDirectory, "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
                     if (!string.IsNullOrEmpty(skinInfoFile))
                     {
                         var skinInfo = XmlManager.Deserialize<XmlSkinInfo>(skinInfoFile);
                         if (skinInfo != null)
                         {
                             skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(skinInfoFile);
+                            Settings.GlobalSettings.LastSkinDirectory = Directory.GetParent(skinInfo.SkinFolderPath).FullName;
                             CurrentSkinInfo = skinInfo;
                             Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
                             LoadSkin(CurrentSkinInfo);
@@ -242,13 +244,15 @@ namespace SkinEditor
         {
             try
             {
-                var newSkinDialog = new NewSkinDialog();
+                var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
                 newSkinDialog.IsNewSkin = false;
                 newSkinDialog.SkinName = CurrentSkinInfo.SkinName;
                 if (newSkinDialog.ShowDialog() == true)
                 {
+
                     CurrentSkinInfo.SaveSkinAs(newSkinDialog.SkinName, newSkinDialog.SkinFolder);
                     CurrentSkinInfo = newSkinDialog.NewSkinInfo;
+                    Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
                     Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
                     ClearPendingChanges();
                     LoadSkin(CurrentSkinInfo);

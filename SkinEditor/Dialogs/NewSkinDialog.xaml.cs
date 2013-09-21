@@ -14,6 +14,8 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GUISkinFramework;
 using SkinEditor.Helpers;
+using System.IO;
+using MPDisplay.Common.Settings;
 
 namespace SkinEditor.Dialogs
 {
@@ -28,10 +30,11 @@ namespace SkinEditor.Dialogs
         private int _skinHeight = 720;
         private bool _isNewSkin = true;
 
-        public NewSkinDialog()
+        public NewSkinDialog(string lastDirectory)
         {
             Owner = App.Current.MainWindow;
             InitializeComponent();
+            SkinFolder = lastDirectory;
         }
 
         public string SkinName

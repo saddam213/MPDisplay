@@ -33,6 +33,7 @@ namespace SkinEditor.Helpers
             dialog.Filter = filter;
             dialog.RestoreDirectory = true;
             dialog.ShowReadOnly = true;
+            dialog.InitialDirectory = startDirectory;
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
             {
                 return dialog.FileName;

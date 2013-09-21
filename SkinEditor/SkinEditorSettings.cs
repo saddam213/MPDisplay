@@ -12,6 +12,7 @@ using GUISkinFramework;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Styles;
 using SkinEditor.Views;
+using MPDisplay.Common.Settings;
 
 namespace SkinEditor
 {
@@ -107,6 +108,13 @@ namespace SkinEditor
 
     public class GlobalSettings : EditorSettingsObject
     {
+        private string _lastSkinDirectory = RegistrySettings.MPDisplaySkinFolder;
+        public string LastSkinDirectory
+        {
+            get { return _lastSkinDirectory; }
+            set { _lastSkinDirectory = value; NotifyPropertyChanged("LastSkinDirectory"); }
+        }
+
         private ObservableCollection<string> _recentSkins = new ObservableCollection<string>();
         public ObservableCollection<string> RecentSkins
         {
