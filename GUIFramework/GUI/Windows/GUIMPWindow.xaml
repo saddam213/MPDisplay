@@ -9,7 +9,7 @@
 	<Border Width="{Binding BaseXml.Width, Mode=OneWay}" 
 		        Height="{Binding BaseXml.Height, Mode=OneWay}"
                 Background="{Binding BaseXml.BackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" >
-		<ItemsControl ItemsSource="{Binding Controls}" Background="Transparent" >
+		<ItemsControl ItemsSource="{Binding Controls, IsAsync=True, Mode=OneTime}" Background="Transparent" >
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<Canvas IsItemsHost="True" />

@@ -96,7 +96,7 @@ namespace GUIFramework
             }
         }
 
-        public static void ForAllControls(this List<GUIControl> controls, Action<GUIControl> action)
+        public static void ForAllControls(this IEnumerable<GUIControl> controls, Action<GUIControl> action)
         {
             foreach (var control in controls.GetControls())
             {

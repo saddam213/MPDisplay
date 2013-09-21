@@ -16,19 +16,20 @@ namespace GUIFramework.GUI
         public GUIVisibleCondition(GUIControl control)
         {
             _xmlString = control.BaseXml.VisibleCondition;
-            _condition = GUIVisibilityManager.CreateVisibleCondition(control, _xmlString);
+            _condition = GUIVisibilityManager.GetVisibleCondition(control.ParentId, control.Id);
         }
+      
 
         public GUIVisibleCondition(GUIWindow window)
         {
             _xmlString = window.BaseXml.VisibleCondition;
-            _condition = GUIVisibilityManager.CreateVisibleCondition(window, _xmlString);
+            _condition = GUIVisibilityManager.GetVisibleCondition(window.Id);
         }
 
         public GUIVisibleCondition(GUIDialog dialog)
         {
             _xmlString = dialog.BaseXml.VisibleCondition;
-            _condition = GUIVisibilityManager.CreateVisibleCondition(dialog, _xmlString);
+            _condition = GUIVisibilityManager.GetVisibleCondition(dialog.Id);
         }
 
         public string XmlString

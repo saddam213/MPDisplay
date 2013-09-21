@@ -13,7 +13,7 @@
 		</ResourceDictionary>
 	</UserControl.Resources>
 	<Grid DataContext="{Binding ElementName=Surface}">
-		<ItemsControl ItemsSource="{Binding SurfaceElements}" Background="Transparent" ScrollViewer.CanContentScroll="False" >
+        <ItemsControl ItemsSource="{Binding SurfaceElements}" Background="Transparent"  >
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
 					<Canvas IsItemsHost="True" />

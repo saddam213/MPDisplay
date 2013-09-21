@@ -24,7 +24,7 @@
                 BorderBrush="{Binding BaseXml.BorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderThickness="{Binding BaseXml.BorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding BaseXml.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
-		<Border x:Name="focusShading" Background="{Binding ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
+		<Border x:Name="focusShading" Background="{Binding BaseXml.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
 			<Border x:Name="focusgloss" Background="{Binding BaseXml.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
 		</Border>
 	</Border>

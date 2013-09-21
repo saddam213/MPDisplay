@@ -147,6 +147,7 @@
     <Compile Include="Controls\ScrollingTextBlock\Implementation\ScrollingTextBlock.cs" />
     <Compile Include="Controls\SplitButton\Implementation\SplitButton.cs" />
     <Compile Include="Controls\Surface3D\Implementation\Surface3D.cs" />
+    <Compile Include="Controls\VirtulizingCanvas\VirtualizingCanvas.cs" />
     <Compile Include="Controls\WatermarkTextBox\Implementation\WatermarkTextBox.cs" />
     <Compile Include="ExtensionMethods\ItemsControlExtensions.cs" />
     <Compile Include="ExtensionMethods\VisualTreeExtensions.cs" />

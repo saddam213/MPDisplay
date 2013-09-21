@@ -27,7 +27,7 @@
                 CornerRadius="{Binding BaseXml.ControlStyle.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
 			<Border x:Name="focusShading" Background="{Binding BaseXml.ControlStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
 			<Border x:Name="focusgloss" Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-				<ItemsControl ItemsSource="{Binding Controls}" Background="Transparent">
+                <ItemsControl ItemsSource="{Binding Controls}" >
                     <ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>
 							<Canvas IsItemsHost="True" />

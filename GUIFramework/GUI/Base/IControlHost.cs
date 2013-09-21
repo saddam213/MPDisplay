@@ -12,7 +12,7 @@ namespace GUIFramework.GUI
     {
         int Id { get; set; }
 
-        List<GUIControl> Controls { get; set; }
+        ObservableCollection<GUIControl> Controls { get; set; }
 
         void CreateControls();
     }

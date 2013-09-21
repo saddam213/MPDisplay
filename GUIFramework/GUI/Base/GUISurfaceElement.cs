@@ -20,9 +20,9 @@ namespace GUIFramework.GUI
             get { return Visibility == System.Windows.Visibility.Visible; }
         }
 
-        private List<GUIControl> _controls = new List<GUIControl>();
+        private ObservableCollection<GUIControl> _controls = new ObservableCollection<GUIControl>();
 
-        public List<GUIControl> Controls
+        public ObservableCollection<GUIControl> Controls
         {
             get { return _controls; }
             set { _controls = value; NotifyPropertyChanged(); }

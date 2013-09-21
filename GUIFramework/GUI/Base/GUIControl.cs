@@ -40,9 +40,10 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIControl()
         {
+            Visibility = System.Windows.Visibility.Collapsed;
             DataContext = this;
             ClipToBounds = true;
-        } 
+        }
 
         #endregion
 

@@ -26,7 +26,7 @@ namespace GUIFramework.GUI.Controls
     [XmlSkinType(typeof(XmlGroup))]  
     public partial class GUIGroup : GUIControl, IControlHost
     {
-        private List<GUIControl> _controls = new List<GUIControl>();
+        private ObservableCollection<GUIControl> _controls = new ObservableCollection<GUIControl>();
        
         public GUIGroup()
         {
@@ -44,7 +44,7 @@ namespace GUIFramework.GUI.Controls
             CreateControls();
         }
 
-        public List<GUIControl> Controls
+        public ObservableCollection<GUIControl> Controls
         {
             get { return _controls; }
             set { _controls = value; NotifyPropertyChanged("Controls"); }
@@ -54,14 +54,8 @@ namespace GUIFramework.GUI.Controls
         {
             foreach (var xmlControl in SkinXml.Controls)
             {
-                if (Controls.Any(c => c.Id == xmlControl.Id))
-                {
-                    Log.Message(LogLevel.Warn, "Duplicate Control - Group '{0}' already contains a control with Id:{1}, Duplicate control '{2}' id cannot be added to group.", BaseXml.Name, xmlControl.Id, xmlControl.Name);
-                    continue;
-                }
                 Controls.Add(GUIElementFactory.CreateControl(ParentId, xmlControl));
             }
-            NotifyPropertyChanged("Controls");
         }
 
       

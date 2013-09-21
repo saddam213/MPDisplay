@@ -44,7 +44,9 @@ namespace GUIFramework.Managers
                 {
                     if (!_styleCache.ContainsKey(brush.StyleId))
                     {
-                        _styleCache.Add(brush.StyleId, new ImageBrush(GetImageNonCached(_xmlImages[brush.ImageName].FileName)) { Stretch = brush.ImageStretch});
+                        var newbrush = new ImageBrush(GetImageNonCached(_xmlImages[brush.ImageName].FileName)) { Stretch = brush.ImageStretch};
+                        newbrush.Freeze();
+                        _styleCache.Add(brush.StyleId,newbrush );
                     }
                     return _styleCache[brush.StyleId];
                 }
@@ -52,7 +54,9 @@ namespace GUIFramework.Managers
                 string cacheKey = string.Format("{0} | {1}", brush.ImageName, brush.ImageStretch);
                 if (!_cache.ContainsKey(cacheKey))
                 {
-                    _cache.Add(cacheKey, new ImageBrush(GetImageNonCached(_xmlImages[brush.ImageName].FileName)) { Stretch = brush.ImageStretch });
+                    var newBrush = new ImageBrush(GetImageNonCached(_xmlImages[brush.ImageName].FileName)) { Stretch = brush.ImageStretch };
+                    newBrush.Freeze();
+                    _cache.Add(cacheKey, newBrush);
                 }
                 return _cache[cacheKey];
             }
@@ -68,7 +72,7 @@ namespace GUIFramework.Managers
                 {
                     BitmapImage bmImage = new BitmapImage();
                     bmImage.BeginInit();
-                    bmImage.DecodePixelWidth = GetScaledImageWidth(filename);
+                  //  bmImage.DecodePixelWidth = GetScaledImageWidth(filename);
                     bmImage.CacheOption = BitmapCacheOption.None;
                     bmImage.UriSource = new Uri(filename, UriKind.RelativeOrAbsolute);
                     bmImage.EndInit();
@@ -97,6 +101,20 @@ namespace GUIFramework.Managers
         private static int GetScaledImageWidth(int width)
         {
             return width;
+        }
+
+        public static BitmapImage GetImageFromBytes(byte[] p)
+        {
+            BitmapImage bmImage = new BitmapImage();
+            if (p != null)
+            {
+                bmImage.BeginInit();
+                bmImage.CacheOption = BitmapCacheOption.None;
+                bmImage.StreamSource = new MemoryStream(p);
+                bmImage.EndInit();
+                bmImage.Freeze();
+            }
+            return bmImage;
         }
     }
 }

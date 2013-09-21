@@ -32,10 +32,11 @@ namespace GUIFramework.GUI
 
         public GUIDialog()
         {
-            DataContext = this;
-            Visibility = System.Windows.Visibility.Hidden;
+          
+            Visibility = System.Windows.Visibility.Collapsed;
             RenderTransform = new ScaleTransform(1, 1);
             RenderTransformOrigin = new Point(0.5, 0.5);
+            DataContext = this;
         }
 
       
@@ -60,7 +61,7 @@ namespace GUIFramework.GUI
                 case XmlAnimationCondition.WindowOpen:
                     break;
                 case XmlAnimationCondition.WindowClose:
-                    Visibility = System.Windows.Visibility.Hidden;
+                    Visibility = System.Windows.Visibility.Collapsed;
                     foreach (var control in Controls.GetControls())
                     {
                         control.ClearInfoData();

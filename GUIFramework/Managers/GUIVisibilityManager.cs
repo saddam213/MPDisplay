@@ -15,6 +15,9 @@ using MessageFramework.DataObjects;
 using Microsoft.CSharp;
 using MPDisplay.Common;
 using MPDisplay.Common.Log;
+using GUISkinFramework.Windows;
+using GUISkinFramework;
+using GUISkinFramework.Dialogs;
 
 namespace GUIFramework.Managers
 {
@@ -25,6 +28,9 @@ namespace GUIFramework.Managers
         GlobalVisibilityChanged
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
     public static class GUIVisibilityManager   
     {
         private static Log Log = LoggingManager.GetLog(typeof(GUIVisibilityManager));
@@ -181,13 +187,183 @@ namespace GUIFramework.Managers
 
         #region Condition Parser/Compiler
 
-        private static CompilerParameters _compilerParams;
-        private static CSharpCodeProvider _codeProvider;
-        private static bool _compilerLoaded = false;
+        private static Module _visibleConditionModule;
 
-        public static Func<bool> CreateVisibleCondition(GUIControl control, string xmlVisibleString)
+        private static string _classTemplate =
+          @"using System;
+            using System.Collections.Generic;
+            using GUIFramework.Managers;
+            namespace Visibility
+            {
+               public class VisibleMethodClass
+               {
+                  *MethodPlaceHolder*
+               }
+            }";
+        private static string _methodTemplate =
+          @"public static bool ShouldBeVisible()
+            { 
+              if (*ConditionPlaceHolder*)
+              {
+                 return true;
+              }  
+              return false;
+            }";
+
+
+        /// <summary>
+        /// Gets the visible condition.
+        /// </summary>
+        /// <param name="windowId">The window identifier.</param>
+        /// <returns></returns>
+        public static Func<bool> GetVisibleCondition(int windowId)
         {
-            xmlVisibleString = xmlVisibleString.Replace("++", "&&");
+            if (_visibleConditionModule != null)
+            {
+                var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}", windowId));
+                if (method != null)
+                {
+                    return () => (bool)method.Invoke(_visibleConditionModule, null);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Gets the visible condition.
+        /// </summary>
+        /// <param name="windowId">The window identifier.</param>
+        /// <param name="controlId">The control identifier.</param>
+        /// <returns></returns>
+        public static Func<bool> GetVisibleCondition(int windowId, int controlId)
+        {
+            if (_visibleConditionModule != null)
+            {
+                var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}C{1}", windowId, controlId));
+                if (method != null)
+                {
+                    return () => (bool)method.Invoke(_visibleConditionModule, null);
+                }
+            }
+            return null;
+        }
+
+        /// <summary>
+        /// Creates the visible conditions.
+        /// </summary>
+        /// <param name="elements">The elements.</param>
+        public static void CreateVisibleConditions(IEnumerable<IXmlControlHost> elements)
+        {
+            string methodTemplate = _methodTemplate;
+            string visibleCode = _classTemplate;
+            foreach (var controlHost in elements)
+            {
+                if (!string.IsNullOrEmpty(controlHost.VisibleCondition))
+                {
+                    visibleCode = visibleCode.Replace("*MethodPlaceHolder*", methodTemplate.Replace("ShouldBeVisible()", string.Format("ShouldBeVisibleW{0}()", controlHost.Id))
+                        .Replace("*ConditionPlaceHolder*", CreateVisibleWindowConditionString(controlHost)) + Environment.NewLine + "*MethodPlaceHolder*");
+                }
+
+                foreach (var control in controlHost.Controls.GetControls())
+                {
+                    if (!string.IsNullOrEmpty(control.VisibleCondition))
+                    {
+                        visibleCode = visibleCode.Replace("*MethodPlaceHolder*", methodTemplate.Replace("ShouldBeVisible()", string.Format("ShouldBeVisibleW{0}C{1}()", controlHost.Id, control.Id))
+                            .Replace("*ConditionPlaceHolder*", CreateVisibleControlConditionString(control, controlHost.Id)) + Environment.NewLine + "*MethodPlaceHolder*");
+                    }
+                }
+            }
+            visibleCode = visibleCode.Replace("*MethodPlaceHolder*", "");
+
+            if (!visibleCode.Contains("*ConditionPlaceHolder*"))
+            {
+                ComplileString(elements, visibleCode);
+            }
+        }
+
+        private static void ComplileString(IEnumerable<IXmlControlHost> elements, string visibleCode)
+        {
+            var _compilerParams = new CompilerParameters();
+            _compilerParams.GenerateInMemory = true;
+            _compilerParams.TreatWarningsAsErrors = false;
+            _compilerParams.GenerateExecutable = false;
+            _compilerParams.CompilerOptions = "/optimize";
+            string[] references = { "System.dll", typeof(GUIFramework.GenericExtensions).Assembly.Location };
+            _compilerParams.ReferencedAssemblies.AddRange(references);
+            var _codeProvider = new CSharpCodeProvider();
+
+            CompilerResults compileResults = _codeProvider.CompileAssemblyFromSource(_compilerParams, visibleCode);
+            if (compileResults.Errors.HasErrors)
+            {
+                try
+                {
+                    CompilerError error = compileResults.Errors[0];
+                    List<string> lines = visibleCode.Replace("\r", "").Split('\n').ToList();
+                    if (lines.Any() && lines.Count > error.Line)
+                    {
+                        var errorLine = lines[error.Line - 3];
+                        if (errorLine.Contains("public static bool ShouldBeVisible"))
+                        {
+                            errorLine = errorLine.Replace("public static bool ShouldBeVisible", "").Replace("()","").Trim();
+                            if (errorLine.Contains('C'))
+                            {
+                                int[] details = errorLine.Split(new char[] { 'W', 'C' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+                                var window = elements.FirstOrDefault(w => w.Id == details[0]);
+                                var control = window.Controls.GetControls().FirstOrDefault(c => c.Id == details[1]);
+                                Log.Message(LogLevel.Error, "An error occured creating control VisibleCondition, Error: {0}, Window: {1} ({2}), Control: {3} ({4})", error.ErrorText, window.Name, window.Id, control.Name, control.Id);
+                            }
+                            else
+                            {
+                                int details = int.Parse(errorLine.Replace("W", "").Trim());
+                                var window = elements.FirstOrDefault(w => w.Id == details);
+                                Log.Message(LogLevel.Error, "An error occured creating window VisibleCondition, Error: {0}, Window: {1} ({2})", error.ErrorText, window.Name, window.Id);
+                            }
+
+                            for (int i = 0; i < _methodTemplate.Replace("\r", "").Split('\n').Count(); i++)
+                            {
+                                lines.RemoveAt(error.Line - 3);
+                            }
+
+                            if (lines.Count > 15)
+                            {
+                                string newCode = string.Join(Environment.NewLine, lines.ToArray());
+                                ComplileString(elements, newCode);
+                            }
+                        }
+                        else
+                        {
+                            Log.Message(LogLevel.Error, "An error occured loading VisibleConditions, Error: {0}", error.ErrorText);
+                        }
+                    }
+                  
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception("An error occured loading VisibleConditions", ex);
+                }
+            }
+            else
+            {
+                var module = compileResults.CompiledAssembly.GetModules()[0];
+                if (module != null)
+                {
+                    _visibleConditionModule = module;
+                }
+            }
+        }
+
+
+   
+
+        /// <summary>
+        /// Creates the visible control condition string.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <param name="parentId">The parent identifier.</param>
+        /// <returns></returns>
+        private static string CreateVisibleControlConditionString(XmlControl control, int parentId)
+        {
+            string xmlVisibleString = control.VisibleCondition.Replace("++", "&&");
 
             if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
             {
@@ -196,7 +372,7 @@ namespace GUIFramework.Managers
                 //xmlVisibleString.Replace("IsPluginEnabled(", "GUIVisibilityManager.IsPluginEnabled(");
             }
 
-            xmlVisibleString = xmlVisibleString.Replace("IsControlVisible(", "GUIVisibilityManager.IsControlVisible(" + control.ParentId + ",");
+            xmlVisibleString = xmlVisibleString.Replace("IsControlVisible(", "GUIVisibilityManager.IsControlVisible(" + parentId + ",");
 
             if (xmlVisibleString.Contains("IsPlayer("))
             {
@@ -227,27 +403,23 @@ namespace GUIFramework.Managers
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalWindow(", "GUIVisibilityManager.IsMediaPortalWindow(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalPreviousWindow(", "GUIVisibilityManager.IsMediaPortalPreviousWindow(");
-
-
-            //GUIWindowManager
-            if (!string.IsNullOrWhiteSpace(xmlVisibleString))
-            {
-                return CompileCondition(control.Id, control.ParentId, xmlVisibleString);
-            }
-            return null;
+            return xmlVisibleString;
         }
 
 
-        public static Func<bool> CreateVisibleCondition(GUIWindow window, string xmlVisibleString)
+        /// <summary>
+        /// Creates the visible window condition string.
+        /// </summary>
+        /// <param name="controlHost">The control host.</param>
+        /// <returns></returns>
+        private static string CreateVisibleWindowConditionString(IXmlControlHost controlHost)
         {
-            xmlVisibleString = xmlVisibleString.Replace("++", "&&");
+            string  xmlVisibleString = controlHost.VisibleCondition.Replace("++", "&&");
             if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
             {
                 xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsSkinOptionEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsSkinOptionEnabled(""$1"")");
-
             }
-
-            if (window is GUIPlayerWindow)
+            if (controlHost is XmlPlayerWindow)
             {
                 if (xmlVisibleString.Contains("IsPlayer("))
                 {
@@ -257,129 +429,22 @@ namespace GUIFramework.Managers
                     }
                 }
             }
-
-            if (window is GUIMPWindow)
+            if (controlHost is XmlMPWindow)
             {
                 xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalWindow(", "GUIVisibilityManager.IsMediaPortalWindow(");
                 xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
                 xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalPreviousWindow(", "GUIVisibilityManager.IsMediaPortalPreviousWindow(");
             }
-
-            //GUIWindowManager
-            if (!string.IsNullOrWhiteSpace(xmlVisibleString))
+            if (controlHost is XmlMPDialog)
             {
-                return CompileCondition(-1, window.Id, xmlVisibleString);
+                xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
             }
-            return null;
+            return xmlVisibleString;
         }
 
-        public static Func<bool> CreateVisibleCondition(GUIDialog dialog, string xmlVisibleString)
-        {
-            xmlVisibleString = xmlVisibleString.Replace("++", "&&");
-            if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
-            {
-                xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsSkinOptionEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsSkinOptionEnabled(""$1"")");
-
-            }
-
-            xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
-
-            //GUIWindowManager
-            if (!string.IsNullOrWhiteSpace(xmlVisibleString))
-            {
-                return CompileCondition(-1, dialog.Id, xmlVisibleString);
-            }
-            return null;
-        }
-
-        /// <summary>
-        /// Creates a complex visible condition.
-        /// </summary>
-        /// <param name="xmlVisibleString">The XML visible string.</param>
-        /// <returns></returns>
-        private static Func<bool> CompileCondition(int controlId, int windowId,string xmlVisibleString)
-        {
-            if (!string.IsNullOrEmpty(xmlVisibleString))
-            {
-                LoadCompilerSettings();
-                string code = _visibleClassString.Replace(_replacementString, xmlVisibleString);
-                CompilerResults compileResults = _codeProvider.CompileAssemblyFromSource(_compilerParams, code);
-                if (compileResults.Errors.HasErrors)
-                {
-                    if (controlId == -1)
-                    {
-                        Log.Message(LogLevel.Error, "Invalid Window VisibleCondition Detected, WindowId: {0}, VisibleString: {1}, Error: {2}"
-                            , windowId, xmlVisibleString, compileResults.Errors[0].ErrorText);
-                    }
-                    else
-                    {
-                        Log.Message(LogLevel.Error, "Invalid Control VisibleCondition Detected, WindowId: {0}, ControlId: {1}, VisibleString: {2}, Error: {3}"
-                            , windowId, controlId, xmlVisibleString,  compileResults.Errors[0].ErrorText);
-                    }
-                    return null;
-                }
-                var method = compileResults.CompiledAssembly.GetModules()[0].GetType("Visibility.VisibleMethodClass").GetMethod("ShouldBeVisible");
-
-                return (Func<bool>)Delegate.CreateDelegate(typeof(Func<bool>), method);
-            }
-            return null;
-        }
-
-    
-  
-
-        /// <summary>
-        /// Loads the compiler settings.
-        /// </summary>
-        private static void LoadCompilerSettings()
-        {
-            if (!_compilerLoaded)
-            {
-                _compilerParams = new CompilerParameters();
-                _compilerParams.GenerateInMemory = true;
-                _compilerParams.TreatWarningsAsErrors = false;
-                _compilerParams.GenerateExecutable = false;
-                _compilerParams.CompilerOptions = "/optimize";
-                string[] references = { "System.dll", typeof(GUIFramework.GenericExtensions).Assembly.Location };
-                _compilerParams.ReferencedAssemblies.AddRange(references);
-                _codeProvider = new CSharpCodeProvider( new Dictionary<String, String>{{ "CompilerVersion","v3.5" }});
-                _compilerLoaded = true;
-            }
-        }
-
-        /// <summary>
-        /// The unique string to replace in the dynamic code to add the xml condition string
-        /// </summary>
-        private const string _replacementString = "8AC9ED14-B51F-401D-8CFF-87469ED062ED";
-
-        /// <summary>
-        /// The class we will generate to handle the controls visibility
-        /// </summary>
-        private static string _visibleClassString =
-        @"using System;
-          using System.Collections.Generic;
-          using GUIFramework.Managers;
-          namespace Visibility
-          {
-             public class VisibleMethodClass
-             {
-                public static bool ShouldBeVisible()
-                {
-                   if (8AC9ED14-B51F-401D-8CFF-87469ED062ED)
-                   {
-                       return true;
-                   }
-                   return false;
-                }
-             }
-          }";
-      
+     
 
         #endregion
-
-
-
-    
     }
 
   

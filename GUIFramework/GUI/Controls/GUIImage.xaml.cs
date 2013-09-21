@@ -26,7 +26,7 @@ namespace GUIFramework.GUI.Controls
     [XmlSkinType(typeof(XmlImage))]
     public partial class GUIImage : GUIControl
     {
-        private byte[] _image;
+        private BitmapImage _image = new BitmapImage();
         public GUIImage()
         {
             InitializeComponent(); 
@@ -37,7 +37,7 @@ namespace GUIFramework.GUI.Controls
             get { return BaseXml as XmlImage; }
         }
 
-        public byte[] Image
+        public BitmapImage Image
         {
             get { return _image; }
             set { _image = value; NotifyPropertyChanged("Image"); }
@@ -67,7 +67,7 @@ namespace GUIFramework.GUI.Controls
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
-             Image = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image);
+             Image = GUIImageManager.GetImageFromBytes( await PropertyRepository.GetProperty<byte[]>(SkinXml.Image));
         }
 
         public override void ClearInfoData()

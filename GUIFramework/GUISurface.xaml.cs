@@ -133,7 +133,7 @@ namespace GUIFramework
         {
             if (skinInfo != null)
             {
-               
+
                 CurrentSkin = skinInfo;
                 Width = CurrentSkin.SkinWidth;
                 Height = CurrentSkin.SkinHeight;
@@ -152,38 +152,53 @@ namespace GUIFramework
                 });
 
 
+                Log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions...");
+                await SetSplashScreenText("Loading VisibleConditions...");
+                DateTime conditionStart = DateTime.Now;
+                GUIVisibilityManager.CreateVisibleConditions(CurrentSkin.Windows.Cast<IXmlControlHost>().Concat(CurrentSkin.Dialogs));
+                Log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions, LoadTime: {0}ms", (DateTime.Now - conditionStart).TotalMilliseconds);
+
+
+
+                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows...");
                 await SetSplashScreenText("Loading Windows...");
-                await Dispatcher.InvokeAsync(() =>
+                DateTime windowsStart = DateTime.Now;
+                foreach (var window in CurrentSkin.Windows.OrderByDescending(x => x.IsDefault))
                 {
-                   
-                    foreach (var window in CurrentSkin.Windows)
+                    await SetSplashScreenText("Loading Window...({0})", window.Name);
+                    await Dispatcher.InvokeAsync(() =>
                     {
                         DateTime start = DateTime.Now;
                         SurfaceElements.Add(GUIElementFactory.CreateWindow(window));
-                        Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
-                    }
-               
-                });
+                        Log.Message(LogLevel.Verbose, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
+                    }, DispatcherPriority.Background);
+                }
+                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows Complete, LoadTime: {0}ms", (DateTime.Now - windowsStart).TotalMilliseconds);
 
 
+                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs...");
                 await SetSplashScreenText("Loading Dialogs...");
-                await Dispatcher.InvokeAsync(() =>
+                DateTime dialogsStart = DateTime.Now;
+                foreach (var dialog in CurrentSkin.Dialogs)
                 {
-                    foreach (var dialog in CurrentSkin.Dialogs)
+                    await SetSplashScreenText("Loading Dialog...({0})", dialog.Name);
+                    await Dispatcher.InvokeAsync(() =>
                     {
+                        DateTime start = DateTime.Now;
                         SurfaceElements.Add(GUIElementFactory.CreateDialog(dialog));
-                    }
-                });
-
+                        Log.Message(LogLevel.Verbose, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog.Name, (DateTime.Now - start).TotalMilliseconds);
+                    });
+                }
+                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs Complete, LoadTime: {0}ms", (DateTime.Now - dialogsStart).TotalMilliseconds);
 
 
                 await SetSplashScreenText("Connecting to service...");
                 await InitializeServerConnection(Settings.ConnectionSettings);
-              
+
 
                 await SetSplashScreenText("Starting MPDisplay++...");
                 await OpenMediaPortalWindow();
-             
+
                 if (_currentWindow != null)
                 {
                     HideSplashScreen();

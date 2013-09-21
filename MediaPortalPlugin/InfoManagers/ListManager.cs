@@ -8,6 +8,7 @@ using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
+using System.Reflection;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -55,6 +56,9 @@ namespace MediaPortalPlugin.InfoManagers
             GUIWindowManager.OnNewAction += GUIWindowManager_OnNewAction;
             GUIWindowManager.Receivers += GUIWindowManager_Receivers;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
+            _menuCotrolMoveUp = typeof(GUIMenuControl).GetMethod("OnUp", BindingFlags.Instance | BindingFlags.NonPublic);
+            _menuCotrolMoveDown = typeof(GUIMenuControl).GetMethod("OnDown", BindingFlags.Instance | BindingFlags.NonPublic);
+            _menuControlButtonList = typeof(GUIMenuControl).GetField("_buttonList", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
         public void Shutdown()
@@ -222,7 +226,7 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     if (_registeredListTypes.Contains(APIListType.Menu))
                     {
-                        SendMenuControlSelectedItem(tagValue);
+                        SendMenuControlSelectedItem();
                     }
                 }
             }
@@ -348,7 +352,7 @@ namespace MediaPortalPlugin.InfoManagers
                     currentFacade.SelectedListItemIndex = item.ItemIndex;
                     if (isSelect)
                     {
-                        GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f));
+                        PluginHelpers.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
                     }
                 }
             }
@@ -420,7 +424,7 @@ namespace MediaPortalPlugin.InfoManagers
                     currentList.SelectedListItemIndex = item.ItemIndex;
                     if (isSelect)
                     {
-                        GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f));
+                        PluginHelpers.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
                     }
                 }
             }
@@ -459,6 +463,10 @@ namespace MediaPortalPlugin.InfoManagers
                     {
                         newFocus.Selected = true;
                         newFocus.Focus = true;
+                        if (isSelect)
+                        {
+                           
+                        }
                         break;
                     }
                 }
@@ -520,19 +528,69 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+        
+        private int _lastMenuCotrolItemIndex = -1;
+        private bool _movingMenuControl = false;
+        private MethodInfo _menuCotrolMoveUp;
+        private MethodInfo _menuCotrolMoveDown;
+        private FieldInfo _menuControlButtonList;
+
         private void SetMenuControlSelectedItem(APIListAction item, bool isSelect)
         {
             if (_menuControl != null)
             {
+                _movingMenuControl = true;
+                if (item.ItemIndex <= _menuControl.ButtonInfos.Count)
+                {
+                    var buttonList = _menuControlButtonList.GetValue(_menuControl) as List<GUIButtonControl>;
+                    if (buttonList != null)
+                    {
+                        var newIndex = buttonList.FindIndex(b => b.Label == item.ItemText);
+                        if (newIndex != -1)
+                        {
+                            bool isMoveDown = newIndex > _menuControl.FocusedButton;
+                            int moveCount = isMoveDown
+                                ? newIndex - _menuControl.FocusedButton
+                                : _menuControl.FocusedButton - newIndex;
 
+                            for (int i = 0; i < moveCount; i++)
+                            {
+                                if (isMoveDown)
+                                {
+                                    if (_menuCotrolMoveDown != null)
+                                    {
+                                        PluginHelpers.GUISafeInvoke(() => _menuCotrolMoveDown.Invoke(_menuControl, null));
+                                    }
+                                }
+                                else
+                                {
+                                    if (_menuCotrolMoveUp != null)
+                                    {
+                                        PluginHelpers.GUISafeInvoke(() => _menuCotrolMoveUp.Invoke(_menuControl, null));
+                                    }
+                                }
+                            }
+
+                            if (isSelect)
+                            {
+                                PluginHelpers.GUISafeInvoke(() => GUIWindowManager.ActivateWindow(_menuControl.ButtonInfos[item.ItemIndex].PluginID));
+                            }
+                        }
+                    }
+                }
+                _movingMenuControl = false;
             }
         }
 
-        private void SendMenuControlSelectedItem(string text)
+        private void SendMenuControlSelectedItem()
         {
-            if (_menuControl != null)
+            if (_menuControl != null && !_movingMenuControl)
             {
-                SendSelectedItem(APIListType.Menu, text, -1);
+                var menuButtons = _menuControlButtonList.GetValue(_menuControl) as List<GUIButtonControl>;
+                if (menuButtons != null)
+                {
+                    SendSelectedItem(APIListType.Menu, menuButtons[_menuControl.FocusedButton].Label, -1);
+                }
             }
         }
 

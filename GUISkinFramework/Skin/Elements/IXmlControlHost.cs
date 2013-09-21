@@ -16,5 +16,6 @@ namespace GUISkinFramework
         int Id { get; set; }
         string DisplayType { get; }
         ObservableCollection<XmlControl> Controls { get; set; }
+        string VisibleCondition { get; set; }
     }
 }

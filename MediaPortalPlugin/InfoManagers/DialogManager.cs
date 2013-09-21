@@ -206,7 +206,7 @@ namespace MediaPortalPlugin.InfoManagers
                     }
 
 
-                    foreach (var control in _currentDialog.Children)
+                    foreach (var control in _currentDialog.GetControls())
                     {
                         var label = ReflectionHelper.GetPropertyValue<string>(control, "Label", null);
                         if (!string.IsNullOrEmpty(label))

@@ -9,7 +9,7 @@
 			 ClipToBounds="False"
 			 x:Name="UI"
              d:DesignHeight="300" d:DesignWidth="300" 
-			 Canvas.Left="{Binding BaseXml.PosX,Mode=OneWay}"
+             Canvas.Left="{Binding BaseXml.PosX,Mode=OneWay}"
 			 Canvas.Top="{Binding BaseXml.PosY,Mode=OneWay}"
 			 Canvas.ZIndex="{Binding BaseXml.PosZ,Mode=OneWay}"
 			 Width="{Binding BaseXml.Width,Mode=OneWay}" 

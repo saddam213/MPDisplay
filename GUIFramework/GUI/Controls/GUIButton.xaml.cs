@@ -26,7 +26,7 @@ namespace GUIFramework.GUI.Controls
     public partial class GUIButton : GUIControl
     {
         private string _label;
-        private byte[] _image;
+        private BitmapImage _image;
 
 
         public GUIButton()
@@ -47,7 +47,7 @@ namespace GUIFramework.GUI.Controls
             set { _label = value; NotifyPropertyChanged("Label"); }
         }
 
-        public byte[] Image
+        public BitmapImage Image
         {
             get { return _image; }
             set { _image = value; NotifyPropertyChanged("Image"); }
@@ -88,7 +88,7 @@ namespace GUIFramework.GUI.Controls
         {
             base.UpdateInfoData();
             Label = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
-            Image = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image);
+            Image = GUIImageManager.GetImageFromBytes(await PropertyRepository.GetProperty<byte[]>(SkinXml.Image));
         }
 
         public override void ClearInfoData()

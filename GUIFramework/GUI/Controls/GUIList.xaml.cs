@@ -111,10 +111,7 @@ namespace GUIFramework.GUI.Controls
         public override void ClearInfoData()
         {
             base.ClearInfoData();
-            if (ListItems != null)
-            {
-                ListItems.Clear();
-            }
+         
         }
 
         public async void OnListItemsReceived()
