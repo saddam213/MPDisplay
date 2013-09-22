@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
@@ -10,7 +11,7 @@ using System.Windows.Interop;
 
 namespace GUIFramework.Utils
 {
-    public class FocusHelper
+    public class ProgramHelper
     {
 
         // Sets the window to be foreground 
@@ -52,7 +53,47 @@ namespace GUIFramework.Utils
         }
 
 
+        public static void StartApplication(string filename, string args)
+        {
+            try
+            {
+                Process.Start(filename, args);
+            }
+            catch 
+            {
+            }
+        }
 
+        public static void KillApplication(string name, bool kill = false)
+        {
+            try
+            {
+                var processes = Process.GetProcessesByName(name);
+                if (processes != null)
+                {
+                    foreach (var process in processes)
+                    {
+                        if (!string.IsNullOrEmpty(process.MainWindowTitle))
+                        {
+                            process.CloseMainWindow();
+                        }
+                        else
+                        {
+                            process.Close();
+                        }
+                    }
+
+                    if (!kill)
+                    {
+                        KillApplication(name, true);
+                    }
+                }
+            }
+            catch 
+            {
+                
+            }
+        }
 
 
 

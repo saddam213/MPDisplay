@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using MediaPortal.GUI.Library;
+using MessageFramework.DataObjects;
 
 namespace MediaPortalPlugin
 {
@@ -71,6 +72,32 @@ namespace MediaPortalPlugin
                     }
                 }
             }
+        }
+
+        public static bool IsMusic(this APIPlaybackType type)
+        {
+            return type != APIPlaybackType.None && !type.IsVideo();
+        }
+
+        public static bool IsVideo(this APIPlaybackType type)
+        {
+            switch (type)
+            {
+                case APIPlaybackType.IsTV:
+                case APIPlaybackType.IsDVD:
+                case APIPlaybackType.IsVideo:
+                case APIPlaybackType.IsTVRecording:
+                case APIPlaybackType.MyFilms:
+                case APIPlaybackType.MovingPictures:
+                case APIPlaybackType.MPTVSeries:
+                case APIPlaybackType.mvCentral:
+                case APIPlaybackType.OnlineVideos:
+                case APIPlaybackType.MyAnime:
+                    return true;
+                default:
+                    break;
+            }
+            return false;
         }
     }
 }

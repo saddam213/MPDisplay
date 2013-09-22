@@ -40,7 +40,6 @@ namespace MessageFramework.DataObjects
         public int WindowId { get; set; }
         public int FocusedControlId { get; set; }
         public List<string> EnabledPlugins { get; set; }
-        public bool IsFullscreenVideo { get; set; }
     }
 
     public enum APIWindowMessageType
@@ -54,6 +53,7 @@ namespace MessageFramework.DataObjects
         public APIPlaybackType PlayerPluginType { get; set; }
         public APIPlaybackType PlaybackType { get; set; }
         public APIPlaybackState PlaybackState { get; set; }
+        public bool PlayerFullScreen { get; set; }
     }
 
     public class APIDialogMessage

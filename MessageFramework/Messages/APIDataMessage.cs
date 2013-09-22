@@ -26,8 +26,7 @@ namespace MessageFramework.DataObjects
     {
         KeepAlive,
         EQData,
-        MPActionId,
-        ResetIteraction,
+        MPActionId
     }
 
 }

@@ -71,7 +71,7 @@ namespace MediaPortalPlugin.InfoManagers
         public void RegisterWindowListTypes(List<APIListType> list)
         {
             Log.Message(LogLevel.Verbose, "[RegisterWindowListTypes] - Registering MPDisplay skin list types...");
-            _registeredListTypes = new List<APIListType>(list);
+            _registeredListTypes = new List<APIListType>(list.Distinct());
             foreach (var listType in _registeredListTypes)
             {
                 Log.Message(LogLevel.Verbose, "[RegisterWindowListTypes] - Registering MPDisplay skin list type: {0}", listType);

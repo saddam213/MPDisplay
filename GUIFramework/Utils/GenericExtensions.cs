@@ -106,7 +106,7 @@ namespace GUIFramework
 
         public static T GetOrDefault<T>(this IEnumerable<T> windows, int id) where T : GUIWindow
         {
-            return windows.FirstOrDefault(w => w.Id == id)
+            return windows.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible() && w.Id == id)
                 ?? windows.FirstOrDefault(w => w.IsDefault);
         }
 

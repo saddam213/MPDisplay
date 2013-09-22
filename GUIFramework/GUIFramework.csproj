@@ -119,7 +119,7 @@
     <Compile Include="Repositories\ListRepository.cs" />
     <Compile Include="Repositories\PropertyRepository.cs" />
     <Compile Include="ServiceProxy.cs" />
-    <Compile Include="Utils\FocusHelper.cs" />
+    <Compile Include="Utils\ProgramHelper.cs" />
     <Compile Include="Utils\GenericExtensions.cs" />
     <Compile Include="GUI\GUIElementFactory.cs" />
     <Compile Include="GUI\Base\GUIControl.cs" />

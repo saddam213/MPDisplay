@@ -225,7 +225,7 @@ namespace MPDisplay.Common.Controls
                     {
                         for (int i = 0; i < BandCount; i++)
                         {
-                            if (i < this._fftData.Length)
+                            if (i < this._fftData.Length && i < arrayValue.Length)
                             {
                                 EQData pm = this._fftData[i];
                                 pm.Value = (int)arrayValue[i];

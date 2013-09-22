@@ -484,7 +484,7 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[CallbackHandler] - An exception occured while invoking callback.", ex.Message);
+                Log.Message(LogLevel.Error, "[CallbackHandler] - An exception occured while invoking callback.{0}", ex.Message);
             }
             await Disconnect();
         }

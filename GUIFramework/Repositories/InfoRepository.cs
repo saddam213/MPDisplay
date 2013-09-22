@@ -63,6 +63,7 @@ namespace GUIFramework.Managers
         private bool _isTVServerConnected;
         private bool _isMediaPortalConnected;
         private bool _isMPDisplayConnected;
+        private bool _isFullscreenMusic;
 
         #endregion
 
@@ -203,8 +204,21 @@ namespace GUIFramework.Managers
                 if (_isFullscreenVideo != value)
                 {
                     _isFullscreenVideo = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsFullscreenVideo, value);
+                    NotifiyValueChanged<bool>(InfoMessageType.IsFullscreenMedia, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+                }
+            }
+        }
+
+        public bool IsFullscreenMusic
+        {
+            get { return _isFullscreenMusic; }
+            set
+            {
+                if (_isFullscreenMusic != value)
+                {
+                    _isFullscreenMusic = value;
+                    NotifiyValueChanged<bool>(InfoMessageType.IsFullscreenMedia, value);
                 }
             }
         }
@@ -386,6 +400,8 @@ namespace GUIFramework.Managers
                 PlayerType = message.PlayerPluginType;
                 PlaybackType = message.PlaybackType;
                 PlaybackState = message.PlaybackState;
+                IsFullscreenVideo = message.PlaybackType.IsVideo() && message.PlayerFullScreen;
+                IsFullscreenMusic = message.PlaybackType.IsMusic() && message.PlayerFullScreen;
             }
         }
 
@@ -396,7 +412,7 @@ namespace GUIFramework.Managers
                 if (message.MessageType == APIWindowMessageType.WindowId)
                 {
                     WindowId = message.WindowId;
-                    IsFullscreenVideo = message.IsFullscreenVideo;
+               
                     FocusedWindowControlId = -1;
                     FocusedWindowControlId = message.FocusedControlId;
 
@@ -440,7 +456,6 @@ namespace GUIFramework.Managers
         PlaybackType,
         PlaybackState,
         IsTvRecording,
-        IsFullscreenVideo,
         WindowId,
         DialogId,
         PreviousWindowId,
@@ -450,5 +465,6 @@ namespace GUIFramework.Managers
         IsMediaPortalConnected,
         IsTVServerConnected,
         SendListItem,
+        IsFullscreenMedia,
     }
 }

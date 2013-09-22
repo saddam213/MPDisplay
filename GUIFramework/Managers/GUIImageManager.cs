@@ -44,9 +44,10 @@ namespace GUIFramework.Managers
                 {
                     if (!_styleCache.ContainsKey(brush.StyleId))
                     {
-                        var newbrush = new ImageBrush(GetImageNonCached(_xmlImages[brush.ImageName].FileName)) { Stretch = brush.ImageStretch};
-                        newbrush.Freeze();
-                        _styleCache.Add(brush.StyleId,newbrush );
+                        var imageSource = GetImageNonCached(_xmlImages[brush.ImageName].FileName);
+                        var newBrush = new ImageBrush(imageSource);
+                        newBrush.Stretch = brush.ImageStretch;
+                        _styleCache.Add(brush.StyleId, (ImageBrush)newBrush.GetAsFrozen());
                     }
                     return _styleCache[brush.StyleId];
                 }
@@ -54,9 +55,10 @@ namespace GUIFramework.Managers
                 string cacheKey = string.Format("{0} | {1}", brush.ImageName, brush.ImageStretch);
                 if (!_cache.ContainsKey(cacheKey))
                 {
-                    var newBrush = new ImageBrush(GetImageNonCached(_xmlImages[brush.ImageName].FileName)) { Stretch = brush.ImageStretch };
-                    newBrush.Freeze();
-                    _cache.Add(cacheKey, newBrush);
+                    var imageSource = GetImageNonCached(_xmlImages[brush.ImageName].FileName);
+                    var newBrush = new ImageBrush(imageSource);
+                    newBrush.Stretch = brush.ImageStretch;
+                    _cache.Add(cacheKey, (ImageBrush)newBrush.GetAsFrozen());
                 }
                 return _cache[cacheKey];
             }

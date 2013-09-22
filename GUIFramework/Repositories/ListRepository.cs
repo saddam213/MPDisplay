@@ -39,6 +39,11 @@ namespace GUIFramework.Managers
             Instance._listService.Register<T>(message, callback);
         }
 
+        public static void DeregisterMessage(ListServiceMessage message,object owner)
+        {
+            Instance._listService.Deregister(message, owner);
+        }
+
         public static void RegisterListMessage(GUIList listcontrol, XmlListType listType)
         {
             Instance.RegisterList(listcontrol, listType);

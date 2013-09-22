@@ -46,7 +46,7 @@ namespace GUI
           //  RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
             //     RenderOptions.SetCachingHint(this, CachingHint.Cache);
             // RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
-         //   TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+            TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
          //   TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
          //   TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
             
@@ -58,14 +58,14 @@ namespace GUI
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
             Log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
-            e.Handled = true;
-            RestartMPDisplay();
+           // e.Handled = true;
+           // RestartMPDisplay();
         }
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
             Log.Message(LogLevel.Error, "[UnhandledException] - An unknown exception occured{0}{1}", Environment.NewLine, e);
-            RestartMPDisplay();
+          //  RestartMPDisplay();
         }
 
         #endregion
@@ -139,11 +139,12 @@ namespace GUI
         }
 
 
-        private void RestartMPDisplay()
+        private async void RestartMPDisplay()
         {
+            await  Task.Delay(2000);
             try
             {
-                surface.CloseDown(false);
+                surface.CloseDown();
             }
             catch (Exception ex)
             {
@@ -172,7 +173,7 @@ namespace GUI
         protected override void OnClosing(CancelEventArgs e)
         {
             Log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
-            surface.CloseDown(false);
+            surface.CloseDown();
             base.OnClosing(e);
         }
 
@@ -188,7 +189,7 @@ namespace GUI
             base.OnMouseUp(e);
 
             await Task.Delay(250);
-            FocusHelper.ActivateApplication("MediaPortal");
+            ProgramHelper.ActivateApplication("MediaPortal");
         }
 
         #region Helpers

@@ -65,7 +65,8 @@ namespace MediaPortalPlugin
         private ConnectionSettings _settings;
         private MPDisplay.Common.Log.Log Log;
         private System.Threading.Timer _keepAlive;
-        private bool _isDisconnecting = false; 
+        private bool _isDisconnecting = false;
+        private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2); 
 
         #endregion
 
@@ -199,7 +200,7 @@ namespace MediaPortalPlugin
         /// <param name="state">The state.</param>
         private void SendKeepAlive(object state)
         {
-            if (!IsConnected)
+            if (!IsConnected || DateTime.Now > _lastKeepAlive.AddSeconds(35))
             {
                 Reconnect();
                 return;
@@ -251,6 +252,7 @@ namespace MediaPortalPlugin
         {
             if (!_isDisconnecting)
             {
+                StopKeepAlive();
                 Log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
                 Disconnect();
                 InitializeConnection(_settings);
@@ -285,7 +287,7 @@ namespace MediaPortalPlugin
             {
                 if (connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
-                    IsConnected = true;
+                   
                 }
                 else if (connection.ConnectionName.Equals("TVServerPlugin"))
                 {
@@ -294,6 +296,7 @@ namespace MediaPortalPlugin
                 else
                 {
                     Log.Message(LogLevel.Info, "[Session] - MPDisplay instance connected to network. ConnectionName: {0}", connection.ConnectionName);
+                    IsConnected = true;
                     IsMPDisplayConnected = true;
                     WindowManager.Instance.SendFullUpdate();
                 }
@@ -310,8 +313,6 @@ namespace MediaPortalPlugin
             {
                 if (connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
-                    IsConnected = false;
-                    IsMPDisplayConnected = false;
                     Reconnect();
                 }
                 else if (connection.ConnectionName.Equals("TVServerPlugin"))
@@ -334,8 +335,7 @@ namespace MediaPortalPlugin
         private void OnConnectionFaulted(object sender, EventArgs e)
         {
             Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
-            IsConnected = false;
-            IsMPDisplayConnected = false;
+            Reconnect();
         } 
 
         #endregion  
@@ -349,6 +349,13 @@ namespace MediaPortalPlugin
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
             Log.Message(LogLevel.Verbose, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
+
+            if (message.MessageType == APIMediaPortalMessageType.KeepAlive)
+            {
+                _lastKeepAlive = DateTime.Now;
+                return;
+            }
+
             WindowManager.Instance.OnMediaPortalMessageReceived(message);
         }
 
@@ -371,7 +378,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendPropertyMessage] - An exception occured sending message.", ex);
+                Log.Message(LogLevel.Error, "[SendPropertyMessage] - An exception occured sending message.", ex.Message);
             }
         }
 
@@ -394,7 +401,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendListMessage] - An exception occured sending message.", ex);
+                Log.Message(LogLevel.Error, "[SendListMessage] - An exception occured sending message.", ex.Message);
             }
         }
 
@@ -417,7 +424,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendInfoMessage] - An exception occured sending message.", ex);
+                Log.Message(LogLevel.Error, "[SendInfoMessage] - An exception occured sending message.", ex.Message);
             }
         }
 
@@ -433,14 +440,17 @@ namespace MediaPortalPlugin
                 {
                     if (_messageClient != null && dataMessage != null)
                     {
-                        Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}.", dataMessage.DataType);
-                        _messageClient.SendDataMessage(dataMessage);
+                        if (dataMessage.DataType != APIDataMessageType.EQData)
+                        {
+                            Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}.", dataMessage.DataType);
+                        }
+                        _messageClient.SendDataMessageAsync(dataMessage);
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendDataMessage] - An Exception Occured Processing Message", ex);
+                Log.Message(LogLevel.Error, "[SendDataMessage] - An Exception Occured Processing Message", ex.Message);
             }
         }
 

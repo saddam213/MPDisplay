@@ -54,6 +54,7 @@ namespace MediaPortalPlugin.InfoManagers
         private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
         private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
         private APIPlaybackType _currentPlayerPlugin = APIPlaybackType.None;
+        private Timer _secondTimer;
     
         public GUIWindow CurrentWindow
         {
@@ -89,11 +90,55 @@ namespace MediaPortalPlugin.InfoManagers
             GUIWindowManager.OnNewAction += GUIWindowManager_OnNewAction;
 
           //  GUIWindowManager.Receivers += GUIGraphicsContext_Receivers;
-
+            _secondTimer = new Timer( SecondTimerTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
         }
 
-      
+        private DateTime _lastIteraction = DateTime.Now.AddYears(1);
+        private bool _isUserInteracting = false;
+       
 
+        private void SecondTimerTick(object state)
+        {
+            CheckUserInteraction();
+        }
+
+        private void CheckUserInteraction()
+        {
+            if (_isUserInteracting)
+            {
+                if (DateTime.Now > _lastIteraction.AddSeconds(10))
+                {
+                    _isUserInteracting = false;
+                    _lastIteraction = DateTime.Now.AddYears(1);
+                    OnUserInteractionEnded();
+                }
+            }
+        }
+
+        private void ResetUserInteraction()
+        {
+            OnUserInteractionStarted();
+            _isUserInteracting = true;
+            _lastIteraction = DateTime.Now;
+        }
+
+        private void OnUserInteractionEnded()
+        {
+            if (_currentPlaybackType.IsMusic() && !_isFullScreenMusic)
+            {
+                _isFullScreenMusic = true;
+                SendPlayerMessage();
+            }
+        }
+
+        private void OnUserInteractionStarted()
+        {
+            if (_currentPlaybackType.IsMusic() && _isFullScreenMusic)
+            {
+                _isFullScreenMusic = false;
+                SendPlayerMessage();
+            }
+        }
       
 
         public void Shutdown()
@@ -109,21 +154,23 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
         {
-            switch (action.wID)
-            {
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_DOWN:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_LEFT:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_RIGHT:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_UP:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_SHOW_ACTIONMENU:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
-                case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_CLICK:
-                    SendInteractionMessage();
-                    break;
-                default:
-                    break;
-            }
+         
+                switch (action.wID)
+                {
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_DOWN:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_LEFT:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_RIGHT:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_UP:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_SHOW_ACTIONMENU:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
+                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_CLICK:
+                        ResetUserInteraction();
+                        break;
+                    default:
+                        break;
+                }
+          
 
             SendFocusedControlMessage();
 
@@ -214,6 +261,7 @@ namespace MediaPortalPlugin.InfoManagers
         }
 
         private List<string> _enabledlugins;
+        private bool _isFullScreenMusic;
 
         public void SendFullUpdate()
         {
@@ -223,7 +271,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         
         }
-    
+
         private void SetCurrentWindow(int windowId)
         {
             ListManager.Instance.ClearWindowListControls();
@@ -240,18 +288,25 @@ namespace MediaPortalPlugin.InfoManagers
                 }
                 retry++;
             }
-            _isFullscreenVideo = (windowId == 2005 || windowId == 602 || GUIGraphicsContext.IsFullScreenVideo);
+
+
+            _currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindow);
+            _isFullscreenVideo = GUIGraphicsContext.IsFullScreenVideo || _currentWindow.GetID == 2005 || _currentWindow.GetID == 602;
+
             if (!_isFullscreenVideo)
             {
-                _currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindow);
                 SendWindowMessage();
                 ListManager.Instance.SetWindowListControls();
             }
+           
+                SendPlayerMessage();
+         
+
             SendFocusedControlMessage();
         }
 
 
-
+    
 
         private void SendWindowMessage()
         {
@@ -264,10 +319,8 @@ namespace MediaPortalPlugin.InfoManagers
                     MessageType = APIInfoMessageType.WindowMessage,
                     WindowMessage = new APIWindowMessage
                     {
-                        
                         WindowId = _currentWindow.GetID,
                         FocusedControlId = _currentWindow.GetFocusControlId(),
-                        IsFullscreenVideo = _isFullscreenVideo,
                         EnabledPlugins = _enabledlugins
                     }
                 });
@@ -300,8 +353,8 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_currentWindow != null)
             {
-                Log.Message(LogLevel.Info, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}"
-                    , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin);
+                Log.Message(LogLevel.Info, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
+                    , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin, _isFullScreenMusic || _isFullscreenVideo);
                 MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
                     MessageType = APIInfoMessageType.PlayerMessage,
@@ -309,20 +362,14 @@ namespace MediaPortalPlugin.InfoManagers
                     {
                         PlaybackState = _currentPlaybackState,
                         PlaybackType = _currentPlaybackType,
-                        PlayerPluginType = _currentPlayerPlugin
+                        PlayerPluginType = _currentPlayerPlugin,
+                        PlayerFullScreen = _isFullscreenVideo || _isFullScreenMusic
                     }
                 });
             }
         }
 
-        private void SendInteractionMessage()
-        {
-            MessageService.Instance.SendDataMessage(new APIDataMessage
-            {
-                DataType = APIDataMessageType.ResetIteraction
-            });
-        }
-
+     
         private void SendActionIdMessage(int actionId)
         {
             MessageService.Instance.SendDataMessage(new APIDataMessage
@@ -384,6 +431,8 @@ namespace MediaPortalPlugin.InfoManagers
             _currentPlaybackState = APIPlaybackState.Started;
             _currentPlaybackType = GetPlaybackType(type);
             _currentPlayerPlugin = _currentPlaybackType;
+            _isFullscreenVideo = _currentPlaybackType.IsVideo();
+            _isFullScreenMusic = _currentPlaybackType.IsMusic();
 
             if (ListManager.Instance.LastSelectedItem != null)
             {
@@ -415,6 +464,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
 
             SendPlayerMessage();
+            _currentPlaybackState = APIPlaybackState.Playing;
         }
 
         private APIPlaybackType GetPlaybackType(g_Player.MediaType type)
@@ -449,6 +499,8 @@ namespace MediaPortalPlugin.InfoManagers
             }
             return GetPlaybackType(defaultType);
         }
+
+
 
         #endregion
    

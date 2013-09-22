@@ -101,9 +101,6 @@ namespace GUIFramework.Managers
                     case APIDataMessageType.EQData:
                         DataService.NotifyListeners(GenericDataMessageType.EQData, message.ByteArray);
                         break;
-                    case APIDataMessageType.ResetIteraction:
-                        DataService.NotifyListeners(GenericDataMessageType.ResetIteraction);
-                        break;
                     case APIDataMessageType.MPActionId:
                         DataService.NotifyListeners(GenericDataMessageType.MPActionId, message.IntValue);
                         break;
@@ -132,9 +129,6 @@ namespace GUIFramework.Managers
     public enum GenericDataMessageType
     {
         EQData,
-        LastMPAction,
-        LastUserMPAction,
-        ResetIteraction,
         MPActionId
     }
 }
