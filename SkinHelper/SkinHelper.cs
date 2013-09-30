@@ -159,20 +159,23 @@ namespace SkinHelper
         {
             lock (_syncObject)
             {
-                LoggingManager.GetLog(typeof(SkinHelper), "Property").Message(LogLevel.Debug, "-[Property] - Tag: {0}, TagValue: {1}", tag, tagValue);
-                if (tag.Equals("#currentmodule") && GUIWindowManager.IsRouted)
+                if (tag != null && !tag.StartsWith("#SkinInfo."))
                 {
-                    LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Debug, "-[Dialog] - DialogId: {0}", GUIWindowManager.RoutedWindow);
-                }
+                    LoggingManager.GetLog(typeof(SkinHelper), "Property").Message(LogLevel.Debug, "-[Property] - Tag: {0}, TagValue: {1}", tag, tagValue);
+                    if (tag.Equals("#currentmodule") && GUIWindowManager.IsRouted)
+                    {
+                        LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Debug, "-[Dialog] - DialogId: {0}", GUIWindowManager.RoutedWindow);
+                    }
 
-                if (tag.Equals("#selectedindex"))
-                {
-                    GetListItemInfo();
-                }
+                    if (tag.Equals("#selectedindex"))
+                    {
+                        GetListItemInfo();
+                    }
 
-                if (tag.Equals("#highlightedbutton") && !string.IsNullOrEmpty(tagValue))
-                {
-                    GetButtonMenuItemInfo();
+                    if (tag.Equals("#highlightedbutton") && !string.IsNullOrEmpty(tagValue))
+                    {
+                        GetButtonMenuItemInfo();
+                    }
                 }
             }
         }

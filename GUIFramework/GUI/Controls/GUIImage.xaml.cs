@@ -52,15 +52,15 @@ namespace GUIFramework.GUI.Controls
         }
 
 
-        public override void RegisterInfoData()
+        public override void OnRegisterInfoData()
         {
-            base.RegisterInfoData();
+            base.OnRegisterInfoData();
             PropertyRepository.RegisterPropertyMessage(this, SkinXml.Image);
         }
 
-        public override void DeregisterInfoData()
+        public override void OnDeregisterInfoData()
         {
-            base.DeregisterInfoData();
+            base.OnDeregisterInfoData();
              PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
         }
 

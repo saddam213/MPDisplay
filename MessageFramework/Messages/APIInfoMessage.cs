@@ -54,6 +54,22 @@ namespace MessageFramework.DataObjects
         public APIPlaybackType PlaybackType { get; set; }
         public APIPlaybackState PlaybackState { get; set; }
         public bool PlayerFullScreen { get; set; }
+
+        public bool IsEquals(APIPlayerMessage msg)
+        {
+            if (msg == null)
+            {
+                return false;
+            }
+
+            if (PlayerPluginType == msg.PlayerPluginType && PlaybackType == msg.PlaybackType 
+                && PlaybackState == msg.PlaybackState && PlayerFullScreen == msg.PlayerFullScreen)
+            {
+                return true;
+            }
+            return false;
+
+        }
     }
 
     public class APIDialogMessage

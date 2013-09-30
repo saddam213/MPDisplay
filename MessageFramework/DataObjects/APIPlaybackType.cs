@@ -34,6 +34,6 @@ namespace MessageFramework.DataObjects
         None = 0,
         Playing,
         Stopped,
-        Started
+      //  Started
     }
 }

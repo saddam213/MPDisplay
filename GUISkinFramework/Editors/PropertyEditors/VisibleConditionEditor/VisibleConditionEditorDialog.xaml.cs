@@ -320,7 +320,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             {
                 foreach (var playtype in Enum.GetValues(typeof(PlaybackType)))
                 {
-                    xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0}, true)", (int)playtype));
+                    xmlVisibleString = xmlVisibleString.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0})", (int)playtype));
                 }
             }
 

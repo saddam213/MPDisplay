@@ -53,7 +53,12 @@ namespace GUIFramework.GUI.Controls
             _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
             _scrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             MouseTouchDevice.RegisterEvents(listbox.GetDescendantByType<VirtualizingStackPanel>());
+           
         }
+
+      
+
+     
 
         public XmlList SkinXml
         {
@@ -87,17 +92,17 @@ namespace GUIFramework.GUI.Controls
         }
 
 
-        public override void RegisterInfoData()
+        public override void OnRegisterInfoData()
         {
-            base.RegisterInfoData();
+            base.OnRegisterInfoData();
             ListRepository.RegisterListMessage(this, SkinXml.ListType);
             GUIActionManager.RegisterAction(XmlActionType.ChangeListView, OnUserViewChange);
         }
 
-     
-        public override void DeregisterInfoData()
+
+        public override void OnDeregisterInfoData()
         {
-            base.DeregisterInfoData();
+            base.OnDeregisterInfoData();
             ListRepository.DeregisterListMessage(this, SkinXml.ListType);
             GUIActionManager.DeregisterAction(this, XmlActionType.ChangeListView);
         }
@@ -106,17 +111,18 @@ namespace GUIFramework.GUI.Controls
         {
             base.UpdateInfoData();
             ListItems = await ListRepository.GetCurrentListItems(SkinXml.ListType);
+            OnSelectedItemReceived();
         }
 
         public override void ClearInfoData()
         {
             base.ClearInfoData();
-         
         }
 
         public async void OnListItemsReceived()
         {
              await Dispatcher.InvokeAsync(OnPropertyChanging);
+             OnSelectedItemReceived();
         }
 
 
@@ -129,7 +135,6 @@ namespace GUIFramework.GUI.Controls
                     ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout(SkinXml.ListType));
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
-            
             });
         }
 
@@ -169,8 +174,7 @@ namespace GUIFramework.GUI.Controls
         }
 
 
-     
-
+    
    
 
         #region Properties
@@ -198,7 +202,7 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         public XmlListLayout ListLayoutType
         {
-            get { return _listLayoutType; }
+            get { return _listLayoutType; } 
             set { _listLayoutType = value; NotifyPropertyChanged("ListLayoutType"); }
         }
 
@@ -318,6 +322,7 @@ namespace GUIFramework.GUI.Controls
                 case XmlListLayout.Vertical:
                     ListLayoutType = XmlListLayout.Vertical;
                     CurrentLayout = SkinXml.VerticalItemStyle;
+                 
                     break;
                 case XmlListLayout.Horizontal:
                     ListLayoutType = XmlListLayout.Horizontal;
@@ -330,7 +335,7 @@ namespace GUIFramework.GUI.Controls
                 default:
                     break;
             }
-
+        
             if (_currentListLayout != layout)
             {
                 _currentListLayout = layout;
@@ -338,15 +343,6 @@ namespace GUIFramework.GUI.Controls
             }
         }
 
-        private void RefreshList()
-        {
-            var items = ListItems;
-            ListItems.Clear();
-            foreach (var item in items)
-            {
-                ListItems.Add(item);
-            }
-        }
 
         /// <summary>
         /// Starts the selection timer.

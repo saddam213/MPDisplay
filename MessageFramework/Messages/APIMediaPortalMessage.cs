@@ -21,7 +21,6 @@ namespace MessageFramework.DataObjects
 
     public enum APIMediaPortalMessageType
     {
-        KeepAlive,
         ActionMessage,
         WindowInfoMessage,
         DialogInfoMessage,

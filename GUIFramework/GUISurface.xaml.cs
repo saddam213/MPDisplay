@@ -61,7 +61,7 @@ namespace GUIFramework
         private bool _processWindow = false;
         private int _currentMPDWindowId = -1;
         private DateTime _lastUserInteraction = DateTime.MinValue;
-        private DateTime _lastKeepAlive = DateTime.MaxValue;
+        private DateTime _lastKeepAlive = DateTime.MinValue;
 
         #endregion
 
@@ -598,8 +598,11 @@ namespace GUIFramework
                     await _currentMediaPortalDialog.DialogClose();
                 }
 
-                _currentMediaPortalDialog = newDialog;
-                await _currentMediaPortalDialog.DialogOpen();
+                if (newDialog != null)
+                {
+                    _currentMediaPortalDialog = newDialog;
+                    await _currentMediaPortalDialog.DialogOpen();
+                }
             }
         }
 
@@ -779,9 +782,7 @@ namespace GUIFramework
         private void Channel_Faulted(object sender, EventArgs e)
         {
             Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
-            InfoRepository.Instance.IsMPDisplayConnected = false;
-            InfoRepository.Instance.IsMediaPortalConnected = false;
-            InfoRepository.Instance.IsTVServerConnected = false;
+            Disconnect();
         }
 
         public async Task ConnectToService()
@@ -790,19 +791,16 @@ namespace GUIFramework
             {
                 try
                 {
-                    _lastKeepAlive = DateTime.Now;
+                
                     Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
-                    InfoRepository.Instance.IsMPDisplayConnected = false;
-                    InfoRepository.Instance.IsMediaPortalConnected = false;
-                    InfoRepository.Instance.IsTVServerConnected = false;
                     var result = await _messageBroker.ConnectAsync(_connection);
                     if (result != null && result.Any())
                     {
                         Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
-                        InfoRepository.Instance.IsMPDisplayConnected = result.Any(x => x.ConnectionName.Equals(_settings.ConnectionSettings.ConnectionName));
+                        InfoRepository.Instance.IsMPDisplayConnected = true;
                         InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionName.Equals("MediaPortalPlugin"));
                         InfoRepository.Instance.IsTVServerConnected = result.Any(x => x.ConnectionName.Equals("TVServerPlugin"));
-                       
+                        _lastKeepAlive = DateTime.Now;
                     }
                 }
                 catch (Exception ex)
@@ -826,6 +824,9 @@ namespace GUIFramework
 
         public Task Disconnect()
         {
+            InfoRepository.Instance.IsMPDisplayConnected = false;
+            InfoRepository.Instance.IsMediaPortalConnected = false;
+            InfoRepository.Instance.IsTVServerConnected = false;
             if (_messageBroker != null)
             {
                 try
@@ -867,9 +868,7 @@ namespace GUIFramework
             {
                 if (connection.ConnectionName.Equals(_settings.ConnectionSettings.ConnectionName))
                 {
-                    InfoRepository.Instance.IsMPDisplayConnected = false;
-                    InfoRepository.Instance.IsMediaPortalConnected = false;
-                    InfoRepository.Instance.IsTVServerConnected = false;
+                    Disconnect();
                 }
 
                 if (connection.ConnectionName.Equals("MediaPortalPlugin"))
@@ -966,41 +965,66 @@ namespace GUIFramework
             });
         }
 
+
+
         public async Task SendKeepAlive()
         {
-            if (_lastKeepAlive != DateTime.MaxValue && DateTime.Now > _lastKeepAlive.AddSeconds(30))
+            if (InfoRepository.Instance.IsMPDisplayConnected)
             {
-                _lastKeepAlive = DateTime.Now;
-                if (!InfoRepository.Instance.IsMPDisplayConnected)
+                if (DateTime.Now > _lastKeepAlive.AddSeconds(45))
                 {
-                    await Reconnect();
+                    await Disconnect();
                 }
-                Log.Message(LogLevel.Info, "[KeepAlive] - Sending connection KeepAlive message.");
-                await SendMediaPortalMessage(new APIMediaPortalMessage { MessageType = APIMediaPortalMessageType.KeepAlive });
+
+                if (DateTime.Now > _lastKeepAlive.AddSeconds(30))
+                {
+                    Log.Message(LogLevel.Info, "[KeepAlive] - Sending KeepAlive message.");
+                    await SendKeepAliveMessage();
+                }
             }
         }
-     
+
+        public Task SendKeepAliveMessage()
+        {
+            try
+            {
+                if (_messageBroker != null)
+                {
+                    return _messageBroker.SendDataMessageAsync(new APIDataMessage { DataType = APIDataMessageType.KeepAlive });
+                }
+            }
+            catch (Exception)
+            {
+
+            }
+            return Task.FromResult<object>(null);
+        }
 
         #region Receive
 
-        public void ReceiveAPIPropertyMessage(APIPropertyMessage message)
+        public async void ReceiveAPIPropertyMessage(APIPropertyMessage message)
         {
-            PropertyRepository.Instance.AddProperty(message);
+           await Task.Factory.StartNew(() =>  PropertyRepository.Instance.AddProperty(message));
         }
 
-        public void ReceiveAPIListMessage(APIListMessage message)
+        public async void ReceiveAPIListMessage(APIListMessage message)
         {
-            ListRepository.Instance.AddListData(message);
+          await Task.Factory.StartNew(() =>  ListRepository.Instance.AddListData(message));
         }
 
-        public void ReceiveAPIInfoMessage(APIInfoMessage message)
+        public async void ReceiveAPIInfoMessage(APIInfoMessage message)
         {
-           InfoRepository.Instance.AddInfo(message);
+          await Task.Factory.StartNew(() =>  InfoRepository.Instance.AddInfo(message));
         }
 
-        public void ReceiveAPIDataMessage(APIDataMessage message)
+        public async void ReceiveAPIDataMessage(APIDataMessage message)
         {
-            GenericDataRepository.Instance.AddDataMessage(message);
+            if (message != null && message.DataType == APIDataMessageType.KeepAlive)
+            {
+                _lastKeepAlive = DateTime.Now;
+                return;
+            }
+            await Task.Factory.StartNew(() => GenericDataRepository.Instance.AddDataMessage(message));
         }
 
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)

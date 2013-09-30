@@ -191,7 +191,7 @@ namespace MediaPortalPlugin.InfoManagers
                         var currentList = _listControls.FirstOrDefault(f => f.Focus);
                         if (currentList != null)
                         {
-                            SendList(ListManager.Instance.GetAPIListItems(currentList));
+                            SendList(ListManager.Instance.GetAPIListItems(currentList, APIListLayout.Vertical));
                         }
                     }
                     else if (_currentDialogType == DialogType.Button)

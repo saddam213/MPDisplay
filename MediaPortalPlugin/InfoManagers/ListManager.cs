@@ -9,6 +9,7 @@ using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
 using System.Reflection;
+using MediaPortalPlugin.PluginHelpers;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -145,6 +146,7 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     SendFacadeList();
                     SendListControlList();
+                    SendFacdeSelectedItem();
                 }
 
                 if (_registeredListTypes.Contains(APIListType.GroupMenu))
@@ -178,18 +180,8 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        public GUIListItem LastSelectedItem { get; set; }
-        public int LastSelectedItemWindowId { get; set; }
-
         private void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
         {
-            var currentFacde = _facadeControls.FirstOrDefault(f => f.Focus);
-             if (currentFacde != null && currentFacde.SelectedListItem != null)
-             {
-                 LastSelectedItem = currentFacde.SelectedListItem;
-                 LastSelectedItemWindowId = currentFacde.WindowId;
-             }
-
             if (_registeredListTypes.Any())
             {
                 switch (action.wID)
@@ -214,13 +206,14 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void GUIPropertyManager_OnPropertyChanged(string tag, string tagValue)
         {
+        
             if (_registeredListTypes.Any())
             {
+             
                 if (tag.Equals("#facadeview.layout"))
                 {
                     SendFacadeLayout();
                 }
-
 
                 if (tag.Equals("#highlightedbutton"))
                 {
@@ -314,13 +307,15 @@ namespace MediaPortalPlugin.InfoManagers
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
             if (currentFacade != null)
             {
-                DateTime timeout = DateTime.Now.AddSeconds(5);
+                DateTime timeout = DateTime.Now.AddSeconds(20);
                 while (currentFacade.SelectedListItem == null && DateTime.Now < timeout)
                 {
                     Log.Message(LogLevel.Verbose, "Facade not ready, Waiting 250ms");
                     Thread.Sleep(250);
                 }
+                Thread.Sleep(250);
                 SendFacadeList();
+                SendFacdeSelectedItem();
             }
         }
 
@@ -329,7 +324,8 @@ namespace MediaPortalPlugin.InfoManagers
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
             if (currentFacade != null)
             {
-                SendList(APIListType.List, GetAPIListLayout(currentFacade), GetAPIListItems(currentFacade));
+                var layout = GetAPIListLayout(currentFacade);
+                SendList(APIListType.List, layout, GetAPIListItems(currentFacade, layout));
             }
         }
 
@@ -352,7 +348,7 @@ namespace MediaPortalPlugin.InfoManagers
                     currentFacade.SelectedListItemIndex = item.ItemIndex;
                     if (isSelect)
                     {
-                        PluginHelpers.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
+                        SupportedPluginManager.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
                     }
                 }
             }
@@ -400,7 +396,7 @@ namespace MediaPortalPlugin.InfoManagers
             var currentList = _listControls.FirstOrDefault(f => f.Focus);
             if (currentList != null)
             {
-                SendList(APIListType.List, APIListLayout.Vertical, GetAPIListItems(currentList));
+                SendList(APIListType.List, APIListLayout.Vertical, GetAPIListItems(currentList, APIListLayout.Vertical));
             }
         }
 
@@ -424,7 +420,7 @@ namespace MediaPortalPlugin.InfoManagers
                     currentList.SelectedListItemIndex = item.ItemIndex;
                     if (isSelect)
                     {
-                        PluginHelpers.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
+                        SupportedPluginManager.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
                     }
                 }
             }
@@ -559,21 +555,21 @@ namespace MediaPortalPlugin.InfoManagers
                                 {
                                     if (_menuCotrolMoveDown != null)
                                     {
-                                        PluginHelpers.GUISafeInvoke(() => _menuCotrolMoveDown.Invoke(_menuControl, null));
+                                        SupportedPluginManager.GUISafeInvoke(() => _menuCotrolMoveDown.Invoke(_menuControl, null));
                                     }
                                 }
                                 else
                                 {
                                     if (_menuCotrolMoveUp != null)
                                     {
-                                        PluginHelpers.GUISafeInvoke(() => _menuCotrolMoveUp.Invoke(_menuControl, null));
+                                        SupportedPluginManager.GUISafeInvoke(() => _menuCotrolMoveUp.Invoke(_menuControl, null));
                                     }
                                 }
                             }
 
                             if (isSelect)
                             {
-                                PluginHelpers.GUISafeInvoke(() => GUIWindowManager.ActivateWindow(_menuControl.ButtonInfos[item.ItemIndex].PluginID));
+                                SupportedPluginManager.GUISafeInvoke(() => GUIWindowManager.ActivateWindow(_menuControl.ButtonInfos[item.ItemIndex].PluginID));
                             }
                         }
                     }
@@ -630,7 +626,7 @@ namespace MediaPortalPlugin.InfoManagers
 
 
 
-        public IEnumerable<APIListItem> GetAPIListItems(GUIFacadeControl facade)
+        public IEnumerable<APIListItem> GetAPIListItems(GUIFacadeControl facade, APIListLayout layout)
         {
             if (facade != null)
             {
@@ -643,13 +639,13 @@ namespace MediaPortalPlugin.InfoManagers
                         Label = facadeItem.Label,
                         Label2 = facadeItem.Label2,
                         Label3 = facadeItem.Label3,
-                        Image = GetItemImageBytes(facadeItem)
+                        Image = GetItemImageBytes(facadeItem, layout)
                     };
                 }
             }
         }
 
-        public IEnumerable<APIListItem> GetAPIListItems(GUIListControl listcontrol)
+        public IEnumerable<APIListItem> GetAPIListItems(GUIListControl listcontrol, APIListLayout layout)
         {
             if (listcontrol != null)
             {
@@ -662,7 +658,7 @@ namespace MediaPortalPlugin.InfoManagers
                         Label = listItem.Label,
                         Label2 = listItem.Label2,
                         Label3 = listItem.Label3,
-                        Image = GetItemImageBytes(listItem)
+                        Image = GetItemImageBytes(listItem, layout)
                     };
                 }
             }
@@ -710,12 +706,16 @@ namespace MediaPortalPlugin.InfoManagers
             return APIListLayout.Vertical;
         }
 
-        public byte[] GetItemImageBytes(GUIListItem item)
+        public byte[] GetItemImageBytes(GUIListItem item, APIListLayout layout)
         {
             string filename = string.Empty;
             if (item != null)
             {
-                if (item.HasThumbnail)
+                if (WindowManager.Instance.CurrentPlugin != null)
+                {
+                    filename = WindowManager.Instance.CurrentPlugin.GetListItemThumb(item, layout);
+                }
+                else if (item.HasThumbnail)
                 {
                     filename = item.ThumbnailImage;
                 }

@@ -1,19 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.ServiceModel;
-using System.Text;
+﻿using MediaPortal.GUI.Library;
 using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
-using MediaPortal.GUI.Library;
+using System;
+using System.Linq;
+using System.ServiceModel;
 using System.Threading;
 
 namespace MediaPortalPlugin
 {
     /// <summary>
-    /// 
+    /// MessageService for sending and receiving messages from MPDisplay
     /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     public class MessageService : IMessageCallback
@@ -147,7 +145,6 @@ namespace MediaPortalPlugin
 
                 _connection = new APIConnection("MediaPortalPlugin");
                 ConnectToService();
-                StartKeepAlive();
             }
             catch (Exception ex)
             {
@@ -160,7 +157,6 @@ namespace MediaPortalPlugin
         /// </summary>
         public void Shutdown()
         {
-            StopKeepAlive();
             Log.Message(LogLevel.Info, "[Shutdown] - Shuting down connection instance.");
             _isDisconnecting = true;
             Disconnect();
@@ -176,7 +172,7 @@ namespace MediaPortalPlugin
             StopKeepAlive();
             if (_keepAlive == null)
             {
-                Log.Message(LogLevel.Info, "[KeepAlive] - Staring KeepAlive thread.");
+                Log.Message(LogLevel.Info, "[KeepAlive] - Starting KeepAlive thread.");
                 _keepAlive = new System.Threading.Timer(SendKeepAlive, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             }
         }
@@ -205,8 +201,7 @@ namespace MediaPortalPlugin
                 Reconnect();
                 return;
             }
-            Log.Message(LogLevel.Info, "[KeepAlive] - Sending connection KeepAlive message.");
-            SendDataMessage(new APIDataMessage { DataType = APIDataMessageType.KeepAlive });
+            SendKeepAliveMessage();
         }
 
         /// <summary>
@@ -214,8 +209,6 @@ namespace MediaPortalPlugin
         /// </summary>
         public void ConnectToService()
         {
-            IsConnected = false;
-            IsMPDisplayConnected = false;
             if (_messageClient != null)
             {
                 Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
@@ -236,12 +229,12 @@ namespace MediaPortalPlugin
             }
             else
             {
+                _lastKeepAlive = DateTime.Now;
                 Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
-                foreach (var connection in e.Result)
-                {
-                    SessionConnected(connection);
-                }
+                IsConnected = true;
+                IsMPDisplayConnected = e.Result.Where(x => !x.ConnectionName.Equals("MediaPortalPlugin") && !x.ConnectionName.Equals("TVServerPlugin")).Any();
             }
+            StartKeepAlive();
         }
      
 
@@ -252,7 +245,6 @@ namespace MediaPortalPlugin
         {
             if (!_isDisconnecting)
             {
-                StopKeepAlive();
                 Log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
                 Disconnect();
                 InitializeConnection(_settings);
@@ -270,6 +262,7 @@ namespace MediaPortalPlugin
             {
                 try
                 {
+                    StopKeepAlive();
                     Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
                     _messageClient.Disconnect();
                 }
@@ -285,18 +278,13 @@ namespace MediaPortalPlugin
         {
             if (connection != null)
             {
-                if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                   
-                }
-                else if (connection.ConnectionName.Equals("TVServerPlugin"))
+                if (connection.ConnectionName.Equals("TVServerPlugin"))
                 {
                     Log.Message(LogLevel.Info, "[Session] - TVServerPlugin connected to network.");
                 }
-                else
+                else if (!connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
                     Log.Message(LogLevel.Info, "[Session] - MPDisplay instance connected to network. ConnectionName: {0}", connection.ConnectionName);
-                    IsConnected = true;
                     IsMPDisplayConnected = true;
                     WindowManager.Instance.SendFullUpdate();
                 }
@@ -349,13 +337,6 @@ namespace MediaPortalPlugin
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
             Log.Message(LogLevel.Verbose, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
-
-            if (message.MessageType == APIMediaPortalMessageType.KeepAlive)
-            {
-                _lastKeepAlive = DateTime.Now;
-                return;
-            }
-
             WindowManager.Instance.OnMediaPortalMessageReceived(message);
         }
 
@@ -454,11 +435,48 @@ namespace MediaPortalPlugin
             }
         }
 
+        /// <summary>
+        /// Sends the keep alive message.
+        /// </summary>
+        public void SendKeepAliveMessage()
+        {
+            try
+            {
+                if (IsConnected)
+                {
+                    if (_messageClient != null)
+                    {
+                        Log.Message(LogLevel.Info, "[KeepAlive] - Sending KeepAlive message.");
+                        _messageClient.SendDataMessageAsync(new APIDataMessage {  DataType = APIDataMessageType.KeepAlive});
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Message(LogLevel.Error, "[KeepAlive] - An Exception Occured sending KeepAlive message", ex.Message);
+            }
+        }
+
+        /// <summary>
+        /// Receives the API data message.
+        /// </summary>
+        /// <param name="message">The message.</param>
+        public void ReceiveAPIDataMessage(APIDataMessage message)
+        {
+            if (message != null)
+            {
+                if (message.DataType == APIDataMessageType.KeepAlive)
+                {
+                    _lastKeepAlive = DateTime.Now;
+                    return;
+                }
+            }
+        } 
+
         public void ReceiveTVServerMessage(APITVServerMessage message) { }
         public void ReceiveAPIPropertyMessage(APIPropertyMessage message) { }
         public void ReceiveAPIListMessage(APIListMessage message) { }
         public void ReceiveAPIInfoMessage(APIInfoMessage message) { }
-        public void ReceiveAPIDataMessage(APIDataMessage message) { } 
 
         #endregion
     }

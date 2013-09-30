@@ -50,17 +50,17 @@ namespace GUIFramework.GUI.Controls
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.LabelText);
         }
 
-     
 
-        public override void RegisterInfoData()
+
+        public override void OnRegisterInfoData()
         {
-            base.RegisterInfoData();
+            base.OnRegisterInfoData();
             PropertyRepository.RegisterPropertyMessage(this, SkinXml.LabelText);
         }
 
-        public override void DeregisterInfoData()
+        public override void OnDeregisterInfoData()
         {
-            base.DeregisterInfoData();
+            base.OnDeregisterInfoData();
             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelText);
         }
 

@@ -96,6 +96,7 @@
     <Compile Include="Controls\Core\Utilities\ContextMenuUtilities.cs" />
     <Compile Include="Controls\DropDownButton\Implementation\DropDownButton.cs" />
     <Compile Include="Controls\EqualizerCanvas\EqualizerCanvas.cs" />
+    <Compile Include="Controls\ListBox\CustomListBox.cs" />
     <Compile Include="Controls\LoadingAdorner\Implementation\BackgroundVisualHost.cs" />
     <Compile Include="Controls\LoadingAdorner\Implementation\LoadingAdorner.cs" />
     <Compile Include="Controls\LoadingAdorner\Implementation\VisualTargetPresentationSource.cs" />

@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.VisualBasic" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -50,6 +51,7 @@
     <Compile Include="..\GlobalAssembly.cs">
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
+    <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\ReflectionHelper.cs" />
     <Compile Include="Helpers\SerializationHelper.cs" />
     <Compile Include="Helpers\ServiceHelper.cs" />
@@ -67,10 +69,11 @@
     <Compile Include="Settings\RegistrySettings.cs" />
     <Compile Include="Settings\SettingsBase.cs" />
     <Compile Include="Settings\SettingsManager.cs" />
+    <Compile Include="Settings\SettingsObjects\AdvancedPluginSettings.cs" />
     <Compile Include="Settings\SettingsObjects\ConnectionSettings.cs" />
     <Compile Include="Settings\SettingsObjects\GUISettings.cs" />
     <Compile Include="Settings\SettingsObjects\MPDisplaySettings.cs" />
-    <Compile Include="Settings\SettingsObjects\PluginObjects\PluginPlayer.cs" />
+    <Compile Include="Settings\SettingsObjects\PluginObjects\SupportedPluginSettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginSettings.cs" />
     <Compile Include="Status\SystemInfo.cs" />
     <Compile Include="Status\ServerChecker.cs" />

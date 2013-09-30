@@ -29,6 +29,10 @@ namespace GUISkinFramework.Controls
         private int _scrollSpeed = 2;
         private string _scrollSeperator = " | ";
 
+        public XmlLabel()
+        {
+            this.SetDefaultValues();
+        }
 
     
          [EditorCategory("Appearance", 3)]

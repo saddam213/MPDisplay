@@ -345,7 +345,15 @@ namespace MessageServer
             {
                 if (_apiConnection != null && dataMessage != null)
                 {
-                    Log.Message(LogLevel.Verbose, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}", _apiConnection.ConnectionName, dataMessage.DataType);
+                    if (dataMessage.DataType == APIDataMessageType.KeepAlive)
+                    {
+                        Log.Message(LogLevel.Info, "[KeepAlive] - KeepAlive received., Sender: {0}", _apiConnection.ConnectionName);
+                    }
+                    else
+                    {
+                        Log.Message(LogLevel.Verbose, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}", _apiConnection.ConnectionName, dataMessage.DataType);
+                    }
+                  
                     await BroadcastMessage(new MessageEventArgs
                     {
                         MessageType = MessageType.ReceiveAPIDataMessage,

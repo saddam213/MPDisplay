@@ -5,6 +5,8 @@ using System.Text;
 using System.IO;
 using System.Management;
 using System.Diagnostics;
+using System.Threading;
+using Microsoft.VisualBasic.Devices;
 
 namespace Common.Status
 {
@@ -13,7 +15,15 @@ namespace Common.Status
     /// </summary>
     public class ServerChecker
     {
-        public SystemInfo SystemInformation { get; set; }
+        private DateTime _lastFastUpdate = DateTime.MinValue;
+        private DateTime _lastMediumUpdate = DateTime.MinValue;
+        private DateTime _lastSlowUpdate = DateTime.MinValue;
+        private System.Threading.Timer _updateTimer;
+        private PerformanceCounter _cpuCounter;
+        private ComputerInfo _computerInfo;
+
+        public event Action<string, string> OnTextDataChanged;
+        public event Action<string, double> OnNumberDataChanged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerChecker"/> class.
@@ -21,99 +31,126 @@ namespace Common.Status
         /// </summary>
         public ServerChecker()
         {
-            SystemInformation = new SystemInfo();
-            GetOSVersion();
-            GetStatsForAllDrives();
-            GetMemoryStats();
-            SystemInformation.CurrentCPUPercent = GetCPUCounter();
+           _computerInfo  = new ComputerInfo();
+           _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+           _cpuCounter.NextValue();
         }
 
         /// <summary>
-        /// Gets the CPU counter by using a performance counter.
+        /// Starts the monitoring.
         /// </summary>
-        /// <returns></returns>
-        public float GetCPUCounter()
+        public void StartMonitoring()
         {
-            PerformanceCounter cpuCounter = new PerformanceCounter();
-            cpuCounter.CategoryName = "Processor";
-            cpuCounter.CounterName = "% Processor Time";
-            cpuCounter.InstanceName = "_Total";
-
-            // will always start at 0
-            cpuCounter.NextValue();
-            System.Threading.Thread.Sleep(1000);
-            // now matches task manager reading
-            var secondValue = cpuCounter.NextValue();
-
-            return secondValue;
-        }
-
-        /// <summary>
-        /// Gets the OS version by querying system property data
-        /// </summary>
-        private void GetOSVersion()
-        {
-            var outputPropertyData = new List<PropertyData>();
-
-            foreach (ManagementObject a in (new ManagementObjectSearcher("SELECT * FROM  Win32_OperatingSystem")).Get())
+            if (_updateTimer == null)
             {
-                foreach (PropertyData d in a.Properties)
-                {
-                    // Yes, really; Caption is the OS version property...
-                    if (d.Name.Equals("Caption", StringComparison.OrdinalIgnoreCase))
-                    {
-                        SystemInformation.OSVersion = (d.Value as string).Trim();
-                    }
-                }
+                _updateTimer = new System.Threading.Timer((o) => OnTimerTick(), null, 250, 250);
             }
         }
 
         /// <summary>
-        /// Gets the stats for all drives.
-        /// This is the Drive letter, Free space (GB) and Total space (GB)
+        /// Stops the monitoring.
         /// </summary>
-        private void GetStatsForAllDrives()
+        public void StopMonitoring()
+        {
+            if (_updateTimer != null)
+            {
+                _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
+        }
+
+        /// <summary>
+        /// Called when [timer tick].
+        /// </summary>
+        private void OnTimerTick()
+        {
+            if (DateTime.Now > _lastSlowUpdate.AddMinutes(1))
+            {
+                _lastSlowUpdate = DateTime.Now;
+                UpdateDriveInfo();
+                UpdateSystemInfo();
+            }
+
+            if (DateTime.Now > _lastMediumUpdate.AddSeconds(5))
+            {
+                _lastMediumUpdate = DateTime.Now;
+
+                double physPercentFree = Math.Round(100 * (double)_computerInfo.AvailablePhysicalMemory / _computerInfo.TotalPhysicalMemory,2);
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.PhysicalTotal",  ((long)_computerInfo.TotalPhysicalMemory).ToPrettySize(2));
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.PhysicalFree", ((long)_computerInfo.AvailablePhysicalMemory).ToPrettySize(2));
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.PhysicalPercent", string.Format("{0:##0} %", physPercentFree));
+                NotifyNumberDataChanged("#MPD.SystemInfo.Number.PhysicalPercent", physPercentFree);
+
+                double vertPercentFree = Math.Round(100 * (double)_computerInfo.AvailableVirtualMemory / _computerInfo.TotalVirtualMemory,2);
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.VirtualTotal", ((long)_computerInfo.TotalVirtualMemory).ToPrettySize(2));
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.VirtualFree",  ((long)_computerInfo.AvailableVirtualMemory).ToPrettySize(2));
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.VirtualPercent", string.Format("{0:##0} %", vertPercentFree));
+                NotifyNumberDataChanged("#MPD.SystemInfo.Number.VirtualPercent", vertPercentFree);
+            }
+
+            if (DateTime.Now > _lastFastUpdate.AddMilliseconds(250))
+            {
+                _lastFastUpdate = DateTime.Now;
+                double value = Math.Round(_cpuCounter.NextValue(),2);
+                NotifyTextDataChanged("#MPD.SystemInfo.Label.CPU", string.Format("{0:##0} %", value));
+                NotifyNumberDataChanged("#MPD.SystemInfo.Number.CPU", value);
+            }
+        }
+
+        /// <summary>
+        /// Updates the system info.
+        /// </summary>
+        private void UpdateSystemInfo()
+        {
+            NotifyTextDataChanged("#MPD.SystemInfo.Label.OSFullName", _computerInfo.OSFullName);
+            NotifyTextDataChanged("#MPD.SystemInfo.Label.OSPlatform", _computerInfo.OSPlatform);
+            NotifyTextDataChanged("#MPD.SystemInfo.Label.OSVersion", _computerInfo.OSVersion);
+        }
+
+        /// <summary>
+        /// Updates the drive info.
+        /// </summary>
+        private void UpdateDriveInfo()
         {
             var allDrives = System.IO.DriveInfo.GetDrives();
+            int num = 0;
             foreach (var d in allDrives)
             {
-                if (d.DriveType == DriveType.Fixed || d.DriveType == DriveType.Removable && d.IsReady)
+                if ( d.IsReady && d.DriveType == DriveType.Fixed)
                 {
-                    var info = new DriveInfo
-                    {
-                        DriveLetter = d.Name
-                        ,
-                        FreeSpaceGigaBytes = ConvertBytesToGigaBytes(d.TotalFreeSpace)
-                        ,
-                        TotalSpaceGigaBytes = ConvertBytesToGigaBytes(d.TotalSize)
-                    };
-                    SystemInformation.DriveInformation.Add(info);
+                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.Name", num), d.Name);
+                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.TotalSpace", num), d.TotalFreeSpace.ToPrettySize(2));
+                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
+                    double percentFree = Math.Round(100 * (double)d.TotalFreeSpace / d.TotalSize,2);
+                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.PercentFree", num), percentFree.ToString());
+                    NotifyNumberDataChanged("#MPD.SystemInfo.Drive{0}.Number.PercentFree", percentFree);
+                    num++;
                 }
             }
         }
 
-        //Convert bytes to GB
-        private double ConvertBytesToGigaBytes(long Bytes)
+        /// <summary>
+        /// Notifies the text data changed.
+        /// </summary>
+        /// <param name="tag">The tag.</param>
+        /// <param name="tagValue">The tag value.</param>
+        private void NotifyTextDataChanged(string tag, string tagValue)
         {
-            return (Bytes / 1024 / 1024 / 1024);
+            if (OnTextDataChanged != null)
+            {
+                OnTextDataChanged(tag, tagValue);
+            }
         }
 
-
         /// <summary>
-        /// Gets the memory stats.
-        /// This is how much RAM and Virtual memory is there total and how much is used
+        /// Notifies the number data changed.
         /// </summary>
-        private void GetMemoryStats()
+        /// <param name="tag">The tag.</param>
+        /// <param name="tagValue">The tag value.</param>
+        private void NotifyNumberDataChanged(string tag, double tagValue)
         {
-            var searcher = new ManagementObjectSearcher(new System.Management.ObjectQuery("SELECT * FROM Win32_OperatingSystem"));
-            var results = searcher.Get();
-
-            foreach (var result in results)
+            if (OnNumberDataChanged != null)
             {
-                SystemInformation.TotalRAMMegaBytes = double.Parse(result["TotalVisibleMemorySize"].ToString()) / 1024;
-                SystemInformation.FreeRAMMegaBytes = double.Parse(result["FreePhysicalMemory"].ToString()) / 1024;
-                SystemInformation.TotalVirtualMemoryMegaBytes = double.Parse(result["TotalVirtualMemorySize"].ToString()) / 1024;
-                SystemInformation.FreeVirtualMemoryMegaBytes = double.Parse(result["FreeVirtualMemory"].ToString()) / 1024;
+                OnNumberDataChanged(tag, tagValue);
             }
         }
     }

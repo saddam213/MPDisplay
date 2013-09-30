@@ -254,17 +254,55 @@ namespace Common.Helpers
         /// <param name="property">The Property Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
-        public static T GetPropertyValue<T>(object obj, string property, T defaultValue)
+        public static T GetPropertyValue<T>(object obj, string property, T defaultValue, object[] index = null)
         {
             try
             {
-                return (T)(obj.GetType().GetProperty(property).GetValue(obj, null));
+                if (obj != null)
+                {
+                    return (T)(obj.GetType().GetProperty(property).GetValue(obj, index));
+                }
             }
-            catch
-            {
-                return defaultValue;
-            }
+            catch { }
+            return defaultValue;
         }
+
+           public static object GetPropertyValue(object obj, string property, object defaultValue, object[] index = null)
+           {
+               return GetPropertyValue<object>(obj, property, defaultValue, index);
+           }
+
+
+           public static T GetPropertyPath<T>(object obj, string property, T defaultValue)
+           {
+               try
+               {
+                   if (!string.IsNullOrEmpty(property))
+                   {
+                       object returnValue = obj;
+                       if (property.Contains('.'))
+                       {
+                           var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                        
+                           foreach (var prop in path)
+                           {
+                               returnValue = GetPropertyValue<object>(returnValue, prop, null) 
+                                          ?? GetFieldValue<object>(returnValue, prop, null);
+                           }
+                           return (T)returnValue;
+                       }
+                       returnValue = GetPropertyValue<object>(obj, property, null) 
+                                  ?? GetFieldValue<object>(obj, property, defaultValue);
+                       if (returnValue != null)
+                       {
+                           return (T)returnValue;
+                       }
+                   }
+               }
+               catch { }
+               return defaultValue;
+           }
+
 
         /// <summary>
         /// Get A Feild Value From An Object
@@ -274,18 +312,39 @@ namespace Common.Helpers
         /// <param name="field">The Field Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
-        public static T GetFieldValue<T>(object obj, string field, T defaultValue, BindingFlags bindingFlags = 0)
+        public static T GetFieldValue<T>(object obj, string field, T defaultValue, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic)
         {
             try
             {
-                return (T)(obj.GetType().GetField(field, bindingFlags).GetValue(obj));
+                if (obj != null)
+                {
+                    return (T)(obj.GetType().GetField(field, bindingFlags).GetValue(obj));
+                }
             }
-            catch (Exception ex)
-            {
-                return defaultValue;
-            }
+            catch { }
+            return defaultValue;
         }
 
+        public static object GetFieldValue(object obj, string field, object defaultValue = null, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic)
+        {
+            return GetFieldValue<object>(obj, field, defaultValue, bindingFlags);
+        }
+
+        public static T GetStaticField<T>(object obj, string field, T defaultValue)
+        {
+            try
+            {
+                return (T)(obj.GetType().GetField(field).GetValue(null));
+            }
+            catch { }
+            return defaultValue;
+        }
+
+        public static object GetStaticField(object obj, string field, object defaultValue)
+        {
+            return GetStaticField<object>(obj, field, defaultValue);
+        }
+    
         #endregion
 
         #region Private Methods

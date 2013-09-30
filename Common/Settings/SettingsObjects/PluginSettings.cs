@@ -9,14 +9,13 @@ using Common.Settings.SettingsObjects;
 namespace MPDisplay.Common.Settings
 {
     [XmlInclude(typeof(ConnectionSettings))]
-    [XmlInclude(typeof(PlayerPlugin))]
     public class PluginSettings : SettingsBase
     {
         private ConnectionSettings _connectionSettings = new ConnectionSettings();
-        private ObservableCollection<PlayerPlugin> _playerPlugins;
         private bool _launchMPDisplayOnStart = true;
         private bool _restartMPDisplayOnStart = false;
         private bool _closeMPDisplayOnExit = true;
+        private bool _isSystemInfoEnabled = true;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -24,11 +23,7 @@ namespace MPDisplay.Common.Settings
             set { _connectionSettings = value; NotifyPropertyChanged("ConnectionSettings"); }
         }
 
-        public ObservableCollection<PlayerPlugin> PlayerPlugins
-        {
-            get { return _playerPlugins; }
-            set { _playerPlugins = value; NotifyPropertyChanged("PlayerPlugins"); }
-        }
+   
 
         public bool LaunchMPDisplayOnStart
         {
@@ -46,6 +41,14 @@ namespace MPDisplay.Common.Settings
         {
             get { return _closeMPDisplayOnExit; }
             set { _closeMPDisplayOnExit = value; NotifyPropertyChanged("CloseMPDisplayOnExit"); }
+        }
+
+
+
+        public bool IsSystemInfoEnabled
+        {
+            get { return _isSystemInfoEnabled; }
+            set { _isSystemInfoEnabled = value; NotifyPropertyChanged("IsSystemInfoEnabled"); }
         }
     }
 }

@@ -41,15 +41,20 @@ namespace GUI
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
-            //   Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),   new FrameworkPropertyMetadata { DefaultValue = 30 });
-            RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
+          ///  Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),   new FrameworkPropertyMetadata { DefaultValue = 30 });
+           // RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
           //  RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
             //     RenderOptions.SetCachingHint(this, CachingHint.Cache);
             // RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
-            TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+           // TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
          //   TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
          //   TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
-            
+
+            Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 30 });
+         //   TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
+         //   TextOptions.TextRenderingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextRenderingMode.Aliased });
+
+
             InitializeComponent();
             DataContext = this;
             LoadSettings();
@@ -57,9 +62,13 @@ namespace GUI
 
         void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
         {
+            if (e.Exception != null && e.Exception.StackTrace.Contains("System.Windows.Controls.VirtualizingStackPanel.get_ItemCount()"))
+            {
+                Log.Message( LogLevel.Warn, "An Error occured in Microsoft VirtualizingStackPanel");
+                e.Handled = true;
+                return;
+            }
             Log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
-           // e.Handled = true;
-           // RestartMPDisplay();
         }
 
         void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)

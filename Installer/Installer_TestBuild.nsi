@@ -2,7 +2,7 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "TestBuild_0.9.4.1.1"
+!define VERSION "TestBuild_0.9.4.1.7"
 !define BUILD_FOLDER "G:\Code\Release\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"
@@ -475,13 +475,19 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 		CreateDirectory "$INSTDIR\SkinEditor"
 			File /r "${BUILD_FOLDER}\SkinEditor\*.*"
 			
-		# Install User Data		
+    # Install User Data		
 	SetOutPath "${PROGRAM_DATA}"
 		CreateDirectory "${PROGRAM_DATA}"
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		File /r "${BUILD_FOLDER}\Data\*.*"
+		File /r "${BUILD_FOLDER}\Data\Install_Full\*.*"
+		File /r "${BUILD_FOLDER}\Data\Skin\*.*"
+		
+	# Install Language Files
+	SetOutPath "${PROGRAM_DATA}Language\"
+		CreateDirectory "${PROGRAM_DATA}Language"
+			File /r "${BUILD_FOLDER}\Data\Language\*.*"
     
    		# Find MediaPortal InstallPath
     ReadRegDWORD $0 ${REG_HKLM} "${REG_MEDIAPORTAL_PATH}" InstallPath
@@ -549,7 +555,8 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		File "${BUILD_FOLDER}\Data\MPDisplay.xml"
+		File "${BUILD_FOLDER}\Data\Install_Plugin\*.*"
+		
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
 		CreateDirectory "${PROGRAM_DATA}Language"
@@ -619,7 +626,8 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		File /r "${BUILD_FOLDER}\Data\*.*"
+		File /r "${BUILD_FOLDER}\Data\Install_GUI\*.*"
+		File /r "${BUILD_FOLDER}\Data\Skin\*.*"
 		
 	
 	# Write Registry Entries

@@ -42,26 +42,44 @@ namespace MediaPortalPlugin.InfoManagers
         private List<APIPropertyMessage> _properties = new List<APIPropertyMessage>();
         private List<string> _registeredProperties = new List<string>();
         private PluginSettings _settings;
+        private bool _suspended;
+        private ServerChecker _systemInfo = new ServerChecker();
 
-        public bool Suspend { get; set; }
+        //public bool Suspend { get; set; }
 
         public void Initialize(PluginSettings settings)
         {
             _settings = settings;
+            _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
+            _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
+
+            if (_settings.IsSystemInfoEnabled)
+            {
+                _systemInfo.StartMonitoring();
+            }
         }
+
+     
 
         public void Shutdown()
         {
+
+            if (_settings.IsSystemInfoEnabled)
+            {
+                _systemInfo.StopMonitoring();
+            }
+
+            _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
+            _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
             GUIPropertyManager.OnPropertyChanged -= GUIPropertyManager_OnPropertyChanged;
         }
 
         public void RegisterWindowProperties(List<APIPropertyMessage> properties)
         {
-            Suspend = true;
+            Suspend(true);
             if (properties != null && properties.Any())
             {
-               
                 lock (_properties)
                 {
                     _properties.Clear();
@@ -79,8 +97,6 @@ namespace MediaPortalPlugin.InfoManagers
                     }
                     Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Registering MPDisplay skin property tags complete.");
                 }
-             
-                _registeredProperties.ForEach(prop => ProcessProperty(prop, GUIPropertyManager.GetProperty(prop)));
             }
             else
             {
@@ -89,12 +105,21 @@ namespace MediaPortalPlugin.InfoManagers
                     _registeredProperties.Clear();
                 }
             }
-            Suspend = false;
+            Suspend(false);
+        }
+
+        public void Suspend(bool suspend)
+        {
+            _suspended = suspend;
+            if (!_suspended)
+            {
+                _registeredProperties.ForEach(prop => ProcessProperty(prop, GUIPropertyManager.GetProperty(prop)));
+            }
         }
 
         private void GUIPropertyManager_OnPropertyChanged(string tag, string tagValue)
         {
-            if (!Suspend)
+            if (!_suspended)
             {
                 ThreadPool.QueueUserWorkItem((o) => ProcessProperty(tag, tagValue));
             }
@@ -104,23 +129,27 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_registeredProperties.Contains(tag))
             {
-                foreach (var property in _properties.Where(x => x.Tags.Contains(tag)))
+                try
                 {
-                    switch (property.PropertyType)
+                    foreach (var property in _properties.Where(x => x.Tags.Contains(tag)).ToList())
                     {
-                        case APIPropertyType.Label:
-                            SendLabelProperty(property.SkinTag, tagValue);
-                            break;
-                        case APIPropertyType.Image:
-                            SendImageProperty(property.SkinTag, tagValue);
-                            break;
-                        case APIPropertyType.Number:
-                            SendNumberProperty(property.SkinTag, tagValue);
-                            break;
-                        default:
-                            break;
+                        switch (property.PropertyType)
+                        {
+                            case APIPropertyType.Label:
+                                SendLabelProperty(property.SkinTag, tagValue);
+                                break;
+                            case APIPropertyType.Image:
+                                SendImageProperty(property.SkinTag, tagValue);
+                                break;
+                            case APIPropertyType.Number:
+                                SendNumberProperty(property.SkinTag, tagValue);
+                                break;
+                            default:
+                                break;
+                        }
                     }
                 }
+                catch { }
             }
         }
 
@@ -165,6 +194,16 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+        private void SendNumberProperty(string tag, double tagValue)
+        {
+            MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                PropertyType = APIPropertyType.Number,
+                Number = tagValue
+            });
+        }
+
 
 
         private byte[] GetImageBytes(string tagValue)
@@ -183,11 +222,15 @@ namespace MediaPortalPlugin.InfoManagers
             return null;
         }
 
-        public void SendSystemInfo()
+
+        private void SystemInfo_OnNumberDataChanged(string tag, double tagValue)
         {
-            var sc = new ServerChecker();
-            SendLabelProperty("#MPD.SystemInfo.CPU", ((int)sc.SystemInformation.CurrentCPUPercent).ToString());
-            SendNumberProperty("#MPD.SystemInfo.CPU", ((int)sc.SystemInformation.CurrentCPUPercent).ToString());
+            SendNumberProperty(tag, tagValue);
+        }
+
+        private void SystemInfo_OnTextDataChanged(string tag, string tagValue)
+        {
+            SendLabelProperty(tag, tagValue);
         }
     }
 }

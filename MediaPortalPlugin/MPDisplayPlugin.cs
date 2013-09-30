@@ -22,6 +22,7 @@ namespace MediaPortalPlugin
     public class MPDisplayPlugin : IPlugin, ISetupForm
     {
         private PluginSettings _settings;
+        private AdvancedPluginSettings _advancedSettings;
         private MPDisplay.Common.Log.Log Log;
 
         public MPDisplayPlugin()
@@ -37,6 +38,14 @@ namespace MediaPortalPlugin
                 settings = new MPDisplaySettings();
                 SettingsManager.Save<MPDisplaySettings>(settings, RegistrySettings.MPDisplaySettingsFile);
             }
+            var advancedSettings = SettingsManager.Load<AdvancedPluginSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AdvancedPluginSettings.xml"));
+            if (advancedSettings == null)
+            {
+                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file not found, Loading defaults..");
+                advancedSettings = new AdvancedPluginSettings();
+              //  SettingsManager.Save<AdvancedPluginSettings>(advancedSettings, Path.Combine(RegistrySettings.ProgramDataPath, "AdvancedPluginSettings.xml"));
+            }
+            _advancedSettings = advancedSettings;
             _settings = settings.PluginSettings;
         }
 
@@ -61,7 +70,7 @@ namespace MediaPortalPlugin
                 }
 
                 MessageService.InitializeMessageService(_settings.ConnectionSettings);
-                WindowManager.Instance.Initialize(_settings);
+                WindowManager.Instance.Initialize(_settings, _advancedSettings);
                 Log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
             }
             else

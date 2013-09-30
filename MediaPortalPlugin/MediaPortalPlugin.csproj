@@ -69,7 +69,15 @@
     <Compile Include="InfoManagers\PropertyManager.cs" />
     <Compile Include="InfoManagers\WindowManager.cs" />
     <Compile Include="MPDisplayPlugin.cs" />
-    <Compile Include="PluginHelpers.cs" />
+    <Compile Include="InfoManagers\SupportedPluginManager.cs" />
+    <Compile Include="PluginHelpers\IPluginHelper.cs" />
+    <Compile Include="PluginHelpers\MovingPicturesPlugin.cs" />
+    <Compile Include="PluginHelpers\MPTvSeriesPlugin.cs" />
+    <Compile Include="PluginHelpers\MvCentralPlugin.cs" />
+    <Compile Include="PluginHelpers\MyAnimePlugin.cs" />
+    <Compile Include="PluginHelpers\MyFilmsPlugin.cs" />
+    <Compile Include="PluginHelpers\OnlineVideosPlugin.cs" />
+    <Compile Include="PluginHelpers\RockStarPlugin.cs" />
     <Compile Include="ServiceProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

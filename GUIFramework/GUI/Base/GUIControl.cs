@@ -30,6 +30,7 @@ namespace GUIFramework.GUI
         private GUIVisibleCondition _visibleCondition;
         private AnimationCollection _animations;
         private List<int> _focusedControlIds;
+        private bool _isDataRegistered = false;
      
         #endregion
 
@@ -166,8 +167,7 @@ namespace GUIFramework.GUI
                 RegisterInfoData();
                 UpdateInfoData(); 
             }
-
-            UpdateControlVisibility();
+         
         } 
 
         #endregion
@@ -235,6 +235,9 @@ namespace GUIFramework.GUI
                 case XmlAnimationCondition.PropertyChanging:
                     OnPropertyChanged();
                     break;
+                case XmlAnimationCondition.WindowOpen:
+                    SetWindowOpenVisibility();
+                    break;
                 default:
                     break;
             }
@@ -243,6 +246,28 @@ namespace GUIFramework.GUI
         #endregion
 
         #region Info/Property Data
+
+        private void RegisterInfoData()
+        {
+            if (!_isDataRegistered)
+            {
+                _isDataRegistered = true;
+                OnRegisterInfoData();
+            }
+        }
+
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
+        private void DeregisterInfoData()
+        {
+            if (_isDataRegistered)
+            {
+                _isDataRegistered = false;
+                OnDeregisterInfoData();
+            }
+        }
+
 
         /// <summary>
         /// Called when [property changing].
@@ -264,14 +289,14 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Registers the info data.
         /// </summary>
-        public virtual void RegisterInfoData()
+        public virtual void OnRegisterInfoData()
         {
         }
 
         /// <summary>
         /// Deregisters the info data.
         /// </summary>
-        public virtual void DeregisterInfoData()
+        public virtual void OnDeregisterInfoData()
         {
         }
 
@@ -361,6 +386,24 @@ namespace GUIFramework.GUI
                 {
                     OnVisibleFalse();
                 }
+            }
+        }
+
+        private void SetWindowOpenVisibility()
+        {
+            _isControlfocused = false;
+            _isVisibleToggled = false;
+            _isControlVisible = _visibleCondition.HasCondition
+                    ? _visibleCondition.ShouldBeVisible()
+                    : _isWindowOpenVisible;
+            GUIVisibilityManager.UpdateControlVisibility(this);
+            if (_isControlVisible)
+            {
+                OnVisibleTrue();
+            }
+            else
+            {
+                OnVisibleFalse();
             }
         }
 

@@ -40,15 +40,15 @@ namespace GUIFramework.GUI.Controls
             get { return SkinXml != null ? SkinXml.BandCount : 0; }
         }
 
-        public override void RegisterInfoData()
+        public override void OnRegisterInfoData()
         {
-            base.RegisterInfoData();
+            base.OnRegisterInfoData();
             GenericDataRepository.RegisterEQData(EQDataReceived);
         }
 
-        public override void DeregisterInfoData()
+        public override void OnDeregisterInfoData()
         {
-            base.DeregisterInfoData();
+            base.OnDeregisterInfoData();
             GenericDataRepository.DegisterEQData(this);
         }
 
