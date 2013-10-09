@@ -18,12 +18,20 @@ namespace Common.Status
         private DateTime _lastFastUpdate = DateTime.MinValue;
         private DateTime _lastMediumUpdate = DateTime.MinValue;
         private DateTime _lastSlowUpdate = DateTime.MinValue;
+        private DateTime _lastTimeUpdate = DateTime.MinValue;
         private System.Threading.Timer _updateTimer;
         private PerformanceCounter _cpuCounter;
         private ComputerInfo _computerInfo;
+        private string _tagPrefix = "MPD";
 
         public event Action<string, string> OnTextDataChanged;
         public event Action<string, double> OnNumberDataChanged;
+
+        public string TagPrefix
+        {
+            get { return _tagPrefix; }
+            set { _tagPrefix = value; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ServerChecker"/> class.
@@ -58,6 +66,8 @@ namespace Common.Status
             }
         }
 
+
+
         /// <summary>
         /// Called when [timer tick].
         /// </summary>
@@ -75,24 +85,25 @@ namespace Common.Status
                 _lastMediumUpdate = DateTime.Now;
 
                 double physPercentFree = Math.Round(100 * (double)_computerInfo.AvailablePhysicalMemory / _computerInfo.TotalPhysicalMemory,2);
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.PhysicalTotal",  ((long)_computerInfo.TotalPhysicalMemory).ToPrettySize(2));
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.PhysicalFree", ((long)_computerInfo.AvailablePhysicalMemory).ToPrettySize(2));
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.PhysicalPercent", string.Format("{0:##0} %", physPercentFree));
-                NotifyNumberDataChanged("#MPD.SystemInfo.Number.PhysicalPercent", physPercentFree);
+                NotifyTextDataChanged("PhysicalTotal",  ((long)_computerInfo.TotalPhysicalMemory).ToPrettySize(2));
+                NotifyTextDataChanged("PhysicalFree", ((long)_computerInfo.AvailablePhysicalMemory).ToPrettySize(2));
+                NotifyTextDataChanged("PhysicalPercent", string.Format("{0:##0} %", physPercentFree));
+                NotifyNumberDataChanged("PhysicalPercent", physPercentFree);
 
                 double vertPercentFree = Math.Round(100 * (double)_computerInfo.AvailableVirtualMemory / _computerInfo.TotalVirtualMemory,2);
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.VirtualTotal", ((long)_computerInfo.TotalVirtualMemory).ToPrettySize(2));
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.VirtualFree",  ((long)_computerInfo.AvailableVirtualMemory).ToPrettySize(2));
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.VirtualPercent", string.Format("{0:##0} %", vertPercentFree));
-                NotifyNumberDataChanged("#MPD.SystemInfo.Number.VirtualPercent", vertPercentFree);
+                NotifyTextDataChanged("VirtualTotal", ((long)_computerInfo.TotalVirtualMemory).ToPrettySize(2));
+                NotifyTextDataChanged("VirtualFree",  ((long)_computerInfo.AvailableVirtualMemory).ToPrettySize(2));
+                NotifyTextDataChanged("VirtualPercent", string.Format("{0:##0} %", vertPercentFree));
+                NotifyNumberDataChanged("VirtualPercent", vertPercentFree);
             }
 
             if (DateTime.Now > _lastFastUpdate.AddMilliseconds(250))
             {
                 _lastFastUpdate = DateTime.Now;
                 double value = Math.Round(_cpuCounter.NextValue(),2);
-                NotifyTextDataChanged("#MPD.SystemInfo.Label.CPU", string.Format("{0:##0} %", value));
-                NotifyNumberDataChanged("#MPD.SystemInfo.Number.CPU", value);
+                NotifyTextDataChanged("CPU", string.Format("{0:##0} %", value));
+                NotifyNumberDataChanged("CPU", value);
+                UpdateTime(_lastFastUpdate);
             }
         }
 
@@ -101,9 +112,9 @@ namespace Common.Status
         /// </summary>
         private void UpdateSystemInfo()
         {
-            NotifyTextDataChanged("#MPD.SystemInfo.Label.OSFullName", _computerInfo.OSFullName);
-            NotifyTextDataChanged("#MPD.SystemInfo.Label.OSPlatform", _computerInfo.OSPlatform);
-            NotifyTextDataChanged("#MPD.SystemInfo.Label.OSVersion", _computerInfo.OSVersion);
+            NotifyTextDataChanged("OSFullName", _computerInfo.OSFullName);
+            NotifyTextDataChanged("OSPlatform", _computerInfo.OSPlatform);
+            NotifyTextDataChanged("OSVersion", _computerInfo.OSVersion);
         }
 
         /// <summary>
@@ -117,15 +128,46 @@ namespace Common.Status
             {
                 if ( d.IsReady && d.DriveType == DriveType.Fixed)
                 {
-                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.Name", num), d.Name);
-                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.TotalSpace", num), d.TotalFreeSpace.ToPrettySize(2));
-                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
+                    NotifyTextDataChanged(string.Format("Drive{0}.Name", num), d.Name);
+                    NotifyTextDataChanged(string.Format("Drive{0}.TotalSpace", num), d.TotalFreeSpace.ToPrettySize(2));
+                    NotifyTextDataChanged(string.Format("Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
                     double percentFree = Math.Round(100 * (double)d.TotalFreeSpace / d.TotalSize,2);
-                    NotifyTextDataChanged(string.Format("#MPD.SystemInfo.Label.Drive{0}.PercentFree", num), percentFree.ToString());
-                    NotifyNumberDataChanged("#MPD.SystemInfo.Drive{0}.Number.PercentFree", percentFree);
+                    NotifyTextDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree.ToString());
+                    NotifyNumberDataChanged("Drive{0}.PercentFree", percentFree);
                     num++;
                 }
             }
+        }
+
+        /// <summary>
+        /// Updates the time.
+        /// </summary>
+        /// <param name="datetime">The datetime.</param>
+        private void UpdateTime(DateTime datetime)
+        {
+            if (_lastTimeUpdate.ToLongDateString() != datetime.ToLongDateString())
+            {
+                NotifyTextDataChanged("Date", datetime.ToLongDateString());
+                NotifyTextDataChanged("Date1", datetime.ToString("ddd d MMM"));
+                NotifyTextDataChanged("Date2", datetime.ToString("dddd dd MMMM"));
+                NotifyTextDataChanged("Date3", datetime.ToString("MM/dd/yyyy"));
+                NotifyTextDataChanged("DateMonth", datetime.Month.ToString());
+                NotifyTextDataChanged("DateMonthShort", datetime.ToString("MMM"));
+                NotifyTextDataChanged("DateMonthLong", datetime.ToString("MMMM"));
+                NotifyTextDataChanged("DateDay", datetime.Day.ToString());
+                NotifyTextDataChanged("DateDayShort", datetime.ToString("dddd"));
+                NotifyTextDataChanged("DateDayLong", datetime.ToString("ddd"));
+                NotifyTextDataChanged("DateYear", datetime.ToString("yyyy"));
+                NotifyTextDataChanged("DateShort", datetime.ToString("yy"));
+            }
+            if (_lastTimeUpdate.Second != datetime.Second)
+            {
+                NotifyTextDataChanged("Time", datetime.ToString("H:mm tt"));
+                NotifyTextDataChanged("Time2", datetime.ToString("HH:mm"));
+                NotifyTextDataChanged("Time3", datetime.ToString("H:mm:ss tt"));
+                NotifyTextDataChanged("Time4", datetime.ToString("HH:mm:ss"));
+            }
+            _lastTimeUpdate = datetime;
         }
 
         /// <summary>
@@ -137,7 +179,7 @@ namespace Common.Status
         {
             if (OnTextDataChanged != null)
             {
-                OnTextDataChanged(tag, tagValue);
+                OnTextDataChanged(string.Format("#{0}.SystemInfo.Label.{1}", _tagPrefix, tag), tagValue);
             }
         }
 
@@ -150,8 +192,10 @@ namespace Common.Status
         {
             if (OnNumberDataChanged != null)
             {
-                OnNumberDataChanged(tag, tagValue);
+                OnNumberDataChanged(string.Format("#{0}.SystemInfo.Number.{1}", _tagPrefix, tag), tagValue);
             }
         }
+
+      
     }
 }

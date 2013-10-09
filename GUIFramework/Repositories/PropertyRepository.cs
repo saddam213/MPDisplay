@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Common.Status;
 using GUIFramework.GUI;
 using GUISkinFramework;
 using GUISkinFramework.Property;
@@ -76,7 +77,8 @@ namespace GUIFramework.Managers
         private List<APIPropertyMessage> _skinProperties = new List<APIPropertyMessage>();
         private MessengerService<string> _propertyService = new MessengerService<string>();
         private DataRepository<string, APIPropertyMessage> _propertyRepository;
-        private DataRepository<string, string> _propertyDefaults;
+      //  private DataRepository<string, string> _propertyDefaults;
+        private ServerChecker _systemInfo;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -86,15 +88,8 @@ namespace GUIFramework.Managers
             Settings = settings;
             SkinInfo = skininfo;
             _propertyRepository = new DataRepository<string, APIPropertyMessage>();
-            _propertyDefaults = new DataRepository<string, string>();
             _skinProperties = GetSkinProperties();
-            if (SkinInfo != null)
-            {
-                foreach (var property in SkinInfo.Properties)
-                {
-                    _propertyDefaults.AddOrUpdate(property.SkinTag, property.DefaultValue);
-                }
-            }
+            StartSystemInfoMonitoring();
         }
 
         public void ClearRepository()
@@ -104,6 +99,7 @@ namespace GUIFramework.Managers
 
         public void ResetRepository()
         {
+            StopSystemInfoMonitoring();
             ClearRepository();
             Settings = null;
             SkinInfo = null;
@@ -119,15 +115,41 @@ namespace GUIFramework.Managers
         {
             if (propertyMessage != null)
             {
-                if (propertyMessage.SkinTag == "#selectedthumb")
-                {
-
-                }
                 if (_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage))
                 {
                    NotifyPropertyChanged(propertyMessage.SkinTag);
                 }
             }
+        }
+
+        public void AddProperty(string tag, double tagValue)
+        {
+            AddProperty(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                Number = tagValue,
+                PropertyType = APIPropertyType.Number
+            });
+        }
+
+        public void AddProperty(string tag, string tagValue)
+        {
+            AddProperty(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                Label = tagValue,
+                PropertyType = APIPropertyType.Label
+            });
+        }
+
+        public void AddProperty(string tag, byte[] tagValue)
+        {
+            AddProperty(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                Image = new APIImage { Image = tagValue },
+                PropertyType = APIPropertyType.Image
+            });
         }
 
         public void DeregisterProperty(GUIControl control, string propertyString)
@@ -169,7 +191,7 @@ namespace GUIFramework.Managers
                         }
                         if (part.StartsWith("#"))
                         {
-                            returnValue += GetPropertyLabelValueOrDefault(part);
+                            returnValue += GetPropertyLabelValue(part);
                             continue;
                         }
                         returnValue += part;
@@ -183,15 +205,19 @@ namespace GUIFramework.Managers
         {
             return Task.Factory.StartNew<byte[]>(() =>
               {
-                  if (xmlstring.StartsWith("#") && !xmlstring.Contains("+"))
+                  if (!string.IsNullOrEmpty(xmlstring))
                   {
-                      return GetPropertyImageValueOrDefault(xmlstring);
+                      if (xmlstring.StartsWith("#") && !xmlstring.Contains("+"))
+                      {
+                          return GetPropertyImageValue(xmlstring);
+                      }
+                      else
+                      {
+                          string filename = GetControlLabelValue(xmlstring).Result;
+                          return SkinInfo.GetImageValue(filename);
+                      }
                   }
-                  else
-                  {
-                      string filename = GetControlLabelValue(xmlstring).Result;
-                      return SkinInfo.GetImageValue(filename);
-                  }
+                  return null;
               });
         }
 
@@ -199,7 +225,7 @@ namespace GUIFramework.Managers
         {
             return Task.Factory.StartNew<double>(() =>
             {
-                return GetPropertyNumberValueOrDefault(xmlstring);
+                return GetPropertyNumberValue(xmlstring);
             });
         }
 
@@ -239,42 +265,32 @@ namespace GUIFramework.Managers
             return new List<APIPropertyMessage>();
         }
 
-        private string GetPropertyLabelValueOrDefault(string tag)
+        private string GetPropertyLabelValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            if (result != null && !string.IsNullOrEmpty(result.Label))
+            if (result != null)
             {
                 return result.Label;
             }
-            return _propertyDefaults.GetValueOrDefault(tag, string.Empty);
+            return string.Empty;
         }
 
-        private byte[] GetPropertyImageValueOrDefault(string tag)
+        private byte[] GetPropertyImageValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
             if (result != null && result.Image != null)
             {
-                var img = result.Image.ToImageBytes();
-                if (img != null)
-                {
-                    return img;
-                }
+                return result.Image.ToImageBytes();
             }
-            return SkinInfo.GetImageValue(_propertyDefaults.GetValueOrDefault(tag, string.Empty));
+            return null;
         }
 
-        private double GetPropertyNumberValueOrDefault(string tag)
+        private double GetPropertyNumberValue(string tag)
         {
-            double returnValue = 0;
             var result = _propertyRepository.GetValueOrDefault(tag, null);
             if (result != null)
             {
                 return result.Number;
-            }
-
-            if (double.TryParse(_propertyDefaults.GetValueOrDefault(tag, "0"), out returnValue))
-            {
-                return returnValue;
             }
             return 0;
         }
@@ -314,7 +330,6 @@ namespace GUIFramework.Managers
                         {
                             SkinTag = xmlProperty.SkinTag,
                             Tags = xmlProperty.MediaPortalTags.Select(x => x.Tag).ToList(),
-                            DefaultValue = xmlProperty.DefaultValue,
                             PropertyType = xmlProperty.PropertyType.ToAPIType()
                         });
                     }
@@ -333,6 +348,40 @@ namespace GUIFramework.Managers
             {
                 _propertyService.NotifyListeners(tag);
             });
+        }
+
+        private void StartSystemInfoMonitoring()
+        {
+            if (Settings.IsSystemInfoEnabled)
+            {
+                _systemInfo = new ServerChecker();
+                _systemInfo.TagPrefix = "MPD";
+                _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
+                _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
+                _systemInfo.StartMonitoring();
+            }
+        }
+
+        private void StopSystemInfoMonitoring()
+        {
+            if (Settings.IsSystemInfoEnabled)
+            {
+                _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
+                _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
+                _systemInfo.StopMonitoring();
+                _systemInfo = null;
+            }
+        }
+
+
+        private void SystemInfo_OnNumberDataChanged(string tag, double tagValue)
+        {
+            AddProperty(tag, tagValue);
+        }
+
+        private void SystemInfo_OnTextDataChanged(string tag, string tagValue)
+        {
+            AddProperty(tag, tagValue);
         }
     }
 }

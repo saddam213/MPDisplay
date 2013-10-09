@@ -70,6 +70,7 @@
     <Compile Include="InfoManagers\WindowManager.cs" />
     <Compile Include="MPDisplayPlugin.cs" />
     <Compile Include="InfoManagers\SupportedPluginManager.cs" />
+    <Compile Include="PluginHelpers\RadioTimePlugin.cs" />
     <Compile Include="PluginHelpers\IPluginHelper.cs" />
     <Compile Include="PluginHelpers\MovingPicturesPlugin.cs" />
     <Compile Include="PluginHelpers\MPTvSeriesPlugin.cs" />

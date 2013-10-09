@@ -103,20 +103,7 @@
                     </Style>
                 </TextBox.Style>
             </TextBox>
-            <TextBlock TextWrapping="Wrap" Text="Default Value"/>
-            <TextBox TextWrapping="Wrap" Text="{Binding SelectedItem.DefaultValue, ElementName=mpTagList}">
-                <TextBox.Style>
-                    <Style TargetType="TextBox">
-                        <Setter Property="IsEnabled" Value="True" />
-                        <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedItem, ElementName=mpTagList}" Value="{x:Null}">
-                                <Setter Property="IsEnabled" Value="False" />
-                            </DataTrigger>
-                        </Style.Triggers>
-                    </Style>
-                </TextBox.Style>
-            </TextBox>
-            <StackPanel Margin="0,3,0,0" Orientation="Horizontal">
+			<StackPanel Margin="0,3,0,0" Orientation="Horizontal">
                 <Button Width="23" Height="23" Click="Button_MediaPortalTagAdd_Click">
                     <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
                 </Button>

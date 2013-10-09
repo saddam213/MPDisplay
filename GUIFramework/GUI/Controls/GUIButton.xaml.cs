@@ -87,8 +87,12 @@ namespace GUIFramework.GUI.Controls
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
-            Label = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
-            Image = GUIImageManager.GetImageFromBytes(await PropertyRepository.GetProperty<byte[]>(SkinXml.Image));
+
+            string text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
+            Label = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelText);
+            var img = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image)
+                 ?? await PropertyRepository.GetProperty<byte[]>(SkinXml.DefaultImage);
+            Image = GUIImageManager.GetImageFromBytes(img);
         }
 
         public override void ClearInfoData()

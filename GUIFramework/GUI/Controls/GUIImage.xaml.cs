@@ -67,7 +67,10 @@ namespace GUIFramework.GUI.Controls
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
-             Image = GUIImageManager.GetImageFromBytes( await PropertyRepository.GetProperty<byte[]>(SkinXml.Image));
+
+            var img = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image) 
+                   ?? await PropertyRepository.GetProperty<byte[]>(SkinXml.DefaultImage);
+            Image = GUIImageManager.GetImageFromBytes(img);
         }
 
         public override void ClearInfoData()

@@ -15,7 +15,6 @@ namespace GUISkinFramework.Property
         private XmlPropertyType _propertyType;
         private string _designerValue;
         private ObservableCollection<XmlMediaPortalTag> _mediaPortalTags = new ObservableCollection<XmlMediaPortalTag>();
-        private string _defaultValue;
 
         public string SkinTag
         {
@@ -34,13 +33,7 @@ namespace GUISkinFramework.Property
             get { return _designerValue; }
             set { _designerValue = value; NotifyPropertyChanged("DesignerValue"); }
         }
-
-        public string DefaultValue
-        {
-            get { return _defaultValue; }
-            set { _defaultValue = value; NotifyPropertyChanged("DefaultValue"); }
-        }
-
+     
         public ObservableCollection<XmlMediaPortalTag> MediaPortalTags
         {
             get { return _mediaPortalTags; }

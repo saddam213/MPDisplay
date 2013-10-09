@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Common.Helpers;
+using System.Collections;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
@@ -39,14 +41,33 @@ namespace MediaPortalPlugin.PluginHelpers
             get { return _window != null; }
         }
 
-        public bool IsPlaying(string filename)
+        public bool IsPlaying(string filename, APIPlaybackType playtype)
         {
+            var player = ReflectionHelper.GetFieldValue(_window, "Player");
+            if (player != null)
+            {
+                var playlistPlayer = ReflectionHelper.GetFieldValue(player, "playlistPlayer", null, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                if (playlistPlayer != null)
+                {
+                    var playlist = ReflectionHelper.GetFieldValue<IEnumerable>(playlistPlayer, "_mvCentralPlayList", null);
+                    if (playlist != null)
+                    {
+                        foreach (var item in playlist)
+                        {
+                            if (ReflectionHelper.GetPropertyValue<string>(item, "FileName", string.Empty) == filename)
+                            {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
             return false;
         }
 
         public string GetListItemThumb(GUIListItem item, APIListLayout layout)
         {
-            return string.Empty;
+            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
         }
 
         public APIPlaybackType PlayType

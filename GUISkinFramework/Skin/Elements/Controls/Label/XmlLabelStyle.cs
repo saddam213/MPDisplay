@@ -44,7 +44,7 @@ namespace GUISkinFramework.Controls
             set { _fontWeight = value; NotifyPropertyChanged("FontWeight"); }
         }
 
-        [DefaultValue(10)]
+        [DefaultValue(20)]
         [PropertyOrder(30)]
         public int FontSize
         {

@@ -22,6 +22,7 @@ namespace MPDisplay.Common.Settings
         private bool _restartOnError = true;
         private string _cursorStyle = "Arrow";
         private int _resumeConnectDelay = 5000;
+        private bool _isSystemInfoEnabled = false;
 
         public string SkinName
         {
@@ -102,8 +103,16 @@ namespace MPDisplay.Common.Settings
             set { _resumeConnectDelay = value; NotifyPropertyChanged("ResumeConnectDelay"); }
         }
 
+        public bool IsSystemInfoEnabled
+        {
+            get { return _isSystemInfoEnabled; }
+            set { _isSystemInfoEnabled = value; NotifyPropertyChanged("IsSystemInfoEnabled"); }
+        }
+
+
         [XmlIgnore]
         public string SkinInfoXml { get; set; }
+
 
       
     }

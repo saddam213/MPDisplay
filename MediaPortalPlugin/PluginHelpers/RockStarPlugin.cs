@@ -43,7 +43,7 @@ namespace MediaPortalPlugin.PluginHelpers
             get { return IsEnabled ? _window.GetID : -1; }
         }
 
-        public bool IsPlaying(string filename)
+        public bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {

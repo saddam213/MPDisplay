@@ -216,8 +216,8 @@
 												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
 													<Storyboard >
 														<!--<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="RotationY" To="0"  />-->
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1.1" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1.1" />
+														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1" />
+														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1" />
 													</Storyboard>
 												</BeginStoryboard>
 											</MultiDataTrigger.EnterActions>

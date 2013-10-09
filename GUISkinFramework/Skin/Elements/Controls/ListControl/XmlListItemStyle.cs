@@ -78,5 +78,22 @@ namespace GUISkinFramework.Controls
             get { return _verticalAlignment; }
             set { _verticalAlignment = value; NotifyPropertyChanged("VerticalAlignment"); }
         }
+
+        private double _selectedZoomX = 1.0;
+
+        public double SelectedZoomX
+        {
+            get { return _selectedZoomX; }
+            set { _selectedZoomX = value; NotifyPropertyChanged("SelectedZoomX"); }
+        }
+
+
+        private double _selectedZoomY = 1.5;
+
+        public double SelectedZoomY
+        {
+            get { return _selectedZoomY; }
+            set { _selectedZoomY = value; NotifyPropertyChanged("SelectedZoomY"); }
+        }
     }
 }

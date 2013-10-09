@@ -88,6 +88,7 @@
 						<CheckBox Content="{Binding Converter={StaticResource LanguageConverter}, FallbackValue=Restart On Error, ConverterParameter=Restart On Error }"  IsChecked="{Binding DataObject.RestartOnError}" Margin="0,5,0,0"/>
 						<TextBlock Text="{Binding FallbackValue=Resume Delay, ConverterParameter=Resume Delay, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
 						<controls:IntegerUpDown Value="{Binding DataObject.ResumeConnectDelay}" />
+						<CheckBox Content="{Binding Converter={StaticResource LanguageConverter}, ConverterParameter=Enable System Info }"  IsChecked="{Binding DataObject.IsSystemInfoEnabled}" Margin="0,5,0,0"/>
 					</StackPanel>
 				</GroupBox>
 

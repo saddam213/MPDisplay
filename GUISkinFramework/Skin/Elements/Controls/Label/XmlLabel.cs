@@ -21,6 +21,7 @@ namespace GUISkinFramework.Controls
     public class XmlLabel : XmlControl
     {
         private string _labelText;
+        private string _defaultLabelText;
         private TextAlignment _labelTextAlignment;
         private bool _isScrollingEnabled;
         private XmlLabelStyle _controlStyle;
@@ -56,7 +57,14 @@ namespace GUISkinFramework.Controls
             set { _labelText = value; NotifyPropertyChanged("LabelText"); }
         }
       
-       
+        [DefaultValue(""), Editor(typeof(LabelEditor), typeof(ITypeEditor))]
+        [PropertyOrder(11)]
+        [EditorCategory("Label", 4)]
+        public string DefaultLabelText
+        {
+            get { return _defaultLabelText; }
+            set { _defaultLabelText = value; NotifyPropertyChanged("DefaultLabelText"); }
+        }
 
         [DefaultValue(TextAlignment.Left)]
         [PropertyOrder(20)]

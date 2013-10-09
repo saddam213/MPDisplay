@@ -25,6 +25,8 @@ namespace GUISkinFramework.Controls
         private string _labelText;
         private XmlButtonStyle _controlStyle;
         private string _image = "";
+        private string _defaultImage;
+        private string _defaultLabelText;
        
         [DefaultValue(null)]
         [PropertyOrder(100)]
@@ -49,6 +51,16 @@ namespace GUISkinFramework.Controls
         }
 
         [DefaultValue("")]
+        [PropertyOrder(305)]
+        [EditorCategory("Image", 8)]
+        [Editor(typeof(ImageEditor), typeof(ITypeEditor))]
+        public string DefaultImage
+        {
+            get { return _defaultImage; }
+            set { _defaultImage = value; NotifyPropertyChanged("DefaultImage"); }
+        }
+
+        [DefaultValue("")]
         [PropertyOrder(204)]
         [EditorCategory("Label", 7)]
         [Editor(typeof(LabelEditor), typeof(ITypeEditor))]
@@ -56,6 +68,17 @@ namespace GUISkinFramework.Controls
         {
             get { return _labelText; }
             set { _labelText = value; NotifyPropertyChanged("LabelText"); }
+        }
+
+
+        [DefaultValue("")]
+        [PropertyOrder(205)]
+        [EditorCategory("Label", 7)]
+        [Editor(typeof(LabelEditor), typeof(ITypeEditor))]
+        public string DefaultLabelText
+        {
+            get { return _defaultLabelText; }
+            set { _defaultLabelText = value; NotifyPropertyChanged("DefaultLabelText"); }
         }
 
         [DefaultValue(null)]

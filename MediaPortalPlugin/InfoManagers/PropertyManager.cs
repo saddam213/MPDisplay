@@ -43,21 +43,23 @@ namespace MediaPortalPlugin.InfoManagers
         private List<string> _registeredProperties = new List<string>();
         private PluginSettings _settings;
         private bool _suspended;
-        private ServerChecker _systemInfo = new ServerChecker();
+        private ServerChecker _systemInfo;
 
         //public bool Suspend { get; set; }
 
         public void Initialize(PluginSettings settings)
         {
             _settings = settings;
-            _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
-            _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
 
-            if (_settings.IsSystemInfoEnabled)
-            {
+            //if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
+            //{
+                _systemInfo = new ServerChecker();
+                _systemInfo.TagPrefix = "MP";
+                _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
+                _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
                 _systemInfo.StartMonitoring();
-            }
+          //  }
         }
 
      
@@ -65,13 +67,15 @@ namespace MediaPortalPlugin.InfoManagers
         public void Shutdown()
         {
 
-            if (_settings.IsSystemInfoEnabled)
-            {
+            //if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
+            //{
+                _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
+                _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
                 _systemInfo.StopMonitoring();
-            }
+                _systemInfo = null;
+           // }
 
-            _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
-            _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
+         
             GUIPropertyManager.OnPropertyChanged -= GUIPropertyManager_OnPropertyChanged;
         }
 
@@ -230,6 +234,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SystemInfo_OnTextDataChanged(string tag, string tagValue)
         {
+            Log.Message(LogLevel.Warn, "Tag: {0}, TagValue: {1}", tag, tagValue);
             SendLabelProperty(tag, tagValue);
         }
     }

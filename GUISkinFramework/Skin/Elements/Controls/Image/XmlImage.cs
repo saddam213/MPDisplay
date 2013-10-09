@@ -26,6 +26,7 @@ namespace GUISkinFramework.Controls
         private int _imageCornerRadius;
         private Stretch _imageStretch;
         private string _image = string.Empty;
+        private string _defaultImage = string.Empty;
         private string _coverCornerRadius = "0,0,0,0";
         private XmlImageStyle _controlStyle;
 
@@ -48,6 +49,16 @@ namespace GUISkinFramework.Controls
         {
             get { return _image; }
             set { _image = value; NotifyPropertyChanged("Image"); }
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(11)]
+        [EditorCategory("Image", 8)]
+        [Editor(typeof(ImageEditor), typeof(ITypeEditor))]
+        public string DefaultImage
+        {
+            get { return _defaultImage; }
+            set { _defaultImage = value; NotifyPropertyChanged("DefaultImage"); }
         }
 
         [PropertyOrder(20)]

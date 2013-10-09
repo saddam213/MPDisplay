@@ -702,7 +702,7 @@ namespace GUISkinFramework
         {
             if (_images != null)
             {
-                var image = _images.FirstOrDefault(x => x.XmlName == xmlname);
+                var image = _images.FirstOrDefault(x => x.XmlName.Equals(xmlname, StringComparison.OrdinalIgnoreCase));
                 if (image != null && File.Exists(image.FileName))
                 {
                     return File.ReadAllBytes(image.FileName);

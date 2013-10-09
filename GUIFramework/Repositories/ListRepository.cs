@@ -172,6 +172,12 @@ namespace GUIFramework.Managers
         {
             if (_listRepository.AddOrUpdate(listType, list))
             {
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Count", list != null ? list.Count.ToString() : "0");
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", string.Empty);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", default(byte[]));
                 NotifyListChanged(listType);
             }
         }
@@ -316,6 +322,15 @@ namespace GUIFramework.Managers
                         break;
                     default:
                         break;
+                }
+
+                if (item != null)
+                {
+                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", item.Label);
+                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", item.Label2);
+                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", item.Label3);
+                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", item.Index.ToString());
+                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image);
                 }
             }
         }

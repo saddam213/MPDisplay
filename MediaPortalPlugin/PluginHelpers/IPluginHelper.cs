@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.PluginHelpers
         GUIWindow PluginWindow { get; }
         int WindowId { get; }
         bool IsEnabled { get; }
-        bool IsPlaying(string filename);
+        bool IsPlaying(string filename, APIPlaybackType playtype);
         APIPlaybackType PlayType { get; }
         string GetListItemThumb(GUIListItem item, APIListLayout layout);
     }

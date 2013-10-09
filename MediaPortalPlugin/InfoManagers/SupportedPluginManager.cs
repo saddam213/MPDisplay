@@ -55,6 +55,7 @@ namespace MediaPortalPlugin
             _supportedPlugins.Add(SupportedPlugin.OnlineVideos, new OnlineVideosPlugin(GetPluginWindow(SupportedPlugin.OnlineVideos), GetPluginSettings(SupportedPlugin.OnlineVideos)));
             _supportedPlugins.Add(SupportedPlugin.MyAnime, new MovingPicturesPlugin(GetPluginWindow(SupportedPlugin.MyAnime), GetPluginSettings(SupportedPlugin.MyAnime)));
             _supportedPlugins.Add(SupportedPlugin.Rockstar, new RockStarPlugin(GetPluginWindow(SupportedPlugin.Rockstar), GetPluginSettings(SupportedPlugin.Rockstar)));
+            _supportedPlugins.Add(SupportedPlugin.RadioTime, new RadioTimePlugin(GetPluginWindow(SupportedPlugin.RadioTime), GetPluginSettings(SupportedPlugin.RadioTime)));
 
          
 
@@ -101,7 +102,7 @@ namespace MediaPortalPlugin
 
         public static APIPlaybackType GetPluginPlayerType(APIPlaybackType playtype, string filename)
         {
-            var plugin = _supportedPlugins.Values.FirstOrDefault(p => p.IsPlaying(filename));
+            var plugin = _supportedPlugins.Values.FirstOrDefault(p => p.IsPlaying(filename, playtype));
             if (plugin != null)
             {
                 return plugin.PlayType;

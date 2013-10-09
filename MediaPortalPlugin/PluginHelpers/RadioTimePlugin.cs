@@ -3,23 +3,27 @@ using Common.Settings.SettingsObjects;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
+using System.Net;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class MyFilmsPlugin : IPluginHelper
+    public class RadioTimePlugin : IPluginHelper
     {
         private GUIWindow _window;
         private SupportedPluginSettings _settings;
 
-        public MyFilmsPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public RadioTimePlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
         {
             _window = pluginWindow;
             _settings = settings;
         }
-
+    
         public SupportedPluginSettings Settings
         {
             get { return _settings; }
@@ -30,27 +34,23 @@ namespace MediaPortalPlugin.PluginHelpers
             get { return _window; }
         }
 
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : 0; }
-        }
-
         public bool IsEnabled
         {
             get { return _window != null; }
+        }
+
+        public int WindowId
+        {
+            get { return IsEnabled ? _window.GetID : -1; }
         }
 
         public bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
-                var currentMovie = ReflectionHelper.GetStaticField(_window, "currentMovie", null);
-                if (currentMovie != null)
+                if (playtype == APIPlaybackType.IsRadio && filename.StartsWith("http"))
                 {
-                    if (ReflectionHelper.GetPropertyValue<string>(currentMovie, "File", string.Empty) == filename)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
             }
             return false;
@@ -63,7 +63,8 @@ namespace MediaPortalPlugin.PluginHelpers
 
         public APIPlaybackType PlayType
         {
-            get { return APIPlaybackType.MyFilms; }
+            get { return APIPlaybackType.RadioTime; }
         }
+    
     }
 }
