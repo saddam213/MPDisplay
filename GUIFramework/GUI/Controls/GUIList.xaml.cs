@@ -33,6 +33,8 @@ namespace GUIFramework.GUI.Controls
     [XmlSkinType(typeof(XmlList))]  
     public partial class GUIList : GUIControl
     {
+        #region Fields
+
         private List<APIListItem> _listItems = new List<APIListItem>();
         private XmlListLayout _listLayoutType;
         private APIListItem _selectedItem;
@@ -44,6 +46,16 @@ namespace GUIFramework.GUI.Controls
         private bool _itemMouseDown;
         private DispatcherTimer _selectionTimer;
 
+        private ListBoxItem _selectedContainer;
+        private Storyboard _selectedZoomAnimation;
+        private Storyboard _selectedZoomBackAnimation;
+        private DoubleAnimation _selectedZoomX;
+        private DoubleAnimation _selectedZoomY; 
+
+        #endregion
+
+        #region Constructor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ListBox3D"/> class.
         /// </summary>
@@ -53,29 +65,46 @@ namespace GUIFramework.GUI.Controls
             _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
             _scrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             MouseTouchDevice.RegisterEvents(listbox.GetDescendantByType<VirtualizingStackPanel>());
-           
         }
 
-      
+        #endregion
 
-     
+        #region Control Base
 
+        /// <summary>
+        /// Gets the skin XML.
+        /// </summary>
         public XmlList SkinXml
         {
             get { return BaseXml as XmlList; }
         }
 
+        /// <summary>
+        /// Gets the type of the list.
+        /// </summary>
+        /// <value>
+        /// The type of the list.
+        /// </value>
         public XmlListType ListType
         {
             get { return SkinXml != null ? SkinXml.ListType : XmlListType.None; }
         }
 
+        /// <summary>
+        /// Gets or sets the list items.
+        /// </summary>
+        /// <value>
+        /// The list items.
+        /// </value>
         public List<APIListItem> ListItems
         {
             get { return _listItems; }
             set { _listItems = value; NotifyPropertyChanged("ListItems"); }
         }
 
+        /// <summary>
+        /// Called when [window open].
+        /// </summary>
         public override void OnWindowOpen()
         {
             base.OnWindowOpen();
@@ -85,13 +114,20 @@ namespace GUIFramework.GUI.Controls
             }
         }
 
+        /// <summary>
+        /// Creates the control.
+        /// </summary>
         public override void CreateControl()
         {
             base.CreateControl();
+            CreateZoomAnimation();
             ChangeLayout(SkinXml.ListLayout == XmlListLayout.Auto ? XmlListLayout.Vertical : SkinXml.ListLayout);
+            SetZoomAnimation(CurrentLayout.SelectionZoomX, CurrentLayout.SelectionZoomY);
         }
 
-
+        /// <summary>
+        /// Registers the info data.
+        /// </summary>
         public override void OnRegisterInfoData()
         {
             base.OnRegisterInfoData();
@@ -100,6 +136,9 @@ namespace GUIFramework.GUI.Controls
         }
 
 
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
         public override void OnDeregisterInfoData()
         {
             base.OnDeregisterInfoData();
@@ -107,6 +146,9 @@ namespace GUIFramework.GUI.Controls
             GUIActionManager.DeregisterAction(this, XmlActionType.ChangeListView);
         }
 
+        /// <summary>
+        /// Updates the info data.
+        /// </summary>
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
@@ -114,18 +156,26 @@ namespace GUIFramework.GUI.Controls
             OnSelectedItemReceived();
         }
 
+        /// <summary>
+        /// Clears the info data.
+        /// </summary>
         public override void ClearInfoData()
         {
             base.ClearInfoData();
         }
 
+        /// <summary>
+        /// Called when [list items received].
+        /// </summary>
         public async void OnListItemsReceived()
         {
              await Dispatcher.InvokeAsync(OnPropertyChanging);
              OnSelectedItemReceived();
         }
 
-
+        /// <summary>
+        /// Called when [list layout received].
+        /// </summary>
         public async void OnListLayoutReceived()
         {
             await Dispatcher.InvokeAsync(() =>
@@ -138,26 +188,30 @@ namespace GUIFramework.GUI.Controls
             });
         }
 
+        /// <summary>
+        /// Called when [selected item received].
+        /// </summary>
         public async void OnSelectedItemReceived()
         {
-              var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
-              if (selectedItem != null && ListItems != null)
-              {
-                  var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex)
-                      ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText);
-                  if (item != null)
-                  {
-                      await  Dispatcher.InvokeAsync(() =>
-                      {
-                          SelectItem(item);
-                      });
-                  }
-              }
-        
+            var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
+            if (selectedItem != null && ListItems != null)
+            {
+                var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex)
+                    ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText);
+                if (item != null)
+                {
+                    await Dispatcher.InvokeAsync(() =>
+                    {
+                        SelectItem(item);
+                    });
+                }
+            }
         }
 
-
-
+        /// <summary>
+        /// Called when [user view change].
+        /// </summary>
+        /// <param name="action">The action.</param>
         private void OnUserViewChange(XmlAction action)
         {
             if (action != null)
@@ -173,9 +227,7 @@ namespace GUIFramework.GUI.Controls
             }
         }
 
-
-    
-   
+        #endregion
 
         #region Properties
 
@@ -206,8 +258,26 @@ namespace GUIFramework.GUI.Controls
             set { _listLayoutType = value; NotifyPropertyChanged("ListLayoutType"); }
         }
 
-        #endregion
+        /// <summary>
+        /// Gets the drag threshold.
+        /// </summary>
+        private double DragThreshold
+        {
+            get { return IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width; }
+        }
 
+        /// <summary>
+        /// Gets a value indicating whether the layout is vertical.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if the layout is vertical; otherwise, <c>false</c>.
+        /// </value>
+        private bool IsLayoutVertical
+        {
+            get { return _currentListLayout == XmlListLayout.Vertical; }
+        }
+
+        #endregion
 
         #region Methods
 
@@ -340,9 +410,58 @@ namespace GUIFramework.GUI.Controls
             {
                 _currentListLayout = layout;
                 listbox.Items.Refresh();
+                SetZoomAnimation(CurrentLayout.SelectionZoomX, CurrentLayout.SelectionZoomY);
             }
         }
 
+        /// <summary>
+        /// Creates the zoom animation.
+        /// </summary>
+        private void CreateZoomAnimation()
+        {
+            if (_selectedZoomBackAnimation == null)
+            {
+                Duration duration = new Duration(TimeSpan.FromMilliseconds(CurrentLayout.SelectionZoomDuration));
+                _selectedZoomX = new DoubleAnimation();
+                _selectedZoomY = new DoubleAnimation();
+                DoubleAnimation outX = new DoubleAnimation();
+                DoubleAnimation outY = new DoubleAnimation();
+                _selectedZoomX.Duration = duration;
+                _selectedZoomY.Duration = duration;
+                outX.Duration = duration;
+                outY.Duration = duration;
+                Storyboard sbIn = new Storyboard();
+                sbIn.Duration = duration;
+                sbIn.Children.Add(_selectedZoomX);
+                sbIn.Children.Add(_selectedZoomY);
+                Storyboard sbOut = new Storyboard();
+                sbOut.Duration = duration;
+                sbOut.Children.Add(outX);
+                sbOut.Children.Add(outY);
+                Storyboard.SetTargetProperty(_selectedZoomX, new PropertyPath("LayoutTransform.ScaleX"));
+                Storyboard.SetTargetProperty(_selectedZoomY, new PropertyPath("LayoutTransform.ScaleY"));
+                Storyboard.SetTargetProperty(outX, new PropertyPath("LayoutTransform.ScaleX"));
+                Storyboard.SetTargetProperty(outY, new PropertyPath("LayoutTransform.ScaleY"));
+                outX.To = 1;
+                outY.To = 1;
+                _selectedZoomAnimation = sbIn;
+                _selectedZoomBackAnimation = sbOut;
+            }
+        }
+
+        /// <summary>
+        /// Sets the zoom animation.
+        /// </summary>
+        /// <param name="x">The x.</param>
+        /// <param name="y">The y.</param>
+        private void SetZoomAnimation(int x, int y)
+        {
+            if (_selectedZoomX != null && _selectedZoomY != null)
+            {
+                _selectedZoomX.To = Math.Max(1.0, ((double)x / 100.0));
+                _selectedZoomY.To = Math.Max(1.0, ((double)y / 100.0));
+            }
+        }
 
         /// <summary>
         /// Starts the selection timer.
@@ -386,25 +505,6 @@ namespace GUIFramework.GUI.Controls
             return null;
         }
 
-        /// <summary>
-        /// Gets the drag threshold.
-        /// </summary>
-        private double DragThreshold
-        {
-            get { return IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width; }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether the layout is vertical.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if the layout is vertical; otherwise, <c>false</c>.
-        /// </value>
-        private bool IsLayoutVertical
-        {
-            get { return _currentListLayout == XmlListLayout.Vertical; }
-        }
-
         #endregion
 
         #region Item Events
@@ -441,7 +541,6 @@ namespace GUIFramework.GUI.Controls
             _itemMouseDownPoint = e.GetPosition(this);
         }
 
-
         /// <summary>
         /// Handles the MouseLeave event of the Item.
         /// </summary>
@@ -453,11 +552,32 @@ namespace GUIFramework.GUI.Controls
             _itemMouseDown = false;
         }
 
+        /// <summary>
+        /// Called when [list item_ selected].
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void OnListItem_Selected(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                if (_selectedContainer != null)
+                {
+                    _selectedZoomBackAnimation.Begin(_selectedContainer);
+                }
+
+                var currentContainer = sender as ListBoxItem;
+                if (currentContainer != null)
+                {
+                    currentContainer.LayoutTransform = new ScaleTransform(1, 1);
+                    currentContainer.RenderTransformOrigin = new Point(0.5, 0.5);
+                    _selectedZoomAnimation.Begin(currentContainer);
+                    _selectedContainer = currentContainer;
+                }
+            }
+            catch { }
+        }
+
         #endregion
-
-
-
-
-      
     }
 }

@@ -30,6 +30,10 @@ namespace GUISkinFramework.Controls
         private System.Windows.VerticalAlignment _verticalAlignment;
         private System.Windows.HorizontalAlignment _horizontalAlignment;
         private string _itemMargin;
+        private int _selectedZoomX = 100;
+        private int _selectedZoomY = 100;
+        private int _selectedZoomDuration = 250;
+     
 
         [PropertyOrder(1)]
         [DefaultValue(0)]
@@ -79,21 +83,36 @@ namespace GUISkinFramework.Controls
             set { _verticalAlignment = value; NotifyPropertyChanged("VerticalAlignment"); }
         }
 
-        private double _selectedZoomX = 1.0;
-
-        public double SelectedZoomX
+        [PropertyOrder(1)]
+        [EditorCategory("Selection", 1)]
+        [DisplayName("Zoom X %")]
+        [DefaultValue(100)]
+        [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
+        public int SelectionZoomX
         {
             get { return _selectedZoomX; }
-            set { _selectedZoomX = value; NotifyPropertyChanged("SelectedZoomX"); }
+            set { _selectedZoomX = value; NotifyPropertyChanged("SelectionZoomX"); }
         }
 
-
-        private double _selectedZoomY = 1.5;
-
-        public double SelectedZoomY
+        [PropertyOrder(2)]
+        [EditorCategory("Selection",2)]
+        [DisplayName("Zoom Y %")]
+        [DefaultValue(100)]
+        [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
+        public int SelectionZoomY
         {
             get { return _selectedZoomY; }
-            set { _selectedZoomY = value; NotifyPropertyChanged("SelectedZoomY"); }
+            set { _selectedZoomY = value; NotifyPropertyChanged("SelectionZoomY"); }
+        }
+
+        [PropertyOrder(3)]
+        [EditorCategory("Selection", 2)]
+        [DisplayName("Zoom Duration")]
+        [DefaultValue(250)]
+        public int SelectionZoomDuration
+        {
+            get { return _selectedZoomDuration; }
+            set { _selectedZoomDuration = value; NotifyPropertyChanged("SelectionZoomDuration"); }
         }
     }
 }

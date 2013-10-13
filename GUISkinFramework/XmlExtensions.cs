@@ -51,7 +51,14 @@ namespace GUISkinFramework
                     .FirstOrDefault();
                 if (attribute != null)
                 {
-                    property.SetValue(obj, attribute.Value, null);
+                    try
+                    {
+                        property.SetValue(obj, attribute.Value, null);
+                    }
+                    catch
+                    {
+                        property.SetValue(obj,default(T), null);
+                    }
                 }
             }
         }

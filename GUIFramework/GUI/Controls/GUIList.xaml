@@ -27,7 +27,7 @@
                 BorderThickness="{Binding BaseXml.ControlStyle.BorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding BaseXml.ControlStyle.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
 		<Border x:Name="focusShading" Background="{Binding BaseXml.ControlStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-			<ListBox x:Name="listbox" ItemsSource="{Binding ListItems}"
+			<ListBox x:Name="listbox" ItemsSource="{Binding ListItems}" 
 		         VirtualizingPanel.VirtualizationMode="Recycling" 
 				 VirtualizingPanel.IsContainerVirtualizable="True" 
 				 VirtualizingPanel.IsVirtualizing="True" 
@@ -50,6 +50,7 @@
 						<EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListItem_MouseButtonUp" />
 						<EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListItem_MouseButtonDown" />
 						<EventSetter Event="MouseLeave" Handler="ListItem_MouseLeave" />
+						<EventSetter Event="Selected" Handler="OnListItem_Selected" />
 					</Style>
 				</ListBox.Resources>
 
@@ -102,9 +103,6 @@
 							<commonControls:Surface3D.Style>
 								<Style TargetType="{x:Type commonControls:Surface3D}">
 									<Style.Triggers>
-
-
-
 										<!--Layout CoverFlow //////////////////////////////////////////////////////////////////////////////////////////////////-->
 										<MultiDataTrigger>
 											<MultiDataTrigger.Conditions>
@@ -115,19 +113,9 @@
 												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
 													<Storyboard >
 														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="RotationY" To="0"  />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1.5" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1.5" />
 													</Storyboard>
 												</BeginStoryboard>
 											</MultiDataTrigger.EnterActions>
-											<MultiDataTrigger.ExitActions>
-												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-													<Storyboard>
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1" />
-													</Storyboard>
-												</BeginStoryboard>
-											</MultiDataTrigger.ExitActions>
 										</MultiDataTrigger>
 
 										<MultiDataTrigger>
@@ -179,59 +167,6 @@
 												<StopStoryboard BeginStoryboardName="CHigherEnter"/>
 											</MultiDataTrigger.ExitActions>
 										</MultiDataTrigger>
-										<!--//////////////////////////////////////////////////////////////////////////////////////////////////-->
-
-										<!--Layout Horizontal //////////////////////////////////////////////////////////////////////////////////////////////////-->
-										<MultiDataTrigger>
-											<MultiDataTrigger.Conditions>
-												<Condition Binding="{Binding ListLayoutType, ElementName=UI}" Value="Horizontal" />
-												<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True"/>
-											</MultiDataTrigger.Conditions>
-											<MultiDataTrigger.EnterActions>
-												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-													<Storyboard >
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1.3" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1.3" />
-													</Storyboard>
-												</BeginStoryboard>
-											</MultiDataTrigger.EnterActions>
-											<MultiDataTrigger.ExitActions>
-												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-													<Storyboard>
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1" />
-													</Storyboard>
-												</BeginStoryboard>
-											</MultiDataTrigger.ExitActions>
-										</MultiDataTrigger>
-										<!-- //////////////////////////////////////////////////////////////////////////////////////////////////-->
-
-										<!--Layout Vertical //////////////////////////////////////////////////////////////////////////////////////////////////-->
-										<MultiDataTrigger>
-											<MultiDataTrigger.Conditions>
-												<Condition Binding="{Binding ListLayoutType, ElementName=UI}" Value="Vertical" />
-												<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True"/>
-											</MultiDataTrigger.Conditions>
-											<MultiDataTrigger.EnterActions>
-												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-													<Storyboard >
-														<!--<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="RotationY" To="0"  />-->
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1" />
-													</Storyboard>
-												</BeginStoryboard>
-											</MultiDataTrigger.EnterActions>
-											<MultiDataTrigger.ExitActions>
-												<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
-													<Storyboard>
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleX" To="1" />
-														<DoubleAnimation Duration="0:0:0.2" Storyboard.TargetProperty="LayoutTransform.ScaleY" To="1" />
-													</Storyboard>
-												</BeginStoryboard>
-											</MultiDataTrigger.ExitActions>
-										</MultiDataTrigger>
-										<!-- //////////////////////////////////////////////////////////////////////////////////////////////////-->
-
 									</Style.Triggers>
 								</Style>
 							</commonControls:Surface3D.Style>
