@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:settings="clr-namespace:GUIConfig.Settings;assembly="
              mc:Ignorable="d" 
-             Name="UI" MinWidth="218">
+             Name="UI" MinWidth="218" Width="241">
 	<UserControl.Style>
 		<Style TargetType="UserControl">
 			<Setter Property="MinHeight" Value="136" />
@@ -25,10 +25,10 @@
 					<ColumnDefinition Width="1*"/>
 				</Grid.ColumnDefinitions>
 				<StackPanel Margin="0,0,5,0">
-					<TextBlock Text="{Binding FallbackValue=IPAddress, ConverterParameter=IPAddress, Converter={StaticResource LanguageConverter}}" />
+					<TextBlock Text="{Binding ConverterParameter=IPAddress, Converter={StaticResource LanguageConverter}}" />
                     <TextBox>
                         <TextBox.Text>
-                            <Binding Path="ConnectionSettings.IpAddress" FallbackValue="IpAddress" Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" >
+                            <Binding Path="ConnectionSettings.IpAddress"  Mode="TwoWay" UpdateSourceTrigger="PropertyChanged" >
                                 <Binding.ValidationRules>
                                     <settings:IpAddressValidationRule ValidatesOnTargetUpdated="True"  />
                                 </Binding.ValidationRules>
@@ -38,15 +38,26 @@
                 </StackPanel>
 
 				<StackPanel Grid.Column="1">
-					<TextBlock Text="{Binding FallbackValue=Port, ConverterParameter=Port, Converter={StaticResource LanguageConverter}}" />
-					<TextBox Text="{Binding ConnectionSettings.Port, FallbackValue=Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+					<TextBlock Text="{Binding ConverterParameter=Port, Converter={StaticResource LanguageConverter}}" />
+					<TextBox Text="{Binding ConnectionSettings.Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
 				</StackPanel>
 			</Grid>
 
-			<StackPanel Margin="0,5,0,0" Visibility="{Binding CanEditConnectionName, Converter={StaticResource BooleanToVisibilityConverter}}">
-				<TextBlock Text="{Binding FallbackValue=MPDisplay, ConverterParameter=ConnectionName, Converter={StaticResource LanguageConverter}}" />
-				<TextBox Text="{Binding ConnectionSettings.ConnectionName, FallbackValue=ConnectionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-			</StackPanel>
+			<Grid Margin="0,5,0,0">
+				<Grid.ColumnDefinitions>
+					<ColumnDefinition Width="2*"/>
+					<ColumnDefinition Width="1*"/>
+				</Grid.ColumnDefinitions>
+				<StackPanel Margin="0,0,5,0" Visibility="{Binding CanEditConnectionName, Converter={StaticResource BooleanToVisibilityConverter}}">
+					<TextBlock Text="{Binding ConverterParameter=ConnectionName, Converter={StaticResource LanguageConverter}}" />
+					<TextBox Text="{Binding ConnectionSettings.ConnectionName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</StackPanel>
+
+				<StackPanel Grid.Column="1">
+					<TextBlock Text="{Binding ConverterParameter=Resume Delay, Converter={StaticResource LanguageConverter}}" />
+					<TextBox Text="{Binding ConnectionSettings.ResumeDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
+				</StackPanel>
+			</Grid>
 
 			<Grid Margin="0,20,0,0">
 				<Grid.ColumnDefinitions>

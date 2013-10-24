@@ -84,10 +84,10 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(1)]
-        [EditorCategory("Selection", 1)]
+        [EditorCategory("Selection", 2)]
         [DisplayName("Zoom X %")]
         [DefaultValue(100)]
-        [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
         public int SelectionZoomX
         {
             get { return _selectedZoomX; }
@@ -98,7 +98,7 @@ namespace GUISkinFramework.Controls
         [EditorCategory("Selection",2)]
         [DisplayName("Zoom Y %")]
         [DefaultValue(100)]
-        [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
         public int SelectionZoomY
         {
             get { return _selectedZoomY; }

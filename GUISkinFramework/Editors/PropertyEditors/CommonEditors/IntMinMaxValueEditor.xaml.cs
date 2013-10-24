@@ -15,6 +15,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using Common.Helpers;
 using GUISkinFramework.Animations;
 using GUISkinFramework.Common;
 using GUISkinFramework.Common.Brushes;
@@ -76,27 +77,21 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
             if (_propertyItem != null && _propertyItem.Instance != null)
             {
-                var propertyRange = _propertyItem.Instance.GetType()
-                    .GetProperty(_propertyItem.BindingPath)
-                    .GetCustomAttributes(typeof(PropertyRangeAttribute), true)
-                    .FirstOrDefault() as PropertyRangeAttribute;
+                var propertyRange = ReflectionHelper.GetPropertyPath(_propertyItem.Instance, _propertyItem.BindingPath)
+               .GetCustomAttributes(typeof(PropertyRangeAttribute), true)
+               .FirstOrDefault() as PropertyRangeAttribute;
                 if (propertyRange != null)
                 {
                     MinValue = propertyRange.Min;
                     MaxValue = propertyRange.Max;
                 }
-       
 
-           
-
-            Binding binding = new Binding("Value");
-            binding.Source = _propertyItem;
-            binding.Mode = BindingMode.TwoWay;
-            BindingOperations.SetBinding(this, ValueProperty, binding);
+                Binding binding = new Binding("Value");
+                binding.Source = _propertyItem;
+                binding.Mode = BindingMode.TwoWay;
+                BindingOperations.SetBinding(this, ValueProperty, binding);
             }
 
-
-         
             return this;
         }
     }

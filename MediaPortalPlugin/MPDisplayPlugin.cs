@@ -12,6 +12,7 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
+using Microsoft.Win32;
 using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
 
@@ -72,6 +73,7 @@ namespace MediaPortalPlugin
                 MessageService.InitializeMessageService(_settings.ConnectionSettings);
                 WindowManager.Instance.Initialize(_settings, _advancedSettings);
                 Log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
+              
             }
             else
             {
@@ -80,8 +82,11 @@ namespace MediaPortalPlugin
             }
         }
 
+     
+
         private void OnPluginStop()
         {
+         
             Log.Message(LogLevel.Info, "[OnPluginStop] - Stopping MPDisplay Plugin...");
             if (_settings.CloseMPDisplayOnExit)
             {

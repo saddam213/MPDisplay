@@ -142,6 +142,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_registeredListTypes.Any())
             {
+              
                 if (_registeredListTypes.Contains(APIListType.List))
                 {
                     SendFacadeList();
@@ -225,7 +226,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private void CheckForListItemChanges()
+        public void CheckForListItemChanges()
         {
             if (_registeredListTypes.Contains(APIListType.List))
             {
@@ -258,7 +259,7 @@ namespace MediaPortalPlugin.InfoManagers
 
                             if (_registeredListTypes.Contains(APIListType.List))
                             {
-                                _listFocused = _facadeControls.Any(f => f.Focus) || _listControls.Any(f => f.Focus);
+                                _listFocused = _facadeControls.Any(f => f.Focus) || _listControls.Any(f => f.Focus) || _facadeControls.Any(f => f.Count > 0) || _listControls.Any(f => f.Count > 0);
 
                                 if (_listFocused)
                                 {
@@ -321,7 +322,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendFacadeList()
         {
-            var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+            var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus) ?? _facadeControls.FirstOrDefault(f => f.Count > 0);
             if (currentFacade != null)
             {
                 var layout = GetAPIListLayout(currentFacade);
@@ -341,14 +342,31 @@ namespace MediaPortalPlugin.InfoManagers
         private void SetFacdeSelectedItem(APIListAction item, bool isSelect)
         {
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+            if (currentFacade == null)
+            {
+                foreach (var listcontrol in _facadeControls)
+                {
+                    if (listcontrol.Count > 0 && item.ItemIndex < listcontrol.Count && listcontrol[item.ItemIndex].Label == item.ItemText)
+                    {
+                        currentFacade = listcontrol;
+                        break;
+                    }
+                }
+            }
+
             if (currentFacade != null)
             {
                 if (item.ItemIndex <= currentFacade.Count)
                 {
+                    currentFacade.Focus = true;
                     currentFacade.SelectedListItemIndex = item.ItemIndex;
                     if (isSelect)
                     {
-                        SupportedPluginManager.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
+                        SupportedPluginManager.GUISafeInvoke(() =>
+                        {
+                            currentFacade.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f));
+                            CheckForListItemChanges();
+                        });
                     }
                 }
             }
@@ -380,12 +398,13 @@ namespace MediaPortalPlugin.InfoManagers
             var currentListControl = _listControls.FirstOrDefault(f => f.Focus);
             if (currentListControl != null)
             {
-                DateTime timeout = DateTime.Now.AddSeconds(5);
+                DateTime timeout = DateTime.Now.AddSeconds(20);
                 while (currentListControl.SelectedListItem == null && DateTime.Now < timeout)
                 {
-                    Thread.Sleep(100);
-                    Log.Message(LogLevel.Verbose, "ListControl not ready, Waiting 100ms");
+                    Thread.Sleep(250);
+                    Log.Message(LogLevel.Verbose, "ListControl not ready, Waiting 250ms");
                 }
+                Thread.Sleep(250);
                 SendListControlList();
             }
         }
@@ -393,7 +412,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendListControlList()
         {
-            var currentList = _listControls.FirstOrDefault(f => f.Focus);
+            var currentList = _listControls.FirstOrDefault(f => f.Focus) ?? _listControls.FirstOrDefault(l => l.Count > 0);
             if (currentList != null)
             {
                 SendList(APIListType.List, APIListLayout.Vertical, GetAPIListItems(currentList, APIListLayout.Vertical));
@@ -420,7 +439,11 @@ namespace MediaPortalPlugin.InfoManagers
                     currentList.SelectedListItemIndex = item.ItemIndex;
                     if (isSelect)
                     {
-                        SupportedPluginManager.GUISafeInvoke(() => GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
+                        SupportedPluginManager.GUISafeInvoke(() => 
+                        {
+                            currentList.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f));
+                            CheckForListItemChanges();
+                        });
                     }
                 }
             }
@@ -432,7 +455,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendGroupList()
         {
-            var currentGroup = _groupControls.FirstOrDefault(g => g.Children.GetControls().Any(c => c.Focus));
+            var currentGroup = _groupControls.FirstOrDefault(g => g.Children.GetControls().Any(c => c.Focus)) ?? _groupControls.FirstOrDefault(g => g.Children.Count > 0);
             if (currentGroup != null)
             {
                 SendList(APIListType.GroupMenu, APIListLayout.Vertical, GetAPIListItems(currentGroup));
@@ -461,7 +484,7 @@ namespace MediaPortalPlugin.InfoManagers
                         newFocus.Focus = true;
                         if (isSelect)
                         {
-                           
+                            SupportedPluginManager.GUISafeInvoke(() => newFocus.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f)));
                         }
                         break;
                     }
@@ -580,13 +603,20 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendMenuControlSelectedItem()
         {
-            if (_menuControl != null && !_movingMenuControl)
+            try
             {
-                var menuButtons = _menuControlButtonList.GetValue(_menuControl) as List<GUIButtonControl>;
-                if (menuButtons != null)
+                if (_menuControl != null && !_movingMenuControl)
                 {
-                    SendSelectedItem(APIListType.Menu, menuButtons[_menuControl.FocusedButton].Label, -1);
+                    var menuButtons = _menuControlButtonList.GetValue(_menuControl) as List<GUIButtonControl>;
+                    if (menuButtons != null)
+                    {
+                        SendSelectedItem(APIListType.Menu, menuButtons[_menuControl.FocusedButton].Label, -1);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+             Log.Exception("Here",ex);
             }
         }
 

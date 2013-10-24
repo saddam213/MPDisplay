@@ -7,6 +7,7 @@ using System;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading;
+using Microsoft.Win32;
 
 namespace MediaPortalPlugin
 {
@@ -26,6 +27,7 @@ namespace MediaPortalPlugin
         private MessageService()
         {
             Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(MessageService));
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
         /// <summary>
@@ -114,8 +116,8 @@ namespace MediaPortalPlugin
                 _serverBinding.Name = "NetTcpBinding_IMessage";
                 _serverBinding.CloseTimeout = new TimeSpan(0, 0, 5);
                 _serverBinding.OpenTimeout = new TimeSpan(0, 0, 5);
-                _serverBinding.ReceiveTimeout = new TimeSpan(0, 0, 30);
-                _serverBinding.SendTimeout = new TimeSpan(0, 0, 30);
+                _serverBinding.ReceiveTimeout = new TimeSpan(0, 1, 0);
+                _serverBinding.SendTimeout = new TimeSpan(0, 1, 0);
                 _serverBinding.TransferMode = TransferMode.Buffered;
                 _serverBinding.ListenBacklog = 100;
                 _serverBinding.MaxConnections = 100;
@@ -136,13 +138,21 @@ namespace MediaPortalPlugin
                 {
                     _messageClient.InnerChannel.Faulted -= OnConnectionFaulted;
                     _messageClient.ConnectCompleted -= OnConnectCompleted;
+                    _messageClient.SendListMessageCompleted -= _messageClient_SendMessageCompleted;
+                    _messageClient.SendInfoMessageCompleted -= _messageClient_SendMessageCompleted;
+                    _messageClient.SendDataMessageCompleted -= _messageClient_SendMessageCompleted;
+                    _messageClient.SendPropertyMessageCompleted -= _messageClient_SendMessageCompleted;
                     _messageClient = null;
                 }
 
                 _messageClient = new MessageClient(site, _serverBinding, _serverEndpoint);
                 _messageClient.InnerChannel.Faulted += OnConnectionFaulted;
                 _messageClient.ConnectCompleted += OnConnectCompleted;
-
+                _messageClient.SendListMessageCompleted += _messageClient_SendMessageCompleted;
+                _messageClient.SendInfoMessageCompleted += _messageClient_SendMessageCompleted;
+                _messageClient.SendDataMessageCompleted += _messageClient_SendMessageCompleted;
+                _messageClient.SendPropertyMessageCompleted += _messageClient_SendMessageCompleted;
+            
                 _connection = new APIConnection("MediaPortalPlugin");
                 ConnectToService();
             }
@@ -152,11 +162,20 @@ namespace MediaPortalPlugin
             }
         }
 
+        void _messageClient_SendMessageCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        {
+            if (e.Error != null)
+            {
+                Log.Exception("An error occured sending message to MPDisplay.", e.Error);
+            }
+        }
+
         /// <summary>
         /// Shutdowns this instance.
         /// </summary>
         public void Shutdown()
         {
+            SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
             Log.Message(LogLevel.Info, "[Shutdown] - Shuting down connection instance.");
             _isDisconnecting = true;
             Disconnect();
@@ -352,7 +371,7 @@ namespace MediaPortalPlugin
                 {
                     if (_messageClient != null && property != null)
                     {
-                        Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}.", property.SkinTag, property.PropertyType);
+                      //  Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}.", property.SkinTag, property.PropertyType);
                         _messageClient.SendPropertyMessageAsync(property);
                     }
                 }
@@ -479,5 +498,22 @@ namespace MediaPortalPlugin
         public void ReceiveAPIInfoMessage(APIInfoMessage message) { }
 
         #endregion
+
+        private void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode == PowerModes.Resume)
+            {
+                ThreadPool.QueueUserWorkItem((o) =>
+                {
+                    Thread.Sleep(_settings.ResumeDelay);
+                    InitializeConnection(_settings);
+                });
+            }
+
+            if (e.Mode == PowerModes.Suspend)
+            {
+                Disconnect();
+            }
+        }
     }
 }

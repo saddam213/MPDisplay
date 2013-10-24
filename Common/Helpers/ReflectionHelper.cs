@@ -304,6 +304,42 @@ namespace Common.Helpers
            }
 
 
+
+
+           public static PropertyInfo GetPropertyPath(object obj, string property)
+           {
+               try
+               {
+
+                   if (!string.IsNullOrEmpty(property))
+                   {
+                       object returnValue = obj;
+                       if (property.Contains('.'))
+                       {
+                           var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+
+                           foreach (var prop in path)
+                           {
+                               if (prop != path.Last())
+                               {
+                               returnValue = GetPropertyValue<object>(returnValue, prop, null);
+                               }
+                           }
+
+                           if (returnValue != null)
+                           {
+                               return returnValue.GetType().GetProperty(path.Last());
+                           }
+                       }
+
+
+                      return obj.GetType().GetProperty(property);
+                   }
+               }
+               catch { }
+               return null;
+           }
+
         /// <summary>
         /// Get A Feild Value From An Object
         /// </summary>

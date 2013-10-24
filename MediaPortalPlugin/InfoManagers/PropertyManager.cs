@@ -52,14 +52,14 @@ namespace MediaPortalPlugin.InfoManagers
             _settings = settings;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
 
-            //if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
-            //{
+            if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
+            {
                 _systemInfo = new ServerChecker();
                 _systemInfo.TagPrefix = "MP";
                 _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
                 _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
                 _systemInfo.StartMonitoring();
-          //  }
+            }
         }
 
      
@@ -67,13 +67,13 @@ namespace MediaPortalPlugin.InfoManagers
         public void Shutdown()
         {
 
-            //if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
-            //{
+            if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
+            {
                 _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
                 _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
                 _systemInfo.StopMonitoring();
                 _systemInfo = null;
-           // }
+            }
 
          
             GUIPropertyManager.OnPropertyChanged -= GUIPropertyManager_OnPropertyChanged;
@@ -234,7 +234,6 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SystemInfo_OnTextDataChanged(string tag, string tagValue)
         {
-            Log.Message(LogLevel.Warn, "Tag: {0}, TagValue: {1}", tag, tagValue);
             SendLabelProperty(tag, tagValue);
         }
     }

@@ -514,7 +514,7 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void ListItem_MouseButtonUp(object sender, MouseButtonEventArgs e)
+        private void OnListItem_MouseButtonUp(object sender, MouseButtonEventArgs e)
         {
             StopSelectionTimer();
             _itemMouseDown = false;
@@ -534,7 +534,7 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void ListItem_MouseButtonDown(object sender, MouseButtonEventArgs e)
+        private void OnListItem_MouseButtonDown(object sender, MouseButtonEventArgs e)
         {
             StartSelectionTimer();
             _itemMouseDown = true;
@@ -546,7 +546,7 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void ListItem_MouseLeave(object sender, MouseEventArgs e)
+        private void OnListItem_MouseLeave(object sender, MouseEventArgs e)
         {
             StopSelectionTimer();
             _itemMouseDown = false;

@@ -232,7 +232,7 @@ namespace MessageServer
                 return;
             try
             {
-                Log.Message(LogLevel.Info, "[Disconnect] - Disconnection request received, ConnectionName: {0}" , _apiConnection.ConnectionName);
+                Log.Message(LogLevel.Info, "[Disconnect] - Disconnection request received, ConnectionName: {0}", _apiConnection.ConnectionName);
                 var connectionToRemove = GetConnectionHandler(_apiConnection.ConnectionName);
                 lock (_syncObj)
                 {
@@ -248,6 +248,9 @@ namespace MessageServer
                     Log.Message(LogLevel.Info, "[Disconnect] - Successfully removed connection instance, ConnectionName: {0}", _apiConnection.ConnectionName);
                     _apiConnection = null;
                     await BroadcastMessage(e);
+                    _messageCallback = null;
+                    _callbackEventHandler = null;
+                    _apiConnection = null;
                 }
             }
             catch (Exception ex)
@@ -269,8 +272,8 @@ namespace MessageServer
             {
                 if (_apiConnection != null && property != null)
                 {
-                    Log.Message(LogLevel.Verbose, "[SendPropertyMessage] - Sending Property message to MPDisplay, Sender: {0}, PropertyType: {1}, SkinTag: {2}"
-                        , _apiConnection.ConnectionName, property.PropertyType, property.SkinTag);
+                    //Log.Message(LogLevel.Verbose, "[SendPropertyMessage] - Sending Property message to MPDisplay, Sender: {0}, PropertyType: {1}, SkinTag: {2}"
+                    //    , _apiConnection.ConnectionName, property.PropertyType, property.SkinTag);
                     await BroadcastMessage(new MessageEventArgs
                     {
                         MessageType = MessageType.ReceiveAPIPropertyMessage,
@@ -349,7 +352,7 @@ namespace MessageServer
                     {
                         Log.Message(LogLevel.Info, "[KeepAlive] - KeepAlive received., Sender: {0}", _apiConnection.ConnectionName);
                     }
-                    else
+                    else if (dataMessage.DataType != APIDataMessageType.EQData)
                     {
                         Log.Message(LogLevel.Verbose, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}", _apiConnection.ConnectionName, dataMessage.DataType);
                     }
@@ -492,7 +495,7 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[CallbackHandler] - An exception occured while invoking callback.{0}", ex.Message);
+                Log.Exception("[CallbackHandler] - An exception occured while invoking callback.{0}", ex);
             }
             await Disconnect();
         }

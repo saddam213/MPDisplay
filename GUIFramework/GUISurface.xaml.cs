@@ -32,6 +32,7 @@ using MPDisplay.Common.Settings;
 using System.Windows.Threading;
 using GUISkinFramework.Editor.PropertyEditors;
 using GUIFramework.Utils;
+using Microsoft.Win32;
 
 namespace GUIFramework
 {
@@ -74,6 +75,7 @@ namespace GUIFramework
         {
             InitializeComponent(); 
             StartSecondTimer();
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
         #endregion
@@ -289,8 +291,9 @@ namespace GUIFramework
             DeregisterCallbacks();
             _isDisconnecting = true;
             Disconnect();
-            ClearRepositories();
+            ClearRepositories(true);
             SurfaceElements.Clear();
+            SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
         }
 
         /// <summary>
@@ -356,13 +359,23 @@ namespace GUIFramework
         /// <summary>
         /// Clears the repositories.
         /// </summary>
-        private void ClearRepositories()
+        private void ClearRepositories(bool isExit)
         {
             Log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
-            InfoRepository.Instance.ClearRepository();
-            ListRepository.Instance.ClearRepository();
-            PropertyRepository.Instance.ClearRepository();
-            GenericDataRepository.Instance.ClearRepository();
+            if (isExit)
+            {
+                InfoRepository.Instance.ResetRepository();
+                ListRepository.Instance.ResetRepository();
+                PropertyRepository.Instance.ResetRepository();
+                GenericDataRepository.Instance.ResetRepository();
+            }
+            else
+            {
+                InfoRepository.Instance.ClearRepository();
+                ListRepository.Instance.ClearRepository();
+                PropertyRepository.Instance.ClearRepository();
+                GenericDataRepository.Instance.ClearRepository();
+            }
             Log.Message(LogLevel.Info, "[CloseDown] - Repositories cleared");
         }
       
@@ -874,7 +887,7 @@ namespace GUIFramework
                 if (connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
                     Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
-                    ClearRepositories();
+                    ClearRepositories(false);
                     InfoRepository.Instance.IsMediaPortalConnected = false;
                 }
 
@@ -959,7 +972,9 @@ namespace GUIFramework
                 MessageType = APIMediaPortalMessageType.ActionMessage,
                 ActionMessage = new APIActionMessage
                 {
-                    ActionType = APIActionMessageType.WindowListAction,
+                    ActionType = action.ItemListType == APIListType.DialogList 
+                           ? APIActionMessageType.DialogListAction 
+                           : APIActionMessageType.WindowListAction,
                     ListAction = action
                 }
             });
@@ -1000,21 +1015,36 @@ namespace GUIFramework
             return Task.FromResult<object>(null);
         }
 
+        private async void SystemEvents_PowerModeChanged(object sender, PowerModeChangedEventArgs e)
+        {
+            if (e.Mode == PowerModes.Resume)
+            {
+              await Task.Delay(_settings.ConnectionSettings.ResumeDelay);
+              await InitializeServerConnection(_settings.ConnectionSettings);
+            }
+
+            if (e.Mode == PowerModes.Suspend)
+            {
+               await Disconnect();
+            }
+        }
+
+
         #region Receive
 
         public async void ReceiveAPIPropertyMessage(APIPropertyMessage message)
         {
-           await Task.Factory.StartNew(() =>  PropertyRepository.Instance.AddProperty(message));
+            await Task.Factory.StartNew(() => PropertyRepository.Instance.AddProperty(message));
         }
 
         public async void ReceiveAPIListMessage(APIListMessage message)
         {
-          await Task.Factory.StartNew(() =>  ListRepository.Instance.AddListData(message));
+            await Task.Factory.StartNew(() => ListRepository.Instance.AddListData(message));
         }
 
         public async void ReceiveAPIInfoMessage(APIInfoMessage message)
         {
-          await Task.Factory.StartNew(() =>  InfoRepository.Instance.AddInfo(message));
+            await Task.Factory.StartNew(() => InfoRepository.Instance.AddInfo(message));
         }
 
         public async void ReceiveAPIDataMessage(APIDataMessage message)

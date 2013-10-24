@@ -86,7 +86,9 @@ namespace GUIFramework.Managers
 
         public void ResetRepository()
         {
-
+            ClearRepository();
+            Settings = null;
+            SkinInfo = null;
         }
 
 

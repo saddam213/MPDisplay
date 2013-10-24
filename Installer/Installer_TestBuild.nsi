@@ -2,7 +2,7 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "TestBuild_0.9.4.1.7"
+!define VERSION "TestBuild_0.9.4.3"
 !define BUILD_FOLDER "G:\Code\Release\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"

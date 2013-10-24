@@ -14,6 +14,7 @@ using SkinEditor.Views;
 using System.Linq;
 using System.Windows.Input;
 using MPDisplay.Common.Utils;
+using MPDisplay.Common.Settings;
 
 namespace SkinEditor
 {
@@ -36,11 +37,11 @@ namespace SkinEditor
             TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
             TextOptions.TextRenderingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextRenderingMode.Aliased });
 
-#if DEBUG
-            LoggingManager.AddLog(new WindowLogger("SkinEditor"));
-#else
-            LoggingManager.AddLog(new FileLogger(Environment.CurrentDirectory + "\\Logs", "SkinEditor"));
-#endif
+//#if DEBUG
+//            LoggingManager.AddLog(new WindowLogger("SkinEditor"));
+//#else
+           LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "SkinEditor"));
+//#endif
 
             _settingsFile = Environment.CurrentDirectory + "\\Settings.xml";
             InitializeComponent();

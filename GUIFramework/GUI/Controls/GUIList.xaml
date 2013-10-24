@@ -47,9 +47,9 @@
 						<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 						<Setter Property="VerticalAlignment" Value="{Binding CurrentLayout.VerticalAlignment, ElementName=UI}" />
 						<Setter Property="HorizontalAlignment" Value="{Binding CurrentLayout.HorizontalAlignment, ElementName=UI}" />
-						<EventSetter Event="PreviewMouseLeftButtonUp" Handler="ListItem_MouseButtonUp" />
-						<EventSetter Event="PreviewMouseLeftButtonDown" Handler="ListItem_MouseButtonDown" />
-						<EventSetter Event="MouseLeave" Handler="ListItem_MouseLeave" />
+						<EventSetter Event="PreviewMouseLeftButtonUp" Handler="OnListItem_MouseButtonUp" />
+						<EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItem_MouseButtonDown" />
+						<EventSetter Event="MouseLeave" Handler="OnListItem_MouseLeave" />
 						<EventSetter Event="Selected" Handler="OnListItem_Selected" />
 					</Style>
 				</ListBox.Resources>

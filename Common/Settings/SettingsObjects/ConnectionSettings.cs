@@ -10,6 +10,7 @@ namespace MPDisplay.Common.Settings
         private int _port = 44444;
         private string _ipAddress = "localhost";
         private string _connectionName = "MPDisplay";
+        private int _resumeDelay = 5000;
 
         public int Port
         {
@@ -28,7 +29,11 @@ namespace MPDisplay.Common.Settings
             get { return _connectionName; }
             set { _connectionName = value; NotifyPropertyChanged("ConnectionName"); }
         }
-        
-        
+
+        public int ResumeDelay
+        {
+            get { return _resumeDelay; }
+            set { _resumeDelay = value; NotifyPropertyChanged("ResumeDelay"); }
+        }
     }
 }

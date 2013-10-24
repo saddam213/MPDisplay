@@ -235,7 +235,7 @@ namespace MediaPortalPlugin.InfoManagers
                     _lastFocusedControlId = -1;
                     _currentDialogType = DialogType.None;
                     _currentDialog = null;
-                   
+                    ListManager.Instance.CheckForListItemChanges();
                 }
             }
             catch (Exception ex)
