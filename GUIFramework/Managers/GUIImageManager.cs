@@ -36,7 +36,7 @@ namespace GUIFramework.Managers
         }
 
 
-        public static ImageBrush GetImage(XmlImageBrush brush)
+        public static ImageBrush GetSkinImage(XmlImageBrush brush)
         {
             if (_xmlImages.ContainsKey(brush.ImageName))
             {
@@ -44,7 +44,7 @@ namespace GUIFramework.Managers
                 {
                     if (!_styleCache.ContainsKey(brush.StyleId))
                     {
-                        var imageSource = GetImageNonCached(_xmlImages[brush.ImageName].FileName);
+                        var imageSource = GetImage(_xmlImages[brush.ImageName].FileName);
                         var newBrush = new ImageBrush(imageSource);
                         newBrush.Stretch = brush.ImageStretch;
                         _styleCache.Add(brush.StyleId, (ImageBrush)newBrush.GetAsFrozen());
@@ -55,7 +55,7 @@ namespace GUIFramework.Managers
                 string cacheKey = string.Format("{0} | {1}", brush.ImageName, brush.ImageStretch);
                 if (!_cache.ContainsKey(cacheKey))
                 {
-                    var imageSource = GetImageNonCached(_xmlImages[brush.ImageName].FileName);
+                    var imageSource = GetImage(_xmlImages[brush.ImageName].FileName);
                     var newBrush = new ImageBrush(imageSource);
                     newBrush.Stretch = brush.ImageStretch;
                     _cache.Add(cacheKey, (ImageBrush)newBrush.GetAsFrozen());
@@ -66,7 +66,7 @@ namespace GUIFramework.Managers
         }
 
 
-        public static BitmapImage GetImageNonCached(string filename)
+        public static BitmapImage GetImage(string filename)
         {
             try
             {
@@ -84,10 +84,36 @@ namespace GUIFramework.Managers
             }
             catch (Exception ex)
             {
-                Log.Exception("[GetImageNonCached] - ", ex);
+                Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
             }
             return null;
         }
+
+        public static BitmapImage GetImage(byte[] imageBytes)
+        {
+            BitmapImage bmImage = new BitmapImage();
+            if (imageBytes != null)
+            {
+                try
+                {
+                    bmImage.BeginInit();
+                    bmImage.CacheOption = BitmapCacheOption.None;
+                    bmImage.StreamSource = new MemoryStream(imageBytes);
+                    bmImage.EndInit();
+                    bmImage.Freeze();
+                }
+                catch (Exception ex)
+                {
+                    Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                }
+            }
+            return bmImage;
+        }
+
+
+
+
+
 
         private static int GetScaledImageWidth(string filename)
         {
@@ -105,18 +131,6 @@ namespace GUIFramework.Managers
             return width;
         }
 
-        public static BitmapImage GetImageFromBytes(byte[] p)
-        {
-            BitmapImage bmImage = new BitmapImage();
-            if (p != null)
-            {
-                bmImage.BeginInit();
-                bmImage.CacheOption = BitmapCacheOption.None;
-                bmImage.StreamSource = new MemoryStream(p);
-                bmImage.EndInit();
-                bmImage.Freeze();
-            }
-            return bmImage;
-        }
+     
     }
 }

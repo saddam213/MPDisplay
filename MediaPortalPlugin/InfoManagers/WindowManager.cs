@@ -208,6 +208,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void GUIWindowManager_Receivers(GUIMessage message)
         {
+       //  GUIWaitCursor
             //Log.Message(LogLevel.Debug, "[GUIWindowManager_Receivers] - Message: {0}, SenderControlId: {1}, SendToTargetWindow: {2}, TargetControlId: {3}, TargetWindowId: {4}"
             //    + ", TargetWindowId: {5}, TargetWindowId: {6}, TargetWindowId: {7}, TargetWindowId: {8}"
             //    +", TargetWindowId: {9}, TargetWindowId: {10}"

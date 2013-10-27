@@ -521,4 +521,120 @@
 		</commonControls:Surface3D>
 	</DataTemplate>
 
+
+
+	<DataTemplate DataType="{x:Type skinControls:XmlListItem}"  >
+		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
+			                    Height="{Binding Height,Mode=OneWay}"
+								RotationX="{Binding Pos3DX,Mode=OneWay}"
+								RotationY="{Binding Pos3DY,Mode=OneWay}"
+								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
+								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
+								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+			<Border x:Name="focus" 
+		        Width="{Binding Width,Mode=OneWay}" 
+			    Height="{Binding Height,Mode=OneWay}"
+		        BorderThickness="{Binding ControlStyle.BorderThickness, Converter={StaticResource ThicknessConverter},Mode=OneWay}"
+                CornerRadius="{Binding ControlStyle.CornerRadius, Converter={StaticResource CornerRadiusConverter},Mode=OneWay}" >
+				<Border.Style>
+					<Style TargetType="Border" >
+						<Setter Property="Background" Value="{Binding ControlStyle.NoFocusBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+						<Setter Property="BorderBrush" Value="{Binding ControlStyle.NoFocusBorderBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+						<Style.Triggers>
+							<DataTrigger Binding="{Binding IsMouseDown, RelativeSource={RelativeSource AncestorType={x:Type commonControls:Surface3D}}}" Value="True">
+								<Setter Property="Background" Value="{Binding ControlStyle.FocusBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+								<Setter Property="BorderBrush" Value="{Binding ControlStyle.FocusBorderBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+							</DataTrigger>
+						</Style.Triggers>
+					</Style>
+				</Border.Style>
+				<Grid>
+					<Border x:Name="Shading" 
+                    Background="{Binding ControlStyle.ShadeBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" 
+                    CornerRadius="{Binding ElementName=focus, Path=CornerRadius,Mode=OneWay}">
+
+						<Grid>
+							<Border Margin="{Binding ControlStyle.ImageMargin,Converter={StaticResource ThicknessConverter},Mode=OneWay}" x:Name="imgBorder"
+						        HorizontalAlignment="{Binding ControlStyle.ImageHorizontalAlignment,Mode=OneWay}" 
+						        VerticalAlignment="{Binding ControlStyle.ImageVerticalAlignment,Mode=OneWay}" 
+								Visibility="{Binding ControlStyle.EnableImage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+								<commonControls:RoundedImage 
+													      Stretch="{Binding ControlStyle.ImageStretch,Mode=OneWay}"
+														  Source="{Binding Image,Converter={StaticResource ImageConverter}, Mode=OneWay}"
+														  CornerRadius="{Binding ControlStyle.ImageCornerRadius,Mode=OneWay}"  >
+								</commonControls:RoundedImage>
+							</Border>
+
+							<TextBlock Text="{Binding LabelText, Converter={StaticResource LabelConverter},Mode=OneWay}"
+                               HorizontalAlignment="{Binding ControlStyle.LabelHorizontalAlignment,Mode=OneWay}"
+						       VerticalAlignment="{Binding ControlStyle.LabelVerticalAlignment,Mode=OneWay}"
+                               FontFamily="{Binding ControlStyle.FontType, Converter={StaticResource FontConverter},Mode=OneWay}" 
+                               FontSize="{Binding ControlStyle.FontSize,Mode=OneWay}" 
+                               FontWeight="{Binding ControlStyle.FontWeight, Converter={StaticResource FontConverter},Mode=OneWay}"
+							   Margin="{Binding ControlStyle.LabelMargin,Converter={StaticResource ThicknessConverter},Mode=OneWay}" 
+							   Visibility="{Binding ControlStyle.EnableLabel, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+								<TextBlock.Style>
+									<Style TargetType="TextBlock">
+										<Setter Property="Foreground" Value="{Binding ControlStyle.NoFocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding IsMouseDown, RelativeSource={RelativeSource AncestorType={x:Type commonControls:Surface3D}}}" Value="True">
+												<Setter Property="Foreground" Value="{Binding ControlStyle.FocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+
+							<TextBlock Text="{Binding Label2Text, Converter={StaticResource LabelConverter},Mode=OneWay}"
+											   HorizontalAlignment="{Binding ControlStyle.Label2HorizontalAlignment,Mode=OneWay}" 
+						                       VerticalAlignment="{Binding ControlStyle.Label2VerticalAlignment,Mode=OneWay}"
+											   FontFamily="{Binding ControlStyle.Label2FontType, Converter={StaticResource FontConverter},Mode=OneWay}"
+											   FontSize="{Binding ControlStyle.Label2FontSize,Mode=OneWay}"
+											   FontWeight="{Binding ControlStyle.Label2FontWeight, Converter={StaticResource FontConverter}}"
+											   Margin="{Binding ControlStyle.Label2Margin, Converter={StaticResource ThicknessConverter}}" 
+											   Visibility="{Binding ControlStyle.EnableLabel2, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+								<TextBlock.Style>
+									<Style TargetType="TextBlock">
+										<Setter Property="Foreground" Value="{Binding ControlStyle.Label2NoFocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding IsMouseDown, RelativeSource={RelativeSource AncestorType={x:Type commonControls:Surface3D}}}" Value="True">
+												<Setter Property="Foreground" Value="{Binding ControlStyle.Label2FocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+
+							<TextBlock Text="{Binding Label3Text, Converter={StaticResource LabelConverter},Mode=OneWay}"
+											   HorizontalAlignment="{Binding ControlStyle.Label3HorizontalAlignment,Mode=OneWay}" 
+						                       VerticalAlignment="{Binding ControlStyle.Label3VerticalAlignment,Mode=OneWay}"
+											   FontFamily="{Binding ControlStyle.Label3FontType, Converter={StaticResource FontConverter},Mode=OneWay}" 
+											   FontSize="{Binding ControlStyle.Label3FontSize,Mode=OneWay}" 
+											   FontWeight="{Binding ControlStyle.Label3FontWeight, Converter={StaticResource FontConverter},Mode=OneWay}"
+											   Margin="{Binding ControlStyle.Label3Margin, Converter={StaticResource ThicknessConverter}}" 
+											   Visibility="{Binding ControlStyle.EnableLabel3, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+								<TextBlock.Style>
+									<Style TargetType="TextBlock">
+										<Setter Property="Foreground" Value="{Binding ControlStyle.Label3NoFocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+										<Style.Triggers>
+											<DataTrigger Binding="{Binding IsMouseDown, RelativeSource={RelativeSource AncestorType={x:Type commonControls:Surface3D}}}" Value="True">
+												<Setter Property="Foreground" Value="{Binding ControlStyle.Label3FocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
+											</DataTrigger>
+										</Style.Triggers>
+									</Style>
+								</TextBlock.Style>
+							</TextBlock>
+						</Grid>
+					</Border>
+					<Border x:Name="Gloss" 
+                        Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" 
+                        CornerRadius="{Binding ElementName=focus, Path=CornerRadius,Mode=OneWay}" />
+				</Grid>
+			</Border>
+		
+		</commonControls:Surface3D>
+	</DataTemplate>
+
+
 </ResourceDictionary>

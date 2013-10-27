@@ -369,7 +369,7 @@ namespace GUIFramework
                 PropertyRepository.Instance.ResetRepository();
                 GenericDataRepository.Instance.ResetRepository();
             }
-            else
+             else
             {
                 InfoRepository.Instance.ClearRepository();
                 ListRepository.Instance.ClearRepository();

@@ -278,6 +278,46 @@
 												</Style>
 											</TextBlock.Style>
 										</TextBlock>
+
+										<TextBlock Text="{Binding Label2}"
+											   HorizontalAlignment="{Binding CurrentLayout.Label2HorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                       VerticalAlignment="{Binding CurrentLayout.Label2VerticalAlignment,Mode=OneWay, ElementName=UI}"
+											   FontFamily="{Binding CurrentLayout.Label2FontType, Converter={StaticResource FontConverter},Mode=OneWay, ElementName=UI}" 
+											   FontSize="{Binding CurrentLayout.Label2FontSize,Mode=OneWay, ElementName=UI}" 
+											   FontWeight="{Binding CurrentLayout.Label2FontWeight, Converter={StaticResource FontConverter},Mode=OneWay, ElementName=UI}"
+											   Margin="{Binding CurrentLayout.Label2LabelMargin, ElementName=UI, Converter={StaticResource ThicknessConverter}}" 
+											   Visibility="{Binding CurrentLayout.EnableLabel2, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
+											<TextBlock.Style>
+												<Style TargetType="TextBlock">
+													<Setter Property="Foreground" Value="{Binding CurrentLayout.Label2NoFocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay, ElementName=UI}" />
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True">
+															<Setter Property="Foreground" Value="{Binding CurrentLayout.Label2FocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay, ElementName=UI}" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBlock.Style>
+										</TextBlock>
+
+										<TextBlock Text="{Binding Label3}"
+											   HorizontalAlignment="{Binding CurrentLayout.Label3HorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                       VerticalAlignment="{Binding CurrentLayout.Label3VerticalAlignment,Mode=OneWay, ElementName=UI}"
+											   FontFamily="{Binding CurrentLayout.Label3FontType, Converter={StaticResource FontConverter},Mode=OneWay, ElementName=UI}" 
+											   FontSize="{Binding CurrentLayout.Label3FontSize,Mode=OneWay, ElementName=UI}" 
+											   FontWeight="{Binding CurrentLayout.Label3FontWeight, Converter={StaticResource FontConverter},Mode=OneWay, ElementName=UI}"
+											   Margin="{Binding CurrentLayout.Label3Margin, ElementName=UI, Converter={StaticResource ThicknessConverter}}" 
+											   Visibility="{Binding CurrentLayout.EnableLabel3, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
+											<TextBlock.Style>
+												<Style TargetType="TextBlock">
+													<Setter Property="Foreground" Value="{Binding CurrentLayout.Label3NoFocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay, ElementName=UI}" />
+													<Style.Triggers>
+														<DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True">
+															<Setter Property="Foreground" Value="{Binding CurrentLayout.Label3FocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay, ElementName=UI}" />
+														</DataTrigger>
+													</Style.Triggers>
+												</Style>
+											</TextBlock.Style>
+										</TextBlock>
 									</Grid>
 								</Border>
 								<Border x:Name="Gloss" 

@@ -55,7 +55,7 @@ namespace GUIFramework.Converters
             {
                 var background = value as XmlImageBrush;
             
-                    return GUIImageManager.GetImage(background);
+                    return GUIImageManager.GetSkinImage(background);
              
             }
             return new SolidColorBrush(Colors.Transparent);

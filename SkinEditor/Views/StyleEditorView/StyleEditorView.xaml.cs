@@ -355,12 +355,14 @@ namespace SkinEditor.Views
             if (_selectedControlStyle is XmlListItemStyle)
             {
                 ShowControlResize = false;
-                ControlHost = new XmlButton
+                ControlHost = new XmlListItem
                 {
                     Height = (_selectedControlStyle as XmlListItemStyle).Height,
                     Width = (_selectedControlStyle as XmlListItemStyle).Width,
                     ControlStyle = _selectedControlStyle as XmlListItemStyle,
                     LabelText = "Avatar",
+                    Label2Text = "Label2",
+                    Label3Text = "Label3",
                     Image = "/SkinEditor;component/Images/DVDCover.jpg"
                 };
             }
@@ -458,10 +460,27 @@ namespace SkinEditor.Views
                 {
                     if (controlSurface != null)
                     {
-                        var text = controlSurface.FindVisualChildren<TextBlock>().FirstOrDefault();
-                        if (text != null)
+                        if (_selectedControlStyle is XmlListItemStyle)
                         {
-                            text.Background = new SolidColorBrush(showColors ? Colors.Orange : Colors.Transparent);
+                            var text = controlSurface.FindVisualChildren<TextBlock>();
+                            if (text != null && text.Any())
+                            {
+                                int count = 0;
+                                var colors = new Color[] { Colors.Purple, Colors.LightBlue, Colors.LimeGreen, Colors.Moccasin, Colors.Tan, Colors.SteelBlue };
+                                foreach (var item in text)
+                                {
+                                    item.Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
+                                    count++;
+                                }
+                            }
+                        }
+                        else
+                        {
+                            var text = controlSurface.FindVisualChildren<TextBlock>().FirstOrDefault();
+                            if (text != null)
+                            {
+                                text.Background = new SolidColorBrush(showColors ? Colors.Orange : Colors.Transparent);
+                            }
                         }
 
                         var image = controlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();

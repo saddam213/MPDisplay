@@ -224,7 +224,7 @@ namespace GUISkinFramework.Controls
 
         [PropertyOrder(200)]
         [DefaultValue(false)]
-        [EditorCategory("Image", 7)]
+        [EditorCategory("Image", 10)]
         public bool EnableImage
         {
             get { return _enableImage; }
@@ -233,7 +233,7 @@ namespace GUISkinFramework.Controls
 
         [PropertyOrder(210)]
         [DefaultValue("0,0,0,0")]
-        [EditorCategory("Image", 7)]
+        [EditorCategory("Image", 10)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
         public string ImageMargin
         {
@@ -242,7 +242,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(220)]
-        [EditorCategory("Image", 7)]
+        [EditorCategory("Image", 10)]
         [DefaultValue(HorizontalAlignment.Center)]
         public HorizontalAlignment ImageHorizontalAlignment
         {
@@ -251,7 +251,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(230)]
-        [EditorCategory("Image", 7)]
+        [EditorCategory("Image", 10)]
         [DefaultValue(VerticalAlignment.Center)]
         public VerticalAlignment ImageVerticalAlignment
         {
@@ -260,7 +260,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(240)]
-        [EditorCategory("Image", 7)]
+        [EditorCategory("Image", 10)]
         [DefaultValue(Stretch.Uniform)]
         public Stretch ImageStretch
         {
@@ -269,7 +269,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(250)]
-        [EditorCategory("Image", 7)]
+        [EditorCategory("Image", 10)]
         [DefaultValue(0)]
         public int ImageCornerRadius
         {

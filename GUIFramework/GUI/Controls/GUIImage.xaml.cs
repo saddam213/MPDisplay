@@ -70,7 +70,7 @@ namespace GUIFramework.GUI.Controls
 
             var img = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image) 
                    ?? await PropertyRepository.GetProperty<byte[]>(SkinXml.DefaultImage);
-            Image = GUIImageManager.GetImageFromBytes(img);
+            Image = GUIImageManager.GetImage(img);
         }
 
         public override void ClearInfoData()

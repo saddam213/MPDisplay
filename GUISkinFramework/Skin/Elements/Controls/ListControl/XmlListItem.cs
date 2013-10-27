@@ -3,32 +3,29 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Serialization;
+using GUISkinFramework.Controls;
 
 namespace GUISkinFramework.Controls
 {
-    public class XmlListItem : XmlControl
+    [Serializable]
+    [XmlType(TypeName = "ListItem")]
+    public class XmlListItem : XmlButton
     {
-        private string _labelText;
-        private XmlListItemStyle _controlStyle;
-        private string _image = "";
-
-        public XmlListItemStyle ControlStyle
+        private string _label2Text;
+        private string _label3Text;
+       
+        public string Label2Text
         {
-            get { return _controlStyle; }
-            set { _controlStyle = value; NotifyPropertyChanged("ControlStyle"); }
+            get { return _label2Text; }
+            set { _label2Text = value; NotifyPropertyChanged("Label2Text"); }
         }
 
-        public string Image
+     
+        public string Label3Text
         {
-            get { return _image; }
-            set { _image = value; NotifyPropertyChanged("Image"); }
-        }
-
-        public string Label
-        {
-            get { return _labelText; }
-            set { _labelText = value; NotifyPropertyChanged("Label"); }
+            get { return _label3Text; }
+            set { _label3Text = value; NotifyPropertyChanged("Label3Text"); }
         }
     }
-   
 }

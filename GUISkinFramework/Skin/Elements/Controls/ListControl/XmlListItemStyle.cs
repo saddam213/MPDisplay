@@ -20,10 +20,7 @@ namespace GUISkinFramework.Controls
     [ExpandableObject]
     public class XmlListItemStyle : XmlButtonStyle
     {
-        public XmlListItemStyle()
-        {
-            this.SetDefaultValues();
-        }
+        #region Fields
 
         private int _height;
         private int _width;
@@ -33,7 +30,37 @@ namespace GUISkinFramework.Controls
         private int _selectedZoomX = 100;
         private int _selectedZoomY = 100;
         private int _selectedZoomDuration = 250;
-     
+        private string _label2FontType;
+        private string _label2FontWeight;
+        private int _label2FontSize;
+        private string _label2Margin;
+        private HorizontalAlignment _label2HorizontalAlignment;
+        private VerticalAlignment _label2VerticalAlignment;
+        private string _label3FontType;
+        private string _label3FontWeight;
+        private int _label3FontSize;
+        private string _label3Margin;
+        private HorizontalAlignment _label3HorizontalAlignment;
+        private VerticalAlignment _label3VerticalAlignment;
+        private XmlBrush _label2FocusFontBrush;
+        private XmlBrush _label2NoFocusFontBrush;
+        private XmlBrush _label3NoFocusFontBrush;
+        private XmlBrush _label3FocusFontBrush;
+        private bool _enableLabel2;
+        private bool _enableLabel3; 
+
+        #endregion
+
+        #region Constructor
+
+        public XmlListItemStyle()
+        {
+            this.SetDefaultValues();
+        } 
+
+        #endregion
+
+        #region Item
 
         [PropertyOrder(1)]
         [DefaultValue(0)]
@@ -95,7 +122,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(2)]
-        [EditorCategory("Selection",2)]
+        [EditorCategory("Selection", 2)]
         [DisplayName("Zoom Y %")]
         [DefaultValue(100)]
         [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(100, 200)]
@@ -113,6 +140,189 @@ namespace GUISkinFramework.Controls
         {
             get { return _selectedZoomDuration; }
             set { _selectedZoomDuration = value; NotifyPropertyChanged("SelectionZoomDuration"); }
+        } 
+
+        #endregion
+
+        #region Label2
+
+        [PropertyOrder(110)]
+        [DefaultValue(false)]
+        [EditorCategory("Label2", 6)]
+        public bool EnableLabel2
+        {
+            get { return _enableLabel2; }
+            set { _enableLabel2 = value; NotifyPropertyChanged("EnableLabel2"); }
+        }
+
+        [DefaultValue("Microsoft Sans Serif")]
+        [PropertyOrder(120)]
+        [EditorCategory("Label2", 6)]
+        [Editor(typeof(FontComboBoxEditor), typeof(ITypeEditor))]
+        public string Label2FontType
+        {
+            get { return _label2FontType; }
+            set { _label2FontType = value; NotifyPropertyChanged("Label2FontType"); }
+        }
+
+        [DefaultValue("Normal")]
+        [PropertyOrder(130)]
+        [EditorCategory("Label2", 6)]
+        [Editor(typeof(FontComboBoxEditor), typeof(ITypeEditor))]
+        public string Label2FontWeight
+        {
+            get { return _label2FontWeight; }
+            set { _label2FontWeight = value; NotifyPropertyChanged("Label2FontWeight"); }
+        }
+
+        [DefaultValue(30)]
+        [PropertyOrder(140)]
+        [EditorCategory("Label2", 6)]
+        public int Label2FontSize
+        {
+            get { return _label2FontSize; }
+            set { _label2FontSize = value; NotifyPropertyChanged("Label2FontSize"); }
+        }
+
+        [PropertyOrder(150)]
+        [EditorCategory("Label2", 6)]
+        public XmlBrush Label2FocusFontBrush
+        {
+            get { return _label2FocusFontBrush; }
+            set { _label2FocusFontBrush = value; NotifyPropertyChanged("Label2FocusFontBrush"); }
+        }
+
+        [PropertyOrder(160)]
+        [EditorCategory("Label2", 6)]
+        public XmlBrush Label2NoFocusFontBrush
+        {
+            get { return _label2NoFocusFontBrush; }
+            set { _label2NoFocusFontBrush = value; NotifyPropertyChanged("Label2NoFocusFontBrush"); }
+        }
+
+        [PropertyOrder(170)]
+        [DefaultValue("0,0,0,0")]
+        [EditorCategory("Label2", 6)]
+        [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
+        public string Label2Margin
+        {
+            get { return _label2Margin; }
+            set { _label2Margin = value; NotifyPropertyChanged("Label2Margin"); }
+        }
+
+        [PropertyOrder(180)]
+        [EditorCategory("Label2", 6)]
+        [DefaultValue(HorizontalAlignment.Center)]
+        public HorizontalAlignment Label2HorizontalAlignment
+        {
+            get { return _label2HorizontalAlignment; }
+            set { _label2HorizontalAlignment = value; NotifyPropertyChanged("Label2HorizontalAlignment"); }
+        }
+
+        [PropertyOrder(190)]
+        [EditorCategory("Label2", 6)]
+        [DefaultValue(VerticalAlignment.Center)]
+        public VerticalAlignment Label2VerticalAlignment
+        {
+            get { return _label2VerticalAlignment; }
+            set { _label2VerticalAlignment = value; NotifyPropertyChanged("Label2VerticalAlignment"); }
+        } 
+
+        #endregion
+
+        #region Label3
+
+        [PropertyOrder(110)]
+        [DefaultValue(false)]
+        [EditorCategory("Label3", 7)]
+        public bool EnableLabel3
+        {
+            get { return _enableLabel3; }
+            set { _enableLabel3 = value; NotifyPropertyChanged("EnableLabel3"); }
+        }
+
+        [DefaultValue("Microsoft Sans Serif")]
+        [PropertyOrder(130)]
+        [EditorCategory("Label3", 7)]
+        [Editor(typeof(FontComboBoxEditor), typeof(ITypeEditor))]
+        public string Label3FontType
+        {
+            get { return _label3FontType; }
+            set { _label3FontType = value; NotifyPropertyChanged("Label3FontType"); }
+        }
+
+        [DefaultValue("Normal")]
+        [PropertyOrder(130)]
+        [EditorCategory("Label3", 7)]
+        [Editor(typeof(FontComboBoxEditor), typeof(ITypeEditor))]
+        public string Label3FontWeight
+        {
+            get { return _label3FontWeight; }
+            set { _label3FontWeight = value; NotifyPropertyChanged("Label3FontWeight"); }
+        }
+
+        [DefaultValue(30)]
+        [PropertyOrder(140)]
+        [EditorCategory("Label3", 7)]
+        public int Label3FontSize
+        {
+            get { return _label3FontSize; }
+            set { _label3FontSize = value; NotifyPropertyChanged("Label3FontSize"); }
+        }
+
+        [PropertyOrder(150)]
+        [EditorCategory("Label3", 7)]
+        public XmlBrush Label3FocusFontBrush
+        {
+            get { return _label3FocusFontBrush; }
+            set { _label3FocusFontBrush = value; NotifyPropertyChanged("Label3FocusFontBrush"); }
+        }
+
+        [PropertyOrder(160)]
+        [EditorCategory("Label3", 7)]
+        public XmlBrush Label3NoFocusFontBrush
+        {
+            get { return _label3NoFocusFontBrush; }
+            set { _label3NoFocusFontBrush = value; NotifyPropertyChanged("Label3NoFocusFontBrush"); }
+        }
+
+        [PropertyOrder(170)]
+        [DefaultValue("0,0,0,0")]
+        [EditorCategory("Label3", 7)]
+        [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
+        public string Label3Margin
+        {
+            get { return _label3Margin; }
+            set { _label3Margin = value; NotifyPropertyChanged("Label3Margin"); }
+        }
+
+        [PropertyOrder(180)]
+        [EditorCategory("Label3", 7)]
+        [DefaultValue(HorizontalAlignment.Center)]
+        public HorizontalAlignment Label3HorizontalAlignment
+        {
+            get { return _label3HorizontalAlignment; }
+            set { _label3HorizontalAlignment = value; NotifyPropertyChanged("Label3HorizontalAlignment"); }
+        }
+
+        [PropertyOrder(190)]
+        [EditorCategory("Label3", 7)]
+        [DefaultValue(VerticalAlignment.Center)]
+        public VerticalAlignment Label3VerticalAlignment
+        {
+            get { return _label3VerticalAlignment; }
+            set { _label3VerticalAlignment = value; NotifyPropertyChanged("Label3VerticalAlignment"); }
+        } 
+
+        #endregion
+
+        public override void LoadSubStyles(XmlStyleCollection style)
+        {
+            base.LoadSubStyles(style);
+            Label2FocusFontBrush = style.GetStyle<XmlBrush>(Label2FocusFontBrush);
+            Label2NoFocusFontBrush = style.GetStyle<XmlBrush>(Label2NoFocusFontBrush);
+            Label3FocusFontBrush = style.GetStyle<XmlBrush>(Label3FocusFontBrush);
+            Label3NoFocusFontBrush = style.GetStyle<XmlBrush>(Label3NoFocusFontBrush);
         }
     }
 }

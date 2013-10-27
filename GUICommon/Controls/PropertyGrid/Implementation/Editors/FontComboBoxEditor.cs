@@ -9,9 +9,9 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
     {
         protected override IList<object> CreateItemsSource(PropertyItem propertyItem)
         {
-            if (propertyItem.PropertyType == typeof(FontFamily) || propertyItem.Name.Equals("FontType"))
+            if (propertyItem.PropertyType == typeof(FontFamily) || propertyItem.Name.Contains("FontType"))
                 return GetFontFamilies();
-            else if (propertyItem.PropertyType == typeof(FontWeight) || propertyItem.Name.Equals("FontWeight"))
+            else if (propertyItem.PropertyType == typeof(FontWeight) || propertyItem.Name.Contains("FontWeight"))
                 return GetFontWeights();
             else if (propertyItem.PropertyType == typeof(FontStyle))
                 return GetFontStyles();

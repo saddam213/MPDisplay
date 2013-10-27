@@ -31,6 +31,7 @@ namespace SkinEditor.BindingConverters
                      case XmlListType.None:
                          break;
                      case XmlListType.MediaPortalListControl:
+                     case XmlListType.MediaPortalDialogList:
 
                          var dummyItemPath = Environment.CurrentDirectory + "\\Data\\ListControl";
                          if (Directory.Exists(dummyItemPath))
@@ -43,6 +44,8 @@ namespace SkinEditor.BindingConverters
                                      items.Add(new CoverFlowListBoxItem
                                      {
                                          Label = Path.GetFileNameWithoutExtension(file),
+                                         Label2 = "Label2",
+                                         Label3 = "Label3",
                                          Image = file,
                                          Index = index
                                      });
