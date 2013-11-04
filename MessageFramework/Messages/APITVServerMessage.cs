@@ -9,5 +9,8 @@ namespace MessageFramework.DataObjects
     [DataContract]
     public class APITVServerMessage
     {
+    
     }
+
+    
 }

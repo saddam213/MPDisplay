@@ -353,6 +353,7 @@ namespace GUIFramework
             PropertyRepository.Instance.Initialize(Settings, CurrentSkin);
             ListRepository.Instance.Initialize(Settings, CurrentSkin);
             GenericDataRepository.Instance.Initialize(Settings, CurrentSkin);
+            TVGuideRepository.Instance.Initialize(Settings, CurrentSkin);
             Log.Message(LogLevel.Info, "[LoadSkin] - Repositories set");
         }
 
@@ -1039,7 +1040,14 @@ namespace GUIFramework
 
         public async void ReceiveAPIListMessage(APIListMessage message)
         {
-            await Task.Factory.StartNew(() => ListRepository.Instance.AddListData(message));
+            if (message.MessageType == APIListMessageType.TVGuide)
+            {
+                await Task.Factory.StartNew(() => TVGuideRepository.Instance.AddDataMessage(message.TvGuide));
+            }
+            else
+            {
+                await Task.Factory.StartNew(() => ListRepository.Instance.AddListData(message));
+            }
         }
 
         public async void ReceiveAPIInfoMessage(APIInfoMessage message)

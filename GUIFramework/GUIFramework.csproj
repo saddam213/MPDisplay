@@ -113,6 +113,7 @@
     </Compile>
     <Compile Include="GUI\GUIAnimationFactory.cs" />
     <Compile Include="Managers\GUIImageManager.cs" />
+    <Compile Include="Repositories\TVGuideRepository.cs" />
     <Compile Include="Repositories\GenericRepository.cs" />
     <Compile Include="Repositories\InfoRepository.cs" />
     <Compile Include="Repositories\IRepository.cs" />

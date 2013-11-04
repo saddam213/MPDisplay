@@ -164,6 +164,8 @@
     <Compile Include="Skin\Common\XmlSkinOption.cs" />
     <Compile Include="Skin\Elements\Controls\Button\XmlButtonStyle.cs" />
     <Compile Include="Skin\Elements\Controls\Equalizer\XmlEqualizer.cs" />
+    <Compile Include="Skin\Elements\Controls\Guide\XmlGuideChannelStyle.cs" />
+    <Compile Include="Skin\Elements\Controls\Guide\XmlGuideProgramStyle.cs" />
     <Compile Include="Skin\Elements\Controls\ListControl\XmlListItem.cs" />
     <Compile Include="Skin\Elements\Controls\ListControl\XmlListItemStyle.cs" />
     <Compile Include="Skin\Elements\Controls\ListControl\XmlList.cs" />

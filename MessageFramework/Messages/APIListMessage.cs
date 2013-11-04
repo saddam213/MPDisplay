@@ -17,11 +17,15 @@ namespace MessageFramework.DataObjects
 
         [DataMember]
         public APIListAction Action { get; set; }
+
+        [DataMember]
+        public APITVGuide TvGuide { get; set; }
     }
 
     public enum APIListMessageType
     {
         Action,
-        List
+        List,
+        TVGuide
     }
 }

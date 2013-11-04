@@ -10,6 +10,7 @@ using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
 using System.Reflection;
 using MediaPortalPlugin.PluginHelpers;
+using Common.Helpers;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -39,17 +40,19 @@ namespace MediaPortalPlugin.InfoManagers
         #endregion
 
         private MPDisplay.Common.Log.Log Log;
-        private bool _groupFocused;
-        private bool _listFocused;
-        private bool _isRecheckingListItems;
-        private bool _isRecheckingListType;
-        private int _focusedControlId = -1;
+        private static bool _groupFocused;
+        private static bool _listFocused;
+        private static bool _isRecheckingListItems;
+        private static bool _isRecheckingListType;
+        private static bool _checkItemsNeedsRefresh = false;
+        private static int _focusedControlId = -1;
         private List<APIListType> _registeredListTypes = new List<APIListType>();
         private List<GUIFacadeControl> _facadeControls = new List<GUIFacadeControl>();
         private List<GUIListControl> _listControls = new List<GUIListControl>();
         private List<GUIGroup> _groupControls = new List<GUIGroup>();
         private GUIMenuControl _menuControl;
         private PluginSettings _settings;
+        private static int _currentBatchId = 0;
 
         public void Initialize(PluginSettings settings)
         {
@@ -226,20 +229,37 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+       
+
         public void CheckForListItemChanges()
         {
             if (_registeredListTypes.Contains(APIListType.List))
             {
                 if (!_isRecheckingListItems)
                 {
+                    _isRecheckingListItems = true;
                     ThreadPool.QueueUserWorkItem((o) =>
                     {
-                        _isRecheckingListItems = true;
-                        Thread.Sleep(200);
-                        CheckFacadeForChanges();
-                        CheckListsForChanges();
+                        Thread.Sleep(500);
+                        if (_facadeControls.Any())
+                        {
+                            CheckFacadeForChanges();
+                        }
+                        else
+                        {
+                            CheckListsForChanges();
+                        }
                         _isRecheckingListItems = false;
+                        if (_checkItemsNeedsRefresh)
+                        {
+                            _checkItemsNeedsRefresh = false;
+                            CheckForListItemChanges();
+                        }
                     });
+                }
+                else
+                {
+                    _checkItemsNeedsRefresh = true;
                 }
             }
         }
@@ -303,21 +323,47 @@ namespace MediaPortalPlugin.InfoManagers
 
         #region Facade
 
+
+        private object _sync = new object();
         private void CheckFacadeForChanges()
         {
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
             if (currentFacade != null)
             {
-                DateTime timeout = DateTime.Now.AddSeconds(20);
-                while (currentFacade.SelectedListItem == null && DateTime.Now < timeout)
+                int currentCount = -1;
+                DateTime timeout = DateTime.Now.AddSeconds(30);
+                while (currentFacade.SelectedListItem == null || currentCount < 0 || currentCount != GetCount(currentFacade))
                 {
                     Log.Message(LogLevel.Verbose, "Facade not ready, Waiting 250ms");
+                    currentCount = GetCount(currentFacade);
                     Thread.Sleep(250);
+                    if (DateTime.Now > timeout)
+                    {
+                        Log.Message(LogLevel.Verbose, "Facade not ready, TIMEOUT");
+                        break;
+                    }
                 }
-                Thread.Sleep(250);
+
                 SendFacadeList();
                 SendFacdeSelectedItem();
             }
+        }
+
+        private int GetCount(GUIFacadeControl facade)
+        {
+            try
+            {
+                int count = 0;
+                 SupportedPluginManager.GUISafeInvoke(() =>
+                    {
+                       count =  ReflectionHelper.GetFieldValue<List<GUIListItem>>(facade, "_itemList", new List<GUIListItem>()).Count;
+                    });
+                return count == 0 ? -1 : count;
+            }
+            catch (Exception)
+            {
+            }
+            return -1;
         }
 
         private void SendFacadeList()
@@ -624,8 +670,9 @@ namespace MediaPortalPlugin.InfoManagers
 
         #region Heplers
 
-        public IEnumerable<APIListItem> GetAPIListItems(GUIGroup actionMenu)
+        public List<APIListItem> GetAPIListItems(GUIGroup actionMenu)
         {
+            var returnValue = new List<APIListItem>();
             if (actionMenu != null)
             {
                 int index = 0;
@@ -647,68 +694,77 @@ namespace MediaPortalPlugin.InfoManagers
 
                     if (!string.IsNullOrEmpty(label))
                     {
-                        yield return new APIListItem { Index = index, Label = label, };
+                        returnValue.Add(new APIListItem { Index = index, Label = label, });
                         index++;
                     }
                 }
             }
+            return returnValue;
         }
 
 
 
-        public IEnumerable<APIListItem> GetAPIListItems(GUIFacadeControl facade, APIListLayout layout)
+        public List<APIListItem> GetAPIListItems(GUIFacadeControl facade, APIListLayout layout)
         {
+            var returnValue = new List<APIListItem>();
             if (facade != null)
             {
-                for (int i = 0; i < facade.Count; i++)
+                var Items = ReflectionHelper.GetFieldValue<List<GUIListItem>>(facade, "_itemList", new List<GUIListItem>());
+                for (int i = 0; i < Items.Count; i++)
                 {
-                    var facadeItem = facade[i];
-                    yield return new APIListItem
+                    var facadeItem = Items[i];
+                    returnValue.Add(new APIListItem
                     {
                         Index = i,
                         Label = facadeItem.Label,
                         Label2 = facadeItem.Label2,
                         Label3 = facadeItem.Label3,
                         Image = GetItemImageBytes(facadeItem, layout)
-                    };
+                    });
                 }
             }
+            return returnValue;
         }
 
-        public IEnumerable<APIListItem> GetAPIListItems(GUIListControl listcontrol, APIListLayout layout)
+        public List<APIListItem> GetAPIListItems(GUIListControl listcontrol, APIListLayout layout)
         {
+            var returnValue = new List<APIListItem>();
             if (listcontrol != null)
             {
+
                 for (int i = 0; i < listcontrol.Count; i++)
                 {
                     var listItem = listcontrol[i];
-                    yield return new APIListItem
-                    {
-                        Index = i,
-                        Label = listItem.Label,
-                        Label2 = listItem.Label2,
-                        Label3 = listItem.Label3,
-                        Image = GetItemImageBytes(listItem, layout)
-                    };
+                    returnValue.Add(new APIListItem
+                   {
+                       Index = i,
+                       Label = listItem.Label,
+                       Label2 = listItem.Label2,
+                       Label3 = listItem.Label3,
+                       Image = GetItemImageBytes(listItem, layout)
+                   });
                 }
             }
+            return returnValue;
         }
 
-        public IEnumerable<APIListItem> GetAPIListItems(GUIMenuControl menuControl)
+        public List<APIListItem> GetAPIListItems(GUIMenuControl menuControl)
         {
+            var returnValue = new List<APIListItem>();
             if (menuControl != null)
             {
                 int index = 0;
                 foreach (var button in menuControl.ButtonInfos)
                 {
-                    yield return new APIListItem
-                    {
-                        Index = index,
-                        Label = button.Text
-                    };
+                    returnValue.Add(new APIListItem
+                   {
+                       Index = index,
+                       Label = button.Text
+                   });
                     index++;
                 }
             }
+            return returnValue;
         }
 
         private APIListLayout _currentLayout;
@@ -778,19 +834,51 @@ namespace MediaPortalPlugin.InfoManagers
 
         #region Send Messages
 
-        public void SendList(APIListType listType, APIListLayout layout, IEnumerable<APIListItem> items)
+
+
+        public void SendList(APIListType listType, APIListLayout layout, List<APIListItem> items)
         {
-            MessageService.Instance.SendListMessage(new APIListMessage
+            int count = items != null ? items.Count() : 0;
+
+            if (listType == APIListType.List && count >= _settings.ListBatchThreshold)
             {
-                MessageType = APIListMessageType.List,
-                List = new APIList
+                _currentBatchId++;
+                int batchNo = 1;
+                int batchCount = count < _settings.ListBatchSize ? 1 : ((count + _settings.ListBatchSize - 1) / _settings.ListBatchSize);
+                for (int i = 0; i < count; i += _settings.ListBatchSize)
                 {
-                    ListType = listType,
-                    ListItems = new List<APIListItem>(items),
-                    ListLayout = layout
+                    MessageService.Instance.SendListMessage(new APIListMessage
+                    {
+                        MessageType = APIListMessageType.List,
+                        List = new APIList
+                        {
+                            BatchNumber = batchNo,
+                            BatchId = _currentBatchId,
+                            BatchCount = batchCount,
+                            ListType = APIListType.List,
+                            ListItems = new List<APIListItem>(items.Skip(i).Take(_settings.ListBatchSize)),
+                            ListLayout = layout
+                        }
+                    });
+                    batchNo++;
                 }
-            });
-            Log.Message(LogLevel.Debug, "[SendList] - ListType: {0}, ItemCount: {1}", listType, items != null ? items.Count() : 0);
+            }
+            else
+            {
+                MessageService.Instance.SendListMessage(new APIListMessage
+                {
+                    MessageType = APIListMessageType.List,
+                    List = new APIList
+                    {
+                        BatchCount = -1,
+                        ListType = listType,
+                        ListItems = new List<APIListItem>(items),
+                        ListLayout = layout
+                    }
+                });
+            }
+            Log.Message(LogLevel.Debug, "[SendList] - ListType: {0}, ItemCount: {1}", listType, count);
+
         }
 
         private APIListAction _lastSelectedAction;

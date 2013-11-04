@@ -7,6 +7,9 @@ namespace MessageFramework.DataObjects
 {
     public class APIList
     {
+        public int BatchId { get; set; }
+        public int BatchNumber { get; set; }
+        public int BatchCount { get; set; }
         public APIListType ListType { get; set; }
         public List<APIListItem> ListItems { get; set; }
         public APIListLayout ListLayout { get; set; }

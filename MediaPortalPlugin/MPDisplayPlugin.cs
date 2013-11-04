@@ -72,6 +72,7 @@ namespace MediaPortalPlugin
 
                 MessageService.InitializeMessageService(_settings.ConnectionSettings);
                 WindowManager.Instance.Initialize(_settings, _advancedSettings);
+                TVServerManager.Instance.Initialize(_settings);
                 Log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
               
             }
@@ -94,6 +95,7 @@ namespace MediaPortalPlugin
             }
             MessageService.Instance.Shutdown();
             WindowManager.Instance.Shutdown();
+        
             Log.Message(LogLevel.Info, "[OnPluginStop] - MPDisplay Plugin stopped.");
             LoggingManager.Destroy();
         }

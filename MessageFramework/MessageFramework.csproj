@@ -48,6 +48,7 @@
     <Compile Include="DataObjects\APIConnection.cs" />
     <Compile Include="DataObjects\APIList.cs" />
     <Compile Include="DataObjects\APIPlaybackType.cs" />
+    <Compile Include="DataObjects\APITVGuide.cs" />
     <Compile Include="Messages\APIDataMessage.cs" />
     <Compile Include="Messages\APIInfoMessage.cs" />
     <Compile Include="DataObjects\APIImage.cs" />

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -116,9 +117,12 @@ namespace GUIFramework.Managers
                     switch (message.List.ListType)
                     {
                         case APIListType.List:
-                            AddList(XmlListType.MediaPortalListControl, message.List.ListItems);
-                            _mediaPortalListLayout = message.List.ListLayout;
-                            NotifyListLayoutChanged();
+
+                            ProcessBatch(message.List);
+
+                            //AddList(XmlListType.MediaPortalListControl, message.List.ListItems);
+                            //_mediaPortalListLayout = message.List.ListLayout;
+                            //NotifyListLayoutChanged();
                             break;
                         case APIListType.Menu:
                             AddList(XmlListType.MediaPortalMenuControl, message.List.ListItems);
@@ -163,6 +167,50 @@ namespace GUIFramework.Managers
                 }
             }
         }
+
+
+        private SortedDictionary<int, List<APIListItem>> _data = new SortedDictionary<int, List<APIListItem>>();
+        private int _currentBatchId = -1;
+        private object _syncObject = new object();
+        private void ProcessBatch(APIList message)
+        {
+            try
+            {
+                if (message.BatchCount == -1)
+                {
+                    AddList(XmlListType.MediaPortalListControl, message.ListItems);
+                    _mediaPortalListLayout = message.ListLayout;
+                    NotifyListLayoutChanged();
+                    return;
+                }
+
+                lock (_syncObject)
+                {
+                    if (message.BatchId > _currentBatchId)
+                    {
+                        _data.Clear();
+                        _currentBatchId = message.BatchId;
+                    }
+
+                    if (message.BatchId == _currentBatchId)
+                    {
+                        _data.Add(message.BatchNumber, message.ListItems);
+                        Console.WriteLine(string.Format("BatchId: {0}, BatchNumber: {1}, Count: {2}", message.BatchId, message.BatchNumber, _data.Count));
+                        if (_data.Count == message.BatchCount)
+                        {
+                            AddList(XmlListType.MediaPortalListControl, _data.Values.SelectMany(k => k).ToList());
+                            _mediaPortalListLayout = message.ListLayout;
+                            NotifyListLayoutChanged();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
 
         /// <summary>
         /// Adds an APIProperty property.

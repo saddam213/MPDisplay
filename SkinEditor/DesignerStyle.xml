@@ -47,14 +47,6 @@
       <GlossBrush />
     </ControlStyle>
 	
-	<ControlStyle x:type="GuideStyle" StyleId="XmlGuide">
-      <BorderThickness>1,1,1,1</BorderThickness>
-      <CornerRadius>4,4,4,4</CornerRadius>
-      <BackgroundBrush x:type="ColorBrush" Color="#FF000000" />
-      <BorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
-      <GlossBrush />
-    </ControlStyle>
-	
 	<ControlStyle x:type="ListStyle" StyleId="XmlList">
       <BorderThickness>1,1,1,1</BorderThickness>
       <CornerRadius>4,4,4,4</CornerRadius>
@@ -189,5 +181,76 @@
      <FallOffColor x:type="ColorBrush" Color="#FF00BFFF" />
    </ControlStyle>
 
+
+   <ControlStyle x:type="GuideStyle" StyleId="XmlGuide">
+     <BorderThickness>1,1,1,1</BorderThickness>
+     <CornerRadius>3,3,3,3</CornerRadius>
+     <BorderBrush x:type="ColorBrush" Color="#00FFFFFF" />
+     <ChannelListBackgroundBrush />
+     <ChannelListBorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <ChannelListBorderThickness>1,1,1,1</ChannelListBorderThickness>
+     <ChannelListCornerRadius>2,0,0,2</ChannelListCornerRadius>
+     <ProgramListBackgroundBrush />
+     <ProgramListBorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <ProgramListBorderThickness>1</ProgramListBorderThickness>
+     <ProgramListCornerRadius>0,2,2,0</ProgramListCornerRadius>
+     <TimelineBackground />
+     <TimelineBorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <TimelineBorderThickness>1,1,1,1</TimelineBorderThickness>
+     <TimelineCornerRadius>2,2,0,0</TimelineCornerRadius>
+     <TimelineMarkerBrush x:type="ColorBrush" Color="#FFFF0000" />
+     <TimelineMarkerThickness>3</TimelineMarkerThickness>
+     <TimelineItemBorderBrush x:type="ColorBrush" Color="#FFC0C0C0" />
+     <TimelineItemBorderThickness>1,1,1,1</TimelineItemBorderThickness>
+     <TimelineItemCornerRadius>2,2,2,2</TimelineItemCornerRadius>
+     <TimelineFontSize>25</TimelineFontSize>
+     <TimelineFontBrush x:type="ColorBrush" Color="#FFFFFFFF" />
+   </ControlStyle>
+   
+   <ControlStyle x:type="GuideChannel" StyleId="XmlGuideChannelStyle">
+     <BorderThickness>1,1,1,1</BorderThickness>
+     <CornerRadius>3,3,3,3</CornerRadius>
+     <NoFocusBrush x:type="ColorBrush" Color="#FF000000" />
+     <NoFocusBorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <FocusBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <FocusBorderBrush x:type="ColorBrush" Color="#FF000000" />
+     <ShadeBrush x:type="GradientBrush">
+       <Angle>Vertical</Angle>
+       <GradientStops>
+         <GradientStop Color="Transparent" Offset="0.266" />
+         <GradientStop Color="#FF000000" Offset="1" />
+       </GradientStops>
+     </ShadeBrush>
+     <FocusFontBrush x:type="ColorBrush" Color="#FF000000" />
+     <NoFocusFontBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <LabelMargin>2,2,2,2</LabelMargin>
+     <LabelHorizontalAlignment>Left</LabelHorizontalAlignment>
+   </ControlStyle>
+   
+   <ControlStyle x:type="GuideProgram" StyleId="XmlGuideProgramStyle">
+     <BorderThickness>1,1,1,1</BorderThickness>
+     <CornerRadius>2,2,2,2</CornerRadius>
+     <NoFocusBrush x:type="ColorBrush" Color="#FF000000" />
+     <NoFocusBorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <FocusBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <FocusBorderBrush x:type="ColorBrush" Color="#FF000000" />
+     <RecordingBrush x:type="ColorBrush" Color="#FFFF0000" />
+     <RecordingBorderBrush x:type="ColorBrush" Color="#FF000000" />
+     <OnNowBrush x:type="ColorBrush" Color="#FFFFFF00" />
+     <OnNowBorderBrush x:type="ColorBrush" Color="#FF000000" />
+     <ShadeBrush x:type="GradientBrush">
+       <Angle>Vertical</Angle>
+       <GradientStops>
+         <GradientStop Color="Transparent" Offset="0.453" />
+         <GradientStop Color="#FF000000" Offset="1" />
+       </GradientStops>
+     </ShadeBrush>
+     <FocusFontBrush x:type="ColorBrush" Color="#FF000000" />
+     <NoFocusFontBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <RecordingFontBrush x:type="ColorBrush" Color="#FF000000" />
+     <OnNowFontBrush x:type="ColorBrush" Color="#FF000000" />
+     <LabelHorizontalAlignment>Left</LabelHorizontalAlignment>
+   </ControlStyle>
+   
  </ControlStyles>
 </StyleCollection>

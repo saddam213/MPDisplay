@@ -16,6 +16,8 @@ namespace MPDisplay.Common.Settings
         private bool _restartMPDisplayOnStart = false;
         private bool _closeMPDisplayOnExit = true;
         private bool _isSystemInfoEnabled = true;
+        private int _listBatchThreshold = 600;
+        private int _listBatchSize = 200;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -49,6 +51,18 @@ namespace MPDisplay.Common.Settings
         {
             get { return _isSystemInfoEnabled; }
             set { _isSystemInfoEnabled = value; NotifyPropertyChanged("IsSystemInfoEnabled"); }
+        }
+
+        public int ListBatchThreshold
+        {
+            get { return _listBatchThreshold; }
+            set { _listBatchThreshold = value; NotifyPropertyChanged("ListBatchThreshold"); }
+        }
+
+        public int ListBatchSize
+        {
+            get { return _listBatchSize; }
+            set { _listBatchSize = value; NotifyPropertyChanged("ListBatchSize"); }
         }
     }
 }

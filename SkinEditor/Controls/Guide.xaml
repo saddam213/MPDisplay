@@ -1,10 +1,9 @@
-﻿<base:GUIControl x:Class="GUIFramework.GUI.Controls.GUIGuide"
+﻿<UserControl x:Class="SkinEditor.Controls.Guide"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-		     xmlns:base="clr-namespace:GUIFramework.GUI"
-			  xmlns:local="clr-namespace:GUIFramework.GUI.Controls"
+	    	  xmlns:local="clr-namespace:SkinEditor.Controls"
 			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" 
 			 x:Name="UI"
@@ -14,13 +13,7 @@
 			 Canvas.ZIndex="{Binding BaseXml.PosZ,Mode=OneWay}"
 			 Width="{Binding BaseXml.Width,Mode=OneWay}" 
 			 Height="{Binding BaseXml.Height,Mode=OneWay}"
-			 RotationX="{Binding BaseXml.Pos3DX,Mode=OneWay}"
-			 RotationY="{Binding BaseXml.Pos3DY,Mode=OneWay}"
-			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
-			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
-			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
-			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
-			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+		>
 		<Grid >
 
 			<Grid.Resources>
@@ -172,7 +165,7 @@
 			        Background="{Binding BaseXml.ControlStyle.ChannelListBackgroundBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}">
 			<ListBox Margin="0,1,0,0" x:Name="channelListBox"  
 			         SelectedItem="{Binding SelectedChannel}" 
-					 ItemsSource="{Binding ChannelData, IsAsync=True, Mode=OneWay}"  
+					 ItemsSource="{Binding ChannelData, Mode=OneWay}"  
 					 ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
 					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged">
 				<ListBox.ItemTemplate>
@@ -247,14 +240,14 @@
 			        Background="{Binding BaseXml.ControlStyle.ProgramListBackgroundBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}">
 			<ListBox x:Name="programListBox" 
 			         SelectedItem="{Binding SelectedChannel}" 
-					 ItemsSource="{Binding ChannelData, IsAsync=True, Mode=OneWay}"  
+					 ItemsSource="{Binding ChannelData, Mode=OneWay}"  
 					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged" >					
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<ItemsControl Background="Brown" Padding="0" Margin="1" 
 						              Width="{Binding TimelineLength, ElementName=UI}" 
 									  ItemContainerStyle="{StaticResource ProgramItem}"  
-									  ItemsSource="{Binding Programs, IsAsync=True, Mode=OneWay}" 
+									  ItemsSource="{Binding Programs, Mode=OneWay}" 
 									  ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
 									  ScrollViewer.VerticalScrollBarVisibility="Disabled" >
 							<ItemsControl.ItemsPanel>
@@ -354,4 +347,4 @@
 			</ScrollViewer>
 			
 		</Grid>
-</base:GUIControl>
+</UserControl>

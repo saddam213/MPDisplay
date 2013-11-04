@@ -16,30 +16,30 @@ using GUISkinFramework.Animations;
 using GUISkinFramework.Controls;
 using GUIFramework.Managers;
 using System.Collections.ObjectModel;
-using MessageFramework.DataObjects;
 using System.Windows.Controls.Primitives;
 using MPDisplay.Common.ExtensionMethods;
 using MPDisplay.Common.Utils;
 using System.ComponentModel;
 using System.Windows.Threading;
+using GUISkinFramework;
+using GUIFramework;
 
-namespace GUIFramework.GUI.Controls
+namespace SkinEditor.Controls
 {
     /// <summary>
     /// Interaction logic for GUIButton.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlGuide))]  
-    public partial class GUIGuide : GUIControl
+    public partial class Guide : UserControl , INotifyPropertyChanged
     {
         private ObservableCollection<TvGuideChannel> _channelData = new ObservableCollection<TvGuideChannel>();
         private ScrollViewer _channelScrollViewer;
         private ScrollViewer _programScrollViewer;
         private ScrollViewer _timelineScrollViewer;
-        private DispatcherTimer _updateTimer;
-
-        public GUIGuide()
+      
+        public Guide()
         {
-            InitializeComponent();
+             InitializeComponent();
+             DataContext = this;
             _channelScrollViewer = channelListBox.GetDescendantByType<ScrollViewer>();
             _programScrollViewer = programListBox.GetDescendantByType<ScrollViewer>();
             _timelineScrollViewer = timelineListBox.GetDescendantByType<ScrollViewer>();
@@ -50,20 +50,31 @@ namespace GUIFramework.GUI.Controls
             MouseTouchDevice.RegisterEvents(channelListBox.GetDescendantByType<VirtualizingStackPanel>());
             MouseTouchDevice.RegisterEvents(programListBox.GetDescendantByType<VirtualizingStackPanel>());
             MouseTouchDevice.RegisterEvents(timelineListBox.GetDescendantByType<Canvas>());
-
-            _updateTimer = new DispatcherTimer();
-            _updateTimer.Interval = TimeSpan.FromMinutes(1);
-            _updateTimer.Tick += (s, e) => UpdateGuide();
-            _updateTimer.Stop();
         }
 
-     
-
-        public XmlGuide SkinXml
+        public XmlGuide BaseXml
         {
-            get { return BaseXml as XmlGuide; }
+            get { return (XmlGuide)GetValue(BaseXmlProperty); }
+            set { SetValue(BaseXmlProperty, value); }
         }
 
+        // Using a DependencyProperty as the backing store for BaseXml.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty BaseXmlProperty =
+            DependencyProperty.Register("BaseXml", typeof(XmlGuide), typeof(Guide), new PropertyMetadata(new XmlGuide(), OnSkinChanged));
+
+        private static void OnSkinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue != null)
+            {
+                if (GuideData == null)
+                {
+                    GuideData = XmlManager.Deserialize<List<TvGuideChannel>>(Environment.CurrentDirectory + "\\Data\\GuideData.xml");
+                }
+                (d as Guide).LoadGuideData(GuideData);
+            }
+        }
+
+        private static List<TvGuideChannel> GuideData;
 
         public ObservableCollection<TvGuideChannel> ChannelData
         {
@@ -121,46 +132,11 @@ namespace GUIFramework.GUI.Controls
         }
         
 
-        public override void CreateControl()
-        {
-            base.CreateControl();
-          //  RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.LabelText);
-        }
-
-        public override void OnRegisterInfoData()
-        {
-            base.OnRegisterInfoData();
-            TVGuideRepository.RegisterTvGuideData(OnPropertyChanging);
-            _updateTimer.Start();
-        }
-
-        public override void OnDeregisterInfoData()
-        {
-            base.OnDeregisterInfoData();
-            TVGuideRepository.DeregisterMessage(TVGuideMessageType.TVGuideData, this);
-            _updateTimer.Stop();
-        }
-
- 
-        public override void UpdateInfoData()
-        {
-            base.UpdateInfoData();
-            LoadGuideData(TVGuideRepository.Instance.GuideData);
-        }
-
-
-
-        public override void ClearInfoData()
-        {
-            base.ClearInfoData();
-        }
-
         private double _timelineLength = 0;
         private double _timelinePosition = 0;
         private DateTime _timelineStart;
         private DateTime _timelineEnd;
         private string _timelineInfo;
-        private bool _userActive = false;
         private double _timelineCenterPosition;
 
         public double TimelineLength
@@ -177,7 +153,7 @@ namespace GUIFramework.GUI.Controls
 
         public double TimelineMultiplier
         {
-            get { return SkinXml.TimelineMultiplier; }
+            get { return BaseXml.TimelineMultiplier; }
         }
 
         public DateTime TimelineStart
@@ -205,19 +181,49 @@ namespace GUIFramework.GUI.Controls
         }
 
 
-        private async void LoadGuideData(IEnumerable<TvGuideChannel> data)
+        private void LoadGuideData(List<TvGuideChannel> data)
         {
-            ChannelData.Clear();
-            SetTimeline(data);
-            foreach (var channel in data)
+            BaseXml.PropertyChanged -= BaseXml_PropertyChanged;
+            BaseXml.PropertyChanged += BaseXml_PropertyChanged;
+
+            Dispatcher.BeginInvoke((Action)delegate
             {
-                channel.UpdateCurrentProgram();
-                ChannelData.Add(channel);
-                await Task.Delay(1);
+                ChannelData.Clear();
+                SetTimeline(data);
+                ChannelData = new ObservableCollection<TvGuideChannel>(data);
+                foreach (var channel in ChannelData)
+                {
+               
+                    channel.UpdateCurrentProgram(Now());
+                }
+
+              
+
+            }, DispatcherPriority.Background);
+        }
+
+        void BaseXml_PropertyChanged(object sender, PropertyChangedEventArgs e)
+        {
+            if (e.PropertyName == "TimelineMultiplier")
+            {
+                NotifyPropertyChanged("TimelineMultiplier");
+                Dispatcher.BeginInvoke((Action)delegate
+                {
+                    TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
+                    TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+                    TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
+                    _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+                }, DispatcherPriority.Background);
             }
         }
 
-        private  void SetTimeline(IEnumerable<TvGuideChannel> data)
+
+        private DateTime Now()
+        {
+            return TimelineStart.AddHours(6).AddMinutes(13);
+        }
+
+        private void SetTimeline(IEnumerable<TvGuideChannel> data)
         {
             if (data != null && data.Any())
             {
@@ -226,91 +232,60 @@ namespace GUIFramework.GUI.Controls
                 TimelineStart = allPrograms.Min(p => p.StartTime);
                 TimelineEnd = allPrograms.Max(p => p.EndTime);
                 TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-                TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-             
+                TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+
                 var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
                 Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
-                 {
-                     StartTime = begin.AddMinutes(30 * x),
-                     EndTime = begin.AddMinutes((30 * x) + 30),
-                     Title = begin.AddMinutes(30 * x).ToString("hh:mm")
-                 }).ToList();
+                {
+                    StartTime = begin.AddMinutes(30 * x),
+                    EndTime = begin.AddMinutes((30 * x) + 30),
+                    Title = begin.AddMinutes(30 * x).ToString("hh:mm")
+                }).ToList();
 
-                TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
+                TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
 
                 _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
                 _timelineScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
                 markerScrollviewer.ScrollToHorizontalOffset(TimelinePosition);
             }
-
         }
 
-
-    
-
-
-        private void UpdateGuide()
-        {
-            if (ChannelData != null && ChannelData.Any())
-            {
-                if (_userActive == false)
-                {
-                    TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                    _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-                }
-
-                TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
-
-                foreach (var channel in ChannelData)
-                {
-                    channel.UpdateCurrentProgram();
-                }
-            }
-        }
-
-
-
-    
-        
 
         private void ListBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-          
-                int voffset = (int)e.VerticalOffset;
-                int hoffset = (int)e.HorizontalOffset;
+            int voffset = (int)e.VerticalOffset;
+            int hoffset = (int)e.HorizontalOffset;
 
-                if (sender != timelineListBox)
+            if (sender != timelineListBox)
+            {
+
+                if (sender == channelListBox && (int)_programScrollViewer.VerticalOffset != voffset)
                 {
-
-                    if (sender == channelListBox && (int)_programScrollViewer.VerticalOffset != voffset)
-                    {
-                        _programScrollViewer.ScrollToVerticalOffset(voffset);
-                    }
-
-                    if (sender == programListBox && (int)_channelScrollViewer.VerticalOffset != voffset)
-                    {
-                        _channelScrollViewer.ScrollToVerticalOffset(voffset);
-                    }
+                    _programScrollViewer.ScrollToVerticalOffset(voffset);
                 }
 
-                if (sender != channelListBox)
+                if (sender == programListBox && (int)_channelScrollViewer.VerticalOffset != voffset)
                 {
-                    if (sender == timelineListBox && (int)_programScrollViewer.HorizontalOffset != hoffset)
-                    {
-                        _programScrollViewer.ScrollToHorizontalOffset(hoffset);
-                        markerScrollviewer.ScrollToHorizontalOffset(hoffset);
-                        TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
-                    }
-
-                    if (sender == programListBox && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
-                    {
-                        _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
-                        markerScrollviewer.ScrollToHorizontalOffset(hoffset);
-                        TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
-                    }
+                    _channelScrollViewer.ScrollToVerticalOffset(voffset);
                 }
-          
-             
+            }
+
+            if (sender != channelListBox)
+            {
+                if (sender == timelineListBox && (int)_programScrollViewer.HorizontalOffset != hoffset)
+                {
+                    _programScrollViewer.ScrollToHorizontalOffset(hoffset);
+                    markerScrollviewer.ScrollToHorizontalOffset(hoffset);
+                    TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
+                }
+
+                if (sender == programListBox && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
+                {
+                    _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
+                    markerScrollviewer.ScrollToHorizontalOffset(hoffset);
+                    TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
+                }
+            }
         }
 
 
@@ -321,6 +296,20 @@ namespace GUIFramework.GUI.Controls
                 SelectedProgram = (sender as Border).Tag as TvGuideProgram;
             }
         }
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+  
+        public void NotifyPropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
+        }
+
+        #endregion
     }
 
 

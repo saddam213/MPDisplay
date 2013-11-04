@@ -64,6 +64,7 @@
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
     <Compile Include="BindingConverters\ContextMenuTemplateSelector.cs" />
+    <Compile Include="BindingConverters\DummyGuideDataConverter.cs" />
     <Compile Include="BindingConverters\SkinEditorProgressValueConverter.cs" />
     <Compile Include="BindingConverters\SnapToGridConverter.cs" />
     <Compile Include="BindingConverters\DummyListItemsConverter.cs" />
@@ -76,6 +77,9 @@
       <DependentUpon>CoverFlowListBox.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\CoverFlowListBox\CoverFlowListBoxItem.cs" />
+    <Compile Include="Controls\Guide.xaml.cs">
+      <DependentUpon>Guide.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\FileSystemHelper.cs" />
     <Compile Include="SkinEditorSettings.cs" />
@@ -117,6 +121,10 @@
     </Compile>
     <Compile Include="Views\StyleEditorView\StyleEditorViewSettings.cs" />
     <Page Include="Controls\CoverFlowListBox\CoverFlowListBox.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Controls\Guide.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

@@ -16,6 +16,7 @@ using MPDisplay.Common.Settings;
 using System.Xml.Linq;
 using MediaPortal.Profile;
 using MediaPortalPlugin.PluginHelpers;
+using MediaPortal.Configuration;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -105,6 +106,7 @@ namespace MediaPortalPlugin.InfoManagers
 
           //  GUIWindowManager.Receivers += GUIGraphicsContext_Receivers;
             _secondTimer = new Timer( SecondTimerTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+
         }
 
         public void Shutdown()
@@ -282,6 +284,7 @@ namespace MediaPortalPlugin.InfoManagers
             Log.Message(LogLevel.Info, "[SendFullUpdate] - Sending full information update");
             SetCurrentWindow(GUIWindowManager.ActiveWindow);
             SendPlayerMessage();
+            TVServerManager.Instance.SendTvGuide();
         }
 
         private void SetCurrentWindow(int windowId)
@@ -323,8 +326,16 @@ namespace MediaPortalPlugin.InfoManagers
 
                 SendFocusedControlMessage();
                 PropertyManager.Instance.Suspend(false);
+
+
+      
+              
             }
         }
+
+
+       
+
 
 
     

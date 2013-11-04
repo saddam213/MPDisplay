@@ -252,6 +252,10 @@ namespace MediaPortalPlugin
                 Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                 IsConnected = true;
                 IsMPDisplayConnected = e.Result.Where(x => !x.ConnectionName.Equals("MediaPortalPlugin") && !x.ConnectionName.Equals("TVServerPlugin")).Any();
+                if (IsMPDisplayConnected)
+                {
+                    WindowManager.Instance.SendFullUpdate();
+                }
             }
             StartKeepAlive();
         }
@@ -395,6 +399,10 @@ namespace MediaPortalPlugin
                     if (_messageClient != null && listMessage != null)
                     {
                         Log.Message(LogLevel.Verbose, "[Send] - Sending list message, MessageType: {0}.", listMessage.MessageType);
+                        if (listMessage.MessageType == APIListMessageType.List && listMessage.List.BatchCount != -1)
+                        {
+                            Log.Message(LogLevel.Verbose, "[SendListMessage] - Sending list batch, BatchId: {0}, BatchNumber: {1}, BatchCount: {2}", listMessage.List.BatchId, listMessage.List.BatchNumber, listMessage.List.BatchCount);
+                        }
                         _messageClient.SendListMessageAsync(listMessage);
                     }
                 }

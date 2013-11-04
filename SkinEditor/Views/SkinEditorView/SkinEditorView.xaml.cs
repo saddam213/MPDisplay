@@ -414,11 +414,13 @@ namespace SkinEditor.Views
                 {
                     Id = id,
                     Name = "NewGuide",
-                    Width = 400,
-                    Height = 80,
+                    Width = 1000,
+                    Height = 600,
                     IsWindowOpenVisible = true,
                     WindowId = windowId,
                     ControlStyle = controlStyle as XmlGuideStyle ?? new XmlGuideStyle(),
+                    ChannelStyle = Settings.DesignerStyle.GetDesignerStyle(typeof(XmlGuideChannelStyle)) as XmlGuideChannelStyle ?? new XmlGuideChannelStyle(),
+                    ProgramStyle = Settings.DesignerStyle.GetDesignerStyle(typeof(XmlGuideProgramStyle)) as XmlGuideProgramStyle ?? new XmlGuideProgramStyle()
                 };
             }
 

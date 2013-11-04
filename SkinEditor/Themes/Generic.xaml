@@ -31,6 +31,8 @@
 
 	<skinEditorConverters:ColorBrushConverter x:Key="ColorBrushConverter"/>
 	<skinEditorConverters:DummyListItemsConverter x:Key="DummyListItemsConverter" />
+	<skinEditorConverters:DummyGuideDataConverter x:Key="DummyGuideDataConverter" />
+	<skinEditorConverters:DummyGuideDataValueConverter x:Key="DummyGuideDataValueConverter" />
 	<skinEditorConverters:SkinEditorXmlLabelConverter x:Key="LabelConverter" />
 	<skinEditorConverters:SkinEditorXmlImageConverter x:Key="ImageConverter" />
 	<skinEditorConverters:SkinEditorXmlBrushConverter x:Key="BrushConverter" />
@@ -433,26 +435,7 @@
 		</commonControls:Surface3D>
 	</DataTemplate>
 
-    <DataTemplate DataType="{x:Type skinControls:XmlGuide}"  >
-		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
-			                    Height="{Binding Height,Mode=OneWay}"
-								RotationX="{Binding Pos3DX,Mode=OneWay}"
-								RotationY="{Binding Pos3DY,Mode=OneWay}"
-								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
-								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
-								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
-        <Border x:Name="background" Width="{Binding Width}" Height="{Binding Height}"
-                Background="{Binding ControlStyle.BackgroundBrush, Converter={StaticResource BrushConverter}}"
-                BorderBrush="{Binding ControlStyle.BorderBrush, Converter={StaticResource BrushConverter}}"
-                BorderThickness="{Binding ControlStyle.BorderThickness, Converter={StaticResource ThicknessConverter},Mode=OneWay}"
-                CornerRadius="{Binding ControlStyle.CornerRadius, Converter={StaticResource CornerRadiusConverter}}" >
-            <Border x:Name="focusShading" Background="{Binding ControlStyle.ShadeBrush, Converter={StaticResource BrushConverter}}" CornerRadius="{Binding ElementName=background, Path=CornerRadius}">
-                <Border x:Name="focusgloss" Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter}}" CornerRadius="{Binding ElementName=background, Path=CornerRadius}" />
-            </Border>
-        </Border>
-		</commonControls:Surface3D>
-	</DataTemplate>
+  
 
 
 	
@@ -636,5 +619,21 @@
 		</commonControls:Surface3D>
 	</DataTemplate>
 
+
+
+
+	<DataTemplate DataType="{x:Type skinControls:XmlGuide}"  >
+		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" x:Name="UI" DataContext="{Binding}"
+			                    Height="{Binding Height,Mode=OneWay}"
+								RotationX="{Binding Pos3DX,Mode=OneWay}"
+								RotationY="{Binding Pos3DY,Mode=OneWay}"
+								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
+								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
+								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+			<skinSubControls:Guide Width="{Binding Width,Mode=OneWay}"
+			                    Height="{Binding Height,Mode=OneWay}" BaseXml="{Binding DataContext, ElementName=UI}"/>
+		</commonControls:Surface3D>
+	</DataTemplate>
 
 </ResourceDictionary>

@@ -97,7 +97,7 @@ namespace Common.Status
                 NotifyNumberDataChanged("VirtualPercent", vertPercentFree);
             }
 
-            if (DateTime.Now > _lastFastUpdate.AddMilliseconds(250))
+            if (DateTime.Now > _lastFastUpdate.AddMilliseconds(500))
             {
                 _lastFastUpdate = DateTime.Now;
                 double value = Math.Round(_cpuCounter.NextValue(),2);
@@ -129,6 +129,7 @@ namespace Common.Status
                 if ( d.IsReady && d.DriveType == DriveType.Fixed)
                 {
                     NotifyTextDataChanged(string.Format("Drive{0}.Name", num), d.Name);
+                    NotifyTextDataChanged(string.Format("Drive{0}.VolumeLabel", num), d.VolumeLabel);
                     NotifyTextDataChanged(string.Format("Drive{0}.TotalSpace", num), d.TotalFreeSpace.ToPrettySize(2));
                     NotifyTextDataChanged(string.Format("Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
                     double percentFree = Math.Round(100 * (double)d.TotalFreeSpace / d.TotalSize,2);

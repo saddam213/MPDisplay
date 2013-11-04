@@ -140,7 +140,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         #endregion //IsDynamicResource
 
         #region IsExpanded
-
+        
         public static readonly DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(PropertyItem), new UIPropertyMetadata(false, OnIsExpandedChanged));
         public bool IsExpanded
         {

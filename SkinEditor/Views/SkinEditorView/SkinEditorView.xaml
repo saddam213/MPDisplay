@@ -206,7 +206,7 @@
 										<Image  Source="/SkinEditor;component/Images/XmlGroup.png" />
 									</MenuItem.Icon>
 								</MenuItem>
-								<MenuItem Header="Guide" IsEnabled="False" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGuide}" >
+								<MenuItem Header="Guide" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGuide}" >
 									<MenuItem.Icon>
 										<Image  Source="/SkinEditor;component/Images/XmlGuide.png" />
 									</MenuItem.Icon>

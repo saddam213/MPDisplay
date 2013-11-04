@@ -65,6 +65,7 @@
     <Compile Include="InfoManagers\DialogManager.cs" />
     <Compile Include="InfoManagers\EqualizerManager.cs" />
     <Compile Include="InfoManagers\ListManager.cs" />
+    <Compile Include="InfoManagers\TVServerManager.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="InfoManagers\PropertyManager.cs" />
     <Compile Include="InfoManagers\WindowManager.cs" />

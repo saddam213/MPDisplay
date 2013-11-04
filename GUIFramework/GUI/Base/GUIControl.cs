@@ -482,7 +482,7 @@ namespace GUIFramework.GUI
 
         protected override void OnPreviewMouseUp(System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (!(this is GUIList))
+            if (!(this is GUIList || this is GUIGuide))
             {
                 OnTouchUp();
             }
