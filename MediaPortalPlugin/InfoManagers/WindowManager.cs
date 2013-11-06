@@ -255,6 +255,10 @@ namespace MediaPortalPlugin.InfoManagers
                         {
                             DialogManager.Instance.OnActionMessageReceived(message.ActionMessage);
                         }
+                        else if (message.ActionMessage.ActionType == APIActionMessageType.GuideAction)
+                        {
+                            TVServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                        }
                         else
                         {
                             if (message.ActionMessage.MediaPortalAction != null)

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using GUIFramework.GUI.Controls;
 using GUIFramework.Managers;
@@ -31,6 +32,7 @@ namespace GUIFramework.GUI
         private AnimationCollection _animations;
         private List<int> _focusedControlIds;
         private bool _isDataRegistered = false;
+        private DateTime _lastUserInteraction = DateTime.MinValue;
      
         #endregion
 
@@ -88,6 +90,11 @@ namespace GUIFramework.GUI
         public bool IsWindowOpenVisible
         {
             get { return _isWindowOpenVisible; }
+        }
+
+        public DateTime LastUserInteraction
+        {
+            get { return _lastUserInteraction; }
         }
 
         /// <summary>
@@ -473,7 +480,8 @@ namespace GUIFramework.GUI
 
         protected override void OnPreviewMouseDown(System.Windows.Input.MouseButtonEventArgs e)
         {
-            if (!(this is GUIList))
+            _lastUserInteraction = DateTime.Now;
+            if (!(this is GUIList || this is GUIGuide))
             {
                 OnTouchDown();
             }

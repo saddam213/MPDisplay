@@ -18,6 +18,7 @@ namespace MPDisplay.Common.Settings
         private bool _isSystemInfoEnabled = true;
         private int _listBatchThreshold = 600;
         private int _listBatchSize = 200;
+        private int _epgDays = 3;
 
         public ConnectionSettings ConnectionSettings
         {
@@ -63,6 +64,12 @@ namespace MPDisplay.Common.Settings
         {
             get { return _listBatchSize; }
             set { _listBatchSize = value; NotifyPropertyChanged("ListBatchSize"); }
+        }
+
+        public int EPGDays
+        {
+            get { return _epgDays; }
+            set { _epgDays = value; NotifyPropertyChanged("EPGDays"); }
         }
     }
 }

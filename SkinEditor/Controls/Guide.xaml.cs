@@ -193,7 +193,6 @@ namespace SkinEditor.Controls
                 ChannelData = new ObservableCollection<TvGuideChannel>(data);
                 foreach (var channel in ChannelData)
                 {
-               
                     channel.UpdateCurrentProgram(Now());
                 }
 

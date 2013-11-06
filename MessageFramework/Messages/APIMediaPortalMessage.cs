@@ -17,6 +17,8 @@ namespace MessageFramework.DataObjects
 
         [DataMember]
         public APIActionMessage ActionMessage { get; set; }
+
+
     }
 
     public enum APIMediaPortalMessageType
@@ -37,6 +39,7 @@ namespace MessageFramework.DataObjects
     {
         public APIActionMessageType ActionType { get; set; }
         public APIListAction ListAction { get; set; }
+        public APIGuideAction GuideAction { get; set; }
         public APIMediaPortalAction MediaPortalAction { get; set; }
     }
 
@@ -46,8 +49,13 @@ namespace MessageFramework.DataObjects
         MediaPortalWindow,
         WindowListAction,
         DialogListAction,
+        GuideAction,
     }
 
+    public class APIGuideAction
+    {
+        public APIGuideActionType ActionType { get; set; }
+    }
 
     public class APIListAction
     {
@@ -85,6 +93,12 @@ namespace MessageFramework.DataObjects
         SelectedItem,
         FocusedItem,
         Layout
+    }
+
+    public enum APIGuideActionType
+    {
+        UpdateData,
+        UpdateRecordings,
     }
 
 

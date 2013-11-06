@@ -29,6 +29,30 @@ namespace GUISkinFramework.Controls
         private XmlBrush _shadeBrush;
         private XmlBrush _glossBrush;
         private XmlBrush _borderBrush;
+        private XmlBrush _channelListBackgroundBrush;
+        private XmlBrush _channelListBorderBrush;
+        private string _channelListCornerRadius;
+        private XmlBrush _programListBackgroundBrush;
+        private XmlBrush _programListBorderBrush;
+        private string _programListCornerRadius;
+        private string _channelListBorderThickness;
+        private string _programListBorderThickness;
+        private XmlBrush _timelineBackground;
+        private XmlBrush _timelineMarkerBrush;
+        private int _timelineMarkerThickness;
+        private string _timelineFontType;
+        private string _timelineFontWeight;
+        private int _timelineFontSize;
+        private XmlBrush _timelineFontBrush;
+        private HorizontalAlignment _timelineLabelHorizontalAlignment;
+        private VerticalAlignment _timelineLabelVerticalAlignment;
+        private string _timelineItemBorderThickness;
+        private string _timelineItemCornerRadius;
+        private XmlBrush _timelineItemBorderBrush;
+        private XmlBrush _timelineBorderBrush;
+        private string _timelineBorderThickness;
+        private string _timelineCornerRadius;
+
 
         public XmlGuideStyle()
         {
@@ -75,7 +99,7 @@ namespace GUISkinFramework.Controls
             set { _borderBrush = value; NotifyPropertyChanged("BorderBrush"); }
         }
 
-        [PropertyOrder(62)]
+        [PropertyOrder(64)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -85,7 +109,7 @@ namespace GUISkinFramework.Controls
             set { _channelListBackgroundBrush = value; NotifyPropertyChanged("ChannelListBackgroundBrush"); }
         }
 
-        [PropertyOrder(62)]
+        [PropertyOrder(65)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -95,7 +119,7 @@ namespace GUISkinFramework.Controls
             set { _channelListBorderBrush = value; NotifyPropertyChanged("ChannelListBorderBrush"); }
         }
 
-        [PropertyOrder(60)]
+        [PropertyOrder(66)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -105,7 +129,7 @@ namespace GUISkinFramework.Controls
             set { _channelListBorderThickness = value; NotifyPropertyChanged("ChannelListBorderThickness"); }
         }
 
-        [PropertyOrder(70)]
+        [PropertyOrder(67)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -115,7 +139,7 @@ namespace GUISkinFramework.Controls
             set { _channelListCornerRadius = value; NotifyPropertyChanged("ChannelListCornerRadius"); }
         }
 
-        [PropertyOrder(62)]
+        [PropertyOrder(68)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -127,7 +151,7 @@ namespace GUISkinFramework.Controls
 
       
 
-        [PropertyOrder(62)]
+        [PropertyOrder(69)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -137,7 +161,7 @@ namespace GUISkinFramework.Controls
             set { _programListBorderBrush = value; NotifyPropertyChanged("ProgramListBorderBrush"); }
         }
 
-        [PropertyOrder(60)]
+        [PropertyOrder(70)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -147,7 +171,7 @@ namespace GUISkinFramework.Controls
             set { _programListBorderThickness = value; NotifyPropertyChanged("ProgramListBorderThickness"); }
         }
 
-        [PropertyOrder(70)]
+        [PropertyOrder(71)]
         [EditorCategory("Appearance", 3)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -158,7 +182,7 @@ namespace GUISkinFramework.Controls
         }
       
 
-        [PropertyOrder(66)]
+        [PropertyOrder(72)]
         [EditorCategory("Shading", 4)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -168,7 +192,7 @@ namespace GUISkinFramework.Controls
             set { _shadeBrush = value; NotifyPropertyChanged("ShadeBrush"); }
         }
 
-        [PropertyOrder(67)]
+        [PropertyOrder(73)]
         [EditorCategory("Shading", 4)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -181,30 +205,7 @@ namespace GUISkinFramework.Controls
 
 
      
-        private XmlBrush _timelineBackground;
-        private XmlBrush _timelineMarkerBrush;
-        private int _timelineMarkerThickness;
-        private string _timelineFontType;
-        private string _timelineFontWeight;
-        private int _timelineFontSize;
-        private XmlBrush _timelineFontBrush;
-        private HorizontalAlignment _timelineLabelHorizontalAlignment;
-        private VerticalAlignment _timelineLabelVerticalAlignment;
-        private string _timelineItemBorderThickness;
-        private string _timelineItemCornerRadius;
-        private XmlBrush _timelineItemBorderBrush;
      
-        private XmlBrush _channelListBackgroundBrush;
-        private XmlBrush _channelListBorderBrush;
-        private string _channelListCornerRadius;
-        private XmlBrush _programListBackgroundBrush;
-        private XmlBrush _programListBorderBrush;
-        private string _programListCornerRadius;
-        private string _channelListBorderThickness;
-        private string _programListBorderThickness;
-        private XmlBrush _timelineBorderBrush;
-        private string _timelineBorderThickness;
-        private string _timelineCornerRadius;
 
 
        
@@ -221,7 +222,7 @@ namespace GUISkinFramework.Controls
             set { _timelineBackground = value; NotifyPropertyChanged("TimelineBackground"); }
         }
 
-        [PropertyOrder(50)]
+        [PropertyOrder(22)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -231,7 +232,7 @@ namespace GUISkinFramework.Controls
             set { _timelineBorderBrush = value; NotifyPropertyChanged("TimelineBorderBrush"); }
         }
 
-        [PropertyOrder(60)]
+        [PropertyOrder(24)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -241,7 +242,7 @@ namespace GUISkinFramework.Controls
             set { _timelineBorderThickness = value; NotifyPropertyChanged("TimelineBorderThickness"); }
         }
 
-        [PropertyOrder(70)]
+        [PropertyOrder(26)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -252,7 +253,7 @@ namespace GUISkinFramework.Controls
         }
 
 
-        [PropertyOrder(30)]
+        [PropertyOrder(28)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue(null)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
@@ -262,7 +263,7 @@ namespace GUISkinFramework.Controls
             set { _timelineMarkerBrush = value; NotifyPropertyChanged("TimelineMarkerBrush"); }
         }
 
-        [PropertyOrder(40)]
+        [PropertyOrder(30)]
         [EditorCategory("Timeline", 6)]
         public int TimelineMarkerThickness
         {
@@ -270,7 +271,7 @@ namespace GUISkinFramework.Controls
             set { _timelineMarkerThickness = value; NotifyPropertyChanged("TimelineMarkerThickness"); }
         }
 
-        [PropertyOrder(50)]
+        [PropertyOrder(32)]
         [EditorCategory("Timeline", 6)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
         public XmlBrush TimelineItemBorderBrush
@@ -279,7 +280,7 @@ namespace GUISkinFramework.Controls
             set { _timelineItemBorderBrush = value; NotifyPropertyChanged("TimelineItemBorderBrush"); }
         }
 
-        [PropertyOrder(60)]
+        [PropertyOrder(34)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -289,7 +290,7 @@ namespace GUISkinFramework.Controls
             set { _timelineItemBorderThickness = value; NotifyPropertyChanged("TimelineItemBorderThickness"); }
         }
 
-        [PropertyOrder(70)]
+        [PropertyOrder(36)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue("0,0,0,0")]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -300,17 +301,17 @@ namespace GUISkinFramework.Controls
         }
 
         [DefaultValue("Microsoft Sans Serif")]
-        [PropertyOrder(90)]
+        [PropertyOrder(38)]
         [EditorCategory("Timeline", 6)]
         [Editor(typeof(FontComboBoxEditor), typeof(ITypeEditor))]
-        public string TimelineFontType
+        public string TimelineFontType 
         {
             get { return _timelineFontType; }
             set { _timelineFontType = value; NotifyPropertyChanged("TimelineFontType"); }
         }
 
         [DefaultValue("Normal")]
-        [PropertyOrder(100)]
+        [PropertyOrder(40)]
         [EditorCategory("Timeline", 6)]
         [Editor(typeof(FontComboBoxEditor), typeof(ITypeEditor))]
         public string TimelineFontWeight
@@ -320,7 +321,7 @@ namespace GUISkinFramework.Controls
         }
 
         [DefaultValue(30)]
-        [PropertyOrder(110)]
+        [PropertyOrder(42)]
         [EditorCategory("Timeline", 6)]
         public int TimelineFontSize
         {
@@ -328,7 +329,7 @@ namespace GUISkinFramework.Controls
             set { _timelineFontSize = value; NotifyPropertyChanged("TimelineFontSize"); }
         }
 
-        [PropertyOrder(120)]
+        [PropertyOrder(44)]
         [EditorCategory("Timeline", 6)]
         [Editor(typeof(BrushEditor), typeof(ITypeEditor))]
         public XmlBrush TimelineFontBrush
@@ -337,7 +338,7 @@ namespace GUISkinFramework.Controls
             set { _timelineFontBrush = value; NotifyPropertyChanged("TimelineFontBrush"); }
         }
 
-        [PropertyOrder(130)]
+        [PropertyOrder(46)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue(HorizontalAlignment.Center)]
         public HorizontalAlignment TimelineLabelHorizontalAlignment
@@ -346,7 +347,7 @@ namespace GUISkinFramework.Controls
             set { _timelineLabelHorizontalAlignment = value; NotifyPropertyChanged("TimelineLabelHorizontalAlignment"); }
         }
 
-        [PropertyOrder(140)]
+        [PropertyOrder(48)]
         [EditorCategory("Timeline", 6)]
         [DefaultValue(VerticalAlignment.Center)]
         public VerticalAlignment TimelineLabelVerticalAlignment
