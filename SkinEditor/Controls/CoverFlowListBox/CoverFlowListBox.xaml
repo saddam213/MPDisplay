@@ -285,7 +285,7 @@
 											   FontFamily="{Binding CurrentLayout.Label2FontType, Converter={StaticResource FontConverter},Mode=OneWay, ElementName=UI}" 
 											   FontSize="{Binding CurrentLayout.Label2FontSize,Mode=OneWay, ElementName=UI}" 
 											   FontWeight="{Binding CurrentLayout.Label2FontWeight, Converter={StaticResource FontConverter},Mode=OneWay, ElementName=UI}"
-											   Margin="{Binding CurrentLayout.Label2LabelMargin, ElementName=UI, Converter={StaticResource ThicknessConverter}}" 
+											   Margin="{Binding CurrentLayout.Label2Margin, ElementName=UI, Converter={StaticResource ThicknessConverter}}" 
 											   Visibility="{Binding CurrentLayout.EnableLabel2, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
 											<TextBlock.Style>
 												<Style TargetType="TextBlock">
