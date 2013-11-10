@@ -8,38 +8,14 @@ using System.Text;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class OnlineVideosPlugin : IPluginHelper
+    public class OnlineVideosPlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public OnlineVideosPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public OnlineVideosPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings)
         {
-            _window = pluginWindow;
-            _settings = settings;
         }
 
-        public SupportedPluginSettings Settings
-        {
-            get { return _settings; }
-        }
-
-        public GUIWindow PluginWindow
-        {
-            get { return _window; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : 0; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
+        public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
@@ -48,12 +24,7 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
-        {
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
-        }
-
-        public APIPlaybackType PlayType
+        public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.OnlineVideos; }
         }

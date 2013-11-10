@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using Common.Helpers;
 using Common.Status;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
@@ -167,21 +168,17 @@ namespace MediaPortalPlugin.InfoManagers
             });
         }
 
-        private void SendImageProperty(string tag, string tagValue)
+        public void SendImageProperty(string tag, string tagValue)
         {
-            //if (!string.IsNullOrEmpty(tagValue))
-            //{
+            if (string.IsNullOrEmpty(tagValue) || File.Exists(tagValue))
+            {
                 MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
                 {
                     SkinTag = tag,
                     PropertyType = APIPropertyType.Image,
-                    Image = new APIImage
-                    {
-                        FileName = tagValue,
-                        Image = GetImageBytes(tagValue)
-                    }
+                    Image = new APIImage(tagValue)
                 });
-           // }
+            }
         }
 
         private void SendNumberProperty(string tag, string tagValue)
@@ -210,21 +207,21 @@ namespace MediaPortalPlugin.InfoManagers
 
 
 
-        private byte[] GetImageBytes(string tagValue)
-        {
-            if (!string.IsNullOrEmpty(tagValue) && File.Exists(tagValue))
-            {
-                try
-                {
-                    return File.ReadAllBytes(tagValue);
-                }
-                catch (Exception ex)
-                {
-                    Log.Message(LogLevel.Error, "An exception occured processing property image, FileName: {0}{1}Excption:{1}{2}", tagValue, Environment.NewLine, ex.ToString());
-                }
-            }
-            return null;
-        }
+        //private byte[] GetImageBytes(string tagValue)
+        //{
+        //    if (!string.IsNullOrEmpty(tagValue) && File.Exists(tagValue))
+        //    {
+        //        try
+        //        {
+        //            return File.ReadAllBytes(tagValue);
+        //        }
+        //        catch (Exception ex)
+        //        {
+        //            Log.Message(LogLevel.Error, "An exception occured processing property image, FileName: {0}{1}Excption:{1}{2}", tagValue, Environment.NewLine, ex.ToString());
+        //        }
+        //    }
+        //    return null;
+        //}
 
 
         private void SystemInfo_OnNumberDataChanged(string tag, double tagValue)

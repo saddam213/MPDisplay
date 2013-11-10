@@ -69,6 +69,37 @@ namespace GUIFramework.Managers
             return Instance.GetControlHostProperties(controlHost);
         }
 
+        public static void AddNumberProperty(string tag, double tagValue)
+        {
+            Instance.AddProperty(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                Number = tagValue,
+                PropertyType = APIPropertyType.Number
+            });
+        }
+
+        public static void AddLabelProperty(string tag, string tagValue)
+        {
+            Instance.AddProperty(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                Label = tagValue,
+                PropertyType = APIPropertyType.Label
+            });
+        }
+
+        public static void AddImageProperty(string tag, byte[] tagValue)
+        {
+            Instance.AddProperty(new APIPropertyMessage
+            {
+                SkinTag = tag,
+                Image = new APIImage(tagValue),
+                PropertyType = APIPropertyType.Image
+            });
+        }
+
+
         #endregion
 
 
@@ -147,7 +178,7 @@ namespace GUIFramework.Managers
             AddProperty(new APIPropertyMessage
             {
                 SkinTag = tag,
-                Image = new APIImage { Image = tagValue },
+                Image = new APIImage(tagValue),
                 PropertyType = APIPropertyType.Image
             });
         }

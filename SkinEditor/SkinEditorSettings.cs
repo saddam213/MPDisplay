@@ -13,6 +13,7 @@ using GUISkinFramework.Controls;
 using GUISkinFramework.Styles;
 using SkinEditor.Views;
 using MPDisplay.Common.Settings;
+using Common.Helpers;
 
 namespace SkinEditor
 {
@@ -24,7 +25,7 @@ namespace SkinEditor
             var settings = new SkinEditorSettings { Filename = filename }; 
             if (File.Exists(filename))
             {
-                settings = XmlManager.Deserialize<SkinEditorSettings>(filename) ?? new SkinEditorSettings { Filename = filename };
+                settings = SerializationHelper.Deserialize<SkinEditorSettings>(filename) ?? new SkinEditorSettings { Filename = filename };
             }
             settings.InitializeSettings();
             return settings;
@@ -80,7 +81,7 @@ namespace SkinEditor
 
         public void Save(string settingsFile)
         {
-            XmlManager.Serialize<SkinEditorSettings>(this, settingsFile);
+            SerializationHelper.Serialize<SkinEditorSettings>(this, settingsFile);
         }
 
        

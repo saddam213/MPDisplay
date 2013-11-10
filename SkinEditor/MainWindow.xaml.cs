@@ -15,6 +15,7 @@ using System.Linq;
 using System.Windows.Input;
 using MPDisplay.Common.Utils;
 using MPDisplay.Common.Settings;
+using Common.Helpers;
 
 namespace SkinEditor
 {
@@ -207,7 +208,7 @@ namespace SkinEditor
                     var skinInfoFile = FileSystemHelper.OpenFileDialog(Settings.GlobalSettings.LastSkinDirectory, "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
                     if (!string.IsNullOrEmpty(skinInfoFile))
                     {
-                        var skinInfo = XmlManager.Deserialize<XmlSkinInfo>(skinInfoFile);
+                        var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(skinInfoFile);
                         if (skinInfo != null)
                         {
                             skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(skinInfoFile);
@@ -278,7 +279,7 @@ namespace SkinEditor
                         ClearPendingChanges();
                         try
                         {
-                            var skinInfo = XmlManager.Deserialize<XmlSkinInfo>(recentSkin);
+                            var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(recentSkin);
                             if (skinInfo != null)
                             {
                                 skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(recentSkin);

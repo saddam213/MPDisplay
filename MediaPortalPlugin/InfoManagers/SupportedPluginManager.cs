@@ -15,7 +15,7 @@ namespace MediaPortalPlugin
 {
     public static class SupportedPluginManager
     {
-        private static Dictionary<SupportedPlugin, IPluginHelper> _supportedPlugins = new Dictionary<SupportedPlugin, IPluginHelper>();
+        private static Dictionary<SupportedPlugin, PluginHelper> _supportedPlugins = new Dictionary<SupportedPlugin, PluginHelper>();
         private static Dictionary<int, SupportedPlugin> _supportedPluginMap = new Dictionary<int, SupportedPlugin>();
         private static Dictionary<int, GUIWindow> _installedPlugins = new Dictionary<int, GUIWindow>();
         private static AdvancedPluginSettings _supportedPluginSettings;
@@ -53,7 +53,7 @@ namespace MediaPortalPlugin
             _supportedPlugins.Add(SupportedPlugin.MPTVSeries, new MPTvSeriesPlugin(GetPluginWindow(SupportedPlugin.MPTVSeries), GetPluginSettings(SupportedPlugin.MPTVSeries)));
             _supportedPlugins.Add(SupportedPlugin.mvCentral, new MvCentralPlugin(GetPluginWindow(SupportedPlugin.mvCentral), GetPluginSettings(SupportedPlugin.mvCentral)));
             _supportedPlugins.Add(SupportedPlugin.OnlineVideos, new OnlineVideosPlugin(GetPluginWindow(SupportedPlugin.OnlineVideos), GetPluginSettings(SupportedPlugin.OnlineVideos)));
-            _supportedPlugins.Add(SupportedPlugin.MyAnime, new MovingPicturesPlugin(GetPluginWindow(SupportedPlugin.MyAnime), GetPluginSettings(SupportedPlugin.MyAnime)));
+            _supportedPlugins.Add(SupportedPlugin.MyAnime, new MyAnimePlugin(GetPluginWindow(SupportedPlugin.MyAnime), GetPluginSettings(SupportedPlugin.MyAnime)));
             _supportedPlugins.Add(SupportedPlugin.Rockstar, new RockStarPlugin(GetPluginWindow(SupportedPlugin.Rockstar), GetPluginSettings(SupportedPlugin.Rockstar)));
             _supportedPlugins.Add(SupportedPlugin.RadioTime, new RadioTimePlugin(GetPluginWindow(SupportedPlugin.RadioTime), GetPluginSettings(SupportedPlugin.RadioTime)));
 
@@ -72,12 +72,12 @@ namespace MediaPortalPlugin
         }
      
 
-        public static IPluginHelper GetPluginHelper(SupportedPlugin plugin)
+        public static PluginHelper GetPluginHelper(SupportedPlugin plugin)
         {
             return _supportedPlugins[plugin];
         }
 
-        public static IPluginHelper GetPluginHelper(int windowId)
+        public static PluginHelper GetPluginHelper(int windowId)
         {
             if (_supportedPluginMap.ContainsKey(windowId))
             {
@@ -119,25 +119,7 @@ namespace MediaPortalPlugin
             catch { }
         }
 
-        public static string GetListItemImage(SupportedPluginSettings settings, GUIListItem item, APIListLayout layout)
-        {
-            if (settings != null && item != null)
-            {
-                switch (layout)
-                {
-                    case APIListLayout.Vertical:
-                        return ReflectionHelper.GetPropertyPath<string>(item, settings.VerticalListItemThumbPath, string.Empty);
-                    case APIListLayout.Horizontal:
-                        return ReflectionHelper.GetPropertyPath<string>(item, settings.HorizontalListItemThumbPath, string.Empty);
-                    case APIListLayout.CoverFlow:
-                        return ReflectionHelper.GetPropertyPath<string>(item, settings.VerticalListItemThumbPath, string.Empty);
-                    default:
-                        break;
-                }
-
-            }
-            return string.Empty;
-        }
+     
    
     }
 

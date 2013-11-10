@@ -25,6 +25,7 @@ using SkinEditor.Dialogs;
 using GUISkinFramework.Windows;
 using GUIFramework.Managers;
 using MPDisplay.Common.Settings;
+using Common.Helpers;
 
 namespace SkinEditor.Views
 {

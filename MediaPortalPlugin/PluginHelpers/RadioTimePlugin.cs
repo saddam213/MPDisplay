@@ -13,38 +13,19 @@ using System.Net;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class RadioTimePlugin : IPluginHelper
+    public class RadioTimePlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public RadioTimePlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public RadioTimePlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings)
         {
-            _window = pluginWindow;
-            _settings = settings;
-        }
-    
-        public SupportedPluginSettings Settings
-        {
-            get { return _settings; }
         }
 
-        public GUIWindow PluginWindow
+        public override APIPlaybackType PlayType
         {
-            get { return _window; }
+            get { return APIPlaybackType.RadioTime; }
         }
 
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : -1; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
+        public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
@@ -55,16 +36,5 @@ namespace MediaPortalPlugin.PluginHelpers
             }
             return false;
         }
-
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
-        {
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
-        }
-
-        public APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.RadioTime; }
-        }
-    
     }
 }

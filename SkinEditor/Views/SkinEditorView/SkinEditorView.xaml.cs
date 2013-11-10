@@ -28,6 +28,7 @@ using SkinEditor;
 using SkinEditor.Dialogs;
 using MPDisplay.Common.ExtensionMethods;
 using MPDisplay.Common.Utils;
+using Common.Helpers;
 
 namespace SkinEditor.Views
 {

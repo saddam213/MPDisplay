@@ -9,42 +9,19 @@ using System.Text;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class MovingPicturesPlugin : IPluginHelper
+    public class MovingPicturesPlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public MovingPicturesPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public MovingPicturesPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings) 
         {
-            _window = pluginWindow;
-            _settings = settings;
         }
+     
 
-        public SupportedPluginSettings Settings
-        {
-            get { return _settings; }
-        }
-
-        public GUIWindow PluginWindow
-        {
-            get { return _window; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : 0; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
+        public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
-                var moviePlayer = ReflectionHelper.GetFieldValue(_window, "moviePlayer", null);
+                var moviePlayer = ReflectionHelper.GetFieldValue(PluginWindow, "moviePlayer", null);
                 if (moviePlayer != null)
                 {
                     var currentMovie = ReflectionHelper.GetPropertyValue<object>(moviePlayer, "CurrentMedia",null);
@@ -60,13 +37,7 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
-        {
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
-        }
-
-
-        public APIPlaybackType PlayType
+        public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.MovingPictures; }
         }

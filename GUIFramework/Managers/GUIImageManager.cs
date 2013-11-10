@@ -86,31 +86,36 @@ namespace GUIFramework.Managers
             {
                 Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
             }
-            return null;
+            return new BitmapImage();
         }
 
-        public static BitmapImage GetImage(byte[] imageBytes)
+        public static BitmapImage GetImage(byte[] bytes)
         {
-            BitmapImage bmImage = new BitmapImage();
-            if (imageBytes != null)
+            try
             {
-                try
+                if (bytes != null && bytes.Length > 0)
                 {
-                    bmImage.BeginInit();
-                    bmImage.CacheOption = BitmapCacheOption.None;
-                    bmImage.StreamSource = new MemoryStream(imageBytes);
-                    bmImage.EndInit();
-                    bmImage.Freeze();
-                }
-                catch (Exception ex)
-                {
-                    Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                    BitmapImage image = new BitmapImage();
+                    using (MemoryStream stream = new MemoryStream(bytes, false))
+                    {
+                        image.BeginInit();
+                       // image.DecodePixelWidth = GetScaledImageWidth(bytes);
+                        image.CacheOption = BitmapCacheOption.None;
+                        image.StreamSource = stream;
+                        image.EndInit();
+                        image.Freeze();
+                        bytes = null;
+                        stream.Flush();
+                    }
+                    return image;
                 }
             }
-            return bmImage;
+            catch (Exception ex)
+            {
+                Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+            }
+            return new BitmapImage();
         }
-
-
 
 
 

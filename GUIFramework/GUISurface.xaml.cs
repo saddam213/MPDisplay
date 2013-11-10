@@ -33,6 +33,7 @@ using System.Windows.Threading;
 using GUISkinFramework.Editor.PropertyEditors;
 using GUIFramework.Utils;
 using Microsoft.Win32;
+using Common.Helpers;
 
 namespace GUIFramework
 {
@@ -173,7 +174,7 @@ namespace GUIFramework
             if (settings != null)
             {
                 IsSplashScreenVisible = true;
-                XmlSkinInfo skinInfo = XmlManager.Deserialize<XmlSkinInfo>(settings.SkinInfoXml);
+                XmlSkinInfo skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(settings.SkinInfoXml);
                 if (skinInfo != null)
                 {
                     Settings = settings;
@@ -317,7 +318,12 @@ namespace GUIFramework
 
             InfoRepository.RegisterMessage<int>(InfoMessageType.DialogId, async windowId => await OpenMediaPortalDialog());
             ListRepository.RegisterMessage<APIListAction>(ListServiceMessage.SendItem, async item => await SendListAction(item));
+
+            TVGuideRepository.RegisterMessage(TVGuideMessageType.RefreshGuideData, async () => await SendGuideAction(APIGuideActionType.UpdateData));
+            TVGuideRepository.RegisterMessage(TVGuideMessageType.RefreshRecordings, async () => await SendGuideAction(APIGuideActionType.UpdateRecordings));
         }
+
+     
 
         /// <summary>
         /// Deregisters the callbacks.
@@ -340,6 +346,8 @@ namespace GUIFramework
 
             InfoRepository.DeregisterMessage(InfoMessageType.DialogId, this);
             ListRepository.DeregisterMessage(ListServiceMessage.SendItem, this);
+            TVGuideRepository.DeregisterMessage(TVGuideMessageType.RefreshGuideData, this);
+            TVGuideRepository.DeregisterMessage(TVGuideMessageType.RefreshRecordings, this);
         }
 
         /// <summary>
@@ -981,6 +989,21 @@ namespace GUIFramework
             });
         }
 
+        private Task SendGuideAction(APIGuideActionType actionType)
+        {
+            return SendMediaPortalMessage(new APIMediaPortalMessage
+            {
+                MessageType = APIMediaPortalMessageType.ActionMessage,
+                ActionMessage = new APIActionMessage
+                {
+                    ActionType = APIActionMessageType.GuideAction,
+                    GuideAction = new APIGuideAction
+                    {
+                        ActionType = actionType
+                    }
+                }
+            });
+        }
 
 
         public async Task SendKeepAlive()

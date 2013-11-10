@@ -197,7 +197,8 @@ namespace GUIFramework.GUI.Controls
             if (selectedItem != null && ListItems != null)
             {
                 var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex)
-                    ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText);
+                    ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText)
+                ?? ListItems.FirstOrDefault(x => x.Index == selectedItem.ItemIndex);
                 if (item != null)
                 {
                     await Dispatcher.InvokeAsync(() =>

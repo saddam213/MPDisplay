@@ -22,6 +22,7 @@ using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Skin;
 using GUISkinFramework.Styles;
 using GUISkinFramework.Dialogs;
+using Common.Helpers;
 
 namespace GUISkinFramework.Editor.PropertyEditors
 {

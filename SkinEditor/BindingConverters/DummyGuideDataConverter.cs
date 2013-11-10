@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Data;
+using Common.Helpers;
 using GUIFramework.Managers;
 using GUISkinFramework;
 
@@ -30,7 +31,7 @@ namespace SkinEditor.BindingConverters
             if (_guideData == null)
             {
                   var dummyItemPath = Environment.CurrentDirectory + "\\Data\\GuideData.xml";
-                  _guideData = XmlManager.Deserialize<List<TvGuideChannel>>(dummyItemPath);
+                  _guideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(dummyItemPath);
             }
 
         
@@ -93,7 +94,7 @@ namespace SkinEditor.BindingConverters
             if (_guideData == null)
             {
                 var dummyItemPath = Environment.CurrentDirectory + "\\Data\\GuideData.xml";
-                _guideData = XmlManager.Deserialize<List<TvGuideChannel>>(dummyItemPath);
+                _guideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(dummyItemPath);
             }
 
 

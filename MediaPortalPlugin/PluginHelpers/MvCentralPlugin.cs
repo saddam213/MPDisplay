@@ -10,53 +10,32 @@ using System.Collections;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class MvCentralPlugin : IPluginHelper
+    public class MvCentralPlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public MvCentralPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public MvCentralPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings)
         {
-            _window = pluginWindow;
-            _settings = settings;
         }
 
-        public SupportedPluginSettings Settings
+         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            get { return _settings; }
-        }
-
-        public GUIWindow PluginWindow
-        {
-            get { return _window; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : 0; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
-        {
-            var player = ReflectionHelper.GetFieldValue(_window, "Player");
-            if (player != null)
+            if (IsEnabled)
             {
-                var playlistPlayer = ReflectionHelper.GetFieldValue(player, "playlistPlayer", null, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
-                if (playlistPlayer != null)
+                var player = ReflectionHelper.GetFieldValue(PluginWindow, "Player");
+                if (player != null)
                 {
-                    var playlist = ReflectionHelper.GetFieldValue<IEnumerable>(playlistPlayer, "_mvCentralPlayList", null);
-                    if (playlist != null)
+                    var playlistPlayer = ReflectionHelper.GetFieldValue(player, "playlistPlayer", null, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public);
+                    if (playlistPlayer != null)
                     {
-                        foreach (var item in playlist)
+                        var playlist = ReflectionHelper.GetFieldValue<IEnumerable>(playlistPlayer, "_mvCentralPlayList", null);
+                        if (playlist != null)
                         {
-                            if (ReflectionHelper.GetPropertyValue<string>(item, "FileName", string.Empty) == filename)
+                            foreach (var item in playlist)
                             {
-                                return true;
+                                if (ReflectionHelper.GetPropertyValue<string>(item, "FileName", string.Empty) == filename)
+                                {
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -65,12 +44,9 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
-        {
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
-        }
 
-        public APIPlaybackType PlayType
+
+        public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.mvCentral; }
         }

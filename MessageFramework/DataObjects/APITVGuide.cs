@@ -11,12 +11,14 @@ namespace MessageFramework.DataObjects
         public APITVGuideMessageType MessageType { get; set; }
         public APITvGuideMessage TvGuideMessage { get; set; }
         public List<APIRecording> RecordingMessage { get; set; }
+        public string GuideGroup { get; set; }
     }
 
     public enum APITVGuideMessageType
     {
         TvGuide,
-        Recordings
+        Recordings,
+        TvGuideGroup
     }
 
     public class APITvGuideMessage
@@ -32,11 +34,11 @@ namespace MessageFramework.DataObjects
     {
         public int Id { get; set; }
         public string Name { get; set; }
+        public APIImage Logo { get; set; }
         public int SortOrder { get; set; }
         public bool IsRadio { get; set; }
-        public List<APIProgram> Programs { get; set; }
-
         public List<string> Groups { get; set; }
+        public List<APIProgram> Programs { get; set; }
     }
 
     public class APIProgram
@@ -47,7 +49,6 @@ namespace MessageFramework.DataObjects
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        public bool IsRecording { get; set; }
         public bool IsScheduled { get; set; }
     }
 
@@ -55,5 +56,7 @@ namespace MessageFramework.DataObjects
     {
         public int ChannelId { get; set; }
         public int ProgramId { get; set; }
+
+        
     }
 }

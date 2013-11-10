@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
+using System.Windows;
 using GUIFramework.GUI;
 using GUIFramework.GUI.Controls;
 using GUISkinFramework;
@@ -33,19 +36,20 @@ namespace GUIFramework.Managers
         }
 
 
-        public static void RegisterTvGuideData(Action callback)
+        public static void RegisterMessage(TVGuideMessageType messageType, Action callback)
         {
-            Instance.TVGuideService.Register(TVGuideMessageType.TVGuideData, callback);
-        }
-
-        public static void RegisterRecordingData(Action callback)
-        {
-            Instance.TVGuideService.Register(TVGuideMessageType.RecordingData, callback);
+            Instance.TVGuideService.Register(messageType, callback);
         }
 
         public static void DeregisterMessage(TVGuideMessageType message, object owner)
         {
             Instance.TVGuideService.Deregister(message, owner);
+        }
+
+
+        public static void NotifyListeners(TVGuideMessageType message)
+        {
+            Instance.TVGuideService.NotifyListeners(message);
         }
 
         #endregion
@@ -63,7 +67,14 @@ namespace GUIFramework.Managers
         {
             Settings = settings;
             SkinInfo = skininfo;
+            if (_updateTimer == null)
+            {
+                _updateTimer = new Timer((o) => UpdateGuideData(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+            }
         }
+
+     
+        private Timer _updateTimer;
 
         public void ClearRepository()
         {
@@ -72,23 +83,43 @@ namespace GUIFramework.Managers
 
         public void ResetRepository()
         {
+            if (_updateTimer != null)
+            {
+                _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+            }
             ClearRepository();
             Settings = null;
             SkinInfo = null;
         }
 
-        public List<TvGuideChannel> GuideData
+        public ObservableCollection<TvGuideChannel> GuideData
         {
             get { return _guideData; }
         }
 
-        public List<APIRecording> RecordingData
+        public string GuideGroup
         {
-            get { return _recordings; }
+            get { return _guideGroup; }
         }
 
-        private List<TvGuideChannel> _guideData = new List<TvGuideChannel>();
-        private List<APIRecording> _recordings = new List<APIRecording>();
+        public DateTime GuideDataStart
+        {
+            get { return _guideDataStart; }
+        }
+
+        public DateTime GuideDataEnd
+        {
+            get { return _guideDataEnd; }
+        }
+
+        private ObservableCollection<TvGuideChannel> _guideData = new ObservableCollection<TvGuideChannel>();
+        private DateTime _guideDataStart = DateTime.MinValue;
+        private DateTime _guideDataEnd = DateTime.MinValue;
+
+        private string _guideGroup;
+        private SortedDictionary<int, APIChannel> _data = new SortedDictionary<int, APIChannel>();
+        private int _currentBatchId = -1;
+        private object _syncObject = new object();
 
         public void AddDataMessage(APITVGuide message)
         {
@@ -97,10 +128,13 @@ namespace GUIFramework.Managers
                 switch (message.MessageType)
                 {
                     case APITVGuideMessageType.TvGuide:
-                       ProcessBatch(message.TvGuideMessage);
-                       break;
+                        ProcessBatch(message.TvGuideMessage);
+                        break;
                     case APITVGuideMessageType.Recordings:
-                       ProcessRecordings( message.RecordingMessage);
+                        ProcessRecordings(message.RecordingMessage);
+                        break;
+                    case APITVGuideMessageType.TvGuideGroup:
+                        ProcessGuideGroup(message.GuideGroup);
                         break;
                     default:
                         break;
@@ -108,9 +142,9 @@ namespace GUIFramework.Managers
             }
         }
 
-        private SortedDictionary<int, APIChannel> _data = new SortedDictionary<int, APIChannel>();
-        private int _currentBatchId = -1;
-        private object _syncObject = new object();
+
+
+     
 
         private void ProcessBatch(APITvGuideMessage message)
         {
@@ -122,62 +156,152 @@ namespace GUIFramework.Managers
                     {
                         _data.Clear();
                         _currentBatchId = message.BatchId;
+                        Console.WriteLine(string.Format("Receiving TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
                     }
 
                     if (message.BatchId == _currentBatchId)
                     {
                         _data.Add(message.BatchNumber, message.Channel);
-                        Console.WriteLine(string.Format("BatchId: {0}, BatchNumber: {1}, Count: {2}", message.BatchId, message.BatchNumber, _data.Count));
+                        Console.WriteLine(string.Format("BatchId: {0}, BatchNumber: {1}, ReceivedCount: {2}", message.BatchId, message.BatchNumber, _data.Count));
                         if (_data.Count == message.BatchCount)
                         {
-                            _guideData = _data.Values.OrderBy(v => v.SortOrder).Select(x => new TvGuideChannel
+                            Console.WriteLine(string.Format("Received TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
+
+
+
+
+                            var data = _data.Values.Select(x => new TvGuideChannel
                             {
                                 Id = x.Id,
                                 Name = x.Name,
                                 SortOrder = x.SortOrder,
                                 IsRadio = x.IsRadio,
                                 Groups = x.Groups,
+                                Logo = x.Logo.ToImageBytes(),
                                 Programs = x.Programs.Select(p => new TvGuideProgram
                                 {
                                     ChannelId = x.Id,
                                     Id = p.Id,
                                     Title = p.Title,
                                     Description = p.Description,
-                                    IsRecording = p.IsRecording,
                                     StartTime = p.StartTime,
                                     EndTime = p.EndTime,
                                     IsScheduled = p.IsScheduled,
                                 }).ToList()
-                            }).ToList();
+                            }).ToArray();
 
-                            _guideData.ForEach(c => c.UpdateCurrentProgram());
+                            var allPrograms = data.SelectMany(c => c.Programs);
+                            _guideDataStart = allPrograms.Min(p => p.StartTime);
+                            _guideDataEnd = allPrograms.Max(p => p.EndTime);
 
-                            TVGuideService.NotifyListeners(TVGuideMessageType.TVGuideData);
+                            Application.Current.Dispatcher.Invoke(() =>
+                            {
+                                _guideData.Clear();
+                                foreach (var item in data)
+                                {
+                                    _guideData.Add(item);
+                                }
+                                SetProgramState();
+                                TVGuideService.NotifyListeners(TVGuideMessageType.TVGuideData);
+                            });
+
+                            
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-              
+
             }
         }
 
-       private void   ProcessRecordings(List<APIRecording> recordings)
-       {
-           lock (_recordings)
-           {
-               _recordings.Clear();
-               _recordings = recordings;
-               TVGuideService.NotifyListeners(TVGuideMessageType.RecordingData);
-           }
-       }
+        private void UpdateGuideData()
+        {
+            lock (_syncObject)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    SetProgramState();
+                });
+            }
+        }
+
+    
+
+        private void ProcessGuideGroup(string group)
+        {
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+                if (_guideGroup != group)
+                {
+                    _guideGroup = group;
+                    TVGuideService.NotifyListeners(TVGuideMessageType.TvGuideGroup);
+                }
+            });
+        }
+
+        private void ProcessRecordings(List<APIRecording> recordings)
+        {
+            lock (_syncObject)
+            {
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    bool anyRecording = false;
+                    foreach (var channel in _guideData)
+                    {
+                        foreach (var program in channel.Programs)
+                        {
+                            bool scheduled = recordings.Any(p => p.ChannelId == channel.Id && p.ProgramId == program.Id);
+                            if (program.IsScheduled != scheduled)
+                            {
+                                program.IsScheduled = scheduled;
+                            }
+                        }
+                        if (channel.UpdateCurrentProgram())
+                        {
+                            anyRecording = true;
+                        }
+                    }
+
+                    TVGuideService.NotifyListeners(TVGuideMessageType.RecordingData);
+
+                    InfoRepository.Instance.IsTvRecording = anyRecording;
+                });
+            }
+        }
+
+
+
+
+        private void SetProgramState()
+        {
+            if (_guideData.Any())
+            {
+                bool anyRecording = false;
+                foreach (var channel in _guideData)
+                {
+                    if (channel.UpdateCurrentProgram())
+                    {
+                        anyRecording = true;
+                    }
+                }
+                InfoRepository.Instance.IsTvRecording = anyRecording;
+            }
+        }
+
+
+
+
     }
 
     public enum TVGuideMessageType
     {
         TVGuideData,
-        RecordingData
+        RecordingData,
+        TvGuideGroup,
+        RefreshGuideData,
+        RefreshRecordings
     }
 
     public class TvGuideChannel : INotifyPropertyChanged
@@ -190,6 +314,7 @@ namespace GUIFramework.Managers
         public bool IsRadio { get; set; }
         public List<TvGuideProgram> Programs { get; set; }
         public List<string> Groups { get; set; }
+        public byte[] Logo { get; set; }
 
     
 
@@ -199,8 +324,9 @@ namespace GUIFramework.Managers
             set { _isSelected = value; NotifyPropertyChanged("IsSelected"); }
         }
 
-        public void UpdateCurrentProgram(DateTime? date = null)
+        public bool UpdateCurrentProgram(DateTime? date = null)
         {
+            bool anyRecording = false;
             if (Programs != null && Programs.Any())
             {
                 foreach (var program in Programs)
@@ -209,9 +335,23 @@ namespace GUIFramework.Managers
                     {
                         program.IsCurrent = program.IsProgramCurrent(date);
                     }
+
+                    if (program.IsRecording != program.IsProgramRecording())
+                    {
+                        program.IsRecording = program.IsProgramRecording();
+                    }
+
+                    if (program.IsRecording)
+                    {
+                        anyRecording = true;
+                    }
+                  
                 }
             }
+            return anyRecording;
         }
+
+     
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
@@ -221,6 +361,8 @@ namespace GUIFramework.Managers
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
+
+     
     }
 
     public class TvGuideProgram : INotifyPropertyChanged
@@ -228,6 +370,7 @@ namespace GUIFramework.Managers
         private bool _isSelected;
         private bool _isRecording;
         private bool _isScheduled;
+        private bool _isCurrent;
 
         public int Id { get; set; }
         public int ChannelId { get; set; }
@@ -235,7 +378,7 @@ namespace GUIFramework.Managers
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
-        private bool _isCurrent;
+       
 
         public bool IsRecording
         {
@@ -268,7 +411,13 @@ namespace GUIFramework.Managers
             return baseline > StartTime && baseline < EndTime;
         }
 
+        public bool IsProgramRecording()
+        {
+            return IsCurrent && IsScheduled;
+        }
 
+
+      
         public event PropertyChangedEventHandler PropertyChanged;
    
      

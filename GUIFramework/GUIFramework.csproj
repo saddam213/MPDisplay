@@ -57,8 +57,10 @@
     <Compile Include="..\GlobalAssembly.cs">
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
+    <Compile Include="Converters\GUIImageConverter.cs" />
     <Compile Include="Converters\CoverFlowGreaterThanSelectedIndexConverter.cs" />
     <Compile Include="Converters\GUIBrushConverter.cs" />
+    <Compile Include="Converters\ProgramTimeToWidthConverter.cs" />
     <Compile Include="Converters\ProgressValueConverter.cs" />
     <Compile Include="GUISurface.xaml.cs">
       <DependentUpon>GUISurface.xaml</DependentUpon>
@@ -228,10 +230,12 @@
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)PreBuild.bat</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)PostBuild.bat</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -379,7 +379,7 @@ namespace GUIFramework.Managers
                     PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", item.Label2);
                     PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", item.Label3);
                     PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", item.Index.ToString());
-                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image);
+                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image.ToImageBytes());
                 }
             }
         }

@@ -57,54 +57,5 @@ namespace GUISkinFramework
         }
     }
 
-    public static class FileHelpers
-    {
-        public static void TryDelete(string file)
-        {
-            try
-            {
-                File.Delete(file);
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public static void TryDelete(IEnumerable<string> files)
-        {
-            if (files != null)
-            {
-                foreach (var file in files)
-                {
-                    TryDelete(file);
-                }
-            }
-        }
-
-        public static void CopyFile(string source, string destination)
-        {
-            try
-            {
-                if (File.Exists(source))
-                {
-                    File.Copy(source, destination);
-                }
-            }
-            catch (Exception)
-            {
-            }
-        }
-
-        public static string OpenFileDialog(string initial, string filter)
-        {
-            var dialog = new OpenFileDialog();
-            dialog.Filter = filter;
-            dialog.InitialDirectory = initial;
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.FileName;
-            }
-            return string.Empty;
-        }
-    }
+  
 }

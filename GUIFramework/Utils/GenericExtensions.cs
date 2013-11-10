@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using Common.Helpers;
 using GUIFramework.GUI;
 using GUIFramework.GUI.Windows;
 using GUISkinFramework.Property;
@@ -168,15 +169,12 @@ namespace GUIFramework
         {
             if (image != null)
             {
-                if (image.Image != null)
+                if (!image.IsFile)
                 {
-                    return image.Image;
+                    return image.FileBytes;
                 }
 
-                if (!string.IsNullOrEmpty(image.FileName) && File.Exists(image.FileName))
-                {
-                    return File.ReadAllBytes(image.FileName);
-                }
+                return FileHelpers.ReadBytesFromFile(image.FileName);
             }
             return null;
         }
@@ -230,9 +228,9 @@ namespace GUIFramework
                 return second.FileName == first.FileName;
             }
 
-            if (second.Image != null)
+            if (!second.IsFile)
             {
-                return second.Image.ImageEquals(first.Image);
+                return second.FileBytes.ImageEquals(first.FileBytes);
             }
             return false;
         }

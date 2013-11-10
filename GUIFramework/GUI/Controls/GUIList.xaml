@@ -202,7 +202,7 @@
 												Visibility="{Binding CurrentLayout.EnableImage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
 												<commonControls:RoundedImage 
 														  Stretch="{Binding CurrentLayout.ImageStretch,Mode=OneWay, ElementName=UI}"
-														  Source="{Binding Image}"
+														  Source="{Binding Image, Converter={StaticResource GUIImageConverter}}"
 														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" >
 												</commonControls:RoundedImage>
 											</Border>

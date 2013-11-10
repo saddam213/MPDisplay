@@ -23,6 +23,7 @@ using MPDisplay.Common.Controls.PropertyGrid.Attributes;
 using MPDisplay.Common.Controls.PropertyGrid.Editors;
 using GUISkinFramework.Skin;
 using GUISkinFramework.Styles;
+using Common.Helpers;
 
 namespace GUISkinFramework.Editor.PropertyEditors
 {

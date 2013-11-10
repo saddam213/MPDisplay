@@ -62,6 +62,7 @@
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="ImageHelper.cs" />
     <Compile Include="InfoManagers\DialogManager.cs" />
     <Compile Include="InfoManagers\EqualizerManager.cs" />
     <Compile Include="InfoManagers\ListManager.cs" />
@@ -72,7 +73,7 @@
     <Compile Include="MPDisplayPlugin.cs" />
     <Compile Include="InfoManagers\SupportedPluginManager.cs" />
     <Compile Include="PluginHelpers\RadioTimePlugin.cs" />
-    <Compile Include="PluginHelpers\IPluginHelper.cs" />
+    <Compile Include="PluginHelpers\PluginHelper.cs" />
     <Compile Include="PluginHelpers\MovingPicturesPlugin.cs" />
     <Compile Include="PluginHelpers\MPTvSeriesPlugin.cs" />
     <Compile Include="PluginHelpers\MvCentralPlugin.cs" />
@@ -99,10 +100,12 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PreBuildEvent>$(SolutionDir)PreBuild.bat</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)PostBuild.bat</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

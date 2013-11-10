@@ -17,6 +17,7 @@ using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Skin;
 using GUISkinFramework.Styles;
+using Common.Helpers;
 
 namespace GUISkinFramework.Editor.PropertyEditors
 {

@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GUISkinFramework;
+using Common.Helpers;
 
 namespace SkinEditor.Dialogs
 {

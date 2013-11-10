@@ -12,42 +12,18 @@ using System.Text;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class RockStarPlugin : IPluginHelper
+    public class RockStarPlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public RockStarPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public RockStarPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings)
         {
-            _window = pluginWindow;
-            _settings = settings;
         }
-    
-        public SupportedPluginSettings Settings
-        {
-            get { return _settings; }
-        }
-
-        public GUIWindow PluginWindow
-        {
-            get { return _window; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : -1; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
+      
+        public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
-                var playerManager = ReflectionHelper.GetFieldValue(_window, "playerManager");
+                var playerManager = ReflectionHelper.GetFieldValue(PluginWindow, "playerManager");
                 if (playerManager != null)
                 {
                     var players = ReflectionHelper.GetFieldValue<IDictionary>(playerManager, "players", null);
@@ -66,23 +42,22 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
+        public override APIImage GetListItemImage(GUIListItem item, APIListLayout layout)
         {
             if (item != null)
             {
                 string imagePath = string.Format("{0}\\Media\\{1}", GUIGraphicsContext.Skin, item.IconImage);
                 if (File.Exists(imagePath))
                 {
-                    return imagePath;
+                    return new APIImage(imagePath);
                 }
             }
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
+            return base.GetListItemImage(item, layout);
         }
 
-        public APIPlaybackType PlayType
+        public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.Rockstar; }
         }
-    
     }
 }

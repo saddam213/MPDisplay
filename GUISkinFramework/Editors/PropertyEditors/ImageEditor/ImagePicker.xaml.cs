@@ -12,6 +12,7 @@ using GUISkinFramework.Controls;
 using GUISkinFramework.Skin;
 using System.Linq;
 using GUISkinFramework.Common;
+using Common.Helpers;
 
 namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
 {

@@ -62,7 +62,7 @@ namespace MediaPortalPlugin.InfoManagers
         private List<string> _enabledlugins;
         private bool _isFullScreenMusic;
         private APIPlayerMessage _lastPlayerMessage;
-        private IPluginHelper _currentPlugin;
+        private PluginHelper _currentPlugin;
     
 
     
@@ -71,7 +71,7 @@ namespace MediaPortalPlugin.InfoManagers
             get { return _currentWindow; }
         }
 
-        public IPluginHelper CurrentPlugin
+        public PluginHelper CurrentPlugin
         {
             get { return _currentPlugin; }
         }
@@ -255,6 +255,10 @@ namespace MediaPortalPlugin.InfoManagers
                         {
                             DialogManager.Instance.OnActionMessageReceived(message.ActionMessage);
                         }
+                        else if (message.ActionMessage.ActionType == APIActionMessageType.GuideAction)
+                        {
+                            TVServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                        }
                         else
                         {
                             if (message.ActionMessage.MediaPortalAction != null)
@@ -324,7 +328,7 @@ namespace MediaPortalPlugin.InfoManagers
                     SendPlayerMessage();
                 }
 
-                SendFocusedControlMessage();
+               // SendFocusedControlMessage();
                 PropertyManager.Instance.Suspend(false);
 
 

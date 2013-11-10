@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 		     xmlns:base="clr-namespace:GUIFramework.GUI"
-			  xmlns:local="clr-namespace:GUIFramework.GUI.Controls"
+			  xmlns:converters="clr-namespace:GUIFramework.Converters"
 			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" 
 			 x:Name="UI"
@@ -21,151 +21,153 @@
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
 			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
 			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-		<Grid >
+	<Grid >
 
-			<Grid.Resources>
-				<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
-				<SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-				<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
-				<local:ProgramWidthConverter x:Key="ProgramWidthConverter" />
-
-		
-				<Style TargetType="ListBox">
-					<Setter Property="BorderBrush" Value="{x:Null}" />
-					<Setter Property="BorderThickness" Value="0" />
-					<Setter Property="Background" Value="{x:Null}" />
-					<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
-					<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
-					<Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="False" />
-					<Setter Property="VirtualizingPanel.IsVirtualizing" Value="False" />
-					<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
-					<Setter Property="ScrollViewer.PanningRatio" Value="1"/>
-				</Style>
-
-				<Style TargetType="ListBoxItem">
-					<Setter Property="FocusVisualStyle" Value="{x:Null}" />
-					<Setter Property="Margin" Value="0" />
-					<Setter Property="Padding" Value="0" />
-					<Setter Property="Height" Value="{Binding BaseXml.GuideItemHeight, ElementName=UI}" />
-					<Setter Property="VerticalContentAlignment" Value="Top" />
-					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-				</Style>
+		<Grid.Resources>
+			<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
+			<SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+			<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+			<converters:ProgramTimeToWidthConverter x:Key="ProgramWidthConverter" />
 
 
-				<Style x:Key="ProgramItem" TargetType="ContentPresenter">
-				    <Setter Property="ScrollViewer.CanContentScroll" Value="False" />
-					<Setter Property="Height" Value="{Binding BaseXml.GuideItemHeight, ElementName=UI}" />
-					<Setter Property="Canvas.Left">
-						<Setter.Value>
-							<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramPosition">
-								<Binding />
-								<Binding Path="TimelineStart" ElementName="UI"/>
-								<Binding Path="TimelineMultiplier" ElementName="UI"/>
-							</MultiBinding>
-						</Setter.Value>
-					</Setter>
-					<Setter Property="Width">
-						<Setter.Value>
-							<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramWidth">
-								<Binding />
-								<Binding Path="TimelineStart" ElementName="UI"/>
-								<Binding Path="TimelineMultiplier" ElementName="UI"/>
-							</MultiBinding>
-						</Setter.Value>
-					</Setter>
-				</Style>
+			<Style TargetType="ListBox">
+				<Setter Property="BorderBrush" Value="{x:Null}" />
+				<Setter Property="BorderThickness" Value="0" />
+				<Setter Property="Background" Value="{x:Null}" />
+				<Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
+				<Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Hidden" />
+				<Setter Property="VirtualizingPanel.IsContainerVirtualizable" Value="False" />
+				<Setter Property="VirtualizingPanel.IsVirtualizing" Value="False" />
+				<Setter Property="ScrollViewer.PanningMode" Value="Both"/>
+				<Setter Property="ScrollViewer.PanningRatio" Value="1"/>
+			</Style>
 
-				<Style x:Key="TimelineItem" TargetType="ListBoxItem">
-					<Setter Property="FocusVisualStyle" Value="{x:Null}" />
-					<Setter Property="Margin" Value="-1" />
-					<Setter Property="Padding" Value="0" />
-					<Setter Property="Height" Value="{Binding BaseXml.TimelineHeight, ElementName=UI}" />
-					<Setter Property="VerticalContentAlignment" Value="Top" />
-					<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-					<Setter Property="Canvas.Left">
-						<Setter.Value>
-							<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramPosition">
-								<Binding />
-								<Binding Path="TimelineStart" ElementName="UI"/>
-								<Binding Path="TimelineMultiplier" ElementName="UI"/>
-							</MultiBinding>
-						</Setter.Value>
-					</Setter>
-					<Setter Property="Width">
-						<Setter.Value>
-							<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramWidth">
-								<Binding />
-								<Binding Path="TimelineStart" ElementName="UI"/>
-								<Binding Path="TimelineMultiplier" ElementName="UI"/>
-							</MultiBinding>
-						</Setter.Value>
-					</Setter>
-				</Style>
+			<Style TargetType="ListBoxItem">
+				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+				<Setter Property="Margin" Value="0" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="Height" Value="{Binding BaseXml.GuideItemHeight, ElementName=UI}" />
+				<Setter Property="VerticalContentAlignment" Value="Top" />
+				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+			</Style>
 
 
-				<Style x:Key="TimelineTextblock" TargetType="TextBlock">
-					<Setter Property="Foreground" Value="{Binding BaseXml.ControlStyle.TimelineFontBrush, Converter={StaticResource GUIBrushConverter}, ElementName=UI}" />
-					<Setter Property="FontFamily" Value="{Binding BaseXml.ControlStyle.TimelineFontType, Converter={StaticResource GUIFontConverter}, ElementName=UI}" />
-					<Setter Property="FontSize" Value="{Binding BaseXml.ControlStyle.TimelineFontSize, ElementName=UI}" />
-					<Setter Property="FontWeight" Value="{Binding BaseXml.ControlStyle.TimelineFontWeight, Converter={StaticResource GUIFontConverter}, ElementName=UI}" />
-					<Setter Property="HorizontalAlignment" Value="{Binding BaseXml.ControlStyle.TimelineLabelHorizontalAlignment, ElementName=UI}" />
-					<Setter Property="VerticalAlignment" Value="{Binding BaseXml.ControlStyle.TimelineLabelVerticalAlignment, ElementName=UI}" />
-				</Style>
+			<Style x:Key="ProgramItem" TargetType="ContentPresenter">
+				<Setter Property="ScrollViewer.CanContentScroll" Value="False" />
+				<Setter Property="Height" Value="{Binding BaseXml.GuideItemHeight, ElementName=UI}" />
+				<Setter Property="Canvas.Left">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramPosition">
+							<Binding />
+							<Binding Path="TimelineStart" ElementName="UI"/>
+							<Binding Path="TimelineMultiplier" ElementName="UI"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+				<Setter Property="Width">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramWidth">
+							<Binding />
+							<Binding Path="TimelineStart" ElementName="UI"/>
+							<Binding Path="TimelineMultiplier" ElementName="UI"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+			</Style>
 
-				<Style x:Key="TimelineBorder" TargetType="Border">
-					<Setter Property="CornerRadius" Value="{Binding BaseXml.ControlStyle.TimelineItemCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, ElementName=UI}"  />
-					<Setter Property="BorderBrush" Value="{Binding BaseXml.ControlStyle.TimelineItemBorderBrush, Converter={StaticResource GUIBrushConverter}, ElementName=UI}" />
-					<Setter Property="BorderThickness" Value="{Binding BaseXml.ControlStyle.TimelineItemBorderThickness, Converter={StaticResource GUIThicknessConverter}, ElementName=UI}" />
-					<Setter Property="Margin" Value="{Binding BaseXml.GuideItemMargin, Converter={StaticResource GUIThicknessConverter}, ElementName=UI}" />
-				</Style>
+			<Style x:Key="TimelineItem" TargetType="ListBoxItem">
+				<Setter Property="FocusVisualStyle" Value="{x:Null}" />
+				<Setter Property="Margin" Value="-1" />
+				<Setter Property="Padding" Value="0" />
+				<Setter Property="Height" Value="{Binding BaseXml.TimelineHeight, ElementName=UI}" />
+				<Setter Property="VerticalContentAlignment" Value="Top" />
+				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
+				<Setter Property="Canvas.Left">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramPosition">
+							<Binding />
+							<Binding Path="TimelineStart" ElementName="UI"/>
+							<Binding Path="TimelineMultiplier" ElementName="UI"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+				<Setter Property="Width">
+					<Setter.Value>
+						<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramWidth">
+							<Binding />
+							<Binding Path="TimelineStart" ElementName="UI"/>
+							<Binding Path="TimelineMultiplier" ElementName="UI"/>
+						</MultiBinding>
+					</Setter.Value>
+				</Setter>
+			</Style>
 
-			</Grid.Resources>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="{Binding BaseXml.TimelineHeight}" />
-				<RowDefinition />
-			</Grid.RowDefinitions>
-			<Grid.ColumnDefinitions>
-				<ColumnDefinition Width="{Binding BaseXml.ChannelListWidth}" />
-				<ColumnDefinition  />
-			</Grid.ColumnDefinitions>
 
-			<Border x:Name="timelineBorder" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+			<Style x:Key="TimelineTextblock" TargetType="TextBlock">
+				<Setter Property="Foreground" Value="{Binding BaseXml.ControlStyle.TimelineFontBrush, Converter={StaticResource GUIBrushConverter}, ElementName=UI}" />
+				<Setter Property="FontFamily" Value="{Binding BaseXml.ControlStyle.TimelineFontType, Converter={StaticResource GUIFontConverter}, ElementName=UI}" />
+				<Setter Property="FontSize" Value="{Binding BaseXml.ControlStyle.TimelineFontSize, ElementName=UI}" />
+				<Setter Property="FontWeight" Value="{Binding BaseXml.ControlStyle.TimelineFontWeight, Converter={StaticResource GUIFontConverter}, ElementName=UI}" />
+				<Setter Property="HorizontalAlignment" Value="{Binding BaseXml.ControlStyle.TimelineLabelHorizontalAlignment, ElementName=UI}" />
+				<Setter Property="VerticalAlignment" Value="{Binding BaseXml.ControlStyle.TimelineLabelVerticalAlignment, ElementName=UI}" />
+			</Style>
+
+			<Style x:Key="TimelineBorder" TargetType="Border">
+				<Setter Property="CornerRadius" Value="{Binding BaseXml.ControlStyle.TimelineItemCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, ElementName=UI}"  />
+				<Setter Property="BorderBrush" Value="{Binding BaseXml.ControlStyle.TimelineItemBorderBrush, Converter={StaticResource GUIBrushConverter}, ElementName=UI}" />
+				<Setter Property="BorderThickness" Value="{Binding BaseXml.ControlStyle.TimelineItemBorderThickness, Converter={StaticResource GUIThicknessConverter}, ElementName=UI}" />
+				<Setter Property="Margin" Value="{Binding BaseXml.GuideItemMargin, Converter={StaticResource GUIThicknessConverter}, ElementName=UI}" />
+			</Style>
+
+		</Grid.Resources>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="{Binding BaseXml.TimelineHeight}" />
+			<RowDefinition />
+		</Grid.RowDefinitions>
+		<Grid.ColumnDefinitions>
+			<ColumnDefinition Width="{Binding BaseXml.ChannelListWidth}" />
+			<ColumnDefinition  />
+		</Grid.ColumnDefinitions>
+
+		<!--Timeline -->
+		<Border x:Name="timelineBorder" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
 			        BorderBrush="{Binding BaseXml.ControlStyle.TimelineBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}"
 					BorderThickness="{Binding BaseXml.ControlStyle.TimelineBorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 					CornerRadius="{Binding BaseXml.ControlStyle.TimelineCornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}"
 			        Background="{Binding BaseXml.ControlStyle.TimelineBackground, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}"
 				    Height="{Binding BaseXml.TimelineHeight}"/>
 
-			<Border Grid.Row="0" Grid.Column="0" Style="{StaticResource TimelineBorder}" >
-				<TextBlock x:Name="timelineDate" Style="{StaticResource TimelineTextblock}" Text="{Binding TimelineInfo}" />
-			</Border>
+		<!--Timeline Info-->
+		<Border Grid.Row="0" Grid.Column="0" Style="{StaticResource TimelineBorder}" >
+			<TextBlock x:Name="timelineDate" Style="{StaticResource TimelineTextblock}" Text="{Binding TimelineInfo}" />
+		</Border>
 
-			<!--Timeline List-->
-			<ListBox x:Name="timelineListBox" Grid.Row="0" Grid.Column="1" Padding="0"
+		<!--Timeline List-->
+		<ListBox x:Name="timelineListBox" Grid.Row="0" Grid.Column="1" Padding="0"
 			         Height="{Binding BaseXml.TimelineHeight}"  
 			         ItemContainerStyle="{StaticResource TimelineItem}"  
 					 ItemsSource="{Binding Timeline}" 
 					 ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
 					 ScrollViewer.VerticalScrollBarVisibility="Disabled" 
 					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged">
-				<ListBox.ItemsPanel>
-					<ItemsPanelTemplate>
-						<Canvas IsItemsHost="True" Width="{Binding TimelineLength}"/>
-					</ItemsPanelTemplate>
-				</ListBox.ItemsPanel>
-				<ListBox.ItemTemplate>
-					<DataTemplate>
-						<Grid Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" >
-							<Border Style="{StaticResource TimelineBorder}" >
-								<TextBlock Text="{Binding Title}" Style="{StaticResource TimelineTextblock}" />
-							</Border>
-						</Grid>
-					</DataTemplate>
-				</ListBox.ItemTemplate>
-			</ListBox>
+			<ListBox.ItemsPanel>
+				<ItemsPanelTemplate>
+					<Canvas IsItemsHost="True" Width="{Binding TimelineLength}"/>
+				</ItemsPanelTemplate>
+			</ListBox.ItemsPanel>
+			<ListBox.ItemTemplate>
+				<DataTemplate>
+					<Grid Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" >
+						<Border Style="{StaticResource TimelineBorder}" >
+							<TextBlock Text="{Binding Title}" Style="{StaticResource TimelineTextblock}" />
+						</Border>
+					</Grid>
+				</DataTemplate>
+			</ListBox.ItemTemplate>
+		</ListBox>
 
-			<!--Channel List-->
-			<Border Grid.Row="1" Grid.Column="0" 
+		<!--Channel List-->
+		<Border Grid.Row="1" Grid.Column="0" 
 			        BorderBrush="{Binding BaseXml.ControlStyle.ChannelListBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}"
 					BorderThickness="{Binding BaseXml.ControlStyle.ChannelListBorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 					CornerRadius="{Binding BaseXml.ControlStyle.ChannelListCornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}"
@@ -204,7 +206,7 @@
 												Visibility="{Binding BaseXml.ChannelStyle.EnableImage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
 											<commonControls:RoundedImage 
 													      Stretch="{Binding BaseXml.ChannelStyle.ImageStretch,Mode=OneWay, ElementName=UI}"
-														
+														Source="{Binding Logo}"
 														  CornerRadius="{Binding BaseXml.ChannelStyle.ImageCornerRadius,Mode=OneWay, ElementName=UI}"  >
 											</commonControls:RoundedImage>
 										</Border>
@@ -237,10 +239,10 @@
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
-			</Border>
+		</Border>
 
-			<!--Program List-->
-			<Border Grid.Row="1" Grid.Column="1" 
+		<!--Program List-->
+		<Border Grid.Row="1" Grid.Column="1" 
 			        BorderBrush="{Binding BaseXml.ControlStyle.ProgramListBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}"
 					BorderThickness="{Binding BaseXml.ControlStyle.ProgramListBorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 					CornerRadius="{Binding BaseXml.ControlStyle.ProgramListCornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}"
@@ -248,7 +250,7 @@
 			<ListBox x:Name="programListBox" 
 			         SelectedItem="{Binding SelectedChannel}" 
 					 ItemsSource="{Binding ChannelData, IsAsync=True, Mode=OneWay}"  
-					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged" >					
+					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged" >
 				<ListBox.ItemTemplate>
 					<DataTemplate>
 						<ItemsControl Background="Brown" Padding="0" Margin="1" 
@@ -335,23 +337,23 @@
 
 
 
-							
+
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>
 					</DataTemplate>
 				</ListBox.ItemTemplate>
 			</ListBox>
-			</Border>
+		</Border>
 
-			<ScrollViewer x:Name="markerScrollviewer" Grid.Row="1" Grid.Column="1" IsHitTestVisible="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
-				<Canvas x:Name="c" Width="{Binding TimelineLength}" Height="{Binding ActualHeight, ElementName=programListBox}" >
-					<Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=c}" Width="10" Height="{Binding ActualHeight, ElementName=c}" 
+		<ScrollViewer x:Name="markerScrollviewer" Grid.Row="1" Grid.Column="1" IsHitTestVisible="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+			<Canvas x:Name="c" Width="{Binding TimelineLength}" Height="{Binding ActualHeight, ElementName=programListBox}" >
+				<Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=c}" Width="10" Height="{Binding ActualHeight, ElementName=c}" 
 			 		      Canvas.Left="{Binding TimelineCenterPosition}" 
 						  Stroke="{Binding BaseXml.ControlStyle.TimelineMarkerBrush, Converter={StaticResource GUIBrushConverter}}" 
 						  StrokeThickness="{Binding BaseXml.ControlStyle.TimelineMarkerThickness}">
-					</Line>
-				</Canvas>
-			</ScrollViewer>
-			
-		</Grid>
+				</Line>
+			</Canvas>
+		</ScrollViewer>
+
+	</Grid>
 </base:GUIControl>

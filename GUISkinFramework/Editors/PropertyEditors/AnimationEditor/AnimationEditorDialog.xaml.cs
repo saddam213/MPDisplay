@@ -20,6 +20,7 @@ using GUISkinFramework.Controls;
 using GUISkinFramework.Dialogs;
 using GUISkinFramework.Windows;
 using MPDisplay.Common.Controls;
+using Common.Helpers;
 
 namespace GUISkinFramework.Editor.PropertyEditors
 {

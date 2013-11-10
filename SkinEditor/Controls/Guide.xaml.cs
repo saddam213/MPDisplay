@@ -23,6 +23,7 @@ using System.ComponentModel;
 using System.Windows.Threading;
 using GUISkinFramework;
 using GUIFramework;
+using Common.Helpers;
 
 namespace SkinEditor.Controls
 {
@@ -68,7 +69,7 @@ namespace SkinEditor.Controls
             {
                 if (GuideData == null)
                 {
-                    GuideData = XmlManager.Deserialize<List<TvGuideChannel>>(Environment.CurrentDirectory + "\\Data\\GuideData.xml");
+                    GuideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(Environment.CurrentDirectory + "\\Data\\GuideData.xml");
                 }
                 (d as Guide).LoadGuideData(GuideData);
             }
@@ -193,7 +194,6 @@ namespace SkinEditor.Controls
                 ChannelData = new ObservableCollection<TvGuideChannel>(data);
                 foreach (var channel in ChannelData)
                 {
-               
                     channel.UpdateCurrentProgram(Now());
                 }
 

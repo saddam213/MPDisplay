@@ -9,42 +9,18 @@ using System.Text;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class MyFilmsPlugin : IPluginHelper
+    public class MyFilmsPlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public MyFilmsPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public MyFilmsPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings)
         {
-            _window = pluginWindow;
-            _settings = settings;
         }
 
-        public SupportedPluginSettings Settings
-        {
-            get { return _settings; }
-        }
-
-        public GUIWindow PluginWindow
-        {
-            get { return _window; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : 0; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
+        public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
-                var currentMovie = ReflectionHelper.GetStaticField(_window, "currentMovie", null);
+                var currentMovie = ReflectionHelper.GetStaticField(PluginWindow, "currentMovie", null);
                 if (currentMovie != null)
                 {
                     if (ReflectionHelper.GetPropertyValue<string>(currentMovie, "File", string.Empty) == filename)
@@ -56,12 +32,7 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
-        {
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
-        }
-
-        public APIPlaybackType PlayType
+        public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.MyFilms; }
         }

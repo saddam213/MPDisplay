@@ -38,6 +38,7 @@ namespace GUISkinFramework.Windows
         //private int _center3DY;
         //private int _center3DZ;
         private XmlBrush _backgroundBrush;
+        private int _defaultMediaPortalFocusedControlId;
 
         public XmlWindow()
         {
@@ -60,6 +61,8 @@ namespace GUISkinFramework.Windows
 
 
         public bool IsDefault { get; set; }
+
+    
 
       //  [XmlIgnore]
         [Browsable(false)]
@@ -208,6 +211,13 @@ namespace GUISkinFramework.Windows
         [XmlElement(ElementName = "VisibleCondition")]
         public string XmlVisibleCondition { get; set; }
 
+        [DefaultValue(-1)]
+        public int DefaultMediaPortalFocusedControlId
+        {
+            get { return _defaultMediaPortalFocusedControlId; }
+            set { _defaultMediaPortalFocusedControlId = value; NotifyPropertyChanged("DefaultMediaPortalFocusedControlId"); }
+        }
+
 
         public virtual void ApplyStyle(XmlStyleCollection style)
         {
@@ -215,7 +225,6 @@ namespace GUISkinFramework.Windows
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-    
         public void NotifyPropertyChanged(string property)
         {
             if (PropertyChanged != null)
@@ -223,7 +232,5 @@ namespace GUISkinFramework.Windows
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
-
-      
     }
 }

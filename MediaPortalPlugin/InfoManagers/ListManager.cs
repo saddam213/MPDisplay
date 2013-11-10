@@ -709,18 +709,32 @@ namespace MediaPortalPlugin.InfoManagers
             var returnValue = new List<APIListItem>();
             if (facade != null)
             {
-                var Items = ReflectionHelper.GetFieldValue<List<GUIListItem>>(facade, "_itemList", new List<GUIListItem>());
-                for (int i = 0; i < Items.Count; i++)
+                var items = new List<GUIListItem>();
+                for (int i = 0; i < facade.Count; i++)
                 {
-                    var facadeItem = Items[i];
-                    returnValue.Add(new APIListItem
+                    items.Add(facade[i]);
+                }
+              
+                if (WindowManager.Instance.CurrentPlugin != null)
+                {
+                    returnValue = WindowManager.Instance.CurrentPlugin.GetListItems(items, layout);
+                }
+
+                if (!returnValue.Any() && items.Any())
+                {
+                    int index = 0;
+                    foreach (var item in items)
                     {
-                        Index = i,
-                        Label = facadeItem.Label,
-                        Label2 = facadeItem.Label2,
-                        Label3 = facadeItem.Label3,
-                        Image = GetItemImageBytes(facadeItem, layout)
-                    });
+                        returnValue.Add(new APIListItem
+                        {
+                            Index = index,
+                            Label = item.Label,
+                            Label2 = item.Label2,
+                            Label3 = item.Label3,
+                            Image = GetItemImageBytes(item, layout)
+                        });
+                        index++;
+                    }
                 }
             }
             return returnValue;
@@ -732,17 +746,33 @@ namespace MediaPortalPlugin.InfoManagers
             if (listcontrol != null)
             {
 
+
+                var items = new List<GUIListItem>();
                 for (int i = 0; i < listcontrol.Count; i++)
                 {
-                    var listItem = listcontrol[i];
-                    returnValue.Add(new APIListItem
-                   {
-                       Index = i,
-                       Label = listItem.Label,
-                       Label2 = listItem.Label2,
-                       Label3 = listItem.Label3,
-                       Image = GetItemImageBytes(listItem, layout)
-                   });
+                    items.Add(listcontrol[i]);
+                }
+
+                if (WindowManager.Instance.CurrentPlugin != null)
+                {
+                    returnValue = WindowManager.Instance.CurrentPlugin.GetListItems(items, layout);
+                }
+
+                if (!returnValue.Any() && items.Any())
+                {
+                    int index = 0;
+                    foreach (var item in items)
+                    {
+                        returnValue.Add(new APIListItem
+                        {
+                            Index = index,
+                            Label = item.Label,
+                            Label2 = item.Label2,
+                            Label3 = item.Label3,
+                            Image = GetItemImageBytes(item, layout)
+                        });
+                        index++;
+                    }
                 }
             }
             return returnValue;
@@ -792,16 +822,12 @@ namespace MediaPortalPlugin.InfoManagers
             return APIListLayout.Vertical;
         }
 
-        public byte[] GetItemImageBytes(GUIListItem item, APIListLayout layout)
+        public APIImage GetItemImageBytes(GUIListItem item, APIListLayout layout)
         {
             string filename = string.Empty;
             if (item != null)
             {
-                if (WindowManager.Instance.CurrentPlugin != null)
-                {
-                    filename = WindowManager.Instance.CurrentPlugin.GetListItemThumb(item, layout);
-                }
-                else if (item.HasThumbnail)
+                if (item.HasThumbnail)
                 {
                     filename = item.ThumbnailImage;
                 }
@@ -817,17 +843,9 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     filename = item.PinImage;
                 }
-
             }
-            if (!string.IsNullOrEmpty(filename) && File.Exists(filename))
-            {
-                try
-                {
-                    return File.ReadAllBytes(filename);
-                }
-                catch { }
-            }
-            return null;
+         
+            return ImageHelper.CreateImage(filename);
         }
 
         #endregion
@@ -839,10 +857,10 @@ namespace MediaPortalPlugin.InfoManagers
         public void SendList(APIListType listType, APIListLayout layout, List<APIListItem> items)
         {
             int count = items != null ? items.Count() : 0;
-
+            _currentBatchId++;
             if (listType == APIListType.List && count >= _settings.ListBatchThreshold)
             {
-                _currentBatchId++;
+               
                 int batchNo = 1;
                 int batchCount = count < _settings.ListBatchSize ? 1 : ((count + _settings.ListBatchSize - 1) / _settings.ListBatchSize);
                 for (int i = 0; i < count; i += _settings.ListBatchSize)
@@ -865,11 +883,13 @@ namespace MediaPortalPlugin.InfoManagers
             }
             else
             {
+             
                 MessageService.Instance.SendListMessage(new APIListMessage
                 {
                     MessageType = APIListMessageType.List,
                     List = new APIList
                     {
+                        BatchId = _currentBatchId,
                         BatchCount = -1,
                         ListType = listType,
                         ListItems = new List<APIListItem>(items),

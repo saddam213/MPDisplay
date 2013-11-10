@@ -20,6 +20,7 @@ using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Editor.PropertyEditors.PropertyEditor;
 using GUISkinFramework.PropertyEditors;
 using GUISkinFramework.Skin;
+using Common.Helpers;
 
 namespace GUISkinFramework.Editor.PropertyEditors
 {

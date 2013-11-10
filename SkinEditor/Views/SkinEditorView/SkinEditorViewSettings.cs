@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
+using Common.Helpers;
 using GUISkinFramework;
 using GUISkinFramework.Styles;
 
@@ -35,7 +36,7 @@ namespace SkinEditor.Views
             base.InitializeSettings();
             if (File.Exists(Environment.CurrentDirectory + "\\DesignerStyle.xml"))
             {
-                var styleCollection = XmlManager.Deserialize<XmlStyleCollection>(Environment.CurrentDirectory + "\\DesignerStyle.xml");
+                var styleCollection = SerializationHelper.Deserialize<XmlStyleCollection>(Environment.CurrentDirectory + "\\DesignerStyle.xml");
                 if (styleCollection != null)
                 {
                    DesignerStyle = styleCollection;

@@ -10,6 +10,7 @@ using GUISkinFramework.Common;
 using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Windows;
+using Common.Helpers;
 
 namespace GUISkinFramework.Styles
 {

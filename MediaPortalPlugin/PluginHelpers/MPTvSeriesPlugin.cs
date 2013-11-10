@@ -1,50 +1,28 @@
 ﻿using Common.Helpers;
 using Common.Settings.SettingsObjects;
 using MediaPortal.GUI.Library;
+using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class MPTvSeriesPlugin : IPluginHelper
+    public class MPTvSeriesPlugin : PluginHelper
     {
-        private GUIWindow _window;
-        private SupportedPluginSettings _settings;
-
-        public MPTvSeriesPlugin(GUIWindow pluginWindow, SupportedPluginSettings settings)
+        public MPTvSeriesPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+            : base(pluginindow, settings)
         {
-            _window = pluginWindow;
-            _settings = settings;
         }
 
-        public SupportedPluginSettings Settings
-        {
-            get { return _settings; }
-        }
-
-        public GUIWindow PluginWindow
-        {
-            get { return _window; }
-        }
-
-        public int WindowId
-        {
-            get { return IsEnabled ? _window.GetID : 0; }
-        }
-
-        public bool IsEnabled
-        {
-            get { return _window != null; }
-        }
-
-        public bool IsPlaying(string filename, APIPlaybackType playtype)
+        public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
             if (IsEnabled)
             {
-                var selectedSeries = ReflectionHelper.GetStaticField(_window, "m_SelectedEpisode", null);
+                var selectedSeries = ReflectionHelper.GetStaticField(PluginWindow, "m_SelectedEpisode", null);
                 if (selectedSeries != null)
                 {
                     var episodeFilename = ReflectionHelper.GetPropertyValue<object>(selectedSeries, "Item", null, new object[] { "EpisodeFilename" });
@@ -57,12 +35,7 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public string GetListItemThumb(GUIListItem item, APIListLayout layout)
-        {
-            return SupportedPluginManager.GetListItemImage(_settings, item, layout);
-        }
-
-        public APIPlaybackType PlayType
+        public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.MPTVSeries; }
         }
