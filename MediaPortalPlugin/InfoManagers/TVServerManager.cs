@@ -13,6 +13,7 @@ using MediaPortal.Profile;
 using MediaPortal.Util;
 using MessageFramework.DataObjects;
 using MPDisplay.Common.Settings;
+using System.Diagnostics;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -56,15 +57,18 @@ namespace MediaPortalPlugin.InfoManagers
             _settings = settings;
             SetupTVServerInterface();
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
+        
            _channelGroup = MPSettings.Instance.GetValue("mytv", "group");
-           _updateTimer = new Timer((o) => UpdateGuideData(), null, TimeSpan.FromSeconds(5), TimeSpan.FromSeconds(5));
+
+           if (_updateTimer == null)
+           {
+               _updateTimer = new Timer((o) => UpdateGuideData(), null, 5000, -1);
+           }
         }
 
-        private void UpdateGuideData()
-        {
-            SendRecordings();
-        }
+   
 
+     
      
 
         void GUIPropertyManager_OnPropertyChanged(string tag, string tagValue)
@@ -79,8 +83,23 @@ namespace MediaPortalPlugin.InfoManagers
         public void Shutdown()
         {
             GUIPropertyManager.OnPropertyChanged -= GUIPropertyManager_OnPropertyChanged;
+            if (_updateTimer != null)
+            {
+                _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                _updateTimer = null;
+            }
         }
-   
+
+
+        private void UpdateGuideData()
+        {
+            if (_updateTimer != null)
+            {
+                _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+                SendRecordings();
+                _updateTimer.Change(5000, -1);
+            }
+        }
 
         public void SendTvGuide()
         {
@@ -112,12 +131,12 @@ namespace MediaPortalPlugin.InfoManagers
         }
 
 
-     
+      
 
         public void SendRecordings()
         {
             var recordings = _getRecordings();
-            if (HasRecordingsChanged(recordings))
+            if (!recordings.AreUnorderedEqualBy(_lastRecordingMessage, x => x.ProgramId))
             {
                 _lastRecordingMessage = recordings;
                 MessageService.Instance.SendListMessage(new APIListMessage
@@ -144,31 +163,36 @@ namespace MediaPortalPlugin.InfoManagers
                 }
             });
         }
-        
+
+      
+
+
         private void SetupTVServerInterface()
         {
             string tvBusinessLayerFile = Config.GetFolder(Config.Dir.Base) + @"\TvBusinessLayer.dll";
-            if (File.Exists(tvBusinessLayerFile))
+            string tvServerFile = Config.GetFolder(Config.Dir.Base) + @"\TVDatabase.dll";
+            if (File.Exists(tvBusinessLayerFile) && File.Exists(tvBusinessLayerFile))
             {
                 try
                 {
+                    var tvServerAssembly = Assembly.LoadFrom(tvServerFile);
                     var tvBusinessLayerAssembly = Assembly.LoadFrom(tvBusinessLayerFile);
-                    if (tvBusinessLayerAssembly != null)
+                    if (tvBusinessLayerAssembly != null && tvServerAssembly != null)
                     {
+                        Type scheduleType = tvServerAssembly.GetType("TvDatabase.Schedule");
                         var tvBusinessLayer = Activator.CreateInstance(tvBusinessLayerAssembly.GetType("TvDatabase.TvBusinessLayer"));
-                        if (tvBusinessLayer != null)
+                        if (tvBusinessLayer != null && scheduleType != null)
                         {
                             var allChannels = ReflectionHelper.GetPropertyValue<IEnumerable>(tvBusinessLayer, "Channels", null);
                             var getProgramsInChannel = tvBusinessLayer.GetType().GetMethods()
                                 .FirstOrDefault(m => m.Name.Equals("GetPrograms") && m.GetParameters().Count() == 3 && m.GetParameters()[0].ParameterType != typeof(DateTime));
-
-                            var getAllPrograms = tvBusinessLayer.GetType().GetMethods()
-                                .FirstOrDefault(m => m.Name.Equals("GetPrograms") && m.GetParameters().Count() == 2 && m.GetParameters()[0].ParameterType == typeof(DateTime));
-
+                        
                             if (allChannels != null && getProgramsInChannel != null)
                             {
                                 _getGuide = () =>
                                 {
+                                    Stopwatch sp = new Stopwatch();
+                                    sp.Start();
                                     var returnValue = new List<APIChannel>();
                                     try
                                     {
@@ -214,25 +238,26 @@ namespace MediaPortalPlugin.InfoManagers
                                     }
                                     catch (Exception ex)
                                     {
-
+                                        Log.Exception("[GetGuide] - An exception occured fetching guide data", ex);
                                     }
+                                  
                                     return returnValue;
                                 };
 
                                 _getRecordings = () =>
+                                {
+                                    var recordings = new List<APIRecording>();
+                                    try
                                     {
-                                        var recordings = new List<APIRecording>();
-                                        try
+                                        var schedules = ReflectionHelper.InvokeStaticMethod<IEnumerable>(scheduleType, "ListAll", null);
+                                        if (schedules != null)
                                         {
-                                            var programs = (IEnumerable)getAllPrograms.Invoke(tvBusinessLayer, new object[] { DateTime.Now.Date, DateTime.Now.AddDays(_settings.EPGDays).Date });
-                                            if (programs != null)
+                                            foreach (var schedule in schedules)
                                             {
-                                                foreach (var program in programs)
+                                                var programs = ReflectionHelper.InvokeStaticMethod<IEnumerable>(scheduleType, "GetProgramsForSchedule", null, schedule);
+                                                if (programs != null)
                                                 {
-                                                    var isrecording = ReflectionHelper.GetPropertyValue<bool>(program, "IsRecording", false)
-                                                      ||  ReflectionHelper.GetPropertyValue<bool>(program, "IsRecordingOncePending", false)
-                                                                   || ReflectionHelper.GetPropertyValue<bool>(program, "IsRecordingSeriesPending", false);
-                                                    if (isrecording)
+                                                    foreach (var program in programs)
                                                     {
                                                         recordings.Add(new APIRecording
                                                         {
@@ -243,12 +268,13 @@ namespace MediaPortalPlugin.InfoManagers
                                                 }
                                             }
                                         }
-                                        catch (Exception ex)
-                                        {
-
-                                        }
-                                        return recordings;
-                                    };
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Log.Exception("[GetRecordings] - An exception occured fetching recordings", ex);
+                                    }
+                                    return recordings;
+                                };
                             }
                         }
                     }
@@ -260,6 +286,8 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+
+
         private APIImage GetChannelLogo(string channelName, bool isRadio)
         {
             string filename = Utils.GetCoverArt(isRadio ? Thumbs.Radio : Thumbs.TVChannel, channelName);
@@ -267,15 +295,7 @@ namespace MediaPortalPlugin.InfoManagers
             return ImageHelper.CreateImage(filename);
         }
 
-        private bool HasRecordingsChanged(IEnumerable<APIRecording> newRecordings)
-        {
-            lock (_lastRecordingMessage)
-            {
-                return !newRecordings.Select(p => p.ProgramId).OrderBy(p => p).SequenceEqual(
-               _lastRecordingMessage.Select(p => p.ProgramId).OrderBy(p => p));
-            }
-        }
-
+    
 
         public void OnActionMessageReceived(APIActionMessage message)
         {

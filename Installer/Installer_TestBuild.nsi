@@ -2,7 +2,7 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "TestBuild_0.9.4.3.2"
+!define VERSION "TestBuild_0.9.4.4"
 !define BUILD_FOLDER "G:\Code\Release\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"
@@ -804,7 +804,8 @@ SectionEnd
 Section Uninstall
 	SetAutoClose true
 	    
-		Delete "$INSTDIR\${UNINSTALLER_EXE_NAME}"
+	    ReadRegDWORD $0 ${REG_HKLM} "${REG_APP_PATH}" MPDisplayPath
+			Delete "$0\${UNINSTALLER_EXE_NAME}"
 		
         # Check User Rights----------------------------------------------------##
 		!insertmacro Check_UAC "UnInstaller"
@@ -881,7 +882,7 @@ Section Uninstall
 		${EndIf}	
 		
         Delete "$0\MPDisplay.xml"
-        Delete "$0\PluginAdvancedSettings.xml"			
+        Delete "$0\AdvancedPluginSettings.xml"			
 	    RmDir "$0"
 		DeleteRegKey ${REG_HKLM} "${REG_APP_PATH}" 
 		DeleteRegKey ${REG_HKLM} "${REG_UNINSTALL_PATH}" 

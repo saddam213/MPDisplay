@@ -246,6 +246,37 @@ namespace Common.Helpers
             return defalutValue;
         }
 
+
+        public static T InvokeMethod<T>(object obj, string methodName, T defalutValue, params object[] args)
+        {
+            try
+            {
+                    return (T)obj.GetType().InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, args);
+            }
+            catch { }
+            return defalutValue;
+        }
+
+
+        public static T InvokeStaticMethod<T>(Type obj, string methodName, T defalutValue, params object[] args)
+        {
+            try
+            {
+                return (T)obj.InvokeMember(methodName, BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, args);
+            }
+            catch { }
+            return defalutValue;
+        }
+
+        public static void InvokeStaticMethod(Type obj, string methodName, params object[] args)
+        {
+            try
+            {
+                obj.InvokeMember(methodName, BindingFlags.Static | BindingFlags.InvokeMethod | BindingFlags.Public, null, null, args);
+            }
+            catch { }
+        }
+
         /// <summary>
         /// Get A Property Value From An Object
         /// </summary>
