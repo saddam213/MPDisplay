@@ -10,6 +10,7 @@ using GUISkinFramework;
 using GUISkinFramework.Property;
 using MessageFramework.DataObjects;
 using MPDisplay.Common;
+using MPDisplay.Common.Log;
 using MPDisplay.Common.Settings;
 
 namespace GUIFramework.Managers
@@ -102,7 +103,7 @@ namespace GUIFramework.Managers
 
         #endregion
 
-
+        private Log Log = LoggingManager.GetLog(typeof(PropertyRepository));
 
 
         private List<APIPropertyMessage> _skinProperties = new List<APIPropertyMessage>();

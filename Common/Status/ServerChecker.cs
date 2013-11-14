@@ -130,11 +130,11 @@ namespace Common.Status
                 {
                     NotifyTextDataChanged(string.Format("Drive{0}.Name", num), d.Name);
                     NotifyTextDataChanged(string.Format("Drive{0}.VolumeLabel", num), d.VolumeLabel);
-                    NotifyTextDataChanged(string.Format("Drive{0}.TotalSpace", num), d.TotalFreeSpace.ToPrettySize(2));
+                    NotifyTextDataChanged(string.Format("Drive{0}.TotalSpace", num), d.TotalSize.ToPrettySize(2));
                     NotifyTextDataChanged(string.Format("Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
                     double percentFree = Math.Round(100 * (double)d.TotalFreeSpace / d.TotalSize,2);
-                    NotifyTextDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree.ToString());
-                    NotifyNumberDataChanged("Drive{0}.PercentFree", percentFree);
+                    NotifyTextDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree.ToString() + " %");
+                    NotifyNumberDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree);
                     num++;
                 }
             }
@@ -149,23 +149,23 @@ namespace Common.Status
             if (_lastTimeUpdate.ToLongDateString() != datetime.ToLongDateString())
             {
                 NotifyTextDataChanged("Date", datetime.ToLongDateString());
-                NotifyTextDataChanged("Date1", datetime.ToString("ddd d MMM"));
-                NotifyTextDataChanged("Date2", datetime.ToString("dddd dd MMMM"));
-                NotifyTextDataChanged("Date3", datetime.ToString("MM/dd/yyyy"));
+                NotifyTextDataChanged("Date2", datetime.ToString("ddd d MMM"));
+                NotifyTextDataChanged("Date3", datetime.ToString("dddd dd MMMM"));
+                NotifyTextDataChanged("Date4", datetime.ToString("MM/dd/yyyy"));
                 NotifyTextDataChanged("DateMonth", datetime.Month.ToString());
                 NotifyTextDataChanged("DateMonthShort", datetime.ToString("MMM"));
                 NotifyTextDataChanged("DateMonthLong", datetime.ToString("MMMM"));
                 NotifyTextDataChanged("DateDay", datetime.Day.ToString());
-                NotifyTextDataChanged("DateDayShort", datetime.ToString("dddd"));
-                NotifyTextDataChanged("DateDayLong", datetime.ToString("ddd"));
+                NotifyTextDataChanged("DateDayShort", datetime.ToString("ddd"));
+                NotifyTextDataChanged("DateDayLong", datetime.ToString("dddy"));
                 NotifyTextDataChanged("DateYear", datetime.ToString("yyyy"));
-                NotifyTextDataChanged("DateShort", datetime.ToString("yy"));
+                NotifyTextDataChanged("DateYearShort", datetime.ToString("yy"));
             }
             if (_lastTimeUpdate.Second != datetime.Second)
             {
-                NotifyTextDataChanged("Time", datetime.ToString("H:mm tt"));
+                NotifyTextDataChanged("Time", datetime.ToString("h:mm tt"));
                 NotifyTextDataChanged("Time2", datetime.ToString("HH:mm"));
-                NotifyTextDataChanged("Time3", datetime.ToString("H:mm:ss tt"));
+                NotifyTextDataChanged("Time3", datetime.ToString("h:mm:ss tt"));
                 NotifyTextDataChanged("Time4", datetime.ToString("HH:mm:ss"));
             }
             _lastTimeUpdate = datetime;

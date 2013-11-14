@@ -344,7 +344,7 @@ namespace GUISkinFramework
         [Browsable(false)]
         public ObservableCollection<XmlProperty> Properties
         {
-            get { return _propertyInfo.Properties; }
+            get { return _propertyInfo.AllProperties; }
         }
 
         [XmlIgnore]
@@ -723,22 +723,24 @@ namespace GUISkinFramework
             if (File.Exists(propertyXmlFile))
             {
                 Log.Message(LogLevel.Info, "PropertyInfo file found: {0}", propertyXmlFile);
-                var info = SerializationHelper.Deserialize<XmlPropertyInfo>(propertyXmlFile);
+                 var info = SerializationHelper.Deserialize<XmlPropertyInfo>(propertyXmlFile);
                 if (info != null)
                 {
-                    _propertyInfo = new XmlPropertyInfo
-                    {
-                        Properties = new ObservableCollection<XmlProperty>(info.Properties.OrderByDescending(p => p.PropertyType))
-                    };
+                    _propertyInfo = new XmlPropertyInfo();
 
-                    foreach (var item in _propertyInfo.Properties)
+                    var internals = info.AllProperties.Where(x => x.IsInternal).Select(x => x.SkinTag).ToList();
+                    foreach (var item in info.AllProperties.Where(x => !x.IsInternal).OrderByDescending(p => p.PropertyType))
                     {
-                        Log.Message(LogLevel.Verbose, "Adding property tag, Type: {0}, Tag: {1}", item.PropertyType, item.SkinTag);
+                        if (!internals.Contains(item.SkinTag))
+                        {
+                            _propertyInfo.Properties.Add(item);
+                        }
                     }
+
                     Log.Message(LogLevel.Info, "Loaded PropertyInfo file.");
                     return;
                 }
-                _propertyInfo = new XmlPropertyInfo { Properties = new ObservableCollection<XmlProperty>() };
+                _propertyInfo = new XmlPropertyInfo();
                 Log.Message(LogLevel.Warn, "Failed to load PropertyInfo file.");
                 return;
             }
@@ -749,13 +751,14 @@ namespace GUISkinFramework
         {
             Log.Message(LogLevel.Info, "Saving skin PropertyInfo...");
             string propertyXmlFile = Path.Combine(SkinFolderPath, "PropertyInfo.xml");
-            var info = new XmlPropertyInfo
+            var info = new XmlPropertyInfo();
+            var internals = _propertyInfo.AllProperties.Where(x => x.IsInternal).Select(x => x.SkinTag).ToList();
+            foreach (var item in _propertyInfo.AllProperties.Where(x => !x.IsInternal).OrderByDescending(p => p.PropertyType))
             {
-                Properties = new ObservableCollection<XmlProperty>(_propertyInfo.Properties.OrderByDescending(p => p.PropertyType))
-            };
-            foreach (var item in info.Properties)
-            {
-                Log.Message(LogLevel.Verbose, "Saving property tag, Type: {0}, Tag: {1}", item.PropertyType, item.SkinTag);
+                if (!internals.Contains(item.SkinTag))
+                {
+                    info.Properties.Add(item);
+                }
             }
 
             if (!SerializationHelper.Serialize<XmlPropertyInfo>(info, propertyXmlFile))

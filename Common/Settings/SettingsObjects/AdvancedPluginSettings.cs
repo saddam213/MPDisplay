@@ -9,6 +9,7 @@ using System.Xml.Serialization;
 namespace MPDisplay.Common.Settings
 {
     [XmlInclude(typeof(SupportedPluginSettings))]
+    [XmlInclude(typeof(TvSeriesPluginSettings))]
     public class AdvancedPluginSettings : SettingsBase
     {
         private ObservableCollection<SupportedPluginSettings> _supportedPlugins = new ObservableCollection<SupportedPluginSettings>();

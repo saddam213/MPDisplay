@@ -42,6 +42,9 @@
       <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="MP-TVSeries">
+      <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\plugins\Windows\MP-TVSeries.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />
@@ -72,15 +75,15 @@
     <Compile Include="InfoManagers\WindowManager.cs" />
     <Compile Include="MPDisplayPlugin.cs" />
     <Compile Include="InfoManagers\SupportedPluginManager.cs" />
-    <Compile Include="PluginHelpers\RadioTimePlugin.cs" />
-    <Compile Include="PluginHelpers\PluginHelper.cs" />
-    <Compile Include="PluginHelpers\MovingPicturesPlugin.cs" />
-    <Compile Include="PluginHelpers\MPTvSeriesPlugin.cs" />
-    <Compile Include="PluginHelpers\MvCentralPlugin.cs" />
-    <Compile Include="PluginHelpers\MyAnimePlugin.cs" />
-    <Compile Include="PluginHelpers\MyFilmsPlugin.cs" />
-    <Compile Include="PluginHelpers\OnlineVideosPlugin.cs" />
-    <Compile Include="PluginHelpers\RockStarPlugin.cs" />
+    <Compile Include="Plugins\RadioTimePlugin.cs" />
+    <Compile Include="Plugins\PluginHelper.cs" />
+    <Compile Include="Plugins\MovingPicturesPlugin.cs" />
+    <Compile Include="Plugins\MPTvSeriesPlugin.cs" />
+    <Compile Include="Plugins\MvCentralPlugin.cs" />
+    <Compile Include="Plugins\MyAnimePlugin.cs" />
+    <Compile Include="Plugins\MyFilmsPlugin.cs" />
+    <Compile Include="Plugins\OnlineVideosPlugin.cs" />
+    <Compile Include="Plugins\RockStarPlugin.cs" />
     <Compile Include="ServiceProxy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -82,10 +82,30 @@ namespace MediaPortalPlugin.PluginHelpers
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumbPath, string.Empty);
                         break;
                     case APIListLayout.CoverFlow:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumbPath, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumbPath, string.Empty);
                         break;
                     default:
                         break;
+                }
+
+                if (string.IsNullOrEmpty(filename))
+                {
+                    if (item.HasThumbnail)
+                    {
+                        filename = item.ThumbnailImage;
+                    }
+                    else if (item.HasIconBig)
+                    {
+                        filename = item.IconImageBig;
+                    }
+                    else if (item.HasIcon)
+                    {
+                        filename = item.IconImage;
+                    }
+                    else if (item.HasPinIcon)
+                    {
+                        filename = item.PinImage;
+                    }
                 }
             }
             return new APIImage(filename);

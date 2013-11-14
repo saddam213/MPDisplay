@@ -18,6 +18,7 @@ using MPDisplay.Common.Log;
 using GUISkinFramework.Windows;
 using GUISkinFramework;
 using GUISkinFramework.Dialogs;
+using MPDisplay.Common.Settings;
 
 namespace GUIFramework.Managers
 {
@@ -181,6 +182,11 @@ namespace GUIFramework.Managers
         public static bool IsMediaPortalListLayout(int layout)
         {
             return (int)ListRepository.GetCurrentMediaPortalListLayout() == layout;
+        }
+
+        public static bool IsMultiSeatInstall()
+        {
+            return RegistrySettings.InstallType == MPDisplayInstallType.GUI;
         }
 
         #endregion
@@ -403,6 +409,8 @@ namespace GUIFramework.Managers
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalWindow(", "GUIVisibilityManager.IsMediaPortalWindow(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalDialog(", "GUIVisibilityManager.IsMediaPortalDialog(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalPreviousWindow(", "GUIVisibilityManager.IsMediaPortalPreviousWindow(");
+            xmlVisibleString = xmlVisibleString.Replace("IsMultiSeatInstall", "GUIVisibilityManager.IsMultiSeatInstall()");
+            //IsMultiSeatInstall
             return xmlVisibleString;
         }
 

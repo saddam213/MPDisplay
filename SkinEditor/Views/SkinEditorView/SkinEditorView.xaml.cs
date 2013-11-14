@@ -190,6 +190,8 @@ namespace SkinEditor.Views
             NotifyPropertyChanged("AllWindows");
             SelectedStyle = SkinInfo.CurrentStyle;
             SelectedLanguage = SkinInfo.CurrentLanguage;
+            TreeView_SelectedItemChanged(null, new RoutedPropertyChangedEventArgs<object>(null, SkinInfo.Windows.FirstOrDefault(w => w.IsDefault)));
+        //    SelectedTreeItem = Windows.FirstOrDefault(w => w.IsDefault);
         }
 
         public override void OnModelOpen()

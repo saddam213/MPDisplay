@@ -76,6 +76,7 @@
     <Compile Include="Settings\SettingsObjects\GUISettings.cs" />
     <Compile Include="Settings\SettingsObjects\MPDisplaySettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginObjects\SupportedPluginSettings.cs" />
+    <Compile Include="Settings\SettingsObjects\PluginObjects\TvSeriesPluginSettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginSettings.cs" />
     <Compile Include="Status\SystemInfo.cs" />
     <Compile Include="Status\ServerChecker.cs" />

@@ -188,6 +188,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 AutoCompleteList.Add(new AutoCompleteEntry("!IsTVServerConnected", "!IsTVServerConnected", "!", "!MP", "!ist", "!connect", "!tv"));
                 AutoCompleteList.Add(new AutoCompleteEntry("IsMPDisplayConnected", "IsMPDisplayConnected", "MP", "ist", "connect", "tv"));
                 AutoCompleteList.Add(new AutoCompleteEntry("!IsMPDisplayConnected", "!IsMPDisplayConnected", "!", "!MP", "!ist", "!connect", "!tv"));
+
+                AutoCompleteList.Add(new AutoCompleteEntry("IsMultiSeatInstall", "IsMultiSeatInstall", "Is", "ism", "inst", "mul"));
+                AutoCompleteList.Add(new AutoCompleteEntry("!IsMultiSeatInstall", "!IsMultiSeatInstall", "!", "!Is", "!ism", "!inst", "!mul"));
+
+             
             }
 
         }
@@ -356,9 +361,10 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlFocused(", "GUIVisibilityManager.IsMediaPortalControlFocused(");
             xmlVisibleString = xmlVisibleString.Replace("IsMediaPortalControlVisible(", "GUIVisibilityManager.IsMediaPortalControlVisible(");
+            xmlVisibleString = xmlVisibleString.Replace("IsMultiSeatInstall", "GUIVisibilityManager.IsMultiSeatInstall()");
 
 
-
+        
             //GUIWindowManager
             if (!string.IsNullOrWhiteSpace(xmlVisibleString))
             {

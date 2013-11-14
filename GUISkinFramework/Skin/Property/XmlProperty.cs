@@ -40,6 +40,7 @@ namespace GUISkinFramework.Property
             set { _mediaPortalTags = value; NotifyPropertyChanged("MediaPortalTags"); }
         }
 
+        public bool IsInternal { get; set; }
       
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)

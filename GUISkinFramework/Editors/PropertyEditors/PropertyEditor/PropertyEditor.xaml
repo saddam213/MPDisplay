@@ -6,9 +6,10 @@
              xmlns:property="clr-namespace:GUISkinFramework.Property"
              xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors.PropertyEditor"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
+			  xmlns:converters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
 			 xmlns:MPDCommon="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
 			    xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-             mc:Ignorable="d" Name="UI" MinWidth="583" MinHeight="398" Width="583" >
+             mc:Ignorable="d" Name="UI" MinWidth="583" MinHeight="398" Height="594" Width="583">
     <UserControl.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="PropertyTypes">
             <ObjectDataProvider.MethodParameters>
@@ -24,7 +25,7 @@
             </Style.Triggers>
         </Style>
 
-	
+		<converters:InverseBoolConverter x:Key="InverseBoolConverter" />
 	</UserControl.Resources>
     
     <Grid DataContext="{Binding ElementName=UI}">
@@ -32,9 +33,18 @@
             <ColumnDefinition Width="115*"/>
             <ColumnDefinition Width="115*"/>
         </Grid.ColumnDefinitions>
-        <StackPanel >
-            <TextBlock Text="Properties" />
-			<ListBox SelectedIndex="0" ItemsSource="{Binding Properties}" SelectedItem="{Binding SelectedProperty}" Height="356" MPDCommon:ItemsControlExtensions.ScrollItemIntoView="True" IsSynchronizedWithCurrentItem="True" >
+        <DockPanel >
+            <TextBlock Text="Properties" DockPanel.Dock="Top"/>
+
+			<StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Margin="0,3,29,0">
+				<Button Width="23" Height="23" Click="Button_PropertyAdd_Click">
+					<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
+				</Button>
+				<Button Margin="3,0,0,0" Width="23" Height="23" Click="Button_PropertyRemove_Click" IsEnabled="{Binding SelectedProperty.IsInternal, Converter={StaticResource InverseBoolConverter}}">
+					<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
+				</Button>
+			</StackPanel>
+			<ListBox SelectedIndex="0" ItemsSource="{Binding Properties}" SelectedItem="{Binding SelectedProperty}" MPDCommon:ItemsControlExtensions.ScrollItemIntoView="True" IsSynchronizedWithCurrentItem="True" >
 
 				<ListBox.GroupStyle>
 						<GroupStyle>
@@ -56,19 +66,12 @@
 			
 
         </ListBox>
-            <StackPanel Orientation="Horizontal" Margin="0,3,29,0">
-                <Button Width="23" Height="23" Click="Button_PropertyAdd_Click">
-                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
-                </Button>
-                <Button Margin="3,0,0,0" Width="23" Height="23" Click="Button_PropertyRemove_Click">
-                    <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
-                </Button>
-            </StackPanel>
-        </StackPanel>
-   
-        <StackPanel Margin="10,16,0,0" Grid.Column="1">
+         
+		</DockPanel>
+
+		<StackPanel Margin="10,16,0,0" Grid.Column="1" IsEnabled="{Binding SelectedProperty.IsInternal, Converter={StaticResource InverseBoolConverter}}">
             <TextBlock TextWrapping="Wrap" Text="Skin Tag"/>
-            <TextBox  TextWrapping="Wrap">
+			<TextBox  TextWrapping="Wrap" >
                 <TextBox.Text>
                     <Binding Path="SelectedProperty.SkinTag" UpdateSourceTrigger="PropertyChanged" >
                         <Binding.ValidationRules>
@@ -78,11 +81,11 @@
                 </TextBox.Text>
             </TextBox>
             <TextBlock TextWrapping="Wrap" Text="Property Type"/>
-            <ComboBox ItemsSource="{Binding Source={StaticResource PropertyTypes}}" SelectedItem="{Binding SelectedProperty.PropertyType}" SelectionChanged="ComboBox_SelectionChanged_1"/>
+			<ComboBox ItemsSource="{Binding Source={StaticResource PropertyTypes}}" SelectedItem="{Binding SelectedProperty.PropertyType}" SelectionChanged="ComboBox_SelectionChanged_1" />
             <TextBlock TextWrapping="Wrap" Text="Designer Value"/>
             <TextBox TextWrapping="Wrap" Text="{Binding SelectedProperty.DesignerValue}"/>
-            <TextBlock TextWrapping="Wrap" Text="MediaPortal Property Tags"/>
-            <ListBox SelectedIndex="{Binding MediaPortalTagSelectedIndex}" x:Name="mpTagList" ItemsSource="{Binding SelectedProperty.MediaPortalTags}"  DisplayMemberPath="Tag"  Height="150" IsSynchronizedWithCurrentItem="True"/>
+            <TextBlock TextWrapping="Wrap" Text="MediaPortal Property Tags" />
+			<ListBox SelectedIndex="{Binding MediaPortalTagSelectedIndex}" x:Name="mpTagList" ItemsSource="{Binding SelectedProperty.MediaPortalTags}"  DisplayMemberPath="Tag"  Height="150" IsSynchronizedWithCurrentItem="True" />
             <TextBlock TextWrapping="Wrap" Text="Tag"/>
             <TextBox TextWrapping="Wrap" >
                 <TextBox.Text>
@@ -99,11 +102,11 @@
                             <DataTrigger Binding="{Binding SelectedItem, ElementName=mpTagList}" Value="{x:Null}">
                                 <Setter Property="IsEnabled" Value="False" />
                             </DataTrigger>
-                        </Style.Triggers>
+						</Style.Triggers>
                     </Style>
                 </TextBox.Style>
             </TextBox>
-			<StackPanel Margin="0,3,0,0" Orientation="Horizontal">
+			<StackPanel Margin="0,3,0,0" Orientation="Horizontal" >
                 <Button Width="23" Height="23" Click="Button_MediaPortalTagAdd_Click">
                     <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" />
                 </Button>

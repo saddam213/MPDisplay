@@ -7,6 +7,7 @@ using System.Xml.Serialization;
 
 namespace Common.Settings.SettingsObjects
 {
+    [XmlType("GenericPluginSettings")]
     public class SupportedPluginSettings
     {
         private SupportedPlugin _pluginType = SupportedPlugin.None;

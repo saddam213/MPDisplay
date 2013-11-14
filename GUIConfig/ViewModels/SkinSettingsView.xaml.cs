@@ -45,7 +45,7 @@ namespace GUIConfig.ViewModels
 
         private void LaunchSkinEditor()
         {
-            Process.Start(RegistrySettings.SkinEditorExePath);
+            Process.Start(RegistrySettings.SkinEditorExePath, SelectedSkin.SkinInfoPath);
         }
 
         public override string Title

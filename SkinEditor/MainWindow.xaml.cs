@@ -50,6 +50,8 @@ namespace SkinEditor
           //  Application.Current.Resources = new ResourceDictionary { Source = new Uri("/GUIFramework;component/Themes/Generic.xaml", UriKind.RelativeOrAbsolute) };
             Settings = SkinEditorSettings.LoadSettings(_settingsFile);
             LoadViews();
+
+            SkinOpenRecent(App.StartupSkinInfoFilename);
         }
 
         private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
@@ -96,10 +98,10 @@ namespace SkinEditor
         {
             if (EditorViews.Count == 0)
             {
-                EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
                 EditorViews.Add(new SkinEditorView{ EditorSettings = Settings.SkinEditorViewSettings});
                 EditorViews.Add(new StyleEditorView{ EditorSettings = Settings.StyleEditorViewSettings});
                 EditorViews.Add(new ImageEditorView{ EditorSettings = Settings.ImageEditorViewSettings});
+                EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
                 EditorViews.Add(new TestEditorView {  });
             }
         }
@@ -112,6 +114,7 @@ namespace SkinEditor
             {
                 editorView.SkinInfo = skinInfo;
             }
+            
         }
 
         private void ClearPendingChanges()

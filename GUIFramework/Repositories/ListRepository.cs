@@ -223,8 +223,8 @@ namespace GUIFramework.Managers
             {
                 PropertyRepository.Instance.AddProperty("#MPD.ListControl.Count", list != null ? list.Count.ToString() : "0");
                 PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", string.Empty);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", string.Empty);
                 PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", string.Empty);
                 PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", default(byte[]));
                 NotifyListChanged(listType);
