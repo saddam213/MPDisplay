@@ -10,10 +10,20 @@ using GUISkinFramework.Common;
 
 namespace GUIFramework.GUI
 {
+    /// <summary>
+    /// 
+    /// </summary>
     public class GUIActionCollection
     {
+        /// <summary>
+        /// The _actions
+        /// </summary>
         public List<Action> _actions = new List<Action>();
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUIActionCollection"/> class.
+        /// </summary>
+        /// <param name="xmlActions">The XML actions.</param>
         public GUIActionCollection(IEnumerable<XmlAction> xmlActions)
         {
             if (xmlActions != null)
@@ -25,6 +35,10 @@ namespace GUIFramework.GUI
             }
         }
 
+        /// <summary>
+        /// Executes the actions.
+        /// </summary>
+        /// <returns></returns>
         public async Task ExecuteActions()
         {
             await Application.Current.Dispatcher.BeginInvoke((Action)delegate

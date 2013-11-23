@@ -7,8 +7,8 @@ using MediaPortal.GUI.Library;
 
 using System.IO;
 
-using MPDisplay.Common.Settings;
-using MPDisplay.Common.Log;
+using Common.Settings;
+using Common.Logging;
 using Common.Helpers;
 
 namespace SkinHelper
@@ -94,11 +94,11 @@ namespace SkinHelper
                     Directory.CreateDirectory(logdir);
                 }
 
-                MPDisplay.Common.Log.LoggingManager.AddLog(new MPDisplay.Common.Log.FileLogger(logdir, "Action"), "Action");
-                MPDisplay.Common.Log.LoggingManager.AddLog(new MPDisplay.Common.Log.FileLogger(logdir, "Property"), "Property");
-                MPDisplay.Common.Log.LoggingManager.AddLog(new MPDisplay.Common.Log.FileLogger(logdir, "ListItem"), "ListItem");
-                MPDisplay.Common.Log.LoggingManager.AddLog(new MPDisplay.Common.Log.FileLogger(logdir, "Dialog"), "Dialog");
-                LoggingManager.AddLog(new MPDisplay.Common.Log.FileLogger(logdir, "Window"), "Window");
+                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Action", LogLevel.Debug), "Action");
+                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Property", LogLevel.Debug), "Property");
+                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "ListItem", LogLevel.Debug), "ListItem");
+                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Dialog", LogLevel.Debug), "Dialog");
+                LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Window", LogLevel.Debug), "Window");
             }
             else
             {
@@ -118,11 +118,11 @@ namespace SkinHelper
 
         private int _lastFocusedControl = -1;
         private object _syncObject = new object();
-        private MPDisplay.Common.Log.Log ActionLog;
-        private MPDisplay.Common.Log.Log PropertyLog;
-        private MPDisplay.Common.Log.Log ListItemLog;
-        private MPDisplay.Common.Log.Log DialogLog;
-        private MPDisplay.Common.Log.Log WindowLog;
+        private Common.Logging.Log ActionLog;
+        private Common.Logging.Log PropertyLog;
+        private Common.Logging.Log ListItemLog;
+        private Common.Logging.Log DialogLog;
+        private Common.Logging.Log WindowLog;
 
 
         void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)

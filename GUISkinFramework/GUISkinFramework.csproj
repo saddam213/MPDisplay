@@ -211,16 +211,12 @@
     <Compile Include="Skin\Common\XmlImage.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Skin\XmlSkinInfo.cs" />
-    <Compile Include="XmlManager.cs" />
     <Compile Include="XmlObject.cs" />
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
     <AppDesigner Include="Properties\" />
-    <None Include="XMLSchema1.xsd">
-      <SubType>Designer</SubType>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Style11.png" />

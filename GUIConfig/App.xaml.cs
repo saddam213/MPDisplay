@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace GUIConfig
 {
@@ -16,7 +16,7 @@ namespace GUIConfig
     {
         protected override void OnStartup(StartupEventArgs e)
         {
-            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Config"));
+            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Config",RegistrySettings.LogLevel));
         }
     }
 }

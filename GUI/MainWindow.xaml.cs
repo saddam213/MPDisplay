@@ -1,26 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.ServiceModel;
-using System.Text;
 using System.Threading;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUIFramework.Utils;
-using Microsoft.Win32;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
 using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Input;
+using Common.Helpers;
+using Common.Logging;
+using Common.Settings;
 
 namespace GUI
 {
@@ -29,8 +17,12 @@ namespace GUI
     /// </summary>
     public partial class MainWindow : Window, INotifyPropertyChanged
     {
+        #region Fields
+
         private Log Log = LoggingManager.GetLog(typeof(MainWindow));
-        private GUISettings _settings;
+        private GUISettings _settings; 
+
+        #endregion
 
         #region Constructor
 
@@ -41,72 +33,57 @@ namespace GUI
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
-          ///  Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline),   new FrameworkPropertyMetadata { DefaultValue = 30 });
-           // RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
-          //  RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
-            //     RenderOptions.SetCachingHint(this, CachingHint.Cache);
-            // RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
-           // TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
-         //   TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
-         //   TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
-
-            Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 30 });
-         //   TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
-         //   TextOptions.TextRenderingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextRenderingMode.Aliased });
-
-
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 30 });
+            //RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
+            //RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
+            //RenderOptions.SetCachingHint(this, CachingHint.Cache);
+            //RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
+            //TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
+            //TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
+            //TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
+            //Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 30 });
+            //TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
+            //TextOptions.TextRenderingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextRenderingMode.Aliased });
             InitializeComponent();
             DataContext = this;
             LoadSettings();
         }
 
-        void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
-        {
-            if (e.Exception != null && e.Exception.StackTrace.Contains("System.Windows.Controls.VirtualizingStackPanel.get_ItemCount()"))
-            {
-                Log.Message( LogLevel.Warn, "An Error occured in Microsoft VirtualizingStackPanel");
-                e.Handled = true;
-                return;
-            }
-            Log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
-        }
-
-        void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
-        {
-            Log.Message(LogLevel.Error, "[UnhandledException] - An unknown exception occured{0}{1}", Environment.NewLine, e);
-          //  RestartMPDisplay();
-        }
-
         #endregion
 
+        #region Properties
 
-
-
-
-
+        /// <summary>
+        /// Gets or sets the settings.
+        /// </summary>
         public GUISettings Settings
         {
             get { return _settings; }
             set { _settings = value; NotifyPropertyChanged("Settings"); }
         }
 
+        #endregion
 
+        #region Methods
 
         /// <summary>
         /// Load MPDisplay.xml
         /// </summary>
         private async void LoadSettings()
         {
+            Log.Message(LogLevel.Info, "[LoadSettings] - Loading UI settings");
             var settings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (settings == null)
             {
+                Log.Message(LogLevel.Warn, "[LoadSettings] - MPDisplay.xml not found!, creating file..");
                 settings = new MPDisplaySettings();
                 SettingsManager.Save<MPDisplaySettings>(settings, RegistrySettings.MPDisplaySettingsFile);
             }
+            Log.Message(LogLevel.Info, "[LoadSettings] - MPDisplay.xml sucessfully loaded.");
             settings.GUISettings.SkinInfoXml = string.Format("{0}{1}\\SkinInfo.xml", RegistrySettings.MPDisplaySkinFolder, settings.GUISettings.SkinName);
             if (!File.Exists(settings.GUISettings.SkinInfoXml))
             {
-                MessageBox.Show("File does not exist: " + settings.GUISettings.SkinInfoXml, "Error!", MessageBoxButton.OK);
+                Log.Message(LogLevel.Error, "[LoadSettings] - Failed to locate the selected skins info file '{0}'", settings.GUISettings.SkinInfoXml);
                 Close();
             }
             Settings = settings.GUISettings;
@@ -143,14 +120,116 @@ namespace GUI
                 this.ResizeMode = System.Windows.ResizeMode.NoResize;
             }
 
+            Log.Message(LogLevel.Info, "[LoadSettings] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
 
             await surface.LoadSkin(Settings);
         }
 
+        #endregion
 
+        #region Window Events/Overrides
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Window.Closing" /> event.
+        /// </summary>
+        /// <param name="e">A <see cref="T:System.ComponentModel.CancelEventArgs" /> that contains the event data.</param>
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            Log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
+            surface.CloseDown();
+            base.OnClosing(e);
+        }
+
+        /// <summary>
+        /// Raises the <see cref="E:System.Windows.Window.Closed" /> event.
+        /// </summary>
+        /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
+        protected override void OnClosed(EventArgs e)
+        {
+            Log.Message(LogLevel.Info, "[OnClosing] - Close complete.");
+            LoggingManager.Destroy();
+            base.OnClosed(e);
+        }
+
+        /// <summary>
+        /// Invoked when an unhandled <see cref="E:System.Windows.Input.Mouse.MouseUp" /> routed event reaches an element in its route that is derived from this class. Implement this method to add class handling for this event.
+        /// </summary>
+        /// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data. The event data reports that the mouse button was released.</param>
+        protected async override void OnMouseUp(MouseButtonEventArgs e)
+        {
+            base.OnMouseUp(e);
+
+            await Task.Delay(250);
+            ProcessHelper.ActivateApplication("MediaPortal");
+        }
+
+        /// <summary>
+        /// Handles the DispatcherUnhandledException event of the Current control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="System.Windows.Threading.DispatcherUnhandledExceptionEventArgs"/> instance containing the event data.</param>
+        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        {
+            if (e.Exception != null && e.Exception.StackTrace.Contains("System.Windows.Controls.VirtualizingStackPanel.get_ItemCount()"))
+            {
+                Log.Message(LogLevel.Warn, "An Error occured in Microsoft VirtualizingStackPanel");
+                e.Handled = true;
+                return;
+            }
+            Log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
+        }
+
+        /// <summary>
+        /// Handles the UnhandledException event of the CurrentDomain control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="UnhandledExceptionEventArgs"/> instance containing the event data.</param>
+        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        {
+            Log.Message(LogLevel.Error, "[UnhandledException] - An unknown exception occured{0}{1}", Environment.NewLine, e);
+        } 
+
+        #endregion
+
+        #region Helpers
+
+        private System.Windows.Forms.Screen GetDisplayByDeviceName(string name)
+        {
+            return System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.DeviceName.Equals(name))
+                ?? System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.Primary);
+        }
+
+        private void SetThreadPriority(string priority)
+        {
+            ThreadPriority option = ThreadPriority.Normal;
+            Enum.TryParse<ThreadPriority>(priority, out option);
+            Thread.CurrentThread.Priority = option;
+        }
+
+        #endregion
+
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void NotifyPropertyChanged(String info)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(info));
+            }
+        }
+
+
+
+        #endregion
+
+
+        /// <summary>
+        /// Restarts the mp display.
+        /// </summary>
         private async void RestartMPDisplay()
         {
-            await  Task.Delay(2000);
+            await Task.Delay(2000);
             try
             {
                 surface.CloseDown();
@@ -178,62 +257,6 @@ namespace GUI
             }
             Close();
         }
-
-        protected override void OnClosing(CancelEventArgs e)
-        {
-            Log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
-            surface.CloseDown();
-            base.OnClosing(e);
-        }
-
-        protected override void OnClosed(EventArgs e)
-        {
-            Log.Message(LogLevel.Info, "[OnClosing] - Close complete.");
-            LoggingManager.Destroy();
-            base.OnClosed(e);
-        }
-
-        protected async override void OnMouseUp(MouseButtonEventArgs e)
-        {
-            base.OnMouseUp(e);
-
-            await Task.Delay(250);
-            ProgramHelper.ActivateApplication("MediaPortal");
-        }
-
-        #region Helpers
-
-        private System.Windows.Forms.Screen GetDisplayByDeviceName(string name)
-        {
-            return System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.DeviceName.Equals(name))
-                ?? System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.Primary);
-        }
-
-        private void SetThreadPriority(string priority)
-        {
-            ThreadPriority option = ThreadPriority.Normal;
-            Enum.TryParse<ThreadPriority>(priority, out option);
-            Thread.CurrentThread.Priority = option;
-        }
-
-        #endregion
-
-
-
-        #region INotifyPropertyChanged
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void NotifyPropertyChanged(String info)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
-        }
-
-
-
-        #endregion
     }
 }
 

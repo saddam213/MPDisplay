@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace MPDisplay.Common
+namespace Common
 {
     /// <summary>
     /// This class is an implementation detail of the Messenger class.

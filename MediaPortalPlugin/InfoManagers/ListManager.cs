@@ -6,11 +6,11 @@ using System.Text;
 using System.Threading;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
 using System.Reflection;
 using MediaPortalPlugin.PluginHelpers;
 using Common.Helpers;
+using Common.Settings;
+using Common.Logging;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -22,7 +22,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private ListManager()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(ListManager));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(ListManager));
         }
 
         public static ListManager Instance
@@ -39,7 +39,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         #endregion
 
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
         private static bool _groupFocused;
         private static bool _listFocused;
         private static bool _isRecheckingListItems;
@@ -74,13 +74,13 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void RegisterWindowListTypes(List<APIListType> list)
         {
-            Log.Message(LogLevel.Verbose, "[RegisterWindowListTypes] - Registering MPDisplay skin list types...");
+            Log.Message(LogLevel.Debug, "[RegisterWindowListTypes] - Registering MPDisplay skin list types...");
             _registeredListTypes = new List<APIListType>(list.Distinct());
             foreach (var listType in _registeredListTypes)
             {
-                Log.Message(LogLevel.Verbose, "[RegisterWindowListTypes] - Registering MPDisplay skin list type: {0}", listType);
+                Log.Message(LogLevel.Debug, "[RegisterWindowListTypes] - Registering MPDisplay skin list type: {0}", listType);
             }
-            Log.Message(LogLevel.Verbose, "[RegisterWindowListTypes] - Registering MPDisplay skin list types complete.");
+            Log.Message(LogLevel.Debug, "[RegisterWindowListTypes] - Registering MPDisplay skin list types complete.");
             RegisterWindowListTypes();
         }
 
@@ -156,6 +156,7 @@ namespace MediaPortalPlugin.InfoManagers
                 if (_registeredListTypes.Contains(APIListType.GroupMenu))
                 {
                     SendGroupList();
+                    SendGroupSelectedItem();
                 }
 
                 if (_registeredListTypes.Contains(APIListType.Menu))
@@ -277,6 +278,32 @@ namespace MediaPortalPlugin.InfoManagers
                         {
                             _focusedControlId = WindowManager.Instance.CurrentWindowFocusedControlId;
 
+
+                            if (_registeredListTypes.Contains(APIListType.GroupMenu))
+                            {
+                                if (!_groupFocused && _groupControls.Any(g => g.Children.GetControls().Any(c => c.Focus)))
+                                {
+                                    _groupFocused = true;
+                                    SendGroupList();
+                                    SendGroupSelectedItem();
+                                    _isRecheckingListType = false;
+                                    return;
+                                }
+
+                                if (_groupFocused && !_groupControls.Any(g => g.Children.GetControls().Any(c => c.Focus)))
+                                {
+                                    _groupFocused = false;
+                                    SendList(APIListType.GroupMenu, APIListLayout.Vertical, new List<APIListItem>());
+                                }
+
+                                if (_groupFocused)
+                                {
+                                    SendGroupSelectedItem();
+                                    _isRecheckingListType = false;
+                                    return;
+                                }
+                            }
+
                             if (_registeredListTypes.Contains(APIListType.List))
                             {
                                 _listFocused = _facadeControls.Any(f => f.Focus) || _listControls.Any(f => f.Focus) || _facadeControls.Any(f => f.Count > 0) || _listControls.Any(f => f.Count > 0);
@@ -291,25 +318,7 @@ namespace MediaPortalPlugin.InfoManagers
                                 }
                             }
 
-                            if (_registeredListTypes.Contains(APIListType.GroupMenu))
-                            {
-                                if (!_groupFocused && _groupControls.Any(g => g.Children.GetControls().Any(c => c.Focus)))
-                                {
-                                    _groupFocused = true;
-                                    SendGroupList();
-                                }
-
-                                if (_groupFocused && !_groupControls.Any(g => g.Children.GetControls().Any(c => c.Focus)))
-                                {
-                                    _groupFocused = false;
-                                    SendList(APIListType.GroupMenu, APIListLayout.Vertical, new List<APIListItem>());
-                                }
-
-                                if (_groupFocused)
-                                {
-                                    SendGroupSelectedItem();
-                                }
-                            }
+                          
                         }
 
                         SendFacadeLayout();
@@ -334,12 +343,12 @@ namespace MediaPortalPlugin.InfoManagers
                 DateTime timeout = DateTime.Now.AddSeconds(30);
                 while (currentFacade.SelectedListItem == null || currentCount < 0 || currentCount != GetCount(currentFacade))
                 {
-                    Log.Message(LogLevel.Verbose, "Facade not ready, Waiting 250ms");
+                    Log.Message(LogLevel.Debug, "Facade not ready, Waiting 250ms");
                     currentCount = GetCount(currentFacade);
                     Thread.Sleep(250);
                     if (DateTime.Now > timeout)
                     {
-                        Log.Message(LogLevel.Verbose, "Facade not ready, TIMEOUT");
+                        Log.Message(LogLevel.Debug, "Facade not ready, TIMEOUT");
                         break;
                     }
                 }
@@ -448,7 +457,7 @@ namespace MediaPortalPlugin.InfoManagers
                 while (currentListControl.SelectedListItem == null && DateTime.Now < timeout)
                 {
                     Thread.Sleep(250);
-                    Log.Message(LogLevel.Verbose, "ListControl not ready, Waiting 250ms");
+                    Log.Message(LogLevel.Debug, "ListControl not ready, Waiting 250ms");
                 }
                 Thread.Sleep(250);
                 SendListControlList();

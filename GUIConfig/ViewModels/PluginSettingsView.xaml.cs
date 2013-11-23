@@ -12,8 +12,8 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace GUIConfig.ViewModels
 {
@@ -22,34 +22,76 @@ namespace GUIConfig.ViewModels
     /// </summary>
     public partial class PluginSettingsView : ViewModelBase
     {
-        private Log Log = LoggingManager.GetLog(typeof(PluginSettingsView));
+        #region Fields
 
+        private LogLevel _logLevel = RegistrySettings.LogLevel;
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="PluginSettingsView"/> class.
+        /// </summary>
         public PluginSettingsView()
         {            
             InitializeComponent();
             HasPendingChanges = false;
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the tabs title.
+        /// </summary>
         public override string Title
         {
             get { return "Plugin"; }
         }
 
+        /// <summary>
+        /// Gets or sets the log level.
+        /// </summary>
+        public LogLevel LogLevel
+        {
+            get { return _logLevel; }
+            set { _logLevel = value; NotifyPropertyChanged(); }
+        }
+
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Called when model tab opens.
+        /// </summary>
         public override void OnModelOpen()
         {
             base.OnModelOpen();
-            Log.Message(LogLevel.Debug, "{0} ViewModel opened.", Title);
         }
 
+        /// <summary>
+        /// Called when model tab closes.
+        /// </summary>
         public override void OnModelClose()
         {
             base.OnModelClose();
-            Log.Message(LogLevel.Debug, "{0} ViewModel closed.", Title);
         }
 
-        private void ConnectionSettingsView_PropertyChanged(object sender, System.ComponentModel.PropertyChangedEventArgs e)
+        /// <summary>
+        /// Saves the changes.
+        /// </summary>
+        public override void SaveChanges()
         {
-           
+            base.SaveChanges();
+            if (_logLevel != RegistrySettings.LogLevel)
+            {
+                RegistrySettings.SetRegistryValue(RegistrySettings.MPDisplayKeys.LogLevel, _logLevel.ToString());
+            }
         }
+
+        #endregion
     }
 }

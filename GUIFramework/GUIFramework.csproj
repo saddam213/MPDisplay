@@ -62,6 +62,8 @@
     <Compile Include="Converters\GUIBrushConverter.cs" />
     <Compile Include="Converters\ProgramTimeToWidthConverter.cs" />
     <Compile Include="Converters\ProgressValueConverter.cs" />
+    <Compile Include="GUI\GUISkinElementAttribute.cs" />
+    <Compile Include="GUI\GUIStoryboard.cs" />
     <Compile Include="GUISurface.xaml.cs">
       <DependentUpon>GUISurface.xaml</DependentUpon>
     </Compile>
@@ -122,7 +124,6 @@
     <Compile Include="Repositories\ListRepository.cs" />
     <Compile Include="Repositories\PropertyRepository.cs" />
     <Compile Include="ServiceProxy.cs" />
-    <Compile Include="Utils\ProgramHelper.cs" />
     <Compile Include="Utils\GenericExtensions.cs" />
     <Compile Include="GUI\GUIElementFactory.cs" />
     <Compile Include="GUI\Base\GUIControl.cs" />

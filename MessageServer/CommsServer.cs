@@ -4,7 +4,7 @@ using System.Runtime.Remoting.Messaging;
 using System.ServiceModel;
 using System.Threading.Tasks;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
+using Common.Logging;
 using System.Linq;
 
 namespace MessageServer
@@ -320,7 +320,7 @@ namespace MessageServer
             {
                 if (_apiConnection != null && listMessage != null)
                 {
-                    Log.Message(LogLevel.Verbose, "[SendListMessage] - Sending List message to MPDisplay, Sender: {0}, MessageType: {1}"
+                    Log.Message(LogLevel.Debug, "[SendListMessage] - Sending List message to MPDisplay, Sender: {0}, MessageType: {1}"
                         , _apiConnection.ConnectionName, listMessage.MessageType);
 
                     await BroadcastMessage(new MessageEventArgs(MessageType.ReceiveAPIListMessage, _apiConnection, listMessage));
@@ -342,7 +342,7 @@ namespace MessageServer
             {
                 if (_apiConnection != null && infoMessage != null)
                 {
-                    Log.Message(LogLevel.Verbose, "[SendInfoMessage] - Sending Info message to MPDisplay, Sender: {0}, InfoType: {1}"
+                    Log.Message(LogLevel.Debug, "[SendInfoMessage] - Sending Info message to MPDisplay, Sender: {0}, InfoType: {1}"
                         , _apiConnection.ConnectionName, infoMessage.MessageType);
                     await BroadcastMessage(new MessageEventArgs(MessageType.ReceiveAPIInfoMessage, _apiConnection, infoMessage));
                 }
@@ -362,13 +362,13 @@ namespace MessageServer
                     var message = new MessageEventArgs(MessageType.ReceiveAPIDataMessage, _apiConnection, dataMessage);
                     if (dataMessage.DataType == APIDataMessageType.KeepAlive)
                     {
-                        Log.Message(LogLevel.Info, "[KeepAlive] - KeepAlive received., Sender: {0}", _apiConnection.ConnectionName);
+                        Log.Message(LogLevel.Debug, "[KeepAlive] - KeepAlive received., Sender: {0}", _apiConnection.ConnectionName);
                         CallbackEventHandler(message);
                         return;
                     }
                     if (dataMessage.DataType != APIDataMessageType.EQData)
                     {
-                        Log.Message(LogLevel.Verbose, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}"
+                        Log.Message(LogLevel.Debug, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}"
                             , _apiConnection.ConnectionName, dataMessage.DataType);
                     }
                     await BroadcastMessage(message);
@@ -390,7 +390,7 @@ namespace MessageServer
             {
                 if (_apiConnection != null && mediaPortalMessage != null)
                 {
-                    Log.Message(LogLevel.Verbose, "[SendMediaPortalMessage] - Sending message to MediaPortal plugin, Sender: {0}, MessageType: {1}"
+                    Log.Message(LogLevel.Debug, "[SendMediaPortalMessage] - Sending message to MediaPortal plugin, Sender: {0}, MessageType: {1}"
                         , _apiConnection.ConnectionName, mediaPortalMessage.MessageType);
                     await BroadcastMessage("MediaPortalPlugin", new MessageEventArgs(MessageType.ReceiveMediaPortalMessage, _apiConnection, mediaPortalMessage));
                 }
@@ -411,7 +411,7 @@ namespace MessageServer
             {
                 if (_apiConnection != null && tvServerMessage != null)
                 {
-                    Log.Message(LogLevel.Verbose, "[SendTVServerMessage] - Sending message to TVServer plugin, Sender: {0}", _apiConnection.ConnectionName);
+                    Log.Message(LogLevel.Debug, "[SendTVServerMessage] - Sending message to TVServer plugin, Sender: {0}", _apiConnection.ConnectionName);
                     await BroadcastMessage("TVServerPlugin", new MessageEventArgs(MessageType.ReceiveTVServerMessage, _apiConnection, tvServerMessage));
                 }
             }

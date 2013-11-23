@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
 using System.Text;
+using Common.Logging;
 
 namespace Common.Helpers
 {
-    public class ServiceHelper
+    public static class ServiceHelper
     {
+        private static Log Log = LoggingManager.GetLog(typeof(ServiceHelper));
+
         /// <summary>
         /// Starts the customers interface if its not running
         /// </summary>
@@ -45,7 +48,10 @@ namespace Common.Helpers
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Exception("[StartService] - An exception occured starting service, Service: "+serviceName, ex);
+            }
             return false;
         }
 
@@ -84,8 +90,9 @@ namespace Common.Helpers
                     }
                 }
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Exception("[IsServiceRunning] - An exception occured checking service status, Service: " + serviceName, ex);
             }
             return false;
         }
@@ -102,7 +109,10 @@ namespace Common.Helpers
                     }
                 }
             }
-            catch { }
+            catch (Exception ex)
+            {
+                Log.Exception("[GetServiceStatus] - An exception occured fetching service status, Service: " + serviceName, ex);
+            }
             return ServiceStatus.Stopped;
         }
 
@@ -120,8 +130,9 @@ namespace Common.Helpers
             {
                 return ServiceController.GetServices().Any(s => s.ServiceName == serviceName);
             }
-            catch
+            catch (Exception ex)
             {
+                Log.Exception("[CheckIfServiceExists] - An exception occured checking service, Service: " + serviceName, ex);
             }
             return false;
         }

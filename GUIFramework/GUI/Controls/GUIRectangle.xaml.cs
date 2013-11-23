@@ -1,38 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
-using GUIFramework.Managers;
-using System.Collections.ObjectModel;
+﻿using GUISkinFramework.Controls;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
     /// Interaction logic for GUIButton.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlRectangle))]  
+    [GUISkinElement(typeof(XmlRectangle))]
     public partial class GUIRectangle : GUIControl
     {
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUIRectangle"/> class.
+        /// </summary>
         public GUIRectangle()
         {
-            InitializeComponent(); 
+            InitializeComponent();
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the skin XML.
+        /// </summary>
         public XmlRectangle SkinXml
         {
             get { return BaseXml as XmlRectangle; }
         }
+
+        #endregion
     }
 }

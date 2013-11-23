@@ -1,60 +1,76 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
 using GUIFramework.Managers;
-using System.Collections.ObjectModel;
+using GUISkinFramework.Controls;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
-    /// Interaction logic for GUIButton.xaml
+    /// Interaction logic for GUIEqualizer.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlEqualizer))]  
+    [GUISkinElement(typeof(XmlEqualizer))]  
     public partial class GUIEqualizer : GUIControl
     {
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUIEqualizer"/> class.
+        /// </summary>
         public GUIEqualizer()
         {
             InitializeComponent(); 
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the skin XML.
+        /// </summary>
         public XmlEqualizer SkinXml
         {
             get { return BaseXml as XmlEqualizer; }
         }
 
+        /// <summary>
+        /// Gets the length of the eq data.
+        /// </summary>
         public int EQDataLength
         {
             get { return SkinXml != null ? SkinXml.BandCount : 0; }
         }
 
+        #endregion
+
+        #region GUIControl Overrides
+
+        /// <summary>
+        /// Registers the info data.
+        /// </summary>
         public override void OnRegisterInfoData()
         {
             base.OnRegisterInfoData();
             GenericDataRepository.RegisterEQData(EQDataReceived);
         }
 
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
         public override void OnDeregisterInfoData()
         {
             base.OnDeregisterInfoData();
             GenericDataRepository.DegisterEQData(this);
         }
 
+        /// <summary>
+        /// Eqs the data received.
+        /// </summary>
+        /// <param name="data">The data.</param>
         private void EQDataReceived(byte[] data)
         {
             Dispatcher.BeginInvoke((Action)delegate { EqualizerCanvas.SetEQData(data); });
         }
+
+        #endregion
     }
 }

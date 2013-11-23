@@ -4,7 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using GUISkinFramework;
-using MPDisplay.Common.Settings;
+using Common.Settings;
+using Common;
 
 namespace GUIFramework.Managers
 {

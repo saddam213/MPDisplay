@@ -25,6 +25,8 @@
 
 			</CollectionViewSource>
 
+
+
 			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
 				<ObjectDataProvider.MethodParameters>
 					<x:Type TypeName="Cursors:CursorType"/>

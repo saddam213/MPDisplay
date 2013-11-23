@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Common.Logging;
 using Microsoft.Win32;
 
-namespace MPDisplay.Common.Settings
+namespace Common.Settings
 {
     public enum MPDisplayInstallType
     {
@@ -24,6 +25,7 @@ namespace MPDisplay.Common.Settings
         private static string _mpdisplayConfigExePath = null;
         private static string _mpdisplayExePath = null;
         private static string _skinEditorExePath = null;
+        private static LogLevel _logLevel = LogLevel.None;
 
         #endregion
 
@@ -168,6 +170,31 @@ namespace MPDisplay.Common.Settings
             }
         }
 
+
+        /// <summary>
+        /// Gets the log level.
+        /// </summary>
+        public static LogLevel LogLevel
+        {
+            get
+            {
+                if (_logLevel == LogLevel.None)
+                {
+                    try
+                    {
+                        _logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), GetRegistryValue("LogLevel"));
+                    }
+                    catch { }
+                }
+                return _logLevel;
+            }
+        }
+
+
+      
+
+
+
         #endregion
 
         #region Helpers
@@ -188,6 +215,7 @@ namespace MPDisplay.Common.Settings
             InstallType,
             LanguageFile,
             MPDServerExePath,
+            LogLevel
         }
 
         public static void SetRegistryValue(MPDisplayKeys key, string value)
@@ -203,5 +231,7 @@ namespace MPDisplay.Common.Settings
         }
 
         #endregion
+
+      
     }
 }

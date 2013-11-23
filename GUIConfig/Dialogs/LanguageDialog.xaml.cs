@@ -12,6 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using Common.Logging;
 using GUIConfig.Settings.Language;
 
 namespace GUIConfig.Dialogs
@@ -21,6 +22,8 @@ namespace GUIConfig.Dialogs
     /// </summary>
     public partial class LanguageDialog : Window, INotifyPropertyChanged
     {
+        private Log Log = LoggingManager.GetLog(typeof(LanguageDialog));
+
         private string _selectedLanguage = "English";
 
         /// <summary>
@@ -30,6 +33,7 @@ namespace GUIConfig.Dialogs
         {
             WindowStartupLocation = System.Windows.WindowStartupLocation.CenterScreen;
             InitializeComponent();
+            Log.Message(LogLevel.Info, "Displaying Language picker dialog");
         }
 
         /// <summary>
@@ -61,6 +65,7 @@ namespace GUIConfig.Dialogs
         /// <param name="e">The <see cref="System.Windows.RoutedEventArgs"/> instance containing the event data.</param>
         private void Button_OK_Click(object sender, RoutedEventArgs e)
         {
+            Log.Message(LogLevel.Info, "Language selected, Lanuage: {0}", SelectedLanguage);
             DialogResult = true;
         }
       

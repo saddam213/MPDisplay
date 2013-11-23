@@ -1,34 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
-using GUIFramework.Managers;
-using System.Collections.ObjectModel;
-using MessageFramework.DataObjects;
-using System.Windows.Controls.Primitives;
-using MPDisplay.Common.ExtensionMethods;
-using MPDisplay.Common.Utils;
-using System.ComponentModel;
 using System.Windows.Threading;
+using GUIFramework.Managers;
+using GUISkinFramework.Controls;
+using GUISkinFramework.ExtensionMethods;
+using MPDisplay.Common.Utils;
+using MPDisplay.Common.ExtensionMethods;
+using Common;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
-    /// Interaction logic for GUIButton.xaml
+    /// Interaction logic for GUIGuide.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlGuide))]
+    [GUISkinElement(typeof(XmlGuide))]
     public partial class GUIGuide : GUIControl
     {
         #region Fields

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using Common.Helpers;
 using System.Threading;
@@ -19,7 +19,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private DialogManager()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(DialogManager));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(DialogManager));
         }
 
         public static DialogManager Instance
@@ -38,7 +38,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         #region Vars
 
-        private MPDisplay.Common.Log.Log Log = LoggingManager.GetLog(typeof(DialogManager));
+        private Common.Logging.Log Log = LoggingManager.GetLog(typeof(DialogManager));
         private PluginSettings _settings;
         private bool _isWorking = false;
         private bool _isDialogVisible;

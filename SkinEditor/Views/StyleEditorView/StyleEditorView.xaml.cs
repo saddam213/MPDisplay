@@ -16,14 +16,16 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using GUISkinFramework;
+using GUISkinFramework.ExtensionMethods;
 using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Styles;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.ExtensionMethods;
+using MPDisplay.Common;
 using SkinEditor.Dialogs;
 using MPDisplay.Common.Controls;
 using Common.Helpers;
+using MPDisplay.Common.ExtensionMethods;
 
 namespace SkinEditor.Views
 {

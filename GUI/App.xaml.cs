@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Windows;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace GUI
 {
@@ -19,7 +19,7 @@ namespace GUI
             base.OnStartup(e);
 
 
-            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "MPDisplay"));
+            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "MPDisplay", RegistrySettings.LogLevel));
 
         }
     }

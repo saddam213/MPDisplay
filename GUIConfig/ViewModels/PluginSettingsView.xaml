@@ -5,17 +5,36 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
 			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
+			 xmlns:common="clr-namespace:Common.Settings;assembly=MPDisplay.Common"
              mc:Ignorable="d" 
              x:Name="UI">
     <Grid DataContext="{Binding ElementName=UI}">
         <StackPanel Orientation="Horizontal">
-            <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" VerticalAlignment="Top" PropertyChanged="ConnectionSettingsView_PropertyChanged"/>
+            <Views:ConnectionSettingsView ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" VerticalAlignment="Top" />
             <GroupBox Header="Settings">
                 <StackPanel Margin="0,5,0,0">
                     <CheckBox IsChecked="{Binding DataObject.LaunchMPDisplayOnStart}" Content="{Binding ConverterParameter=Start MPDisplay when MediaPortal starts, Converter={StaticResource LanguageConverter}}" Margin="5,2,0,0"/>
                     <CheckBox IsChecked="{Binding DataObject.RestartMPDisplayOnStart}" Content="{Binding ConverterParameter=Restart MPDisplay when MediaPortal starts, Converter={StaticResource LanguageConverter}}" Margin="5,2,0,0" />
                     <CheckBox IsChecked="{Binding DataObject.CloseMPDisplayOnExit}" Content="{Binding ConverterParameter=Close MPDisplay when MediaPortal closes, Converter={StaticResource LanguageConverter}}" Margin="5,2,0,0" />
-                </StackPanel>
+
+					<StackPanel Margin="5,5,0,0">
+						<TextBlock Text="{Binding ConverterParameter=Log Level, Converter={StaticResource LanguageConverter}}" />
+						<ComboBox Width="140" HorizontalAlignment="Left"  ItemsSource="{Binding Source={StaticResource LogLevels}}" SelectedItem="{Binding LogLevel, ElementName=UI}"/>
+						<StackPanel.Style>
+							<Style TargetType="StackPanel">
+								<Setter Property="Visibility" Value="Collapsed" />
+								<Style.Triggers>
+									<DataTrigger Binding="{Binding Source={x:Static common:RegistrySettings.InstallType}}" Value="Plugin">
+										<Setter Property="Visibility" Value="Visible" />
+									</DataTrigger>
+								</Style.Triggers>
+							</Style>
+						</StackPanel.Style>
+
+					
+					</StackPanel>
+				
+				</StackPanel>
             </GroupBox>
         </StackPanel>
     </Grid>

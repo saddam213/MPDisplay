@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
 using Common.Helpers;
+using Common.Logging;
 using GUISkinFramework.Common;
 using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Dialogs;
@@ -16,7 +17,6 @@ using GUISkinFramework.Property;
 using GUISkinFramework.Skin;
 using GUISkinFramework.Styles;
 using GUISkinFramework.Windows;
-using MPDisplay.Common.Log;
 
 namespace GUISkinFramework
 {
@@ -676,7 +676,7 @@ namespace GUISkinFramework
                     });
                     Log.Message(LogLevel.Verbose, "Skin image added, Name: {0}, File: {1}", xmlname, imageFile);
                 }
-                Log.Message(LogLevel.Info, "Loading skin iamges complete, Image count: {0}", Images.Count);
+                Log.Message(LogLevel.Info, "Loading skin images complete, Image count: {0}", Images.Count);
                 return;
             }
             Log.Message(LogLevel.Warn, "Image directory not found, Directory missing: {0}", SkinImageFolder);
@@ -835,9 +835,11 @@ namespace GUISkinFramework
                     return;
                 }
                 Log.Message(LogLevel.Info, "Loading skin languages complete. Current language: {0}", CurrentLanguage);
-             
             }
-            Log.Message(LogLevel.Warn, "Language file not found, File missing: {0}", languageFile);
+            else
+            {
+                Log.Message(LogLevel.Warn, "Language file not found, File missing: {0}", languageFile);
+            }
         }
 
         private void SaveLanguage()

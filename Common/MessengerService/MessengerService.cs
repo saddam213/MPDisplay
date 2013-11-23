@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace MPDisplay.Common
+namespace Common
 {
     /// <summary>
     /// Provides loosely-coupled messaging between

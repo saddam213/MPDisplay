@@ -4,12 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
+using Common.Logging;
+
 
 namespace Common.Helpers
 {
     public static class SerializationHelper
     {
-     
+        private static Log Log = LoggingManager.GetLog(typeof(SerializationHelper));
 
         /// <summary>
         /// Serializes the specified object.
@@ -35,7 +37,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-               
+                Log.Exception("[Serialize] - An exception occured serializing file, FileName: " + filename, ex);
             }
             return false;
         }
@@ -61,12 +63,17 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-               
+                Log.Exception("[Deserialize] - An exception occured deserializing file, FileName: " + filename, ex);
             }
             return default(T);
         }
 
-
+        /// <summary>
+        /// Creates a copy of a serailizable object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="obj">The obj.</param>
+        /// <returns></returns>
         public static T CreateCopy<T>(this T obj)
         {
             try
@@ -87,7 +94,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-               
+                 Log.Exception("[CreateCopy] - An exception occured creating object copy", ex);
             }
             return default(T);
         }

@@ -1,26 +1,30 @@
-namespace MPDisplay.Common.Log
+namespace Common.Logging
 {
     /// <summary>
     /// Message type
     /// </summary>
-    public enum LogLevel
+    public enum LogLevel : int
     {
-        Verbose,
+        Verbose = 0,
         /// <summary>
         /// Debug message
         /// </summary>
-        Debug,
+        Debug = 1,
         /// <summary>
         /// Info message
         /// </summary>
-        Info,
+        Info = 2,
         /// <summary>
         /// Warn message
         /// </summary>
-        Warn,
+        Warn = 3,
         /// <summary>
         /// Error message
         /// </summary>
-        Error
+        Error = 4,
+        /// <summary>
+        /// No Logging
+        /// </summary>
+        None = 5,
     }
 }

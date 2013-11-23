@@ -6,7 +6,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace MPDisplay.Common.Log
+namespace Common.Logging
 {
     public class WindowLogger : Logger
     {
@@ -14,7 +14,7 @@ namespace MPDisplay.Common.Log
         private TextBox _logBox;
         private ScrollViewer _scrollViewer;
 
-        public WindowLogger(string name) : base()
+        public WindowLogger(string name, LogLevel level) : base(level)
         {
             _logBox = new TextBox();
             _scrollViewer = new ScrollViewer

@@ -14,11 +14,13 @@ using GUISkinFramework.Controls;
 using MessageFramework.DataObjects;
 using Microsoft.CSharp;
 using MPDisplay.Common;
-using MPDisplay.Common.Log;
+using Common.Helpers;
 using GUISkinFramework.Windows;
 using GUISkinFramework;
 using GUISkinFramework.Dialogs;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common;
+using Common.Settings;
 
 namespace GUIFramework.Managers
 {
@@ -30,31 +32,59 @@ namespace GUIFramework.Managers
     }
 
     /// <summary>
-    /// 
+    /// Class to handle GUI element visibility
     /// </summary>
     public static class GUIVisibilityManager   
     {
+        #region Fields
+
         private static Log Log = LoggingManager.GetLog(typeof(GUIVisibilityManager));
         private static Dictionary<int, Dictionary<int, bool>> _controlVisibilityMap = new Dictionary<int, Dictionary<int, bool>>();
-        private static MessengerService<VisibleMessageType> _visibilityService = new MessengerService<VisibleMessageType>();
+        private static MessengerService<VisibleMessageType> _visibilityService = new MessengerService<VisibleMessageType>(); 
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the visibility service.
+        /// </summary>
         public static MessengerService<VisibleMessageType> VisibilityService
         {
             get { return _visibilityService; }
         }
 
-        public static void RegisterMessage(VisibleMessageType action, Action callback)
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Registers a message callback.
+        /// </summary>
+        /// <param name="message">The message to listen for.</param>
+        /// <param name="callback">The callback.</param>
+        public static void RegisterMessage(VisibleMessageType message, Action callback)
         {
-            VisibilityService.Register(action, callback);
+            VisibilityService.Register(message, callback);
         }
 
-        public static void DeregisterMessage(VisibleMessageType action, object owner)
+        /// <summary>
+        /// Deregisters the message callback.
+        /// </summary>
+        /// <param name="message">The message registered.</param>
+        /// <param name="owner">The callback owner.</param>
+        public static void DeregisterMessage(VisibleMessageType message, object owner)
         {
-            VisibilityService.Deregister(action, owner);
+            VisibilityService.Deregister(message, owner);
         }
 
-        public static void NotifyVisibilityChanged(VisibleMessageType action)
+        /// <summary>
+        /// Notifiys all registered callbacks for the message type.
+        /// </summary>
+        /// <param name="message">The action.</param>
+        public static void NotifyVisibilityChanged(VisibleMessageType message)
         {
-            if (action == VisibleMessageType.GlobalVisibilityChanged)
+            if (message == VisibleMessageType.GlobalVisibilityChanged)
             {
                 VisibilityService.NotifyListeners(VisibleMessageType.GlobalVisibilityChanged);
                 VisibilityService.NotifyListeners(VisibleMessageType.ControlVisibilityChanged);
@@ -62,10 +92,14 @@ namespace GUIFramework.Managers
             }
             else
             {
-                VisibilityService.NotifyListeners(action);
+                VisibilityService.NotifyListeners(message);
             }
         }
 
+        /// <summary>
+        /// Registers the all controls into a visibility map.
+        /// </summary>
+        /// <param name="controlHost">The control host.</param>
         public static void RegisterControlVisibility(IControlHost controlHost)
         {
             DeregisterControlVisibility(controlHost);
@@ -75,6 +109,10 @@ namespace GUIFramework.Managers
             }
         }
 
+        /// <summary>
+        /// Deregisters the controls from the visibility map.
+        /// </summary>
+        /// <param name="controlHost">The control host.</param>
         public static void DeregisterControlVisibility(IControlHost controlHost)
         {
             lock (_controlVisibilityMap)
@@ -86,6 +124,10 @@ namespace GUIFramework.Managers
             }
         }
 
+        /// <summary>
+        /// Updates the control visibility.
+        /// </summary>
+        /// <param name="control">The control.</param>
         public static void UpdateControlVisibility(GUIControl control)
         {
             if (control != null)
@@ -107,9 +149,16 @@ namespace GUIFramework.Managers
             }
         }
 
+        #endregion
+
         #region Condition Checks
 
-     
+        /// <summary>
+        /// Determines whether the control is visible .
+        /// </summary>
+        /// <param name="windowId">The window id.</param>
+        /// <param name="controlId">The control id.</param>
+        /// <returns></returns>
         public static bool IsControlVisible(int windowId, int controlId)
         {
             if (_controlVisibilityMap.ContainsKey(windowId) && _controlVisibilityMap[windowId].ContainsKey(controlId))
@@ -119,71 +168,136 @@ namespace GUIFramework.Managers
             return false;
         }
 
+        /// <summary>
+        /// Determines whether the current window id matches the supplied id.
+        /// </summary>
+        /// <param name="windowId">The window id.</param>
+        /// <returns></returns>
         public static bool IsMediaPortalWindow(int windowId)
         {
             return windowId == InfoRepository.Instance.WindowId;
         }
 
+        /// <summary>
+        /// Determines whether the current dialog id matches the supplied id.
+        /// </summary>
+        /// <param name="dialogId">The dialog id.</param>
+        /// <returns></returns>
         public static bool IsMediaPortalDialog(int dialogId)
         {
             return dialogId == InfoRepository.Instance.DialogId;
         }
 
+        /// <summary>
+        /// Determines whether the previous window id matches the supplied id.
+        /// </summary>
+        /// <param name="windowId">The window id.</param>
+        /// <returns></returns>
         public static bool IsMediaPortalPreviousWindow(int windowId)
         {
             return windowId == InfoRepository.Instance.PreviousWindowId;
         }
 
+        /// <summary>
+        /// Determines whether [is media portal control focused] [the specified control id].
+        /// </summary>
+        /// <param name="controlId">The control id.</param>
+        /// <returns></returns>
         public static bool IsMediaPortalControlFocused(int controlId)
         {
             return controlId == InfoRepository.Instance.FocusedWindowControlId;
         }
 
+        /// <summary>
+        /// Determines whether the specified plugin is enabled.
+        /// </summary>
+        /// <param name="pluginName">Name of the plugin.</param>
+        /// <returns></returns>
         public static bool IsPluginEnabled(string pluginName)
         {
             return InfoRepository.Instance.EnabledPluginMap.Any(plugin => plugin.ToLower() == pluginName.ToLower());
         }
 
+        /// <summary>
+        /// Determines whether the specified player id is playing.
+        /// </summary>
+        /// <param name="playerId">The player id.</param>
+        /// <returns></returns>
         public static bool IsPlayer(int playerId)
         {
             return playerId.Equals((int)InfoRepository.Instance.PlayerType);
         }
 
+        /// <summary>
+        /// Determines whether tv is recording.
+        /// </summary>
+        /// <returns></returns>
         public static bool IsTvRecording()
         {
             return InfoRepository.Instance.IsTvRecording;
         }
 
+        /// <summary>
+        /// Determines whether [is fullscreen video] [the specified value].
+        /// </summary>
+        /// <param name="value">if set to <c>true</c> [value].</param>
+        /// <returns></returns>
         public static bool IsFullscreenVideo(bool value)
         {
             return value == InfoRepository.Instance.IsFullscreenVideo;
         }
 
+        /// <summary>
+        /// Determines whether [is media portal connected].
+        /// </summary>
+        /// <returns></returns>
         public static bool IsMediaPortalConnected()
         {
             return InfoRepository.Instance.IsMediaPortalConnected;
         }
 
+        /// <summary>
+        /// Determines whether [is tv server connected].
+        /// </summary>
+        /// <returns></returns>
         public static bool IsTVServerConnected()
         {
             return InfoRepository.Instance.IsTVServerConnected;
         }
 
+        /// <summary>
+        /// Determines whether [is mp display connected].
+        /// </summary>
+        /// <returns></returns>
         public static bool IsMPDisplayConnected()
         {
             return InfoRepository.Instance.IsMPDisplayConnected;
         }
 
+        /// <summary>
+        /// Determines whether [is skin option enabled] [the specified option].
+        /// </summary>
+        /// <param name="option">The option.</param>
+        /// <returns></returns>
         public static bool IsSkinOptionEnabled(string option)
         {
             return InfoRepository.Instance.IsSkinOptionEnabled(option);
         }
 
+        /// <summary>
+        /// Determines whether [is media portal list layout] [the specified layout].
+        /// </summary>
+        /// <param name="layout">The layout.</param>
+        /// <returns></returns>
         public static bool IsMediaPortalListLayout(int layout)
         {
             return (int)ListRepository.GetCurrentMediaPortalListLayout() == layout;
         }
 
+        /// <summary>
+        /// Determines whether [is multi seat install].
+        /// </summary>
+        /// <returns></returns>
         public static bool IsMultiSeatInstall()
         {
             return RegistrySettings.InstallType == MPDisplayInstallType.GUI;
@@ -283,11 +397,11 @@ namespace GUIFramework.Managers
 
             if (!visibleCode.Contains("*ConditionPlaceHolder*"))
             {
-                ComplileString(elements, visibleCode);
+                CompileString(elements, visibleCode);
             }
         }
 
-        private static void ComplileString(IEnumerable<IXmlControlHost> elements, string visibleCode)
+        private static void CompileString(IEnumerable<IXmlControlHost> elements, string visibleCode)
         {
             var _compilerParams = new CompilerParameters();
             _compilerParams.GenerateInMemory = true;
@@ -333,7 +447,7 @@ namespace GUIFramework.Managers
                             if (lines.Count > 15)
                             {
                                 string newCode = string.Join(Environment.NewLine, lines.ToArray());
-                                ComplileString(elements, newCode);
+                                CompileString(elements, newCode);
                             }
                         }
                         else
@@ -357,9 +471,6 @@ namespace GUIFramework.Managers
                 }
             }
         }
-
-
-   
 
         /// <summary>
         /// Creates the visible control condition string.
@@ -414,7 +525,6 @@ namespace GUIFramework.Managers
             return xmlVisibleString;
         }
 
-
         /// <summary>
         /// Creates the visible window condition string.
         /// </summary>
@@ -449,9 +559,7 @@ namespace GUIFramework.Managers
             }
             return xmlVisibleString;
         }
-
      
-
         #endregion
     }
 

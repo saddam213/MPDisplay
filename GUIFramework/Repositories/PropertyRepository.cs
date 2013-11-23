@@ -4,14 +4,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Common;
+using Common.Logging;
+using Common.Settings;
 using Common.Status;
 using GUIFramework.GUI;
 using GUISkinFramework;
 using GUISkinFramework.Property;
 using MessageFramework.DataObjects;
 using MPDisplay.Common;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace GUIFramework.Managers
 {

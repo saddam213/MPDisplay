@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
+using Common.Logging;
 
-namespace GUIFramework.Utils
+namespace Common.Helpers
 {
-    public class ProgramHelper
+    public class ProcessHelper
     {
+        private static Log Log = LoggingManager.GetLog(typeof(ProcessHelper));
 
         // Sets the window to be foreground 
         [DllImport("User32")]
@@ -59,8 +59,9 @@ namespace GUIFramework.Utils
             {
                 Process.Start(filename, args);
             }
-            catch 
+            catch(Exception ex)
             {
+                Log.Exception("[StartApplication] - An execption occured starting application, Filename: {0}, args: {1}", ex, filename, args);
             }
         }
 
@@ -89,9 +90,9 @@ namespace GUIFramework.Utils
                     }
                 }
             }
-            catch 
+            catch (Exception ex)
             {
-                
+                Log.Exception("[KillApplication] - An execption occured starting application, Name: {0}, IsKill: {1}", ex, name, kill);
             }
         }
 

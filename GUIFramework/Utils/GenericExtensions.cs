@@ -6,12 +6,14 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using Common.Helpers;
+using MPDisplay.Common;
 using GUIFramework.GUI;
 using GUIFramework.GUI.Windows;
 using GUISkinFramework.Property;
 using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
+using Common.Helpers;
+using Common;
 
 namespace GUIFramework
 {
@@ -19,15 +21,6 @@ namespace GUIFramework
 
     public static class GenericExtensions
     {
-      
-
-        public static bool IsNumber(this string str)
-        {
-            int value = 0;
-            return !string.IsNullOrEmpty(str.Trim())
-                && !string.IsNullOrWhiteSpace(str.Trim())
-                && int.TryParse(str.Trim(), out value);
-        }
 
         public static void BindTo(this UIElement target, DependencyProperty targetProperty, object source, string sourceProperty, BindingMode mode = BindingMode.TwoWay, IValueConverter converter = null)
         {
@@ -40,47 +33,6 @@ namespace GUIFramework
             });
         }
 
-        public static double ToDouble(this int value)
-        {
-            return value <= 0 ? 0.0 : ((double)value) / 100.0;
-        }
-
-        public static bool ImageEquals(this byte[] first, byte[] second)
-        {
-            if (first == second)
-            {
-                return true;
-            }
-            if (first == null || second == null)
-            {
-                return first == null && second == null;
-            }
-            if (first.Length != second.Length)
-            {
-                return false;
-            }
-            for (int i = 0; i < first.Length; i++)
-            {
-                if (first[i] != second[i])
-                {
-                    return false;
-                }
-            }
-            return true;
-        }
-
-        public static V GetValueOrDefault<K, V>(this Dictionary<K, V> dictionary, K key, V defaultValue)
-        {
-            lock (dictionary)
-            {
-                V exists;
-                if (dictionary.TryGetValue(key, out exists))
-                {
-                    return exists;
-                }
-                return defaultValue;
-            }
-        }
 
         public static IEnumerable<GUIControl> GetControls(this IEnumerable<GUIControl> controls)
         {
@@ -117,18 +69,7 @@ namespace GUIFramework
                 ?? windows.FirstOrDefault(w => w.IsDefault);
         }
 
-        public static IEnumerable<TSource> DistinctBy<TSource, TKey>
-    (this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
-        {
-            HashSet<TKey> seenKeys = new HashSet<TKey>();
-            foreach (TSource element in source)
-            {
-                if (seenKeys.Add(keySelector(element)))
-                {
-                    yield return element;
-                }
-            }
-        }
+   
 
 
      
@@ -263,24 +204,6 @@ namespace GUIFramework
         }
 
 
-        public static TimeSpan Round(this TimeSpan time, TimeSpan roundingInterval, MidpointRounding roundingType)
-        {
-            return new TimeSpan(
-                Convert.ToInt64(Math.Round(
-                    time.Ticks / (decimal)roundingInterval.Ticks,
-                    roundingType
-                )) * roundingInterval.Ticks
-            );
-        }
-
-        public static TimeSpan Round(this TimeSpan time, TimeSpan roundingInterval)
-        {
-            return Round(time, roundingInterval, MidpointRounding.ToEven);
-        }
-
-        public static DateTime Round(this DateTime datetime, TimeSpan roundingInterval)
-        {
-            return new DateTime((datetime - DateTime.MinValue).Round(roundingInterval).Ticks);
-        }
+    
     }
 }

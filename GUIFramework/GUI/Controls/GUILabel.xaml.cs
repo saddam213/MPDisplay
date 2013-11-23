@@ -1,69 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
+﻿using GUIFramework.Managers;
 using GUISkinFramework.Controls;
-using GUIFramework.Managers;
-using System.Collections.ObjectModel;
-using GUISkinFramework.Property;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
-    /// Interaction logic for GUIButton.xaml
+    /// Interaction logic for GUILabel.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlLabel))]  
+    [GUISkinElement(typeof(XmlLabel))]  
     public partial class GUILabel : GUIControl
     {
+        #region Fields
+
         private string _label;
 
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUILabel"/> class.
+        /// </summary>
         public GUILabel()
         {
             InitializeComponent(); 
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the skin XML.
+        /// </summary>
         public XmlLabel SkinXml
         {
             get { return BaseXml as XmlLabel; }
         }
 
+        /// <summary>
+        /// Gets or sets the label.
+        /// </summary>
         public string Label
         {
             get { return _label; }
             set { _label = value; NotifyPropertyChanged("Label"); }
         }
 
+        #endregion
+
+        #region GUIControl Overrides
+
+        /// <summary>
+        /// Creates the control.
+        /// </summary>
         public override void CreateControl()
         {
             base.CreateControl();
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.LabelText);
         }
 
-
-
+        /// <summary>
+        /// Registers the info data.
+        /// </summary>
         public override void OnRegisterInfoData()
         {
             base.OnRegisterInfoData();
             PropertyRepository.RegisterPropertyMessage(this, SkinXml.LabelText);
         }
 
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
         public override void OnDeregisterInfoData()
         {
             base.OnDeregisterInfoData();
             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelText);
         }
 
+        /// <summary>
+        /// Updates the info data.
+        /// </summary>
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
@@ -71,15 +87,15 @@ namespace GUIFramework.GUI.Controls
             Label = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelText);
         }
 
+        /// <summary>
+        /// Clears the info data.
+        /// </summary>
         public override void ClearInfoData()
         {
             base.ClearInfoData();
             Label = string.Empty;
         }
 
-
-
-
-       
+        #endregion
     }
 }

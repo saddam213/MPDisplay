@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 using GUISkinFramework;
 using MessageFramework.DataObjects;
 using MPDisplay.Common;
-using MPDisplay.Common.Settings;
+using Common.Settings;
+using Common;
 
 namespace GUIFramework.Managers
 {

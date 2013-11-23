@@ -10,6 +10,14 @@ namespace GUIConfig.Settings
 {
     public class IpAddressValidationRule : ValidationRule
     {
+        /// <summary>
+        /// When overridden in a derived class, performs validation checks on a value.
+        /// </summary>
+        /// <param name="value">The value from the binding target to check.</param>
+        /// <param name="cultureInfo">The culture to use in this rule.</param>
+        /// <returns>
+        /// A <see cref="T:System.Windows.Controls.ValidationResult" /> object.
+        /// </returns>
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
         {
             //I know it's called IP Address internally but it really should be hostname.

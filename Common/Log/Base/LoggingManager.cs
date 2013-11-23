@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Windows;
 using System.Linq;
+using Common.Settings;
 
-namespace MPDisplay.Common.Log
+namespace Common.Logging
 {
     /// <summary>
     /// Logging manager class for easy handling of logs across classes
@@ -12,78 +13,36 @@ namespace MPDisplay.Common.Log
     public static class LoggingManager
     {
         private static Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>();
-        private static Dictionary<string, Dictionary<Type, Log>> _logss = new Dictionary<string, Dictionary<Type, Log>>();
+        private static Dictionary<string, Dictionary<Type, Log>> _logs = new Dictionary<string, Dictionary<Type, Log>>();
 
-
-        private static Logger _logger = new ConsoleLogger();
-        private static Dictionary<Type, Log> _logs = new Dictionary<Type, Log>();
-        private static List<LogLevel> _levels = new List<LogLevel>();
-
-        static LoggingManager()
+        public static void AddLog(Logger logger, string logname = "Default")
         {
-           
-            string levels = System.Configuration.ConfigurationManager.AppSettings["LogLevel"] ?? "Verbose,Debug,Info,Warn,Error";
-            var logLevels = levels.Contains(',')
-                ? Enum.GetValues(typeof(LogLevel)).Cast<LogLevel>().Where(e => levels.Split(',').Select(x => x.Trim()).Contains(e.ToString()))
-                : Enum.GetValues(typeof(LogLevel)).Cast<LogLevel>().Where(x => x.ToString().Equals(levels))
-                ?? Enum.GetValues(typeof(LogLevel)).Cast<LogLevel>();
-            _levels = new List<LogLevel>(logLevels);
-        }
-
-        public static void AddLog(Logger logger)
-        {
-            if (_logger != null)
+            if (_loggers.ContainsKey(logname))
             {
-                _logger.Dispose();
+                _loggers[logname].Dispose();
+                _loggers.Remove(logname);
             }
-            _logger = logger;
+
+            _loggers.Add(logname, logger);
+            _logs.Add(logname, new Dictionary<Type, Log>());
+            logger.WriteHeader();
         }
 
-        public static void AddLog(Logger logger, string logname)
+        public static Log GetLog(Type owner, string logName = "Default")
         {
-            if (!_loggers.ContainsKey(logname))
+            if (_loggers.Count == 0)
             {
-                _loggers.Add(logname, logger);
-                _logss.Add(logname, new Dictionary<Type, Log>());
+                AddLog(new ConsoleLogger(RegistrySettings.LogLevel));
             }
-        }
 
-        /// <summary>
-        /// Gets/Creates the log for this class.
-        /// </summary>
-        /// <param name="owner">The class that owns this Log instance</param>
-        /// <returns></returns>
-        public static Log GetLog(Type owner)
-        {
-            if (!_logs.ContainsKey(owner))
+            if (_loggers.ContainsKey(logName) && _logs.ContainsKey(logName))
             {
-                _logs.Add(owner, new Log(owner, (l, s) =>
+                if (!_logs[logName].ContainsKey(owner))
                 {
-                    if (_levels.Contains(l))
-                    {
-                        _logger.QueueLogMessage(s);
-                    }
-                }));
-            }
-            return _logs[owner];
-        }
-
-        public static Log GetLog(Type owner, string logName)
-        {
-            if (_loggers.ContainsKey(logName) && _logss.ContainsKey(logName))
-            {
-                if (!_logss[logName].ContainsKey(owner))
-                {
-                    _logss[logName].Add(owner, new Log(owner, (l, s) =>
-                    {
-                        if (_levels.Contains(l))
-                        {
-                            _loggers[logName].QueueLogMessage(s);
-                        }
-                    }));
+                    _logs[logName].Add(owner, new Log(owner, _loggers[logName].QueueLogMessage));
                 }
             }
-            return _logss[logName][owner];
+            return _logs[logName][owner];
         }
 
         /// <summary>
@@ -91,12 +50,6 @@ namespace MPDisplay.Common.Log
         /// </summary>
         public static void Destroy()
         {
-            if (_logger != null)
-            {
-                _logger.Dispose();
-                _logs.Clear();
-            }
-
             if (_loggers.Any())
             {
                 foreach (var logger in _loggers.Values)
@@ -104,7 +57,7 @@ namespace MPDisplay.Common.Log
                     logger.Dispose();
                 }
                 _loggers.Clear();
-                _logss.Clear();
+                _logs.Clear();
             }
         }
     }

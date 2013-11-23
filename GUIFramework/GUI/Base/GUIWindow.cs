@@ -1,15 +1,15 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Common.Logging;
 using GUIFramework.Managers;
 using GUISkinFramework.Animations;
 using GUISkinFramework.Common;
 using GUISkinFramework.Windows;
-using MPDisplay.Common.Log;
 
 namespace GUIFramework.GUI
 {
-    [XmlSkinType(typeof(XmlWindow))]
+    [GUISkinElement(typeof(XmlWindow))]
     public class GUIWindow : GUISurfaceElement
     {
         private XmlWindow _baseXml;

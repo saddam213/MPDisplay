@@ -6,9 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MessageFramework.DataObjects;
 using System.ServiceModel.Channels;
-using MPDisplay.Common.Settings;
-using MPDisplay.Common.Log;
 using System.Windows;
+using Common.Settings;
 
 namespace GUIConfig
 {

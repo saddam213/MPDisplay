@@ -15,7 +15,7 @@ using System.Windows.Shapes;
 using GUISkinFramework;
 using SkinEditor.Helpers;
 using System.IO;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 
 namespace SkinEditor.Dialogs
 {

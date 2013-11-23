@@ -1,36 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
-using GUIFramework.Managers;
-using System.Collections.ObjectModel;
-using System.Windows.Threading;
-using System.Threading;
-using MPDisplay.Common.ExtensionMethods;
 using System.Windows.Media.Animation;
-using MPDisplay.Common.Utils;
-using MessageFramework.DataObjects;
-using GUISkinFramework.Skin;
+using System.Windows.Threading;
+using GUIFramework.Managers;
 using GUISkinFramework.Common;
+using GUISkinFramework.Controls;
+using GUISkinFramework.Skin;
+using MessageFramework.DataObjects;
+using MPDisplay.Common;
+using MPDisplay.Common.Utils;
+using MPDisplay.Common.ExtensionMethods;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
-    /// Interaction logic for GUIButton.xaml
+    /// Interaction logic for GUIList.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlList))]  
+    [GUISkinElement(typeof(XmlList))]  
     public partial class GUIList : GUIControl
     {
         #region Fields

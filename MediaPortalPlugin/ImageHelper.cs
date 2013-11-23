@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Common.Helpers;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 
 namespace MediaPortalPlugin
 {

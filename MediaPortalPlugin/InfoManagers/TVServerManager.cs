@@ -12,8 +12,9 @@ using MediaPortal.GUI.Library;
 using MediaPortal.Profile;
 using MediaPortal.Util;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 using System.Diagnostics;
+using Common;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -25,7 +26,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private TVServerManager()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(TVServerManager));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(TVServerManager));
         }
 
         public static TVServerManager Instance
@@ -43,7 +44,7 @@ namespace MediaPortalPlugin.InfoManagers
         #endregion
 
 
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
         private PluginSettings _settings;
         private Func<List<APIChannel>> _getGuide;
         private Func<List<APIRecording>> _getRecordings;

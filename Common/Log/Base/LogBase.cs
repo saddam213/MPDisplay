@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 
-namespace MPDisplay.Common.Log
+namespace Common.Logging
 {
     /// <summary>
     /// Base class for logs
@@ -15,16 +16,34 @@ namespace MPDisplay.Common.Log
         private ManualResetEvent terminate = new ManualResetEvent(false);
         private ManualResetEvent waiting = new ManualResetEvent(false);
         private Thread loggingThread;
+        private volatile LogLevel _logLevel = LogLevel.Verbose;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Logger"/> class.
         /// </summary>
-        public Logger()
+        public Logger(LogLevel level)
         {
+            _logLevel = level;
             // Create background thread, to ensure the queue is serviced from a single thread
             loggingThread = new Thread(new ThreadStart(ProcessQueue));
             loggingThread.IsBackground = true;
             loggingThread.Start();
+        }
+
+        public virtual void WriteHeader()
+        {
+            foreach (var line in StartHeader)
+            {
+                QueueLogMessage(_logLevel, line);
+            }
+        }
+
+        public virtual void WriteFooter()
+        {
+            foreach (var line in EndFooter)
+            {
+                QueueLogMessage(_logLevel, line);
+            }
         }
 
         /// <summary>
@@ -60,22 +79,28 @@ namespace MPDisplay.Common.Log
             }
         }
 
-        /// <summary>
-        /// Gets the log time.
-        /// </summary>
-      
+
+
 
         /// <summary>
         /// Queues the log message.
         /// </summary>
         /// <param name="message">The message.</param>
-        public void QueueLogMessage(string message)
+        public void QueueLogMessage(LogLevel level, string message)
         {
-            lock (queue)
+            if (_logLevel == LogLevel.None)
             {
-                queue.Enqueue(() => LogQueuedMessage(message));
+                return;
             }
-            hasNewItems.Set();
+
+            if (level >= _logLevel)
+            {
+                lock (queue)
+                {
+                    queue.Enqueue(() => LogQueuedMessage(message));
+                }
+                hasNewItems.Set();
+            }
         }
 
         /// <summary>
@@ -84,11 +109,31 @@ namespace MPDisplay.Common.Log
         /// <param name="message">The message.</param>
         protected abstract void LogQueuedMessage(string message);
 
+
+        public virtual IEnumerable<string> StartHeader
+        {
+            get
+            {
+                yield return "Log Started at: " + DateTime.Now;
+                yield return Environment.OSVersion.VersionString;
+                yield return Assembly.GetExecutingAssembly().GetName().ToString();
+            }
+        }
+
+        public virtual IEnumerable<string> EndFooter
+        {
+            get
+            {
+                yield return "Log Ended at: " + DateTime.Now;
+            }
+        }
+
         /// <summary>
         /// Flushes this instance.
         /// </summary>
-        public void Flush()
+        private void Flush()
         {
+            WriteFooter();
             waiting.WaitOne();
         }
 
@@ -97,8 +142,9 @@ namespace MPDisplay.Common.Log
         /// </summary>
         public virtual void Dispose()
         {
+            Flush();
             terminate.Set();
-          //  loggingThread.Join();
+            loggingThread.Join();
         }
     }
 }

@@ -14,8 +14,18 @@ using MPDisplay.Common.Controls;
 
 namespace GUIFramework.GUI
 {
+    /// <summary>
+    /// Helper class to create GUIStoryboards from XmlAnimations
+    /// </summary>
     public static class GUIAnimationFactory
     {
+        /// <summary>
+        /// Creates the animation.
+        /// </summary>
+        /// <param name="condition">The condition.</param>
+        /// <param name="element">The element.</param>
+        /// <param name="animations">The animations.</param>
+        /// <returns></returns>
         public static GUIStoryboard CreateAnimation(XmlAnimationCondition condition, FrameworkElement element, IEnumerable<XmlAnimation> animations)
         {
             var storyboard = new GUIStoryboard { Condition = condition };
@@ -23,43 +33,55 @@ namespace GUIFramework.GUI
             {
                 foreach (var animation in animations.OfType<XmlSlideAnimation>())
                 {
-                    storyboard.Add(element, CreateDoubleAnimation(animation.StartX, animation.EndX, animation), new PropertyPath(Canvas.LeftProperty));
-                    storyboard.Add(element, CreateDoubleAnimation(animation.StartY, animation.EndY, animation), new PropertyPath("(Canvas.Top)"));
-                    storyboard.Add(element, CreateIntAnimation(animation.StartZ, animation.EndZ, animation), new PropertyPath(Canvas.ZIndexProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.StartX, animation.EndX, animation), new PropertyPath(Canvas.LeftProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.StartY, animation.EndY, animation), new PropertyPath("(Canvas.Top)"));
+                    storyboard.AddAnimation(element, CreateIntAnimation(animation.StartZ, animation.EndZ, animation), new PropertyPath(Canvas.ZIndexProperty));
                 }
                 foreach (var animation in animations.OfType<XmlFadeAnimation>())
                 {
-                    storyboard.Add(element, CreateDoubleAnimation(GetOpacity(animation.From), GetOpacity( animation.To), animation), new PropertyPath(FrameworkElement.OpacityProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(GetOpacity(animation.From), GetOpacity( animation.To), animation), new PropertyPath(FrameworkElement.OpacityProperty));
                 }
                 foreach (var animation in animations.OfType<XmlZoomAnimation>())
                 {
-                    storyboard.Add(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleX"));
-                    storyboard.Add(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleY"));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleX"));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleY"));
                 }
                 foreach (var animation in animations.OfType<XmlRotateAnimation>())
                 {
-                    storyboard.Add(element, CreateDoubleAnimation(animation.Pos3DXFrom, animation.Pos3DXTo, animation), new PropertyPath(Surface3D.RotationXProperty));
-                    storyboard.Add(element, CreateDoubleAnimation(animation.Pos3DYFrom, animation.Pos3DYTo, animation), new PropertyPath(Surface3D.RotationYProperty));
-                    storyboard.Add(element, CreateDoubleAnimation(animation.Pos3DZFrom, animation.Pos3DZTo, animation), new PropertyPath(Surface3D.RotationZProperty));
-                    storyboard.Add(element, CreateDoubleAnimation(animation.Pos3DCenterXFrom, animation.Pos3DCenterXTo, animation), new PropertyPath(Surface3D.RotationCenterXProperty));
-                    storyboard.Add(element, CreateDoubleAnimation(animation.Pos3DCenterYFrom, animation.Pos3DCenterYTo, animation), new PropertyPath(Surface3D.RotationCenterYProperty));
-                    storyboard.Add(element, CreateDoubleAnimation(animation.Pos3DCenterZFrom, animation.Pos3DCenterZTo, animation), new PropertyPath(Surface3D.RotationCenterZProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DXFrom, animation.Pos3DXTo, animation), new PropertyPath(Surface3D.RotationXProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DYFrom, animation.Pos3DYTo, animation), new PropertyPath(Surface3D.RotationYProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DZFrom, animation.Pos3DZTo, animation), new PropertyPath(Surface3D.RotationZProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterXFrom, animation.Pos3DCenterXTo, animation), new PropertyPath(Surface3D.RotationCenterXProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterYFrom, animation.Pos3DCenterYTo, animation), new PropertyPath(Surface3D.RotationCenterYProperty));
+                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterZFrom, animation.Pos3DCenterZTo, animation), new PropertyPath(Surface3D.RotationCenterZProperty));
                 }
                 return storyboard;
             }
          
             return null;
         }
-
-
-        private static void Add(this GUIStoryboard storyboard, FrameworkElement element, Timeline animation, PropertyPath propertyTarget)
+       
+        /// <summary>
+        /// Adds the animation.
+        /// </summary>
+        /// <param name="storyboard">The storyboard.</param>
+        /// <param name="element">The element.</param>
+        /// <param name="animation">The animation.</param>
+        /// <param name="propertyTarget">The property target.</param>
+        private static void AddAnimation(this GUIStoryboard storyboard, FrameworkElement element, Timeline animation, PropertyPath propertyTarget)
         {
             storyboard.Children.Add(animation);
             GUIStoryboard.SetTarget(animation, element);
             GUIStoryboard.SetTargetProperty(animation, propertyTarget);
         }
 
-
+        /// <summary>
+        /// Creates the double animation.
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="xmlAnimation">The XML animation.</param>
+        /// <returns></returns>
         private static DoubleAnimationUsingKeyFrames CreateDoubleAnimation(double from, double to, XmlAnimation xmlAnimation)
         {
             var doubleanimation = new DoubleAnimationUsingKeyFrames();
@@ -92,6 +114,13 @@ namespace GUIFramework.GUI
             return doubleanimation;
         }
 
+        /// <summary>
+        /// Creates the int animation.
+        /// </summary>
+        /// <param name="from">From.</param>
+        /// <param name="to">To.</param>
+        /// <param name="xmlAnimation">The XML animation.</param>
+        /// <returns></returns>
         private static Int32AnimationUsingKeyFrames CreateIntAnimation(int from, int to, XmlAnimation xmlAnimation)
         {
             var intanimation = new Int32AnimationUsingKeyFrames();
@@ -124,15 +153,24 @@ namespace GUIFramework.GUI
             return intanimation;
         }
 
-        public static double GetZoom(int value)
+        /// <summary>
+        /// Gets the zoom.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        private static double GetZoom(int value)
         {
             return Math.Max(0.0, ((double)value) / 100.0);
         }
 
-        public static double GetOpacity(int value)
+        /// <summary>
+        /// Gets the opacity.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns></returns>
+        private static double GetOpacity(int value)
         {
             return Math.Max(0.0, Math.Min(1.0, ((double)value) / 100.0));
-        }
+        } 
     }
-  
 }

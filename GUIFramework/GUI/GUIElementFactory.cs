@@ -14,13 +14,25 @@ using GUISkinFramework.Windows;
 
 namespace GUIFramework.GUI
 {
+    /// <summary>
+    /// Factory class to create GUI elements from Xml elements
+    /// </summary>
     public static class GUIElementFactory
     {
-        private static Dictionary<Type,Type> _xmlControlTypeMap;
-        private static Dictionary<Type, Type> _xmlWindowTypeMap;
-        private static Dictionary<Type, Type> _xmlDialogTypeMap;
+        #region Fields
 
-        public static Dictionary<Type,Type> XmlControlTypeMap
+        private static Dictionary<Type, Type> _xmlControlTypeMap;
+        private static Dictionary<Type, Type> _xmlWindowTypeMap;
+        private static Dictionary<Type, Type> _xmlDialogTypeMap; 
+
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the XML control type map.
+        /// </summary>
+        public static Dictionary<Type, Type> XmlControlTypeMap
         {
             get
             {
@@ -28,12 +40,15 @@ namespace GUIFramework.GUI
                 {
                     _xmlControlTypeMap = new Dictionary<Type, Type>(
                         Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof(GUIControl))
-                        .ToDictionary(key => key.GetCustomAttribute<XmlSkinTypeAttribute>().XmlType, value => value.UnderlyingSystemType));
+                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType, value => value.UnderlyingSystemType));
                 }
                 return _xmlControlTypeMap;
             }
         }
 
+        /// <summary>
+        /// Gets the XML window type map.
+        /// </summary>
         public static Dictionary<Type, Type> XmlWindowTypeMap
         {
             get
@@ -42,12 +57,15 @@ namespace GUIFramework.GUI
                 {
                     _xmlWindowTypeMap = new Dictionary<Type, Type>(
                         Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof(GUIWindow))
-                        .ToDictionary(key => key.GetCustomAttribute<XmlSkinTypeAttribute>().XmlType, value => value.UnderlyingSystemType));
+                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType, value => value.UnderlyingSystemType));
                 }
                 return _xmlWindowTypeMap;
             }
         }
 
+        /// <summary>
+        /// Gets the XML dialog type map.
+        /// </summary>
         public static Dictionary<Type, Type> XmlDialogTypeMap
         {
             get
@@ -56,13 +74,22 @@ namespace GUIFramework.GUI
                 {
                     _xmlDialogTypeMap = new Dictionary<Type, Type>(
                         Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof(GUIDialog))
-                        .ToDictionary(key => key.GetCustomAttribute<XmlSkinTypeAttribute>().XmlType, value => value.UnderlyingSystemType));
+                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType, value => value.UnderlyingSystemType));
                 }
                 return _xmlDialogTypeMap;
             }
-        }
+        } 
 
+        #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Creates a GUIControl.
+        /// </summary>
+        /// <typeparam name="T">the type of control</typeparam>
+        /// <param name="skinXml">The skin XML.</param>
+        /// <returns></returns>
         public static GUIControl CreateControl<T>(int windowId, T skinXml) where T : XmlControl
         {
             if (XmlControlTypeMap.ContainsKey(skinXml.GetType()))
@@ -74,6 +101,12 @@ namespace GUIFramework.GUI
             return null;
         }
 
+        /// <summary>
+        /// Creates a GUIWindow.
+        /// </summary>
+        /// <typeparam name="T">the type of window</typeparam>
+        /// <param name="skinXml">The skin XML.</param>
+        /// <returns></returns>
         public static GUIWindow CreateWindow<T>(T skinXml) where T : XmlWindow
         {
             if (XmlWindowTypeMap.ContainsKey(skinXml.GetType()))
@@ -85,6 +118,12 @@ namespace GUIFramework.GUI
             return null;
         }
 
+        /// <summary>
+        /// Creates a GUIDialog.
+        /// </summary>
+        /// <typeparam name="T">the type of dialog</typeparam>
+        /// <param name="skinXml">The skin XML.</param>
+        /// <returns></returns>
         public static GUIDialog CreateDialog<T>(T skinXml) where T : XmlDialog
         {
             if (XmlDialogTypeMap.ContainsKey(skinXml.GetType()))
@@ -94,22 +133,8 @@ namespace GUIFramework.GUI
                 return dialog;
             }
             return null;
-        }
-    }
+        } 
 
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-    public class XmlSkinTypeAttribute : Attribute
-    {
-        protected Type xmlType;
-
-        public XmlSkinTypeAttribute(Type xmlType)
-        {
-            this.xmlType = xmlType;
-        }
-
-        public Type XmlType
-        {
-            get { return this.xmlType; }
-        }
+        #endregion
     }
 }

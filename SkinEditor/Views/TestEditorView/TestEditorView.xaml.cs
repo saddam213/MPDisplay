@@ -20,12 +20,12 @@ using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Styles;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.ExtensionMethods;
+using MPDisplay.Common;
 using SkinEditor.Dialogs;
 using GUISkinFramework.Windows;
 using GUIFramework.Managers;
-using MPDisplay.Common.Settings;
 using Common.Helpers;
+using Common.Settings;
 
 namespace SkinEditor.Views
 {

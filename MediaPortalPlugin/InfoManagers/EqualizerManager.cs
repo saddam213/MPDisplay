@@ -6,8 +6,8 @@ using Common.Helpers;
 using MediaPortal.Configuration;
 using MediaPortal.Player;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -19,7 +19,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private EqualizerManager()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(EqualizerManager));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(EqualizerManager));
         }
 
         public static EqualizerManager Instance
@@ -37,7 +37,7 @@ namespace MediaPortalPlugin.InfoManagers
         #endregion
 
 
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
         private bool _isEQRunning;
         private float[] _eqFftData = new float[1280];
         private System.Threading.Timer _eqThread;

@@ -36,5 +36,76 @@ namespace Common
             return chosenValue;
         }
 
+
+        public static bool IsNumber(this string str)
+        {
+            int value = 0;
+            return !string.IsNullOrEmpty(str.Trim())
+                && int.TryParse(str.Trim(), out value);
+        }
+
+   
+
+        public static double ToDouble(this int value)
+        {
+            return value <= 0 ? 0.0 : ((double)value) / 100.0;
+        }
+
+        public static bool ImageEquals(this byte[] first, byte[] second)
+        {
+            if (first == second)
+            {
+                return true;
+            }
+            if (first == null || second == null)
+            {
+                return first == null && second == null;
+            }
+            if (first.Length != second.Length)
+            {
+                return false;
+            }
+            for (int i = 0; i < first.Length; i++)
+            {
+                if (first[i] != second[i])
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        public static V GetValueOrDefault<K, V>(this Dictionary<K, V> dictionary, K key, V defaultValue)
+        {
+            lock (dictionary)
+            {
+                V exists;
+                if (dictionary.TryGetValue(key, out exists))
+                {
+                    return exists;
+                }
+                return defaultValue;
+            }
+        }
+
+        public static TimeSpan Round(this TimeSpan time, TimeSpan roundingInterval, MidpointRounding roundingType)
+        {
+            return new TimeSpan(
+                Convert.ToInt64(Math.Round(
+                    time.Ticks / (decimal)roundingInterval.Ticks,
+                    roundingType
+                )) * roundingInterval.Ticks
+            );
+        }
+
+        public static TimeSpan Round(this TimeSpan time, TimeSpan roundingInterval)
+        {
+            return Round(time, roundingInterval, MidpointRounding.ToEven);
+        }
+
+        public static DateTime Round(this DateTime datetime, TimeSpan roundingInterval)
+        {
+            return new DateTime((datetime - DateTime.MinValue).Round(roundingInterval).Ticks);
+        }
     }
 }

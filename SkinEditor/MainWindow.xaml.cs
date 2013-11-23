@@ -7,14 +7,14 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using GUISkinFramework;
-using MPDisplay.Common.Log;
+using Common.Logging;
 using SkinEditor.Dialogs;
 using SkinEditor.Helpers;
 using SkinEditor.Views;
 using System.Linq;
 using System.Windows.Input;
 using MPDisplay.Common.Utils;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 using Common.Helpers;
 
 namespace SkinEditor
@@ -41,7 +41,7 @@ namespace SkinEditor
 //#if DEBUG
 //            LoggingManager.AddLog(new WindowLogger("SkinEditor"));
 //#else
-           LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "SkinEditor"));
+           LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "SkinEditor", RegistrySettings.LogLevel));
 //#endif
 
             _settingsFile = Environment.CurrentDirectory + "\\Settings.xml";

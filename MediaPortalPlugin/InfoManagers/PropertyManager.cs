@@ -5,11 +5,13 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 using Common.Helpers;
+using Common.Logging;
+using Common.Settings;
 using Common.Status;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -21,7 +23,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private PropertyManager()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(PropertyManager));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(PropertyManager));
         }
 
         public static PropertyManager Instance
@@ -38,7 +40,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         #endregion
 
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
 
         private List<APIPropertyMessage> _properties = new List<APIPropertyMessage>();
         private List<string> _registeredProperties = new List<string>();
@@ -93,14 +95,14 @@ namespace MediaPortalPlugin.InfoManagers
 
                 lock (_registeredProperties)
                 {
-                    Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Registering MPDisplay skin property tags...");
+                    Log.Message(LogLevel.Debug, "[RegisterWindowProperties] - Registering MPDisplay skin property tags...");
                     _registeredProperties.Clear();
                     _registeredProperties.AddRange(properties.SelectMany(x => x.Tags).Distinct());
                     foreach (var prop in _registeredProperties)
                     {
-                          Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Registering property tag: {0}", prop);
+                        Log.Message(LogLevel.Debug, "[RegisterWindowProperties] - Registering property tag: {0}", prop);
                     }
-                    Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Registering MPDisplay skin property tags complete.");
+                    Log.Message(LogLevel.Debug, "[RegisterWindowProperties] - Registering MPDisplay skin property tags complete.");
                 }
             }
             else

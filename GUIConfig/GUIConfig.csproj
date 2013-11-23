@@ -69,7 +69,7 @@
     <Compile Include="..\GlobalAssembly.cs">
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
-    <Compile Include="ConnectionTester.cs" />
+    <Compile Include="Settings\ConnectionTester.cs" />
     <Compile Include="Dialogs\LanguageDialog.xaml.cs">
       <DependentUpon>LanguageDialog.xaml</DependentUpon>
     </Compile>
@@ -88,7 +88,7 @@
     <Compile Include="ViewModels\PluginSettingsView.xaml.cs">
       <DependentUpon>PluginSettingsView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ViewModels\SkinInfo.cs" />
+    <Compile Include="Settings\SkinInfo.cs" />
     <Compile Include="ViewModels\ViewModelBase.cs" />
     <Page Include="Dialogs\LanguageDialog.xaml">
       <SubType>Designer</SubType>
@@ -141,7 +141,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="ViewModels\app.config" />
+    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

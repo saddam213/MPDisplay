@@ -1,50 +1,59 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
+﻿using System.Windows.Media.Imaging;
 using GUIFramework.Managers;
-using System.Collections.ObjectModel;
-using GUISkinFramework.Property;
+using GUISkinFramework.Controls;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
-    /// Interaction logic for GUIButton.xaml
+    /// Interaction logic for GUIImage.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlImage))]
+    [GUISkinElement(typeof(XmlImage))]
     public partial class GUIImage : GUIControl
     {
+        #region Fields
+
         private BitmapImage _image = new BitmapImage();
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUIImage"/> class.
+        /// </summary>
         public GUIImage()
         {
             InitializeComponent(); 
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the skin XML.
+        /// </summary>
         public XmlImage SkinXml
         {
             get { return BaseXml as XmlImage; }
         }
 
+        /// <summary>
+        /// Gets or sets the image.
+        /// </summary>
         public BitmapImage Image
         {
             get { return _image; }
             set { _image = value; NotifyPropertyChanged("Image"); }
         }
 
-    
+        #endregion
 
+        #region GUIControl Overrides
+
+        /// <summary>
+        /// Creates the control.
+        /// </summary>
         public override void CreateControl()
         {
             base.CreateControl();
@@ -52,18 +61,27 @@ namespace GUIFramework.GUI.Controls
         }
 
 
+        /// <summary>
+        /// Registers the info data.
+        /// </summary>
         public override void OnRegisterInfoData()
         {
             base.OnRegisterInfoData();
             PropertyRepository.RegisterPropertyMessage(this, SkinXml.Image);
         }
 
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
         public override void OnDeregisterInfoData()
         {
             base.OnDeregisterInfoData();
              PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
         }
 
+        /// <summary>
+        /// Updates the info data.
+        /// </summary>
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
@@ -73,12 +91,15 @@ namespace GUIFramework.GUI.Controls
             Image = GUIImageManager.GetImage(img);
         }
 
+        /// <summary>
+        /// Clears the info data.
+        /// </summary>
         public override void ClearInfoData()
         {
             base.ClearInfoData();
             Image = null;
         }
 
-
+        #endregion
     }
 }

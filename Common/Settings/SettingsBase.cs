@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
-namespace MPDisplay.Common.Settings
+namespace Common.Settings
 {
     public class SettingsBase : INotifyPropertyChanged
     {

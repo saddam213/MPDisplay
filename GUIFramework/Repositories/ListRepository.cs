@@ -5,6 +5,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Common;
+using Common.Settings;
 using GUIFramework.GUI;
 using GUIFramework.GUI.Controls;
 using GUISkinFramework;
@@ -12,7 +14,6 @@ using GUISkinFramework.Controls;
 using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
 using MPDisplay.Common;
-using MPDisplay.Common.Settings;
 
 namespace GUIFramework.Managers
 {

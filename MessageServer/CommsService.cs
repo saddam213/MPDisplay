@@ -3,15 +3,15 @@ using System.IO;
 using System.ServiceModel;
 using System.ServiceProcess;
 using Microsoft.Win32;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 namespace MessageServer
 {
     partial class CommsService : ServiceBase
     {
         private ServiceHost MPDisplayHost;
-        private Log Log = LoggingManager.GetLog(typeof(CommsService));
+        private Log Log;
      
 
         /// <summary>
@@ -19,7 +19,8 @@ namespace MessageServer
         /// </summary>
         public CommsService()
         {
-            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Server"));
+            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Server", RegistrySettings.LogLevel));
+            Log = LoggingManager.GetLog(typeof(CommsService));
             InitializeComponent();
         }
 

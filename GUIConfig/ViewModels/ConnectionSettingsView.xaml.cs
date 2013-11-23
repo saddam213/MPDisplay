@@ -12,11 +12,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using MPDisplay.Common.Settings;
 using System.ComponentModel;
 using MPDisplay.Common.Utils;
 using Common.Helpers;
 using GUIConfig.Settings.Language;
+using Common.Settings;
 
 namespace GUIConfig.ViewModels
 {
@@ -25,13 +25,37 @@ namespace GUIConfig.ViewModels
     /// </summary>
     public partial class ConnectionSettingsView : UserControl, INotifyPropertyChanged
     {
+        #region Fields
+
+        private bool _canEditConnectionName;
+        private string _testStatus;
+        private string _serverStatus;
+        private string _serverButtonText;
+        private ICommand _testButtonCommand;
+        private ICommand _serverButtonCommand;
+        private bool _isTestingConnection = false; 
+
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConnectionSettingsView"/> class.
+        /// </summary>
         public ConnectionSettingsView()
         {
             InitializeComponent();
             TestButtonCommand = new RelayCommand(TestButtonExecute, CanTestButtonExecute);
             ServerButtonCommand = new RelayCommand(ServerButtonExecute, CanServerButtonExecute);
-        }
+        } 
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the connection settings.
+        /// </summary>
         public ConnectionSettings ConnectionSettings
         {
             get { return (ConnectionSettings)GetValue(ConnectionSettingsProperty); }
@@ -42,51 +66,70 @@ namespace GUIConfig.ViewModels
         public static readonly DependencyProperty ConnectionSettingsProperty =
             DependencyProperty.Register("ConnectionSettings", typeof(ConnectionSettings), typeof(ConnectionSettingsView));//, new PropertyMetadata(new ConnectionSettings));
 
-        private bool _canEditConnectionName;
-        private string _testStatus;
-        private string _serverStatus;
-        private string _serverButtonText;
-        private ICommand _testButtonCommand;
-        private ICommand _serverButtonCommand;
-        private bool _isTestingConnection = false;
-
+        /// <summary>
+        /// Gets or sets a value indicating whether can edit connection name.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [can edit connection name]; otherwise, <c>false</c>.
+        /// </value>
         public bool CanEditConnectionName
         {
             get { return _canEditConnectionName; }
             set { _canEditConnectionName = value; NotifyPropertyChanged("CanEditConnectionName"); }
         }
 
+        /// <summary>
+        /// Gets the test button command.
+        /// </summary>
         public ICommand TestButtonCommand
         {
             get { return _testButtonCommand; }
             private set { _testButtonCommand = value; NotifyPropertyChanged("TestButtonCommand"); }
         }
 
+        /// <summary>
+        /// Gets or sets the test status.
+        /// </summary>
         public string TestStatus
         {
             get { return _testStatus; }
             set { _testStatus = value; NotifyPropertyChanged("TestStatus"); }
         }
 
+        /// <summary>
+        /// Gets the server button command.
+        /// </summary>
         public ICommand ServerButtonCommand
         {
             get { return _serverButtonCommand; }
             private set { _serverButtonCommand = value; NotifyPropertyChanged("ServerButtonCommand"); }
         }
 
+        /// <summary>
+        /// Gets or sets the server status.
+        /// </summary>
         public string ServerStatus
         {
             get { return _serverStatus; }
             set { _serverStatus = value; NotifyPropertyChanged("ServerStatus"); }
         }
 
+        /// <summary>
+        /// Gets or sets the server button text.
+        /// </summary>
         public string ServerButtonText
         {
             get { return _serverButtonText; }
             set { _serverButtonText = value; NotifyPropertyChanged("ServerButtonText"); }
         }
 
+        #endregion
 
+        #region Methods
+
+        /// <summary>
+        /// Servers button command to execute.
+        /// </summary>
         public async void ServerButtonExecute()
         {
             bool isRunning = ServiceHelper.IsServiceRunning("MPDisplayServer");
@@ -108,6 +151,10 @@ namespace GUIConfig.ViewModels
             CommandManager.InvalidateRequerySuggested();
         }
 
+        /// <summary>
+        /// Determines whether this instance [can server button execute].
+        /// </summary>
+        /// <returns></returns>
         public bool CanServerButtonExecute()
         {
             var status = ServiceHelper.GetServiceStatus("MPDisplayServer");
@@ -118,6 +165,9 @@ namespace GUIConfig.ViewModels
             return !_isTestingConnection && (status == ServiceStatus.Running || status == ServiceStatus.Stopped);
         }
 
+        /// <summary>
+        /// Tests button command to execute.
+        /// </summary>
         public async void TestButtonExecute()
         {
             _isTestingConnection = true;
@@ -128,17 +178,24 @@ namespace GUIConfig.ViewModels
             CommandManager.InvalidateRequerySuggested();
         }
 
-     
-
+        /// <summary>
+        /// Determines whether this instance [can test button execute].
+        /// </summary>
+        /// <returns></returns>
         public bool CanTestButtonExecute()
         {
             return !_isTestingConnection && ServiceHelper.IsServiceRunning("MPDisplayServer");
         }
 
+        #endregion
 
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
+        /// <summary>
+        /// Notifies the property changed.
+        /// </summary>
+        /// <param name="property">The property.</param>
         public void NotifyPropertyChanged(string property)
         {
             if (PropertyChanged != null)
@@ -148,7 +205,5 @@ namespace GUIConfig.ViewModels
         }
 
         #endregion
-    
-        
     }
 }

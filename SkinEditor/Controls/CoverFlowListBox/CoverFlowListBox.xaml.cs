@@ -16,10 +16,11 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using MPDisplay.Common.Utils;
-using MPDisplay.Common.ExtensionMethods;
+using MPDisplay.Common;
 using System.Windows.Media.Animation;
 using System.Threading;
 using GUISkinFramework.Controls;
+using MPDisplay.Common.ExtensionMethods;
 
 namespace SkinEditor.Controls
 {

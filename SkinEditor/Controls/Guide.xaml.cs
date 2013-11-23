@@ -17,13 +17,14 @@ using GUISkinFramework.Controls;
 using GUIFramework.Managers;
 using System.Collections.ObjectModel;
 using System.Windows.Controls.Primitives;
-using MPDisplay.Common.ExtensionMethods;
 using MPDisplay.Common.Utils;
 using System.ComponentModel;
 using System.Windows.Threading;
 using GUISkinFramework;
 using GUIFramework;
 using Common.Helpers;
+using MPDisplay.Common.ExtensionMethods;
+using Common;
 
 namespace SkinEditor.Controls
 {

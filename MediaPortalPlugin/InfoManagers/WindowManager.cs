@@ -11,8 +11,8 @@ using Common.Settings.SettingsObjects;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 using System.Xml.Linq;
 using MediaPortal.Profile;
 using MediaPortalPlugin.PluginHelpers;
@@ -30,7 +30,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private WindowManager()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(WindowManager));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(WindowManager));
         }
 
         public static WindowManager Instance
@@ -47,7 +47,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         #endregion
 
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
         private bool _isFullscreenVideo;
         private GUIWindow _currentWindow;
         private PluginSettings _settings;
@@ -225,7 +225,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (message != null)
             {
-                Log.Message(LogLevel.Verbose, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
+                Log.Message(LogLevel.Debug, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
                 if (message.MessageType == APIMediaPortalMessageType.WindowInfoMessage)
                 {
                     if (message.WindowMessage != null)
@@ -285,7 +285,7 @@ namespace MediaPortalPlugin.InfoManagers
     
         public void SendFullUpdate()
         {
-            Log.Message(LogLevel.Info, "[SendFullUpdate] - Sending full information update");
+            Log.Message(LogLevel.Debug, "[SendFullUpdate] - Sending full information update");
             SetCurrentWindow(GUIWindowManager.ActiveWindow);
             SendPlayerMessage();
             TVServerManager.Instance.SendTvGuide();
@@ -301,7 +301,7 @@ namespace MediaPortalPlugin.InfoManagers
                 int retry = 0;
                 while (GUIWindowManager.IsSwitchingToNewWindow || !GUIWindowManager.Initalized)
                 {
-                    // Log.Message(LogLevel.Verbose, "[SetCurrentWindow] - Waiting 100ms for window to initalize, WindowId: {0}", windowId);
+                    Log.Message(LogLevel.Debug, "[SetCurrentWindow] - Waiting for window to initalize, WindowId: {0}", windowId);
                     Thread.Sleep(200);
                     if (retry > 100)
                     {
@@ -348,7 +348,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_currentWindow != null && MessageService.Instance.IsMPDisplayConnected)
             {
-                Log.Message(LogLevel.Info, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
+                Log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
                    , _currentWindow.GetID, _currentWindow.GetFocusControlId());
                 MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
@@ -371,7 +371,7 @@ namespace MediaPortalPlugin.InfoManagers
                 if (focusId != _previousFocusedControlId)
                 {
                     _previousFocusedControlId = focusId;
-                    Log.Message(LogLevel.Info, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
+                    Log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
                     MessageService.Instance.SendInfoMessage(new APIInfoMessage
                     {
                         MessageType = APIInfoMessageType.WindowMessage,
@@ -401,7 +401,7 @@ namespace MediaPortalPlugin.InfoManagers
 
                 if (!message.IsEquals(_lastPlayerMessage))
                 {
-                    Log.Message(LogLevel.Info, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
+                    Log.Message(LogLevel.Debug, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
                                                                 , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin, _isFullScreenMusic || _isFullscreenVideo);
                     _lastPlayerMessage = message;
                     MessageService.Instance.SendInfoMessage(new APIInfoMessage
@@ -431,7 +431,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-            Log.Message(LogLevel.Info, "[Player_PlayBackEnded] - PlayType: {0}", type);
+            Log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
             EqualizerManager.Instance.StopEqualizer();
             _currentPlaybackState = APIPlaybackState.Stopped;
             _currentPlaybackType = APIPlaybackType.None;
@@ -443,7 +443,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename)
         {
-            Log.Message(LogLevel.Info, "[Player_PlayBackStopped] - PlayType: {0}", type);
+            Log.Message(LogLevel.Debug, "[Player_PlayBackStopped] - PlayType: {0}", type);
             EqualizerManager.Instance.StopEqualizer();
             _currentPlaybackState = APIPlaybackState.Stopped;
             _currentPlaybackType = APIPlaybackType.None;
@@ -455,12 +455,12 @@ namespace MediaPortalPlugin.InfoManagers
 
         void Player_PlayBackChanged(g_Player.MediaType type, int stoptime, string filename)
         {
-            Log.Message(LogLevel.Info, "[Player_PlayBackChanged] - PlayType: {0}", type);
+            Log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
         }
         
         private void Player_PlayBackStarted(g_Player.MediaType type, string filename)
         {
-            Log.Message(LogLevel.Info, "[Player_PlayBackStarted] - PlayType: {0}", type);
+            Log.Message(LogLevel.Debug, "[Player_PlayBackStarted] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Playing;
             _currentPlaybackType = GetPlaybackType(type);
             _currentPlayerPlugin = SupportedPluginManager.GetPluginPlayerType(_currentPlaybackType, filename);

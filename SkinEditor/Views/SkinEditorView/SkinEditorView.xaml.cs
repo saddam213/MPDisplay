@@ -26,7 +26,7 @@ using MPDisplay.Common.Controls;
 using MPDisplay.Common.Controls.PropertyGrid;
 using SkinEditor;
 using SkinEditor.Dialogs;
-using MPDisplay.Common.ExtensionMethods;
+using MPDisplay.Common;
 using MPDisplay.Common.Utils;
 using Common.Helpers;
 

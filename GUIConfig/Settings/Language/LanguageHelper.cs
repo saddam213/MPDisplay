@@ -4,14 +4,14 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using Common.Helpers;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 
 namespace GUIConfig.Settings.Language
 {
-   public class LanguageHelper
+    public class LanguageHelper
     {
-       private static LanguageFile _languageXmlFile;
-       private static Language _currentLanguage;
+        private static LanguageFile _languageXmlFile;
+        private static Language _currentLanguage;
 
         public static void LoadLanguage()
         {
@@ -36,7 +36,7 @@ namespace GUIConfig.Settings.Language
                 }
                 return null;
             }
-           
+
         }
 
         public static void SetLanguage(string language)
@@ -77,24 +77,24 @@ namespace GUIConfig.Settings.Language
 
             }
 
-            return _currentLanguage.LanguageKeys.FirstOrDefault(k => k.Key == key).Value ?? "";;
+            return _currentLanguage.LanguageKeys.FirstOrDefault(k => k.Key == key).Value ?? ""; ;
         }
     }
 
-   public class LanguageFile
-   {
-       public List<Language> Languages { get; set; }
-   }
+    public class LanguageFile
+    {
+        public List<Language> Languages { get; set; }
+    }
 
-public class Language
-{
-    public string LanguageName { get; set; }
-    public List<LanguageKey> LanguageKeys { get; set; }
-}
+    public class Language
+    {
+        public string LanguageName { get; set; }
+        public List<LanguageKey> LanguageKeys { get; set; }
+    }
 
-   public class LanguageKey
-   {
-       public string Key { get; set; }
-       public string Value { get; set; }
-   }
+    public class LanguageKey
+    {
+        public string Key { get; set; }
+        public string Value { get; set; }
+    }
 }

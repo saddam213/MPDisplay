@@ -27,13 +27,14 @@ using GUISkinFramework;
 using GUISkinFramework.Common;
 using GUISkinFramework.Windows;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+
+
 using System.Windows.Threading;
 using GUISkinFramework.Editor.PropertyEditors;
-using GUIFramework.Utils;
 using Microsoft.Win32;
 using Common.Helpers;
+using Common.Logging;
+using Common.Settings;
 
 namespace GUIFramework
 {
@@ -241,7 +242,7 @@ namespace GUIFramework
                     {
                         DateTime start = DateTime.Now;
                         SurfaceElements.Add(GUIElementFactory.CreateWindow(window));
-                        Log.Message(LogLevel.Verbose, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
+                        Log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
                     }, DispatcherPriority.Background);
                 }
                 Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows Complete, LoadTime: {0}ms", (DateTime.Now - windowsStart).TotalMilliseconds);
@@ -257,7 +258,7 @@ namespace GUIFramework
                     {
                         DateTime start = DateTime.Now;
                         SurfaceElements.Add(GUIElementFactory.CreateDialog(dialog));
-                        Log.Message(LogLevel.Verbose, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog.Name, (DateTime.Now - start).TotalMilliseconds);
+                        Log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog.Name, (DateTime.Now - start).TotalMilliseconds);
                     });
                 }
                 Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs Complete, LoadTime: {0}ms", (DateTime.Now - dialogsStart).TotalMilliseconds);
@@ -356,7 +357,7 @@ namespace GUIFramework
         private void SetRepositories()
         {
             Log.Message(LogLevel.Info, "[LoadSkin] - Setting repositories..");
-            GUIImageManager.Init(CurrentSkin);
+            GUIImageManager.Initialize(CurrentSkin);
             InfoRepository.Instance.Initialize(Settings, CurrentSkin);
             PropertyRepository.Instance.Initialize(Settings, CurrentSkin);
             ListRepository.Instance.Initialize(Settings, CurrentSkin);
@@ -697,7 +698,7 @@ namespace GUIFramework
         /// <param name="action">The action.</param>
         private void StartApplication(XmlAction action)
         {
-            ProgramHelper.StartApplication(action.Param1, action.Param2);
+            ProcessHelper.StartApplication(action.Param1, action.Param2);
         }
 
         /// <summary>
@@ -706,7 +707,7 @@ namespace GUIFramework
         /// <param name="action">The action.</param>
         private void StopApplication(XmlAction action)
         {
-            ProgramHelper.KillApplication(action.Param1);
+            ProcessHelper.KillApplication(action.Param1);
         } 
 
         #endregion
@@ -1017,7 +1018,7 @@ namespace GUIFramework
 
                 if (DateTime.Now > _lastKeepAlive.AddSeconds(30))
                 {
-                    Log.Message(LogLevel.Info, "[KeepAlive] - Sending KeepAlive message.");
+                    Log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
                     await SendKeepAliveMessage();
                 }
             }

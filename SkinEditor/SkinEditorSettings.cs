@@ -12,7 +12,7 @@ using GUISkinFramework;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Styles;
 using SkinEditor.Views;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 using Common.Helpers;
 
 namespace SkinEditor

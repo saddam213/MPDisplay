@@ -13,8 +13,8 @@ using MediaPortal.Player;
 using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
 using Microsoft.Win32;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 
 
 namespace MediaPortalPlugin
@@ -24,11 +24,11 @@ namespace MediaPortalPlugin
     {
         private PluginSettings _settings;
         private AdvancedPluginSettings _advancedSettings;
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
 
         public MPDisplayPlugin()
         {
-            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin"));
+            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin", RegistrySettings.LogLevel));
             Log = LoggingManager.GetLog(typeof(MPDisplayPlugin));
 
             Log.Message(LogLevel.Info, "[OnPluginStart] - Loading MPDisplay settings file: {0}", RegistrySettings.MPDisplaySettingsFile);

@@ -1,8 +1,8 @@
 ﻿using MediaPortal.GUI.Library;
 using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
-using MPDisplay.Common.Log;
-using MPDisplay.Common.Settings;
+using Common.Logging;
+using Common.Settings;
 using System;
 using System.Linq;
 using System.ServiceModel;
@@ -26,7 +26,7 @@ namespace MediaPortalPlugin
         /// </summary>
         private MessageService()
         {
-            Log = MPDisplay.Common.Log.LoggingManager.GetLog(typeof(MessageService));
+            Log = Common.Logging.LoggingManager.GetLog(typeof(MessageService));
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
         }
 
@@ -63,7 +63,7 @@ namespace MediaPortalPlugin
         private EndpointAddress _serverEndpoint;
         private NetTcpBinding _serverBinding;
         private ConnectionSettings _settings;
-        private MPDisplay.Common.Log.Log Log;
+        private Common.Logging.Log Log;
         private System.Threading.Timer _keepAlive;
         private bool _isDisconnecting = false;
         private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2); 
@@ -191,7 +191,7 @@ namespace MediaPortalPlugin
             StopKeepAlive();
             if (_keepAlive == null)
             {
-                Log.Message(LogLevel.Info, "[KeepAlive] - Starting KeepAlive thread.");
+                Log.Message(LogLevel.Debug, "[KeepAlive] - Starting KeepAlive thread.");
                 _keepAlive = new System.Threading.Timer(SendKeepAlive, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
             }
         }
@@ -203,7 +203,7 @@ namespace MediaPortalPlugin
         {
             if (_keepAlive != null)
             {
-                Log.Message(LogLevel.Info, "[KeepAlive] - Stopping KeepAlive thread.");
+                Log.Message(LogLevel.Debug, "[KeepAlive] - Stopping KeepAlive thread.");
                 _keepAlive.Change(Timeout.Infinite, Timeout.Infinite);
                 _keepAlive = null;
             }
@@ -359,7 +359,7 @@ namespace MediaPortalPlugin
         /// <param name="message">The message.</param>
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
-            Log.Message(LogLevel.Verbose, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
+            Log.Message(LogLevel.Debug, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
             WindowManager.Instance.OnMediaPortalMessageReceived(message);
         }
 
@@ -473,14 +473,14 @@ namespace MediaPortalPlugin
                 {
                     if (_messageClient != null)
                     {
-                        Log.Message(LogLevel.Info, "[KeepAlive] - Sending KeepAlive message.");
+                        Log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
                         _messageClient.SendDataMessageAsync(new APIDataMessage {  DataType = APIDataMessageType.KeepAlive});
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[KeepAlive] - An Exception Occured sending KeepAlive message", ex.Message);
+                Log.Exception("[KeepAlive] - An Exception Occured sending KeepAlive message", ex);
             }
         }
 

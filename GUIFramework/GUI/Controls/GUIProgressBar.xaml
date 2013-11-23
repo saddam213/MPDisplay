@@ -20,6 +20,7 @@
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
 			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
+			 UseLayoutRounding="True"
 			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
     
     <base:GUIControl.Resources>
@@ -32,22 +33,39 @@
                 BorderThickness="{Binding BaseXml.ControlStyle.BorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding BaseXml.ControlStyle.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
 		<Border x:Name="focusShading" Background="{Binding BaseXml.ControlStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-			<Grid  x:Name="bar">
-				<Border
-                            HorizontalAlignment="Left"
-                            Margin="{Binding BaseXml.ControlStyle.BarMargin, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
-                            Background="{Binding BaseXml.ControlStyle.BarBackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
-                            BorderBrush="{Binding BaseXml.ControlStyle.BarBorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
-                            BorderThickness="{Binding BaseXml.ControlStyle.BarBorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
-                            CornerRadius="{Binding BaseXml.ControlStyle.BarCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}">
+			<Grid  x:Name="bar" ClipToBounds="True">
+				<Border x:Name="opacityMask" HorizontalAlignment="Left" Background="White"
+                        Margin="{Binding BaseXml.ControlStyle.BarMargin, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
+                        BorderThickness="{Binding BaseXml.ControlStyle.BarBorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
+                        CornerRadius="{Binding BaseXml.ControlStyle.BarCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}">
 					<Border.Width>
-                        <MultiBinding Converter="{StaticResource ProgressValueConverter}">
+						<MultiBinding Converter="{StaticResource ProgressValueConverter}">
 							<Binding Path="ActualWidth" ElementName="bar" Mode="OneWay" />
 							<Binding Path="Progress" Mode="OneWay" />
 							<Binding  Path="BaseXml.ControlStyle.BarMargin" Mode="OneWay" />
 						</MultiBinding>
 					</Border.Width>
 				</Border>
+				<Border HorizontalAlignment="Left" Background="White"
+				        Width="{Binding Width, ElementName=opacityMask}" 
+					    Margin="{Binding BaseXml.ControlStyle.BarMargin, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
+                        BorderThickness="{Binding BaseXml.ControlStyle.BarBorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
+                        CornerRadius="{Binding BaseXml.ControlStyle.BarCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}">
+					<Border Background="{Binding BaseXml.ControlStyle.BarBackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
+		 	                Width="{Binding ActualWidth, ElementName=bar}" 
+					        Height="{Binding ActualHeight, ElementName=bar}" />
+					<Border.OpacityMask>
+						<VisualBrush Visual="{Binding ElementName=opacityMask}" />
+					</Border.OpacityMask>
+				</Border>
+
+				<Border HorizontalAlignment="Left"  
+				        Width="{Binding Width, ElementName=opacityMask}" 
+					    BorderBrush="{Binding BaseXml.ControlStyle.BarBorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
+					    Margin="{Binding BaseXml.ControlStyle.BarMargin, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
+                        BorderThickness="{Binding BaseXml.ControlStyle.BarBorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
+                        CornerRadius="{Binding BaseXml.ControlStyle.BarCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" />
+
 				<Border x:Name="focusgloss" Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
 			</Grid>
 		</Border>

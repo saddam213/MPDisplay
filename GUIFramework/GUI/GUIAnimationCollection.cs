@@ -10,13 +10,29 @@ using GUISkinFramework.Animations;
 
 namespace GUIFramework.GUI
 {
+    /// <summary>
+    /// Holds a collection of animations
+    /// </summary>
     public class AnimationCollection
     {
+        #region Fields
+
         private Dictionary<XmlAnimationCondition, GUIStoryboard> _animations = new Dictionary<XmlAnimationCondition, GUIStoryboard>();
         private FrameworkElement _element;
         private Action<XmlAnimationCondition> _startedCallback;
-        private Action<XmlAnimationCondition> _completedCallback;
+        private Action<XmlAnimationCondition> _completedCallback; 
 
+        #endregion
+
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AnimationCollection"/> class.
+        /// </summary>
+        /// <param name="element">The element.</param>
+        /// <param name="animations">The animations.</param>
+        /// <param name="animationStartedCallback">The animation started callback.</param>
+        /// <param name="animationCompletedCallback">The animation completed callback.</param>
         public AnimationCollection(FrameworkElement element, IEnumerable<XmlAnimation> animations, Action<XmlAnimationCondition> animationStartedCallback, Action<XmlAnimationCondition> animationCompletedCallback)
         {
             _element = element;
@@ -34,6 +50,14 @@ namespace GUIFramework.GUI
             }
         }
 
+        #endregion
+
+        #region Methods
+
+        /// <summary>
+        /// Starts the animation.
+        /// </summary>
+        /// <param name="condition">The condition.</param>
         public void StartAnimation(XmlAnimationCondition condition)
         {
             if (_element != null && _animations.ContainsKey(condition))
@@ -47,7 +71,7 @@ namespace GUIFramework.GUI
                 {
                     _animations[condition].OnAnimationComplete -= OnAnimationComplete;
                 }
-              
+
                 _startedCallback(condition);
 
                 if (_animations[condition] != null)
@@ -65,6 +89,10 @@ namespace GUIFramework.GUI
             }
         }
 
+        /// <summary>
+        /// Called when animation completes.
+        /// </summary>
+        /// <param name="condition">The condition.</param>
         private void OnAnimationComplete(XmlAnimationCondition condition)
         {
             if (_element != null && _completedCallback != null)
@@ -76,54 +104,41 @@ namespace GUIFramework.GUI
             }
         }
 
-
+        /// <summary>
+        /// Gets the dependant animation.
+        /// </summary>
+        /// <param name="condition">The condition.</param>
+        /// <returns></returns>
         private XmlAnimationCondition GetDependantAnimation(XmlAnimationCondition condition)
         {
             switch (condition)
             {
                 case XmlAnimationCondition.WindowOpen:
-                    return  XmlAnimationCondition.WindowClose;
+                    return XmlAnimationCondition.WindowClose;
                 case XmlAnimationCondition.WindowClose:
-                    return  XmlAnimationCondition.WindowOpen;
+                    return XmlAnimationCondition.WindowOpen;
                 case XmlAnimationCondition.TouchDown:
-                    return  XmlAnimationCondition.TouchUp;
+                    return XmlAnimationCondition.TouchUp;
                 case XmlAnimationCondition.TouchUp:
-                    return  XmlAnimationCondition.TouchDown;
+                    return XmlAnimationCondition.TouchDown;
                 case XmlAnimationCondition.VisibleTrue:
-                    return  XmlAnimationCondition.VisibleFalse;
+                    return XmlAnimationCondition.VisibleFalse;
                 case XmlAnimationCondition.VisibleFalse:
-                    return  XmlAnimationCondition.VisibleTrue;
+                    return XmlAnimationCondition.VisibleTrue;
                 case XmlAnimationCondition.FocusTrue:
-                    return  XmlAnimationCondition.FocusFalse;
+                    return XmlAnimationCondition.FocusFalse;
                 case XmlAnimationCondition.FocusFalse:
-                    return  XmlAnimationCondition.FocusTrue;
+                    return XmlAnimationCondition.FocusTrue;
                 case XmlAnimationCondition.PropertyChanging:
-                    return  XmlAnimationCondition.PropertyChanged;
+                    return XmlAnimationCondition.PropertyChanged;
                 case XmlAnimationCondition.PropertyChanged:
-                    return  XmlAnimationCondition.PropertyChanging;
+                    return XmlAnimationCondition.PropertyChanging;
                 default:
                     break;
             }
             return condition;
-        }
-    }
+        } 
 
-    public class GUIStoryboard : Storyboard
-    {
-        public XmlAnimationCondition Condition { get; set; }
-
-        public delegate void AnimationComplete(XmlAnimationCondition condition);
-        public event AnimationComplete OnAnimationComplete;
-
-        public GUIStoryboard()
-        {
-            this.Completed += (s, e) =>
-            {
-                if (OnAnimationComplete != null)
-                {
-                    OnAnimationComplete(Condition);
-                }
-            };
-        }
+        #endregion
     }
 }

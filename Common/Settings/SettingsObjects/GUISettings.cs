@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Xml.Serialization;
 
-namespace MPDisplay.Common.Settings
+namespace Common.Settings
 {
     [XmlInclude(typeof(ConnectionSettings))] 
     public class GUISettings : SettingsBase

@@ -1,60 +1,74 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
+﻿using System.Windows.Media.Imaging;
 using GUIFramework.Managers;
-using GUISkinFramework.Property;
+using GUISkinFramework.Controls;
 
 namespace GUIFramework.GUI.Controls
 {
     /// <summary>
     /// Interaction logic for GUIButton.xaml
     /// </summary>
-    [XmlSkinType(typeof(XmlButton))]
+    [GUISkinElement(typeof(XmlButton))]
     public partial class GUIButton : GUIControl
     {
+        #region Fields
+
         private string _label;
         private BitmapImage _image;
 
+        #endregion
 
+        #region Constructor
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GUIButton"/> class.
+        /// </summary>
         public GUIButton()
         {
             InitializeComponent();
         }
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets the skin XML.
+        /// </summary>
         public XmlButton SkinXml
         {
             get { return BaseXml as XmlButton; }
         }
 
+        /// <summary>
+        /// Gets or sets the action collection.
+        /// </summary>
         public GUIActionCollection ActionCollection { get; set; }
 
+        /// <summary>
+        /// Gets or sets the label.
+        /// </summary>
         public string Label
         {
             get { return _label; }
             set { _label = value; NotifyPropertyChanged("Label"); }
         }
 
+        /// <summary>
+        /// Gets or sets the image.
+        /// </summary>
         public BitmapImage Image
         {
             get { return _image; }
             set { _image = value; NotifyPropertyChanged("Image"); }
-        }
+        } 
 
- 
+        #endregion
 
+        #region GUIControl Overrides
+
+        /// <summary>
+        /// Creates the control.
+        /// </summary>
         public override void CreateControl()
         {
             base.CreateControl();
@@ -63,13 +77,18 @@ namespace GUIFramework.GUI.Controls
             RegisteredProperties.AddRange(PropertyRepository.GetRegisteredProperties(this, SkinXml.Image));
         }
 
-
+        /// <summary>
+        /// Called when touch up.
+        /// </summary>
         public override async void OnTouchUp()
         {
             await ActionCollection.ExecuteActions();
             base.OnTouchUp();
         }
 
+        /// <summary>
+        /// Registers the info data.
+        /// </summary>
         public override void OnRegisterInfoData()
         {
             base.OnRegisterInfoData();
@@ -77,6 +96,9 @@ namespace GUIFramework.GUI.Controls
             PropertyRepository.RegisterPropertyMessage(this, SkinXml.Image);
         }
 
+        /// <summary>
+        /// Deregisters the info data.
+        /// </summary>
         public override void OnDeregisterInfoData()
         {
             base.OnDeregisterInfoData();
@@ -84,6 +106,9 @@ namespace GUIFramework.GUI.Controls
             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.Image);
         }
 
+        /// <summary>
+        /// Updates the info data.
+        /// </summary>
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
@@ -95,11 +120,16 @@ namespace GUIFramework.GUI.Controls
             Image = GUIImageManager.GetImage(img);
         }
 
+        /// <summary>
+        /// Clears the info data.
+        /// </summary>
         public override void ClearInfoData()
         {
             base.ClearInfoData();
             Image = null;
             Label = string.Empty;
-        }
+        } 
+
+        #endregion
      }
 }

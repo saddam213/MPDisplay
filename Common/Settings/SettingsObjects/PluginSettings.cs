@@ -6,7 +6,7 @@ using System.Text;
 using System.Xml.Serialization;
 using Common.Settings.SettingsObjects;
 
-namespace MPDisplay.Common.Settings
+namespace Common.Settings
 {
     [XmlInclude(typeof(ConnectionSettings))]
     public class PluginSettings : SettingsBase

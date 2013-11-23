@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text;
 using System.Linq;
 
-namespace MPDisplay.Common.Log
+namespace Common.Logging
 {
     /// <summary>
     /// Outputs messages to a file
@@ -22,8 +22,8 @@ namespace MPDisplay.Common.Log
         /// </summary>
         /// <param name="directory">The directory.</param>
         /// <param name="filename">The filename.</param>
-        public FileLogger(string directory, string filename)
-            : base()
+        public FileLogger(string directory, string filename, LogLevel level)
+            : base(level)
         {
             _directory = directory;
             _filename = filename;
@@ -85,27 +85,10 @@ namespace MPDisplay.Common.Log
                 {
                     File.Move(_fullPath, string.Format("{0}_1.log", System.IO.Path.Combine(_directory, _filename)));
                 }
-
-                // Create fresh logfile
-                File.WriteAllLines(_fullPath, StartHeader.ToArray());
-
             }
             catch (Exception ex)
             {
                 // should I log this error, LMAO!!!!
-            }
-        }
-
-        /// <summary>
-        /// Gets the log file start header.
-        /// </summary>
-        private IEnumerable<string> StartHeader
-        {
-            get
-            {
-                yield return "Log Started at: " + DateTime.Now;
-                yield return Environment.OSVersion.VersionString;
-                yield return Assembly.GetExecutingAssembly().GetName().ToString();
             }
         }
     }

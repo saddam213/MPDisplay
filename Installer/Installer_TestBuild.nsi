@@ -26,6 +26,7 @@
 !define PROGRAM_DATA "$APPDATA\MPDisplay++\"
 !define INSTALLER_EXE_NAME "Setup_MPDisplay++_${VERSION}.exe"
 !define UNINSTALLER_EXE_NAME "Uninstall_${APP_NAME}.exe"
+!define LOGLEVEL "Debug"
 
 # Set Installer Output Location #
 !system "md ${BUILD_FOLDER}\Packages\TestBuilds\${VERSION}\"
@@ -508,6 +509,7 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 	${EndIf}
 			  
 	# Write Registry Entries
+    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
@@ -582,6 +584,7 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
 	${EndIf}
 	
   	# Write Registry Entries
+    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDisplayServer.exe"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
@@ -631,6 +634,7 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
 		
 	
 	# Write Registry Entries
+    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"

@@ -3,21 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using GUIFramework.GUI.Controls;
 using GUIFramework.Managers;
-using GUIFramework.Utils;
 using GUISkinFramework.Animations;
 using GUISkinFramework.Common;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Property;
 using MPDisplay.Common.Controls;
-using MPDisplay.Common.Log;
-
+using Common.Logging;
 
 namespace GUIFramework.GUI
 {
     /// <summary>
     /// 
     /// </summary>
-    [XmlSkinType(typeof(XmlControl))]
+    [GUISkinElement(typeof(XmlControl))]
     public class GUIControl : Surface3D
     {
         #region Fields
@@ -92,6 +90,9 @@ namespace GUIFramework.GUI
             get { return _isWindowOpenVisible; }
         }
 
+        /// <summary>
+        /// Gets the last user interaction time.
+        /// </summary>
         public DateTime LastUserInteraction
         {
             get { return _lastUserInteraction; }
@@ -105,14 +106,18 @@ namespace GUIFramework.GUI
             get { return _animations; }
         }
 
-     
+        /// <summary>
+        /// Gets or sets a value indicating whether is focused.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if is control focused; otherwise, <c>false</c>.
+        /// </value>
         public bool IsControlFocused
         {
             get { return _isControlfocused; }
             set { _isControlfocused = value; NotifyPropertyChanged("IsControlFocused"); }
         }
         
-
         #endregion
 
         #region Initialize
@@ -174,7 +179,6 @@ namespace GUIFramework.GUI
                 RegisterInfoData();
                 UpdateInfoData(); 
             }
-         
         } 
 
         #endregion
@@ -186,25 +190,35 @@ namespace GUIFramework.GUI
         /// </summary>
         public void CreateAnimations()
         {
-            _animations = new AnimationCollection(this, BaseXml.Animations, AnimationStarted, AnimationComplete);
+            _animations = new AnimationCollection(this, BaseXml.Animations
+                , condition => Dispatcher.Invoke(() => OnAnimationStarted(condition))
+                , condition => Dispatcher.Invoke(() => OnAnimationCompleted(condition)));
         }
 
 
-        private void AnimationStarted(XmlAnimationCondition condition)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                OnAnimationStarted(condition);
-            });
-        }
+        ///// <summary>
+        ///// Animations the started.
+        ///// </summary>
+        ///// <param name="condition">The condition.</param>
+        //private void AnimationStarted(XmlAnimationCondition condition)
+        //{
+        //    Dispatcher.Invoke(() =>
+        //    {
+        //        OnAnimationStarted(condition);
+        //    });
+        //}
 
-        private void AnimationComplete(XmlAnimationCondition condition)
-        {
-            Dispatcher.Invoke(() =>
-            {
-                OnAnimationCompleted(condition);
-            });
-        }
+        ///// <summary>
+        ///// Animations the complete.
+        ///// </summary>
+        ///// <param name="condition">The condition.</param>
+        //private void AnimationComplete(XmlAnimationCondition condition)
+        //{
+        //    Dispatcher.Invoke(() =>
+        //    {
+        //        OnAnimationCompleted(condition);
+        //    });
+        //}
 
         /// <summary>
         /// Called when [animation started].
@@ -212,7 +226,7 @@ namespace GUIFramework.GUI
         /// <param name="condition">The condition.</param>
         public virtual void OnAnimationStarted(XmlAnimationCondition condition)
         {
-           // Log.Message(LogLevel.Verbose, "OnAnimationStarted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
+            //Log.Message(LogLevel.Verbose, "OnAnimationStarted({0}), WindowId: {1}, ControlName: {2}, ControlId {3}", condition, ParentId, Name, Id);
             switch (condition)
             {
                 case XmlAnimationCondition.VisibleTrue:
@@ -463,7 +477,7 @@ namespace GUIFramework.GUI
         #region Touch Interaction
 
         /// <summary>
-        /// Called when [touch up].
+        /// Called when touch is released.
         /// </summary>
         public virtual void OnTouchUp()
         {
@@ -471,7 +485,7 @@ namespace GUIFramework.GUI
         }
 
         /// <summary>
-        /// Called when [touch down].
+        /// Called when touch is down.
         /// </summary>
         public virtual void OnTouchDown()
         {

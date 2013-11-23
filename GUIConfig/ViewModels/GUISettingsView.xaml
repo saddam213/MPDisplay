@@ -9,6 +9,7 @@
          xmlns:Cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
 		 xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
 		 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+		 
              mc:Ignorable="d" x:Name="UI" >
     <Grid DataContext="{Binding ElementName=UI}">
 		<Grid.Resources>
@@ -17,6 +18,8 @@
 					<x:Type TypeName="Theading:ThreadPriority"/>
 				</ObjectDataProvider.MethodParameters>
 			</ObjectDataProvider>
+
+		
 
 			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
 				<ObjectDataProvider.MethodParameters>
@@ -89,6 +92,9 @@
 						<TextBlock Text="{Binding FallbackValue=Resume Delay, ConverterParameter=Resume Delay, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
 						<controls:IntegerUpDown Value="{Binding DataObject.ResumeConnectDelay}" />
 						<CheckBox Content="{Binding Converter={StaticResource LanguageConverter}, ConverterParameter=Enable System Info }"  IsChecked="{Binding DataObject.IsSystemInfoEnabled}" Margin="0,5,0,0"/>
+
+						<TextBlock Text="{Binding ConverterParameter=Log Level, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
+						<ComboBox ItemsSource="{Binding Source={StaticResource LogLevels}}" SelectedItem="{Binding LogLevel, ElementName=UI}"/>
 					</StackPanel>
 				</GroupBox>
 

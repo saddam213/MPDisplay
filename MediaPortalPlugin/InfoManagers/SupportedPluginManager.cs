@@ -8,7 +8,7 @@ using Common.Helpers;
 using System.Reflection;
 using Common.Settings.SettingsObjects;
 using MediaPortalPlugin.PluginHelpers;
-using MPDisplay.Common.Settings;
+using Common.Settings;
 using MessageFramework.DataObjects;
 
 namespace MediaPortalPlugin

@@ -11,10 +11,18 @@ using System.Xml.Serialization;
 
 namespace GUIConfig.ViewModels
 {
+    /// <summary>
+    /// Slimline version class for XmlSkinInfo
+    /// </summary>
     [Serializable]
     [XmlType("XmlSkinInfo")]
     public class SkinInfo : INotifyPropertyChanged
     {
+        #region Fields
+
+        private string _author = "Team MPDisplay++";
+        private string _skinName;
+        private string _skinFolderPath;
         private int _skinWidth = 1280;
         private int _skinHeight = 720;
         private string _currentStyle = "Default";
@@ -30,26 +38,52 @@ namespace GUIConfig.ViewModels
         private bool _textEnableScrolling = true;
         private ObservableCollection<SkinOption> _skinOptions = new ObservableCollection<SkinOption>();
 
-       
+        #endregion
 
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the width of the skin.
+        /// </summary>
+        /// <value>
+        /// The width of the skin.
+        /// </value>
         public int SkinWidth
         {
             get { return _skinWidth; }
             set { _skinWidth = value; NotifyPropertyChanged("SkinWidth"); }
         }
-      
+
+        /// <summary>
+        /// Gets or sets the height of the skin.
+        /// </summary>
+        /// <value>
+        /// The height of the skin.
+        /// </value>
         public int SkinHeight
         {
             get { return _skinHeight; }
             set { _skinHeight = value; NotifyPropertyChanged("SkinHeight"); }
         }
 
+        /// <summary>
+        /// Gets or sets the current style.
+        /// </summary>
+        /// <value>
+        /// The current style.
+        /// </value>
         public string CurrentStyle
         {
             get { return _currentStyle; }
             set { _currentStyle = value; NotifyPropertyChanged("CurrentStyle"); NotifyPropertyChanged("PreviewImage"); }
         }
 
+        /// <summary>
+        /// Gets or sets the current language.
+        /// </summary>
+        /// <value>
+        /// The current language.
+        /// </value>
         public string CurrentLanguage
         {
             get { return _currentLanguage; }
@@ -64,8 +98,6 @@ namespace GUIConfig.ViewModels
             get { return _textEnableScrolling; }
             set { _textEnableScrolling = value; NotifyPropertyChanged("TextEnableScrolling"); }
         }
-
-
 
         /// <summary>
         /// Gets or sets the horizontal scroll text delay.
@@ -139,49 +171,36 @@ namespace GUIConfig.ViewModels
             set { _textVerticalScrollSeperator = value; NotifyPropertyChanged("TextVerticalScrollSeperator"); }
         }
 
-
-
+        /// <summary>
+        /// Gets or sets the skin options.
+        /// </summary>
         public ObservableCollection<SkinOption> SkinOptions
         {
             get { return _skinOptions; }
             set { _skinOptions = value; NotifyPropertyChanged("SkinOptions"); }
         }
 
-        private string _skinName;
-
-     
+        /// <summary>
+        /// Gets or sets the name of the skin.
+        /// </summary>
         public string SkinName
         {
             get { return _skinName; }
             set { _skinName = value; NotifyPropertyChanged("SkinName"); }
         }
 
-        private string _author = "Team MPDisplay++";
-
+        /// <summary>
+        /// Gets or sets the author.
+        /// </summary>
         public string Author
         {
             get { return _author; }
             set { _author = value; NotifyPropertyChanged("Author"); }
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        private string _skinFolderPath;
+        /// <summary>
+        /// Gets or sets the skin folder path.
+        /// </summary>
         [XmlIgnore]
         [Browsable(false)]
         public string SkinFolderPath
@@ -190,6 +209,9 @@ namespace GUIConfig.ViewModels
             set { _skinFolderPath = value; NotifyPropertyChanged("SkinFolderPath"); }
         }
 
+        /// <summary>
+        /// Gets the skin info path.
+        /// </summary>
         [XmlIgnore]
         [Browsable(false)]
         public string SkinInfoPath
@@ -197,6 +219,9 @@ namespace GUIConfig.ViewModels
             get { return SkinFolderPath + "\\SkinInfo.xml"; }
         }
 
+        /// <summary>
+        /// Gets the skin language path.
+        /// </summary>
         [XmlIgnore]
         [Browsable(false)]
         public string SkinLanguagePath
@@ -204,6 +229,9 @@ namespace GUIConfig.ViewModels
             get { return SkinFolderPath + "\\Language.xml"; }
         }
 
+        /// <summary>
+        /// Gets the skin image folder.
+        /// </summary>
         [XmlIgnore]
         [Browsable(false)]
         public string SkinImageFolder
@@ -211,6 +239,9 @@ namespace GUIConfig.ViewModels
             get { return SkinFolderPath + "\\Images"; }
         }
 
+        /// <summary>
+        /// Gets the skin style folder.
+        /// </summary>
         [XmlIgnore]
         [Browsable(false)]
         public string SkinStyleFolder
@@ -218,6 +249,9 @@ namespace GUIConfig.ViewModels
             get { return SkinFolderPath + "\\Styles\\"; }
         }
 
+        /// <summary>
+        /// Gets the preview image.
+        /// </summary>
         [XmlIgnore]
         [Browsable(false)]
         public string PreviewImage
@@ -233,6 +267,9 @@ namespace GUIConfig.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets the styles.
+        /// </summary>
         public IEnumerable<string> Styles
         {
             get
@@ -245,6 +282,9 @@ namespace GUIConfig.ViewModels
             }
         }
 
+        /// <summary>
+        /// Gets the languages.
+        /// </summary>
         public IEnumerable<string> Languages
         {
             get
@@ -261,8 +301,11 @@ namespace GUIConfig.ViewModels
             }
         }
 
-        public event PropertyChangedEventHandler PropertyChanged;
+        #endregion
 
+        #region INotifyPropertyChanged
+
+        public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
             if (PropertyChanged != null)
@@ -270,18 +313,33 @@ namespace GUIConfig.ViewModels
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
+
+        #endregion
     }
 
+    /// <summary>
+    /// Slimline version class for XmlSkinOption
+    /// </summary>
     [Serializable]
     [XmlType(TypeName = "SkinOption")]
     public class SkinOption : INotifyPropertyChanged
     {
+        #region Fields
+
         private string _name = string.Empty;
         private bool _isEnabled;
         private string _description = null;
         private string _previewImage = string.Empty;
         private bool _isPreviewImageEnabled;
+        private string _group;
 
+        #endregion
+
+        #region Properties
+
+        /// <summary>
+        /// Gets or sets the name.
+        /// </summary>
         [DefaultValue("")]
         [XmlAttribute(AttributeName = "Name")]
         public string Name
@@ -289,8 +347,10 @@ namespace GUIConfig.ViewModels
             get { return _name; }
             set { _name = value; NotifyPropertyChanged("Name"); }
         }
-
-        private string _group;
+     
+        /// <summary>
+        /// Gets or sets the group.
+        /// </summary>
         [DefaultValue("")]
         [XmlAttribute(AttributeName = "Group")]
         public string Group
@@ -299,6 +359,12 @@ namespace GUIConfig.ViewModels
             set { _group = value; NotifyPropertyChanged("Group"); }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [is enabled].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [is enabled]; otherwise, <c>false</c>.
+        /// </value>
         [DefaultValue(false)]
         [XmlAttribute(AttributeName = "IsEnabled")]
         public bool IsEnabled
@@ -307,6 +373,12 @@ namespace GUIConfig.ViewModels
             set { _isEnabled = value; NotifyPropertyChanged("IsEnabled"); }
         }
 
+        /// <summary>
+        /// Gets or sets a value indicating whether [is preview image enabled].
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if [is preview image enabled]; otherwise, <c>false</c>.
+        /// </value>
         [DefaultValue(false)]
         [XmlAttribute(AttributeName = "IsPreviewImageEnabled")]
         public bool IsPreviewImageEnabled
@@ -315,6 +387,9 @@ namespace GUIConfig.ViewModels
             set { _isPreviewImageEnabled = value; NotifyPropertyChanged("IsPreviewImageEnabled"); }
         }
 
+        /// <summary>
+        /// Gets or sets the preview image.
+        /// </summary>
         [DefaultValue("")]
         [XmlAttribute(AttributeName = "PreviewImage")]
         public string PreviewImage
@@ -323,7 +398,9 @@ namespace GUIConfig.ViewModels
             set { _previewImage = value; NotifyPropertyChanged("PreviewImage"); }
         }
 
-   
+        /// <summary>
+        /// Gets or sets the description.
+        /// </summary>
         [XmlAttribute(AttributeName = "Description")]
         public string Description
         {
@@ -331,12 +408,11 @@ namespace GUIConfig.ViewModels
             set { _description = value; NotifyPropertyChanged("Description"); }
         }
 
+        #endregion
 
-
+        #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-
         public void NotifyPropertyChanged(string property)
         {
             if (PropertyChanged != null)
@@ -345,7 +421,7 @@ namespace GUIConfig.ViewModels
             }
         }
 
-
+        #endregion
     }
 
 }
