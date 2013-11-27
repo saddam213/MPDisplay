@@ -27,5 +27,13 @@ namespace MessageFramework.DataObjects
         {
             get { return !string.IsNullOrEmpty(FileName); }
         }
+
+        public bool IsEmpty
+        {
+            get
+            {
+                return string.IsNullOrEmpty(FileName) && FileBytes == null;
+            }
+        }
     }
 }

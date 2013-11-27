@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>C:\Program Files %28x86%29\MPDisplay++\SkinEditor\</OutputPath>
+    <OutputPath>C:\Program Files %28x86%29\MPDisplay++\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -29,7 +29,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Release\MPDisplay\SkinEditor\</OutputPath>
+    <OutputPath>..\..\..\Release\MPDisplay\GUI\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -64,7 +64,6 @@
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
     <Compile Include="BindingConverters\ContextMenuTemplateSelector.cs" />
-    <Compile Include="BindingConverters\DummyGuideDataConverter.cs" />
     <Compile Include="BindingConverters\SkinEditorProgressValueConverter.cs" />
     <Compile Include="BindingConverters\SnapToGridConverter.cs" />
     <Compile Include="BindingConverters\DummyListItemsConverter.cs" />
@@ -303,9 +302,7 @@
     <Resource Include="Images\DVDCover.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DesignerStyle.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    <None Include="DesignerStyle.xml" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\XmlEqualizer.png" />

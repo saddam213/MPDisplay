@@ -89,8 +89,6 @@
 						<TextBlock Text="{Binding FallbackValue=Process Priority, ConverterParameter=Process Priority, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
 						<ComboBox ItemsSource="{Binding Source={StaticResource ThreadPriorities}}" SelectedItem="{Binding DataObject.Priority}"/>
 						<CheckBox Content="{Binding Converter={StaticResource LanguageConverter}, FallbackValue=Restart On Error, ConverterParameter=Restart On Error }"  IsChecked="{Binding DataObject.RestartOnError}" Margin="0,5,0,0"/>
-						<TextBlock Text="{Binding FallbackValue=Resume Delay, ConverterParameter=Resume Delay, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
-						<controls:IntegerUpDown Value="{Binding DataObject.ResumeConnectDelay}" />
 						<CheckBox Content="{Binding Converter={StaticResource LanguageConverter}, ConverterParameter=Enable System Info }"  IsChecked="{Binding DataObject.IsSystemInfoEnabled}" Margin="0,5,0,0"/>
 
 						<TextBlock Text="{Binding ConverterParameter=Log Level, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>

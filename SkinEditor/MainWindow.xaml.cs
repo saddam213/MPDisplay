@@ -44,7 +44,7 @@ namespace SkinEditor
            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "SkinEditor", RegistrySettings.LogLevel));
 //#endif
 
-            _settingsFile = Environment.CurrentDirectory + "\\Settings.xml";
+            _settingsFile = System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\Settings.xml");
             InitializeComponent();
             CreateContextMenuCommands();
           //  Application.Current.Resources = new ResourceDictionary { Source = new Uri("/GUIFramework;component/Themes/Generic.xaml", UriKind.RelativeOrAbsolute) };

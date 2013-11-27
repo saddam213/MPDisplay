@@ -36,7 +36,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "InstallScripts", "InstallSc
 		Installer\Installer_Patch.nsi = Installer\Installer_Patch.nsi
 		Installer\Installer_Release.nsi = Installer\Installer_Release.nsi
 		Installer\Installer_Skin.nsi = Installer\Installer_Skin.nsi
-		Installer\Installer_SkinEditor.nsi = Installer\Installer_SkinEditor.nsi
 		Installer\Installer_TestBuild.nsi = Installer\Installer_TestBuild.nsi
 	EndProjectSection
 EndProject

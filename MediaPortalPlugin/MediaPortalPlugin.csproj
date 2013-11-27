@@ -42,9 +42,6 @@
       <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\Core.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="MP-TVSeries">
-      <HintPath>C:\Program Files (x86)\Team MediaPortal\MediaPortal\plugins\Windows\MP-TVSeries.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Runtime.Serialization" />

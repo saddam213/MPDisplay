@@ -43,7 +43,12 @@
 					<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent"/>
 					<SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 					<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
+					<SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+					<SolidColorBrush x:Key="{x:Static SystemColors.ControlTextBrushKey}" Color="Black" />
+
 					<Style TargetType="ListBoxItem">
+						<Setter Property="BorderThickness" Value="0" />
+						<Setter Property="BorderBrush" Value="Transparent" />
 						<Setter Property="FocusVisualStyle" Value="{x:Null}" />
 						<Setter Property="VerticalAlignment" Value="{Binding CurrentLayout.VerticalAlignment, ElementName=UI}" />
 						<Setter Property="HorizontalAlignment" Value="{Binding CurrentLayout.HorizontalAlignment, ElementName=UI}" />

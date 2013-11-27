@@ -47,7 +47,6 @@ namespace MediaPortalPlugin.PluginHelpers
 
         public override APIImage GetListItemImage(GUIListItem item, APIListLayout layout)
         {
-
             string filename = string.Empty;
             if (Settings != null && item != null)
             {
@@ -72,7 +71,13 @@ namespace MediaPortalPlugin.PluginHelpers
                         break;
                 }
             }
-            return new APIImage(filename) ?? base.GetListItemImage(item, layout);
+
+            var image = ImageHelper.CreateImage(filename);
+            if (!image.IsEmpty)
+            {
+                return image;
+            }
+            return base.GetListItemImage(item, layout);
         }
     }
 }

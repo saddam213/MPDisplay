@@ -31,8 +31,8 @@
 
 	<skinEditorConverters:ColorBrushConverter x:Key="ColorBrushConverter"/>
 	<skinEditorConverters:DummyListItemsConverter x:Key="DummyListItemsConverter" />
-	<skinEditorConverters:DummyGuideDataConverter x:Key="DummyGuideDataConverter" />
-	<skinEditorConverters:DummyGuideDataValueConverter x:Key="DummyGuideDataValueConverter" />
+
+
 	<skinEditorConverters:SkinEditorXmlLabelConverter x:Key="LabelConverter" />
 	<skinEditorConverters:SkinEditorXmlImageConverter x:Key="ImageConverter" />
 	<skinEditorConverters:SkinEditorXmlBrushConverter x:Key="BrushConverter" />

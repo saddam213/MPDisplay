@@ -178,7 +178,7 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     SkinTag = tag,
                     PropertyType = APIPropertyType.Image,
-                    Image = new APIImage(tagValue)
+                    Image = ImageHelper.CreateImage(tagValue)
                 });
             }
         }

@@ -108,7 +108,7 @@ namespace MediaPortalPlugin.PluginHelpers
                     }
                 }
             }
-            return new APIImage(filename);
+            return ImageHelper.CreateImage(filename);
         }
 
     }

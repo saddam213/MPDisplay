@@ -61,9 +61,12 @@ namespace MediaPortalPlugin.InfoManagers
         
            _channelGroup = MPSettings.Instance.GetValue("mytv", "group");
 
-           if (_updateTimer == null)
+           if (_getRecordings != null)
            {
-               _updateTimer = new Timer((o) => UpdateGuideData(), null, 5000, -1);
+               if (_updateTimer == null)
+               {
+                   _updateTimer = new Timer((o) => UpdateGuideData(), null, 5000, -1);
+               }
            }
         }
 
@@ -136,19 +139,22 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void SendRecordings()
         {
-            var recordings = _getRecordings();
-            if (!recordings.AreUnorderedEqualBy(_lastRecordingMessage, x => x.ProgramId))
+            if (_getRecordings != null)
             {
-                _lastRecordingMessage = recordings;
-                MessageService.Instance.SendListMessage(new APIListMessage
+                var recordings = _getRecordings();
+                if (!recordings.AreUnorderedEqualBy(_lastRecordingMessage, x => x.ProgramId))
                 {
-                    MessageType = APIListMessageType.TVGuide,
-                    TvGuide = new APITVGuide
+                    _lastRecordingMessage = recordings;
+                    MessageService.Instance.SendListMessage(new APIListMessage
                     {
-                        MessageType = APITVGuideMessageType.Recordings,
-                        RecordingMessage = recordings
-                    }
-                });
+                        MessageType = APIListMessageType.TVGuide,
+                        TvGuide = new APITVGuide
+                        {
+                            MessageType = APITVGuideMessageType.Recordings,
+                            RecordingMessage = recordings
+                        }
+                    });
+                }
             }
         }
 

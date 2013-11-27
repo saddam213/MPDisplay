@@ -5,6 +5,8 @@ using System.Text;
 using Common.Helpers;
 using MessageFramework.DataObjects;
 using Common.Settings;
+using System.IO;
+using MediaPortal.GUI.Library;
 
 namespace MediaPortalPlugin
 {
@@ -12,11 +14,14 @@ namespace MediaPortalPlugin
     {
         public static APIImage CreateImage(string filename)
         {
+            string imageFile = File.Exists(filename)
+                ? filename : GUIGraphicsContext.GetThemedSkinFile("\\media\\" + filename);
+
             if (RegistrySettings.InstallType == MPDisplayInstallType.Full)
             {
-                return new APIImage(filename);
+                return new APIImage(imageFile);
             }
-            return new APIImage(FileHelpers.ReadBytesFromFile(filename));
+            return new APIImage(FileHelpers.ReadBytesFromFile(imageFile));
         }
     }
 }

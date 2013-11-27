@@ -46,10 +46,10 @@ namespace MediaPortalPlugin.PluginHelpers
         {
             if (item != null)
             {
-                string imagePath = string.Format("{0}\\Media\\{1}", GUIGraphicsContext.Skin, item.IconImage);
-                if (File.Exists(imagePath))
+                var image = ImageHelper.CreateImage(item.IconImage);
+                if (!image.IsEmpty)
                 {
-                    return new APIImage(imagePath);
+                    return image;
                 }
             }
             return base.GetListItemImage(item, layout);

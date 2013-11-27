@@ -275,6 +275,7 @@ namespace GUIFramework
                     StartWindowProcessThread();
                     HideSplashScreen();
                     RegisterCallbacks();
+                    ProcessHelper.ActivateApplication("MediaPortal");
                     return;
                 }
                 ShowSplashScreenError("No Default windows found!");

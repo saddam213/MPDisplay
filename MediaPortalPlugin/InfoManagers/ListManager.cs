@@ -853,7 +853,7 @@ namespace MediaPortalPlugin.InfoManagers
                     filename = item.PinImage;
                 }
             }
-         
+
             return ImageHelper.CreateImage(filename);
         }
 

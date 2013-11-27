@@ -25,6 +25,8 @@ using GUIFramework;
 using Common.Helpers;
 using MPDisplay.Common.ExtensionMethods;
 using Common;
+using System.IO;
+using Common.Settings;
 
 namespace SkinEditor.Controls
 {
@@ -70,7 +72,11 @@ namespace SkinEditor.Controls
             {
                 if (GuideData == null)
                 {
-                    GuideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(Environment.CurrentDirectory + "\\Data\\GuideData.xml");
+                    var data = System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\GuideData.xml");
+                    if (File.Exists(data))
+                    {
+                        GuideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(data);
+                    }
                 }
                 (d as Guide).LoadGuideData(GuideData);
             }

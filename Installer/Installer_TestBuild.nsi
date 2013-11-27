@@ -482,13 +482,19 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		File /r "${BUILD_FOLDER}\Data\Install_Full\*.*"
+     	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
+		File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
 		File /r "${BUILD_FOLDER}\Data\Skin\*.*"
 		
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
 		CreateDirectory "${PROGRAM_DATA}Language"
 			File /r "${BUILD_FOLDER}\Data\Language\*.*"
+
+	# Install skinEditor data Files
+	SetOutPath "${PROGRAM_DATA}SkinEditor\"
+		CreateDirectory "${PROGRAM_DATA}SkinEditor"
+			File /r "${BUILD_FOLDER}\Data\SkinEditor\*.*"
     
    		# Find MediaPortal InstallPath
     ReadRegDWORD $0 ${REG_HKLM} "${REG_MEDIAPORTAL_PATH}" InstallPath
@@ -557,7 +563,8 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		File "${BUILD_FOLDER}\Data\Install_Plugin\*.*"
+	  	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
+		File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
 		
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
@@ -629,8 +636,8 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		File /r "${BUILD_FOLDER}\Data\Install_GUI\*.*"
-		File /r "${BUILD_FOLDER}\Data\Skin\*.*"
+		 File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
+	     File /r "${BUILD_FOLDER}\Data\Skin\*.*"
 		
 	
 	# Write Registry Entries
@@ -874,7 +881,9 @@ Section Uninstall
 		ReadRegDWORD $0 ${REG_HKLM} "${REG_APP_PATH}" ProgramDataPath
 		RmDir /r "$0\Language"
 		RmDir /r "$0\Logs"
-		RmDir /r "$0\Skin\default"
+        RmDir /r "$0\SkinEditor"
+		RmDir /r "$0\Skin\Titan"
+        RmDir /r "$0\Skin\Titan-WS"
 		RmDir "$0\Skin"
 	
 		# Ask if the user wants to remove all 3rd party skins.
