@@ -14,7 +14,7 @@ namespace Common.Helpers
 
         private static Log Log = LoggingManager.GetLog(typeof(ReflectionHelper));
 
-      
+
 
         #region Method Invoke
 
@@ -49,7 +49,7 @@ namespace Common.Helpers
         {
             try
             {
-                    return (T)obj.GetType().InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, args);
+                return (T)obj.GetType().InvokeMember(methodName, BindingFlags.InvokeMethod, null, obj, args);
             }
             catch (Exception ex)
             {
@@ -248,7 +248,7 @@ namespace Common.Helpers
         {
             return GetStaticField<object>(obj, field, defaultValue);
         }
-    
+
         #endregion
 
         #region Other
@@ -339,5 +339,61 @@ namespace Common.Helpers
 
         #endregion
 
+
+
+
+        public static IEnumerable<string> FindStringValues(object obj)
+        {
+            return _FindStringValues(obj, new List<object>());
+        }
+
+        private static IEnumerable<string> _FindStringValues(object obj, IList<object> visitedObjects)
+        {
+            if (obj == null)
+                yield break;
+
+            // Console.WriteLine(string.Join("; ", visitedObjects.Select(i => i.ToString()).ToArray()));
+            if (visitedObjects.Any(item => Object.ReferenceEquals(item, obj)))
+                yield break;
+
+            if (!(obj is string))
+                visitedObjects.Add(obj);
+
+            Type type = obj.GetType();
+
+            if (type == typeof(string))
+            {
+                yield return (obj).ToString();
+                yield break;
+            }
+
+            if (typeof(IEnumerable).IsAssignableFrom(type))
+            {
+                var array = obj as IEnumerable;
+                foreach (var item in array)
+                    foreach (var str in _FindStringValues(item, visitedObjects))
+                        yield return str;
+
+                yield break;
+            }
+
+            if (type.IsClass)
+            {
+                FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                foreach (FieldInfo field in fields)
+                {
+                    object item = field.GetValue(obj);
+
+                    if (item == null)
+                        continue;
+
+
+                    foreach (var str in _FindStringValues(item, visitedObjects))
+                        yield return str;
+                }
+
+                yield break;
+            }
+        }
     }
 }

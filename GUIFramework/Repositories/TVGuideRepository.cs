@@ -253,10 +253,13 @@ namespace GUIFramework.Managers
                     {
                         foreach (var program in channel.Programs)
                         {
-                            bool scheduled = recordings.Any(p => p.ChannelId == channel.Id && p.ProgramId == program.Id);
+                            var recording = recordings.FirstOrDefault(p => p.ChannelId == channel.Id && p.ProgramId == program.Id);
+                            bool scheduled = recording != null;
                             if (program.IsScheduled != scheduled)
                             {
                                 program.IsScheduled = scheduled;
+                                program.RecordPaddingStart = recording.RecordPaddingStart;
+                                program.RecordPaddingEnd = recording.RecordPaddingEnd;
                             }
                         }
                         if (channel.UpdateCurrentProgram())
@@ -379,6 +382,8 @@ namespace GUIFramework.Managers
         public string Description { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
+        public int RecordPaddingStart { get; set; }
+        public int RecordPaddingEnd { get; set; }
        
 
         public bool IsRecording
@@ -414,7 +419,7 @@ namespace GUIFramework.Managers
 
         public bool IsProgramRecording()
         {
-            return IsCurrent && IsScheduled;
+            return IsScheduled && (StartTime > DateTime.Now.AddMinutes(-RecordPaddingStart) && EndTime < DateTime.Now.AddMinutes(RecordPaddingEnd));
         }
 
 

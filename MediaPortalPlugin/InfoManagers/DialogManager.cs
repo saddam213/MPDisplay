@@ -332,6 +332,8 @@ namespace MediaPortalPlugin.InfoManagers
                         FocusedControlId = _currentDialog.GetFocusControlId()
                     }
                 });
+
+                SendEditorData(APISkinEditorDataType.DialogId, _currentDialogId);
             }
         }
 
@@ -347,6 +349,8 @@ namespace MediaPortalPlugin.InfoManagers
                     FocusedControlId = -1
                 }
             });
+
+            SendEditorData(APISkinEditorDataType.DialogId, -1);
         }
 
         private void SendDialogFocusMessage()
@@ -367,9 +371,23 @@ namespace MediaPortalPlugin.InfoManagers
                             FocusedControlId = _lastFocusedControlId
                         }
                     });
+
+                    SendEditorData(APISkinEditorDataType.FocusedControlId, focusedControlId);
                 }
             }
         }
-     
+
+
+        private void SendEditorData(APISkinEditorDataType type, int value)
+        {
+            if (MessageService.Instance.IsSkinEditorConnected)
+            {
+                MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                {
+                    DataType = type,
+                    IntValue = value
+                });
+            }
+        }
     }
 }

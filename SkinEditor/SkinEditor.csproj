@@ -39,6 +39,8 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
@@ -93,6 +95,10 @@
       <DependentUpon>TextBoxDialog.xaml</DependentUpon>
     </Compile>
     <Compile Include="Themes\BaseViews\EditorViewModel.cs" />
+    <Compile Include="Views\InfoEditorView\InfoEditorView.xaml.cs">
+      <DependentUpon>InfoEditorView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InfoEditorView\InfoEditorViewSettings.cs" />
     <Compile Include="Views\SkinInfoEditorView\SkinInfoEditorView.xaml.cs">
       <DependentUpon>SkinInfoEditorView.xaml</DependentUpon>
     </Compile>
@@ -153,6 +159,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Themes\Generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\InfoEditorView\InfoEditorView.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -228,6 +238,10 @@
     <ProjectReference Include="..\GUICommon\GUICommon.csproj">
       <Project>{1f9acdee-fc03-4e2b-98db-632d4d64bffb}</Project>
       <Name>GUICommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MessageFramework\MessageFramework.csproj">
+      <Project>{c3a683aa-2caf-4093-bf6e-0b47ff048096}</Project>
+      <Name>MessageFramework</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -309,6 +323,13 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\XmlPlayerWindow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Cross.png" />
+    <Resource Include="Images\Plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Tick.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -56,7 +56,7 @@ namespace MessageFramework.DataObjects
     {
         public int ChannelId { get; set; }
         public int ProgramId { get; set; }
-
-        
+        public int RecordPaddingStart { get; set; }
+        public int RecordPaddingEnd { get; set; }
     }
 }

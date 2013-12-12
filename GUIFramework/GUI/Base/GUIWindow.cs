@@ -24,6 +24,7 @@ namespace GUIFramework.GUI
             RenderTransform = new ScaleTransform(1, 1);
             RenderTransformOrigin = new Point(0.5, 0.5);
             DataContext = this;
+            ClipToBounds = true;
         }
 
         /// <summary>

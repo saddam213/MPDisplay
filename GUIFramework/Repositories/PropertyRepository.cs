@@ -113,7 +113,7 @@ namespace GUIFramework.Managers
         private MessengerService<string> _propertyService = new MessengerService<string>();
         private DataRepository<string, APIPropertyMessage> _propertyRepository;
       //  private DataRepository<string, string> _propertyDefaults;
-        private ServerChecker _systemInfo;
+        private SystemStatusInfo _systemInfo;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -389,7 +389,7 @@ namespace GUIFramework.Managers
         {
             if (Settings.IsSystemInfoEnabled)
             {
-                _systemInfo = new ServerChecker();
+                _systemInfo = new SystemStatusInfo();
                 _systemInfo.TagPrefix = "MPD";
                 _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
                 _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;

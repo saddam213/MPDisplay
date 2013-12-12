@@ -46,7 +46,7 @@ namespace MediaPortalPlugin.InfoManagers
         private List<string> _registeredProperties = new List<string>();
         private PluginSettings _settings;
         private bool _suspended;
-        private ServerChecker _systemInfo;
+        private SystemStatusInfo _systemInfo;
 
         //public bool Suspend { get; set; }
 
@@ -57,7 +57,7 @@ namespace MediaPortalPlugin.InfoManagers
 
             if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin && _settings.IsSystemInfoEnabled)
             {
-                _systemInfo = new ServerChecker();
+                _systemInfo = new SystemStatusInfo();
                 _systemInfo.TagPrefix = "MP";
                 _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
                 _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
@@ -155,8 +155,22 @@ namespace MediaPortalPlugin.InfoManagers
                                 break;
                         }
                     }
+
+
                 }
                 catch { }
+            }
+
+            if (MessageService.Instance.IsSkinEditorConnected)
+            {
+                if (!string.IsNullOrEmpty(tag) && !string.IsNullOrEmpty(tagValue))
+                {
+                    MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                    {
+                        DataType = APISkinEditorDataType.Property,
+                        PropertyData = new string[] { tag, tagValue }
+                    });
+                }
             }
         }
 
@@ -168,6 +182,8 @@ namespace MediaPortalPlugin.InfoManagers
                 PropertyType = APIPropertyType.Label,
                 Label = tagValue
             });
+
+
         }
 
         public void SendImageProperty(string tag, string tagValue)

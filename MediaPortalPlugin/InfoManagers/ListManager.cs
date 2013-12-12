@@ -391,6 +391,8 @@ namespace MediaPortalPlugin.InfoManagers
             if (currentFacde != null && currentFacde.SelectedListItem != null)
             {
                 SendSelectedItem(APIListType.List, currentFacde.SelectedListItem.Label, currentFacde.SelectedListItemIndex);
+
+                SendSkinEditorData(currentFacde.SelectedListItem);
             }
         }
 
@@ -444,6 +446,39 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
+        private void SendSkinEditorData(GUIListItem item)
+        {
+            if (item != null && MessageService.Instance.IsSkinEditorConnected)
+            {
+                try
+                {
+                    var data = new List<string[]>();
+                    foreach (var property in item.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(string)))
+                    {
+                        data.Add(new string[] { property.Name, (string)property.GetValue(item, null) });
+                    }
+
+                    if (item.TVTag != null)
+                    {
+                        foreach (var property in item.TVTag.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(string)))
+                        {
+                            data.Add(new string[] { "TVTag." + property.Name, (string)property.GetValue(item.TVTag, null) });
+                        }
+                    }
+
+                    MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                    {
+                        DataType = APISkinEditorDataType.ListItem,
+                        ListItemData = data
+                    });
+                }
+                catch 
+                {
+                                       
+                }
+            }
+        }
+
         #endregion
 
         #region ListControl
@@ -481,6 +516,8 @@ namespace MediaPortalPlugin.InfoManagers
             if (currentList != null && currentList.SelectedListItem != null)
             {
                 SendSelectedItem(APIListType.List, currentList.SelectedListItem.Label, currentList.SelectedListItemIndex);
+
+                SendSkinEditorData(currentList.SelectedListItem);
             }
         }
 

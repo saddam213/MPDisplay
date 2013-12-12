@@ -476,6 +476,24 @@ namespace SkinEditor.Views
                                     count++;
                                 }
                             }
+
+                            var images = controlSurface.FindVisualChildren<RoundedImage>();
+                            if (images != null && images.Any())
+                            {
+                                int count = 0;
+                                var colors = new Color[] { Colors.DarkOrange, Colors.LightCoral, Colors.Peru, Colors.YellowGreen, Colors.SlateBlue, Colors.Silver };
+                                foreach (var image in images)
+                                {
+                                    if (image != null && image.Descendants<Border>().Any())
+                                    {
+
+                                        (image.Ancestors<Border>().First() as Border).Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
+                                        count++;
+                                    }
+                                }
+                            }
+
+
                         }
                         else
                         {
@@ -484,13 +502,19 @@ namespace SkinEditor.Views
                             {
                                 text.Background = new SolidColorBrush(showColors ? Colors.Orange : Colors.Transparent);
                             }
+
+                            var image = controlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();
+                            if (image != null && image.Parent is Border)
+                            {
+                                (image.Parent as Border).Background = new SolidColorBrush(showColors ? Colors.Red : Colors.Transparent);
+                            }
                         }
 
-                        var image = controlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();
-                        if (image != null && image.Parent is Border)
-                        {
-                            (image.Parent as Border).Background = new SolidColorBrush(showColors ? Colors.Red : Colors.Transparent);
-                        }
+                  
+
+
+                     
+
                     }
                 }
             }, DispatcherPriority.Background);

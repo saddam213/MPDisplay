@@ -13,8 +13,9 @@ namespace Common.Status
     /// <summary>
     /// Class that runs to get information from your system
     /// </summary>
-    public class ServerChecker
+    public class SystemStatusInfo
     {
+        private Logging.Log Log = Logging.LoggingManager.GetLog(typeof(SystemStatusInfo));
         private DateTime _lastFastUpdate = DateTime.MinValue;
         private DateTime _lastMediumUpdate = DateTime.MinValue;
         private DateTime _lastSlowUpdate = DateTime.MinValue;
@@ -34,14 +35,21 @@ namespace Common.Status
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ServerChecker"/> class.
+        /// Initializes a new instance of the <see cref="SystemStatusInfo"/> class.
         /// This populates a SystemInfo object with data from the system
         /// </summary>
-        public ServerChecker()
+        public SystemStatusInfo()
         {
            _computerInfo  = new ComputerInfo();
-           _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-           _cpuCounter.NextValue();
+           try
+           {
+               _cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
+               _cpuCounter.NextValue();
+           }
+           catch (Exception ex)
+           {
+               Log.Message(Logging.LogLevel.Error, "Unable to start CPU performance counter, MPDisplay does not have the required permission/rights{0}{1}", Environment.NewLine, ex.Message);
+           }
         }
 
         /// <summary>
@@ -100,7 +108,7 @@ namespace Common.Status
             if (DateTime.Now > _lastFastUpdate.AddMilliseconds(500))
             {
                 _lastFastUpdate = DateTime.Now;
-                double value = Math.Round(_cpuCounter.NextValue(),2);
+                double value = _cpuCounter != null ? Math.Round(_cpuCounter.NextValue(),2) : 0.0;
                 NotifyTextDataChanged("CPU", string.Format("{0:##0} %", value));
                 NotifyNumberDataChanged("CPU", value);
                 UpdateTime(_lastFastUpdate);

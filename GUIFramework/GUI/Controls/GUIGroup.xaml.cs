@@ -23,6 +23,7 @@ namespace GUIFramework.GUI.Controls
         public GUIGroup()
         {
             InitializeComponent(); 
+
         }
 
         #endregion

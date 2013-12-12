@@ -101,7 +101,7 @@ namespace GUI
             {
                 double dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
                 double dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
-                if (dpiX != 96.0 || dpiX != 96.0)
+                if (dpiX != 96.0 || dpiY != 96.0)
                 {
                     width = width * 96.0 / dpiX;
                     height = height * 96.0 / dpiY;

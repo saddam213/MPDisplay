@@ -538,16 +538,48 @@
                     CornerRadius="{Binding ElementName=focus, Path=CornerRadius,Mode=OneWay}">
 
 						<Grid>
-							<Border Margin="{Binding ControlStyle.ImageMargin,Converter={StaticResource ThicknessConverter},Mode=OneWay}" x:Name="imgBorder"
-						        HorizontalAlignment="{Binding ControlStyle.ImageHorizontalAlignment,Mode=OneWay}" 
-						        VerticalAlignment="{Binding ControlStyle.ImageVerticalAlignment,Mode=OneWay}" 
-								Visibility="{Binding ControlStyle.EnableImage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+							<!--Image-->
+							<Border x:Name="imgBorder" 
+										        Margin="{Binding CurrentLayout.ImageMargin, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
+												HorizontalAlignment="{Binding CurrentLayout.ImageHorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                        VerticalAlignment="{Binding CurrentLayout.ImageVerticalAlignment,Mode=OneWay, ElementName=UI}"
+												Visibility="{Binding CurrentLayout.EnableImage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}"
+													Background="Black">
 								<commonControls:RoundedImage 
-													      Stretch="{Binding ControlStyle.ImageStretch,Mode=OneWay}"
-														  Source="{Binding Image,Converter={StaticResource ImageConverter}, Mode=OneWay}"
-														  CornerRadius="{Binding ControlStyle.ImageCornerRadius,Mode=OneWay}"  >
+														  Stretch="{Binding CurrentLayout.ImageStretch,Mode=OneWay, ElementName=UI}"
+														  Source="{Binding Image, Converter={StaticResource GUIImageConverter}}"
+														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" >
 								</commonControls:RoundedImage>
+							
 							</Border>
+
+							<!--Image2-->
+							<!--<Border x:Name="imgBorder2" 
+										        Margin="{Binding CurrentLayout.Image2Margin, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
+												HorizontalAlignment="{Binding CurrentLayout.Image2HorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                        VerticalAlignment="{Binding CurrentLayout.Image2VerticalAlignment,Mode=OneWay, ElementName=UI}"
+												Visibility="{Binding CurrentLayout.EnableImage2, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}"
+													Background="{Binding CurrentLayout.DefaultImage2, Converter={StaticResource BrushConverter} ,Mode=OneWay, ElementName=UI}">
+								<commonControls:RoundedImage 
+														  Stretch="{Binding CurrentLayout.Image2Stretch,Mode=OneWay, ElementName=UI}"
+														  Source="{Binding Image2, Converter={StaticResource GUIImageConverter}}"
+														  CornerRadius="{Binding CurrentLayout.Image2CornerRadius,Mode=OneWay, ElementName=UI}" >
+								</commonControls:RoundedImage>
+							</Border>-->
+
+							<!--Image3-->
+							<!--<Border x:Name="imgBorder3" 
+										        Margin="{Binding CurrentLayout.Image3Margin, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
+												HorizontalAlignment="{Binding CurrentLayout.Image3HorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                        VerticalAlignment="{Binding CurrentLayout.Image3VerticalAlignment,Mode=OneWay, ElementName=UI}"
+												Visibility="{Binding CurrentLayout.EnableImage3, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}"
+												Background="{Binding CurrentLayout.DefaultImage3, Converter={StaticResource BrushConverter} ,Mode=OneWay, ElementName=UI}">
+								<commonControls:RoundedImage 
+														  Stretch="{Binding CurrentLayout.Image3Stretch,Mode=OneWay, ElementName=UI}"
+														  Source="{Binding Image3, Converter={StaticResource GUIImageConverter}}"
+														  CornerRadius="{Binding CurrentLayout.Image3CornerRadius,Mode=OneWay, ElementName=UI}" >
+								</commonControls:RoundedImage>
+							</Border>-->
 
 							<TextBlock Text="{Binding LabelText, Converter={StaticResource LabelConverter},Mode=OneWay}"
                                HorizontalAlignment="{Binding ControlStyle.LabelHorizontalAlignment,Mode=OneWay}"

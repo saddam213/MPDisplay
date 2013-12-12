@@ -20,13 +20,40 @@ namespace MessageFramework.DataObjects
 
         [DataMember]
         public int IntValue { get; set; }
+
+        [DataMember]
+        public APISkinEditorData SkinEditorData { get; set; }
     }
+
+ 
 
     public enum APIDataMessageType
     {
         KeepAlive,
         EQData,
-        MPActionId
+        MPActionId,
+        SkinEditorInfo
+    }
+
+
+
+
+    public class APISkinEditorData
+    {
+        public APISkinEditorDataType DataType { get; set; }
+        public string[] PropertyData { get; set; }
+        public List<string[]> ListItemData { get; set; }
+        public int IntValue { get; set; }
+    }
+
+    public enum APISkinEditorDataType
+    {
+        Property,
+        ListItem,
+        ActionId,
+        WindowId,
+        DialogId,
+        FocusedControlId,
     }
 
 }

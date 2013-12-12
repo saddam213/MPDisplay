@@ -259,8 +259,11 @@ namespace MediaPortalPlugin.InfoManagers
                                         var schedules = ReflectionHelper.InvokeStaticMethod<IEnumerable>(scheduleType, "ListAll", null);
                                         if (schedules != null)
                                         {
+                                        
                                             foreach (var schedule in schedules)
                                             {
+                                                var preRecordInterval = ReflectionHelper.GetPropertyValue<int>(schedule, "PreRecordInterval", 0);
+                                                var postRecordInterval = ReflectionHelper.GetPropertyValue<int>(schedule, "PostRecordInterval", 0);
                                                 var programs = ReflectionHelper.InvokeStaticMethod<IEnumerable>(scheduleType, "GetProgramsForSchedule", null, schedule);
                                                 if (programs != null)
                                                 {
@@ -269,7 +272,9 @@ namespace MediaPortalPlugin.InfoManagers
                                                         recordings.Add(new APIRecording
                                                         {
                                                             ChannelId = ReflectionHelper.GetPropertyValue<int>(program, "IdChannel", -1),
-                                                            ProgramId = ReflectionHelper.GetPropertyValue<int>(program, "IdProgram", -1)
+                                                            ProgramId = ReflectionHelper.GetPropertyValue<int>(program, "IdProgram", -1),
+                                                            RecordPaddingStart = preRecordInterval,
+                                                            RecordPaddingEnd = postRecordInterval
                                                         });
                                                     }
                                                 }

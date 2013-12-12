@@ -10,59 +10,31 @@
              mc:Ignorable="d" 
              d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >
 	<local:EditorViewModel.Resources>
-	
+
 	</local:EditorViewModel.Resources>
 
 	<Grid DataContext="{Binding ElementName=UI}">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="149*"/>
-			<ColumnDefinition Width="491*"/>
-		</Grid.ColumnDefinitions>
-		
-			<Border Margin="5" CornerRadius="4" Background="DarkGray">
+		<Grid.RowDefinitions>
+			<RowDefinition Height="50"/>
+			<RowDefinition />
+		</Grid.RowDefinitions>
+
+		<Border Margin="5" CornerRadius="4" Background="DarkGray">
 			<Grid>
-			<Button Content="Load Current Skin" HorizontalAlignment="Left" Height="25" Margin="4,4,0,0" VerticalAlignment="Top" Width="116" Click="Button_Click_LoadSkin"/>
-				<Button Content="send property" HorizontalAlignment="Left" Height="25" Margin="4,45,0,0" VerticalAlignment="Top" Width="116" Click="Button_Click_SendProperty"/>
-				<Button Content="open mpwindow" HorizontalAlignment="Left" Height="25" Margin="4,103,0,0" VerticalAlignment="Top" Width="116" Click="Button_Click_OpenMpWindow"/>
-
-				<StackPanel Margin="0,186,0,0">
-
-				<!--Property-->
-					<StackPanel Margin="5" VerticalAlignment="Top">
-						<TextBlock Text="Send Property" />
-						<ComboBox ItemsSource="{Binding LabelProperties}" SelectedItem="{Binding SelectedProperty}" />
-						<DockPanel>
-							<Button DockPanel.Dock="Right" Width="22" Content="->" Tag="{Binding Text, ElementName=propText}" Click="Button_Click_SendProperty" />
-							<TextBox Name="propText" Margin="0,0,2,0" />
-						</DockPanel>
-					</StackPanel>
-			
-
-
-				<!--Property-->
-				<StackPanel Margin="5" VerticalAlignment="Top">
-					<TextBlock Text="Open MediaPortal Window" />
-					<DockPanel>
-						<Button DockPanel.Dock="Right" Width="22" Content="->" Tag="{Binding Value, ElementName=winId}" Click="Button_Click_SendWindowId" />
-							<commonControls:IntegerUpDown x:Name="winId" Margin="0,0,2,0" />
-					</DockPanel>
-				</StackPanel>
-				</StackPanel>
-
+				<Button Content="Load Current Skin" Height="25" Margin="5" HorizontalAlignment="Left" Width="116" Click="Button_Click_LoadSkin"/>
 			</Grid>
-				
-			</Border>
-		
-		
+		</Border>
 
 
 
 
 
-		<Viewbox Grid.Column="1" >
+
+
+		<Viewbox Grid.Row="1" >
 			<gui:GUISurface Name="surface" ClipToBounds="True" />
 		</Viewbox>
-	
+
 
 	</Grid>
 

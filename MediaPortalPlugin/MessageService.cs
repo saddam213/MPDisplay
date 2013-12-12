@@ -86,7 +86,11 @@ namespace MediaPortalPlugin
         /// <value>
         /// <c>true</c> if [is mp display connected]; otherwise, <c>false</c>.
         /// </value>
-        public bool IsMPDisplayConnected { get; set; } 
+        public bool IsMPDisplayConnected { get; set; }
+
+
+        public bool IsSkinEditorConnected { get; set; }
+
 
         #endregion
 
@@ -251,7 +255,8 @@ namespace MediaPortalPlugin
                 _lastKeepAlive = DateTime.Now;
                 Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                 IsConnected = true;
-                IsMPDisplayConnected = e.Result.Where(x => !x.ConnectionName.Equals("MediaPortalPlugin") && !x.ConnectionName.Equals("TVServerPlugin")).Any();
+                IsMPDisplayConnected = e.Result.Where(x => !x.ConnectionName.Equals("MediaPortalPlugin") && !x.ConnectionName.Equals("SkinEditor")).Any();
+                IsSkinEditorConnected = e.Result.Any(x => x.ConnectionName.Equals("SkinEditor"));
                 if (IsMPDisplayConnected)
                 {
                     WindowManager.Instance.SendFullUpdate();
@@ -281,6 +286,7 @@ namespace MediaPortalPlugin
         {
             IsConnected = false;
             IsMPDisplayConnected = false;
+            IsSkinEditorConnected = false;
             if (_messageClient != null)
             {
                 try
@@ -301,9 +307,10 @@ namespace MediaPortalPlugin
         {
             if (connection != null)
             {
-                if (connection.ConnectionName.Equals("TVServerPlugin"))
+                if (connection.ConnectionName.Equals("SkinEditor"))
                 {
-                    Log.Message(LogLevel.Info, "[Session] - TVServerPlugin connected to network.");
+                    Log.Message(LogLevel.Info, "[Session] - SkinEditor connected to network.");
+                    IsSkinEditorConnected = true;
                 }
                 else if (!connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
@@ -326,9 +333,10 @@ namespace MediaPortalPlugin
                 {
                     Reconnect();
                 }
-                else if (connection.ConnectionName.Equals("TVServerPlugin"))
+                else if (connection.ConnectionName.Equals("SkinEditor"))
                 {
-                    Log.Message(LogLevel.Info, "[Session] - TVServerPlugin disconnected from network.");
+                    Log.Message(LogLevel.Info, "[Session] - SkinEditor disconnected from network.");
+                    IsSkinEditorConnected = false;
                 }
                 else
                 {
@@ -371,14 +379,20 @@ namespace MediaPortalPlugin
         {
             try
             {
-                if (IsConnected && IsMPDisplayConnected)
+                if (IsConnected)
                 {
-                    if (_messageClient != null && property != null)
+                    if (IsMPDisplayConnected)
                     {
-                      //  Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}.", property.SkinTag, property.PropertyType);
-                        _messageClient.SendPropertyMessageAsync(property);
+                        if (_messageClient != null && property != null)
+                        {
+                            //  Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}.", property.SkinTag, property.PropertyType);
+                            _messageClient.SendPropertyMessageAsync(property);
+                        }
                     }
+
+                  
                 }
+
             }
             catch (Exception ex)
             {
@@ -523,5 +537,30 @@ namespace MediaPortalPlugin
                 Disconnect();
             }
         }
+
+
+        public void SendSkinEditorDataMessage(APISkinEditorData message)
+        {   
+            try
+            {
+                if (IsConnected && IsSkinEditorConnected)
+                {
+                    if (_messageClient != null && message != null)
+                    {
+                        var dataMessage = new APIDataMessage
+                        {
+                            DataType = APIDataMessageType.SkinEditorInfo,
+                            SkinEditorData = message
+                        };
+                        _messageClient.SendDataMessageAsync(dataMessage);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Message(LogLevel.Error, "[SendSkinEditorDataMessage] - An Exception Occured Processing Message", ex.Message);
+            }
+        }
+      
     }
 }

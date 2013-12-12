@@ -56,6 +56,14 @@
 						<EventSetter Event="PreviewMouseLeftButtonDown" Handler="OnListItem_MouseButtonDown" />
 						<EventSetter Event="MouseLeave" Handler="OnListItem_MouseLeave" />
 						<EventSetter Event="Selected" Handler="OnListItem_Selected" />
+
+						<!-- Windows8 -->
+						<Setter Property="Background" Value="Transparent" />
+						<Style.Triggers>
+							<Trigger Property="IsSelected" Value="True">
+								<Setter Property="Background" Value="Transparent" />
+							</Trigger>
+						</Style.Triggers>
 					</Style>
 				</ListBox.Resources>
 
@@ -210,6 +218,64 @@
 														  Source="{Binding Image, Converter={StaticResource GUIImageConverter}}"
 														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" >
 												</commonControls:RoundedImage>
+												<Border.Style>
+													<Style TargetType="Border">
+														<Setter Property="Background" Value="{Binding CurrentLayout.DefaultImage, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Image.IsEmpty}" Value="False">
+																<Setter Property="Background" Value="Transparent" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Border.Style>
+											</Border>
+
+											<!--Image2-->
+											<Border x:Name="imgBorder2" 
+										        Margin="{Binding CurrentLayout.Image2Margin, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
+												HorizontalAlignment="{Binding CurrentLayout.Image2HorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                        VerticalAlignment="{Binding CurrentLayout.Image2VerticalAlignment,Mode=OneWay, ElementName=UI}"
+												Visibility="{Binding CurrentLayout.EnableImage2, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
+												<commonControls:RoundedImage 
+														  Stretch="{Binding CurrentLayout.Image2Stretch,Mode=OneWay, ElementName=UI}"
+														  Source="{Binding Image2, Converter={StaticResource GUIImageConverter}}"
+														  CornerRadius="{Binding CurrentLayout.Image2CornerRadius,Mode=OneWay, ElementName=UI}" >
+												</commonControls:RoundedImage>
+												<Border.Style>
+													<Style TargetType="Border">
+														<Setter Property="Background" Value="{Binding CurrentLayout.DefaultImage2, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
+														<Style.Triggers>
+															<DataTrigger Binding="{Binding Image2.IsEmpty}" Value="False">
+																<Setter Property="Background" Value="Transparent" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Border.Style>
+											</Border>
+
+											<!--Image3-->
+											<Border x:Name="imgBorder3"
+										        Margin="{Binding CurrentLayout.Image3Margin, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
+												HorizontalAlignment="{Binding CurrentLayout.Image3HorizontalAlignment,Mode=OneWay, ElementName=UI}" 
+						                        VerticalAlignment="{Binding CurrentLayout.Image3VerticalAlignment,Mode=OneWay, ElementName=UI}"
+												Visibility="{Binding CurrentLayout.EnableImage3, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay, ElementName=UI}">
+												<commonControls:RoundedImage 
+														  Stretch="{Binding CurrentLayout.Image3Stretch,Mode=OneWay, ElementName=UI}"
+														  Source="{Binding Image3, Converter={StaticResource GUIImageConverter}}"
+														  CornerRadius="{Binding CurrentLayout.Image3CornerRadius,Mode=OneWay, ElementName=UI}" >
+												</commonControls:RoundedImage>
+												<Border.Style>
+													<Style TargetType="Border">
+														<Setter Property="Background" Value="{Binding CurrentLayout.DefaultImage3, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
+														<Style.Triggers>
+															<Trigger Property="IsMouseDirectlyOver" Value="True" >
+															</Trigger>
+															<DataTrigger Binding="{Binding Image3.IsEmpty}" Value="False">
+																<Setter Property="Background" Value="Transparent" />
+															</DataTrigger>
+														</Style.Triggers>
+													</Style>
+												</Border.Style>
 											</Border>
 
 											<!--Label1-->

@@ -37,6 +37,7 @@ namespace SkinEditor
         private StyleEditorViewSettings _styleEditorViewSettings = new StyleEditorViewSettings();
         private ImageEditorViewSettings _imageEditorViewSettings = new ImageEditorViewSettings();
         private SkinInfoEditorViewSettings _skinInfoEditorViewSettings = new SkinInfoEditorViewSettings();
+        private InfoEditorViewSettings _infoEditorViewSettings = new InfoEditorViewSettings();
 
         public string Filename { get; set; }
 
@@ -69,6 +70,13 @@ namespace SkinEditor
             get { return _skinInfoEditorViewSettings; }
             set { _skinInfoEditorViewSettings = value; NotifyPropertyChanged("SkinInfoEditorViewSettings"); }
         }
+
+        public InfoEditorViewSettings InfoEditorViewSettings
+        {
+            get { return _infoEditorViewSettings; }
+            set { _infoEditorViewSettings = value; NotifyPropertyChanged("InfoEditorViewSettings"); }
+        }
+
 
         public override void InitializeSettings()
         {

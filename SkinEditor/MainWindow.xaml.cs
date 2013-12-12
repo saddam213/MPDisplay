@@ -102,6 +102,7 @@ namespace SkinEditor
                 EditorViews.Add(new StyleEditorView{ EditorSettings = Settings.StyleEditorViewSettings});
                 EditorViews.Add(new ImageEditorView{ EditorSettings = Settings.ImageEditorViewSettings});
                 EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
+                EditorViews.Add(new InfoEditorView { EditorSettings = Settings.InfoEditorViewSettings });
                 EditorViews.Add(new TestEditorView {  });
             }
         }

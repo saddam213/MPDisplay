@@ -328,13 +328,14 @@ namespace MediaPortalPlugin.InfoManagers
                     SendPlayerMessage();
                 }
 
-               // SendFocusedControlMessage();
+                // SendFocusedControlMessage();
                 PropertyManager.Instance.Suspend(false);
 
 
-      
-              
+
+
             }
+         
         }
 
 
@@ -360,6 +361,8 @@ namespace MediaPortalPlugin.InfoManagers
                         EnabledPlugins = _enabledlugins
                     }
                 });
+
+                SendEditorData(APISkinEditorDataType.WindowId, _currentWindow.GetID);
             }
         }
 
@@ -381,6 +384,8 @@ namespace MediaPortalPlugin.InfoManagers
                             FocusedControlId = focusId
                         }
                     });
+
+                    SendEditorData(APISkinEditorDataType.FocusedControlId, focusId);
                 }
             }
         }
@@ -498,7 +503,20 @@ namespace MediaPortalPlugin.InfoManagers
         }
 
         #endregion
-   
+
+
+        private void SendEditorData(APISkinEditorDataType type, int value)
+        {
+            if (MessageService.Instance.IsSkinEditorConnected)
+            {
+                    MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                    {
+                        DataType = type,
+                        IntValue = value
+                    });
+            }
+        }
+
     }
 
 
