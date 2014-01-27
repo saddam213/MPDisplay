@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 using System.Xml.Serialization;
 using GUISkinFramework.Common.Brushes;
 using GUISkinFramework.Editor.PropertyEditors;
@@ -47,7 +48,22 @@ namespace GUISkinFramework.Controls
         private XmlBrush _label3NoFocusFontBrush;
         private XmlBrush _label3FocusFontBrush;
         private bool _enableLabel2;
-        private bool _enableLabel3; 
+        private bool _enableLabel3;
+        private bool _enableImage2;
+        private string _Image2Margin;
+        private System.Windows.HorizontalAlignment _Image2HorizontalAlignment;
+        private System.Windows.VerticalAlignment _Image2VerticalAlignment;
+        private Stretch _Image2Stretch;
+        private int _Image2CornerRadius;
+        private bool _enableImage3;
+        private string _Image3Margin;
+        private System.Windows.HorizontalAlignment _Image3HorizontalAlignment;
+        private System.Windows.VerticalAlignment _Image3VerticalAlignment;
+        private Stretch _Image3Stretch;
+        private int _Image3CornerRadius;
+        private XmlBrush _defaultImage;
+        private XmlBrush _defaultImage2;
+        private XmlBrush _defaultImage3; 
 
         #endregion
 
@@ -140,7 +156,16 @@ namespace GUISkinFramework.Controls
         {
             get { return _selectedZoomDuration; }
             set { _selectedZoomDuration = value; NotifyPropertyChanged("SelectionZoomDuration"); }
-        } 
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(201)]
+        [EditorCategory("Image", 10)]
+        public XmlBrush DefaultImage
+        {
+            get { return _defaultImage; }
+            set { _defaultImage = value; NotifyPropertyChanged("DefaultImage"); }
+        }
 
         #endregion
 
@@ -316,6 +341,144 @@ namespace GUISkinFramework.Controls
 
         #endregion
 
+        #region Image2
+
+        [PropertyOrder(200)]
+        [DefaultValue(false)]
+        [EditorCategory("Image2", 12)]
+        public bool EnableImage2
+        {
+            get { return _enableImage2; }
+            set { _enableImage2 = value; NotifyPropertyChanged("EnableImage2"); }
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(201)]
+        [EditorCategory("Image2", 12)]
+        public XmlBrush DefaultImage2
+        {
+            get { return _defaultImage2; }
+            set { _defaultImage2 = value; NotifyPropertyChanged("DefaultImage2"); }
+        }
+
+        [PropertyOrder(210)]
+        [DefaultValue("0,0,0,0")]
+        [EditorCategory("Image2", 12)]
+        [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
+        public string Image2Margin
+        {
+            get { return _Image2Margin; }
+            set { _Image2Margin = value; NotifyPropertyChanged("Image2Margin"); }
+        }
+
+        [PropertyOrder(220)]
+        [EditorCategory("Image2", 12)]
+        [DefaultValue(HorizontalAlignment.Center)]
+        public HorizontalAlignment Image2HorizontalAlignment
+        {
+            get { return _Image2HorizontalAlignment; }
+            set { _Image2HorizontalAlignment = value; NotifyPropertyChanged("Image2HorizontalAlignment"); }
+        }
+
+        [PropertyOrder(230)]
+        [EditorCategory("Image2", 12)]
+        [DefaultValue(VerticalAlignment.Center)]
+        public VerticalAlignment Image2VerticalAlignment
+        {
+            get { return _Image2VerticalAlignment; }
+            set { _Image2VerticalAlignment = value; NotifyPropertyChanged("Image2VerticalAlignment"); }
+        }
+
+        [PropertyOrder(240)]
+        [EditorCategory("Image2", 12)]
+        [DefaultValue(Stretch.Uniform)]
+        public Stretch Image2Stretch
+        {
+            get { return _Image2Stretch; }
+            set { _Image2Stretch = value; NotifyPropertyChanged("Image2Stretch"); }
+        }
+
+        [PropertyOrder(250)]
+        [EditorCategory("Image2", 12)]
+        [DefaultValue(0)]
+        public int Image2CornerRadius
+        {
+            get { return _Image2CornerRadius; }
+            set { _Image2CornerRadius = value; NotifyPropertyChanged("Image2CornerRadius"); }
+        }
+
+        #endregion
+
+        #region Image3
+
+    
+
+        [PropertyOrder(200)]
+        [DefaultValue(false)]
+        [EditorCategory("Image3", 13)]
+        public bool EnableImage3
+        {
+            get { return _enableImage3; }
+            set { _enableImage3 = value; NotifyPropertyChanged("EnableImage3"); }
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(201)]
+        [EditorCategory("Image3", 13)]
+        public XmlBrush DefaultImage3
+        {
+            get { return _defaultImage3; }
+            set { _defaultImage3 = value; NotifyPropertyChanged("DefaultImage3"); }
+        }
+
+        [PropertyOrder(210)]
+        [DefaultValue("0,0,0,0")]
+        [EditorCategory("Image3", 13)]
+        [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
+        public string Image3Margin
+        {
+            get { return _Image3Margin; }
+            set { _Image3Margin = value; NotifyPropertyChanged("Image3Margin"); }
+        }
+
+        [PropertyOrder(220)]
+        [EditorCategory("Image3", 13)]
+        [DefaultValue(HorizontalAlignment.Center)]
+        public HorizontalAlignment Image3HorizontalAlignment
+        {
+            get { return _Image3HorizontalAlignment; }
+            set { _Image3HorizontalAlignment = value; NotifyPropertyChanged("Image3HorizontalAlignment"); }
+        }
+
+        [PropertyOrder(230)]
+        [EditorCategory("Image3", 13)]
+        [DefaultValue(VerticalAlignment.Center)]
+        public VerticalAlignment Image3VerticalAlignment
+        {
+            get { return _Image3VerticalAlignment; }
+            set { _Image3VerticalAlignment = value; NotifyPropertyChanged("Image3VerticalAlignment"); }
+        }
+
+        [PropertyOrder(240)]
+        [EditorCategory("Image3", 13)]
+        [DefaultValue(Stretch.Uniform)]
+        public Stretch Image3Stretch
+        {
+            get { return _Image3Stretch; }
+            set { _Image3Stretch = value; NotifyPropertyChanged("Image3Stretch"); }
+        }
+
+        [PropertyOrder(250)]
+        [EditorCategory("Image3", 13)]
+        [DefaultValue(0)]
+        public int Image3CornerRadius
+        {
+            get { return _Image3CornerRadius; }
+            set { _Image3CornerRadius = value; NotifyPropertyChanged("Image3CornerRadius"); }
+        }
+
+        #endregion
+
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
@@ -323,6 +486,9 @@ namespace GUISkinFramework.Controls
             Label2NoFocusFontBrush = style.GetStyle<XmlBrush>(Label2NoFocusFontBrush);
             Label3FocusFontBrush = style.GetStyle<XmlBrush>(Label3FocusFontBrush);
             Label3NoFocusFontBrush = style.GetStyle<XmlBrush>(Label3NoFocusFontBrush);
+            DefaultImage = style.GetStyle<XmlBrush>(DefaultImage);
+            DefaultImage2 = style.GetStyle<XmlBrush>(DefaultImage2);
+            DefaultImage3 = style.GetStyle<XmlBrush>(DefaultImage3);
         }
     }
 }

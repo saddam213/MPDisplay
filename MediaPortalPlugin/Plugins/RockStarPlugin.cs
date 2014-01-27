@@ -42,7 +42,7 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
-        public override APIImage GetListItemImage(GUIListItem item, APIListLayout layout)
+        public override APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {
             if (item != null)
             {
@@ -52,7 +52,7 @@ namespace MediaPortalPlugin.PluginHelpers
                     return image;
                 }
             }
-            return base.GetListItemImage(item, layout);
+            return base.GetListItemImage1(item, layout);
         }
 
         public override APIPlaybackType PlayType

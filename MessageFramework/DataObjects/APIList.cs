@@ -22,6 +22,8 @@ namespace MessageFramework.DataObjects
         public string Label2 { get; set; }
         public string Label3 { get; set; }
         public APIImage Image { get; set; }
+        public APIImage Image2 { get; set; }
+        public APIImage Image3 { get; set; }
     }
 
     public enum APIListType

@@ -635,10 +635,18 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_menuControl != null)
             {
-                SendList(APIListType.Menu, APIListLayout.Vertical, GetAPIListItems(_menuControl));
+                SendList(APIListType.Menu, GetMenuControlLayout(_menuControl), GetAPIListItems(_menuControl));
             }
         }
 
+        private APIListLayout GetMenuControlLayout(GUIMenuControl menuControl)
+        {
+            if (ReflectionHelper.GetFieldValue<bool>(menuControl, "_horizontal", false))
+            {
+                return APIListLayout.Horizontal;
+            }
+            return APIListLayout.Vertical;
+        }
         
         private int _lastMenuCotrolItemIndex = -1;
         private bool _movingMenuControl = false;

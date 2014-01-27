@@ -45,7 +45,7 @@ namespace MediaPortalPlugin.PluginHelpers
             get { return APIPlaybackType.MPTVSeries; }
         }
 
-        public override APIImage GetListItemImage(GUIListItem item, APIListLayout layout)
+        public override APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {
             string filename = string.Empty;
             if (Settings != null && item != null)
@@ -77,7 +77,7 @@ namespace MediaPortalPlugin.PluginHelpers
             {
                 return image;
             }
-            return base.GetListItemImage(item, layout);
+            return base.GetListItemImage1(item, layout);
         }
     }
 }

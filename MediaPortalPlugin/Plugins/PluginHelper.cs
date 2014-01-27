@@ -58,17 +58,19 @@ namespace MediaPortalPlugin.PluginHelpers
                 returnValue.Add(new APIListItem
                 {
                     Index = index,
-                    Label = item.Label,
-                    Label2 = item.Label2,
-                    Label3 = item.Label3,
-                    Image = GetListItemImage(item, layout)
+                    Label = GetListItemLabel1(item, layout),
+                    Label2 = GetListItemLabel2(item, layout),
+                    Label3 = GetListItemLabel3(item, layout),
+                    Image = GetListItemImage1(item, layout),
+                    Image2 = GetListItemImage2(item, layout),
+                    Image3 = GetListItemImage3(item, layout)
                 });
                 index++;
             }
             return returnValue;
         }
 
-        public virtual APIImage GetListItemImage(GUIListItem item, APIListLayout layout)
+        public virtual APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {
             string filename = string.Empty;
             if (Settings != null && item != null)
@@ -76,13 +78,13 @@ namespace MediaPortalPlugin.PluginHelpers
                 switch (layout)
                 {
                     case APIListLayout.Vertical:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumbPath, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb1Path, string.Empty);
                         break;
                     case APIListLayout.Horizontal:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumbPath, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb1Path, string.Empty);
                         break;
                     case APIListLayout.CoverFlow:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumbPath, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumb1Path, string.Empty);
                         break;
                     default:
                         break;
@@ -111,5 +113,143 @@ namespace MediaPortalPlugin.PluginHelpers
             return ImageHelper.CreateImage(filename);
         }
 
+        public virtual APIImage GetListItemImage2(GUIListItem item, APIListLayout layout)
+        {
+            string filename = string.Empty;
+            if (Settings != null && item != null)
+            {
+                switch (layout)
+                {
+                    case APIListLayout.Vertical:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb2Path, string.Empty);
+                        break;
+                    case APIListLayout.Horizontal:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb2Path, string.Empty);
+                        break;
+                    case APIListLayout.CoverFlow:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumb2Path, string.Empty);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return ImageHelper.CreateImage(filename);
+        }
+
+        public virtual APIImage GetListItemImage3(GUIListItem item, APIListLayout layout)
+        {
+            string filename = string.Empty;
+            if (Settings != null && item != null)
+            {
+                switch (layout)
+                {
+                    case APIListLayout.Vertical:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb3Path, string.Empty);
+                        break;
+                    case APIListLayout.Horizontal:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb3Path, string.Empty);
+                        break;
+                    case APIListLayout.CoverFlow:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumb3Path, string.Empty);
+                        break;
+                    default:
+                        break;
+                }
+            }
+            return ImageHelper.CreateImage(filename);
+        }
+
+        public virtual string GetListItemLabel1(GUIListItem item, APIListLayout layout)
+        {
+            if (item != null)
+            {
+                string propertyPath = string.Empty;
+                switch (layout)
+                {
+                    case APIListLayout.Vertical:
+                        propertyPath = _settings.VerticalListItemLabel1Path;
+                        break;
+                    case APIListLayout.Horizontal:
+                        propertyPath = _settings.HorizontalListItemLabel1Path;
+                        break;
+                    case APIListLayout.CoverFlow:
+                        propertyPath = _settings.CoverflowListItemLabel1Path;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(propertyPath) && !propertyPath.Equals("Label"))
+                {
+                    return ReflectionHelper.GetPropertyPath<string>(item, propertyPath, string.Empty);
+                }
+
+                return item.Label;
+            }
+            return string.Empty;
+        }
+
+        public virtual string GetListItemLabel2(GUIListItem item, APIListLayout layout)
+        {
+            if (item != null)
+            {
+                string propertyPath = string.Empty;
+                switch (layout)
+                {
+                    case APIListLayout.Vertical:
+                        propertyPath = _settings.VerticalListItemLabel2Path;
+                        break;
+                    case APIListLayout.Horizontal:
+                        propertyPath = _settings.HorizontalListItemLabel2Path;
+                        break;
+                    case APIListLayout.CoverFlow:
+                        propertyPath = _settings.CoverflowListItemLabel2Path;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(propertyPath) && !propertyPath.Equals("Label2"))
+                {
+                    return ReflectionHelper.GetPropertyPath<string>(item, propertyPath, string.Empty);
+                }
+
+                return item.Label2;
+            }
+            return string.Empty;
+        }
+
+        public virtual string GetListItemLabel3(GUIListItem item, APIListLayout layout)
+        {
+            if (item != null)
+            {
+                string propertyPath = string.Empty;
+                switch (layout)
+                {
+                    case APIListLayout.Vertical:
+                        propertyPath = _settings.VerticalListItemLabel3Path;
+                        break;
+                    case APIListLayout.Horizontal:
+                        propertyPath = _settings.HorizontalListItemLabel3Path;
+                        break;
+                    case APIListLayout.CoverFlow:
+                        propertyPath = _settings.CoverflowListItemLabel3Path;
+                        break;
+                    default:
+                        break;
+                }
+
+                if (!string.IsNullOrEmpty(propertyPath) && !propertyPath.Equals("Label3"))
+                {
+                    return ReflectionHelper.GetPropertyPath<string>(item, propertyPath, string.Empty);
+                }
+
+                return item.Label3;
+            }
+            return string.Empty;
+        }
+
+      
+      
     }
 }
