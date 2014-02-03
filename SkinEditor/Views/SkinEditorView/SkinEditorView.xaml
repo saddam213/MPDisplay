@@ -13,282 +13,282 @@
              xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
 			 xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" d:DesignWidth="1256" x:Name="UI"  >
-	<local:EditorViewModel.Resources>
-     
+    <local:EditorViewModel.Resources>
+
         <converters:TypeToImageConverter x:Key="TypeToImageConverter"/>
         <converters:TypeToFontWeightConverter x:Key="TypeToFontWeightConverter" />
 
-		<Style TargetType="{x:Type Controls:MoveResizeControl}">
-			<Setter Property="Visibility" Value="Collapsed" />
-			<Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
-			<Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
-			<Setter Property="IsSnapToGrid" Value="{Binding Settings.SnapToGrid, ElementName=UI}" />
-			<Setter Property="GridSize" Value="{Binding Settings.GridSize, ElementName=UI}" />
-			<Style.Triggers>
-				<MultiDataTrigger>
-				<MultiDataTrigger.Conditions>
-						<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True" />
-						<Condition Binding="{Binding Settings.DragMoveResize, ElementName=UI}" Value="True" />
-					</MultiDataTrigger.Conditions>
-					<MultiDataTrigger.Setters>
-						<Setter  Property="Visibility" Value="Visible" />
-					</MultiDataTrigger.Setters>
-				</MultiDataTrigger>
-			</Style.Triggers>
-		</Style>
-		
-		<CollectionViewSource x:Key="allWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
+        <Style TargetType="{x:Type Controls:MoveResizeControl}">
+            <Setter Property="Visibility" Value="Collapsed" />
+            <Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
+            <Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
+            <Setter Property="IsSnapToGrid" Value="{Binding Settings.SnapToGrid, ElementName=UI}" />
+            <Setter Property="GridSize" Value="{Binding Settings.GridSize, ElementName=UI}" />
+            <Style.Triggers>
+                <MultiDataTrigger>
+                    <MultiDataTrigger.Conditions>
+                        <Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True" />
+                        <Condition Binding="{Binding Settings.DragMoveResize, ElementName=UI}" Value="True" />
+                    </MultiDataTrigger.Conditions>
+                    <MultiDataTrigger.Setters>
+                        <Setter  Property="Visibility" Value="Visible" />
+                    </MultiDataTrigger.Setters>
+                </MultiDataTrigger>
+            </Style.Triggers>
+        </Style>
+
+        <CollectionViewSource x:Key="allWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="DisplayType" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
-		<Style TargetType="{x:Type GridSplitter}">
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate>
-						<TextBlock Text="⁞" VerticalAlignment="Center" FontSize="23"/>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-
-			
+        <Style TargetType="{x:Type GridSplitter}">
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <TextBlock Text="⁞" VerticalAlignment="Center" FontSize="23"/>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
 
-	</local:EditorViewModel.Resources>
+
+
+    </local:EditorViewModel.Resources>
 
     <Grid DataContext="{Binding ElementName=UI}">
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="552" MaxWidth="1000" />
-			<ColumnDefinition/>
+            <ColumnDefinition/>
         </Grid.ColumnDefinitions>
 
         <Grid Margin="0,0,0,0" >
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="37*" MaxWidth="480" />
-				<ColumnDefinition Width="55*" />
+                <ColumnDefinition Width="55*" />
             </Grid.ColumnDefinitions>
-			
+
             <DockPanel Grid.Column="0" Margin="0,0,5,0"  >
-			   <TextBlock DockPanel.Dock="Top" Text="{Binding SkinInfo.SkinName}"/>
-				<Grid DockPanel.Dock="Bottom" Margin="0,3,0,0"  >
+                <TextBlock DockPanel.Dock="Top" Text="{Binding SkinInfo.SkinName}"/>
+                <Grid DockPanel.Dock="Bottom" Margin="0,3,0,0"  >
                     <Button  Height="22" Width="50"  Click="Button_AddWindow_Click" HorizontalAlignment="Left" HorizontalContentAlignment="Left">
-						<StackPanel Orientation="Horizontal" >
-							<Image Margin="1,1,4,1" Source="/SkinEditor;component/Images/Add.png" Stretch="Uniform" />
-							<TextBlock Text="Add" />
-						</StackPanel>
-							
+                        <StackPanel Orientation="Horizontal" >
+                            <Image Margin="1,1,4,1" Source="/SkinEditor;component/Images/Add.png" Stretch="Uniform" />
+                            <TextBlock Text="Add" />
+                        </StackPanel>
+
                     </Button>
-				</Grid>
+                </Grid>
 
                 <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource allWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.Row="1" >
-				
-					<TreeView.Resources>
-						<!--SelectedItem with focus-->
-						<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DeepSkyBlue" />
-						<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DeepSkyBlue" />
-						<SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 
-						<Style TargetType="TreeViewItem">
-							<EventSetter Event="UIElement.MouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown"/>
-						</Style>
+                    <TreeView.Resources>
+                        <!--SelectedItem with focus-->
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DeepSkyBlue" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DeepSkyBlue" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 
-						<Style TargetType="ContentControl">
-							<Setter Property="Template">
-								<Setter.Value>
-									<ControlTemplate TargetType="ContentControl">
-										<StackPanel Orientation="Horizontal" Margin="0,0,4,0" >
-										    <Image MaxHeight="16" MaxWidth="16" Margin="2,2,2,2" Stretch="Uniform" Source="{Binding ., Converter={StaticResource TypeToImageConverter}, Mode=OneWay}" />
-											<TextBlock Text="{Binding DisplayName}" Margin="2,1,0,0" FontWeight="{Binding ., Converter={StaticResource TypeToFontWeightConverter}, Mode=OneWay}" />
-										</StackPanel>
-									</ControlTemplate>
-								</Setter.Value>
-							</Setter>
-						</Style>
+                        <Style TargetType="TreeViewItem">
+                            <EventSetter Event="UIElement.MouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown"/>
+                        </Style>
 
-						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPDWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
-							<ContentControl />
-						</HierarchicalDataTemplate>
-						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
-							<ContentControl />
-						</HierarchicalDataTemplate>
-						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlPlayerWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
-							<ContentControl />
-						</HierarchicalDataTemplate>
-						<HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
-							<ContentControl />
-						</HierarchicalDataTemplate>
-						<HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
-							<ContentControl />
-						</HierarchicalDataTemplate>
-						<HierarchicalDataTemplate DataType="{x:Type xmlControls:XmlGroup}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
-							<ContentControl />
-						</HierarchicalDataTemplate>
+                        <Style TargetType="ContentControl">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ContentControl">
+                                        <StackPanel Orientation="Horizontal" Margin="0,0,4,0" >
+                                            <Image MaxHeight="16" MaxWidth="16" Margin="2,2,2,2" Stretch="Uniform" Source="{Binding ., Converter={StaticResource TypeToImageConverter}, Mode=OneWay}" />
+                                            <TextBlock Text="{Binding DisplayName}" Margin="2,1,0,0" FontWeight="{Binding ., Converter={StaticResource TypeToFontWeightConverter}, Mode=OneWay}" />
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
 
-						<DataTemplate DataType="{x:Type xmlControls:XmlButton}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlGuide}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlImage}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlLabel}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlList}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlProgressBar}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlRectangle}" >
-							<ContentControl />
-						</DataTemplate>
-						<DataTemplate DataType="{x:Type xmlControls:XmlEqualizer}" >
-							<ContentControl />
-						</DataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPDWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+                            <ContentControl />
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+                            <ContentControl />
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlPlayerWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+                            <ContentControl />
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+                            <ContentControl />
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+                            <ContentControl />
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type xmlControls:XmlGroup}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+                            <ContentControl />
+                        </HierarchicalDataTemplate>
 
-					</TreeView.Resources>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlButton}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlGuide}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlImage}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlLabel}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlList}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlProgressBar}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlRectangle}" >
+                            <ContentControl />
+                        </DataTemplate>
+                        <DataTemplate DataType="{x:Type xmlControls:XmlEqualizer}" >
+                            <ContentControl />
+                        </DataTemplate>
 
-					<TreeView.GroupStyle>
+                    </TreeView.Resources>
+
+                    <TreeView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
-									<Border BorderBrush="Black" BorderThickness="1" CornerRadius="2">
-										<TextBlock Tag="Group" Background="Silver" TextAlignment="Center" Text="{Binding Name}" FontSize="13" FontWeight="Bold" />
-									</Border>
+                                    <Border BorderBrush="Black" BorderThickness="1" CornerRadius="2">
+                                        <TextBlock Tag="Group" Background="Silver" TextAlignment="Center" Text="{Binding Name}" FontSize="13" FontWeight="Bold" />
+                                    </Border>
                                 </DataTemplate>
                             </GroupStyle.HeaderTemplate>
                         </GroupStyle>
                     </TreeView.GroupStyle>
 
                     <TreeView.ContextMenu>
-                    
-						<ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}"  >
-							<ContextMenu.Resources>
-								<Style TargetType="Image">
-									<Setter Property="Width" Value="16" />
-									<Setter Property="Height" Value="16" />
-									<Style.Triggers>
-										<Trigger Property="IsEnabled" Value="False">
-											<Setter Property="Opacity" Value="0.4" />
-										</Trigger>
-									</Style.Triggers>
-								</Style>
 
-							</ContextMenu.Resources>
+                        <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}"  >
+                            <ContextMenu.Resources>
+                                <Style TargetType="Image">
+                                    <Setter Property="Width" Value="16" />
+                                    <Setter Property="Height" Value="16" />
+                                    <Style.Triggers>
+                                        <Trigger Property="IsEnabled" Value="False">
+                                            <Setter Property="Opacity" Value="0.4" />
+                                        </Trigger>
+                                    </Style.Triggers>
+                                </Style>
 
-							<MenuItem Header="Add" Command="{Binding AddControlCommand}" Visibility="{Binding IsEnabled, ElementName=labelAdd, Converter={StaticResource BooleanToVisibilityConverter}}">
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/Add.png" />
-								</MenuItem.Icon>
+                            </ContextMenu.Resources>
 
-								<MenuItem Header="Label" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlLabel}" >
-									<MenuItem.Icon>
-										<Image Source="/SkinEditor;component/Images/XmlLabel.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="Button" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlButton}" >
-									<MenuItem.Icon>
-										<Image   Source="/SkinEditor;component/Images/XmlButton.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="Image" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlImage}" >
-									<MenuItem.Icon>
-										<Image  Source="/SkinEditor;component/Images/XmlImage.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="Group" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGroup}" >
-									<MenuItem.Icon>
-										<Image  Source="/SkinEditor;component/Images/XmlGroup.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="Guide" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGuide}" >
-									<MenuItem.Icon>
-										<Image  Source="/SkinEditor;component/Images/XmlGuide.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="List" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlList}" >
-									<MenuItem.Icon>
-										<Image   Source="/SkinEditor;component/Images/XmlList.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="ProgressBar" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlProgressBar}" >
-									<MenuItem.Icon>
-										<Image Source="/SkinEditor;component/Images/XmlProgressBar.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<MenuItem Header="Equalizer" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlEqualizer}" >
-									<MenuItem.Icon>
-										<Image Source="/SkinEditor;component/Images/XmlEqualizer.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-								<Separator/>
-								<MenuItem Header="Rectangle" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlRectangle}" >
-									<MenuItem.Icon>
-										<Image Source="/SkinEditor;component/Images/XmlRectangle.png" />
-									</MenuItem.Icon>
-								</MenuItem>
-							</MenuItem>
+                            <MenuItem Header="Add" Command="{Binding AddControlCommand}" Visibility="{Binding IsEnabled, ElementName=labelAdd, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Add.png" />
+                                </MenuItem.Icon>
 
-							<Separator />
+                                <MenuItem Header="Label" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlLabel}" >
+                                    <MenuItem.Icon>
+                                        <Image Source="/SkinEditor;component/Images/XmlLabel.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Button" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlButton}" >
+                                    <MenuItem.Icon>
+                                        <Image   Source="/SkinEditor;component/Images/XmlButton.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Image" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlImage}" >
+                                    <MenuItem.Icon>
+                                        <Image  Source="/SkinEditor;component/Images/XmlImage.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Group" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGroup}" >
+                                    <MenuItem.Icon>
+                                        <Image  Source="/SkinEditor;component/Images/XmlGroup.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Guide" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGuide}" >
+                                    <MenuItem.Icon>
+                                        <Image  Source="/SkinEditor;component/Images/XmlGuide.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="List" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlList}" >
+                                    <MenuItem.Icon>
+                                        <Image   Source="/SkinEditor;component/Images/XmlList.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="ProgressBar" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlProgressBar}" >
+                                    <MenuItem.Icon>
+                                        <Image Source="/SkinEditor;component/Images/XmlProgressBar.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <MenuItem Header="Equalizer" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlEqualizer}" >
+                                    <MenuItem.Icon>
+                                        <Image Source="/SkinEditor;component/Images/XmlEqualizer.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                                <Separator/>
+                                <MenuItem Header="Rectangle" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlRectangle}" >
+                                    <MenuItem.Icon>
+                                        <Image Source="/SkinEditor;component/Images/XmlRectangle.png" />
+                                    </MenuItem.Icon>
+                                </MenuItem>
+                            </MenuItem>
 
-							<MenuItem Header="Cut" Command="{Binding CopyControlCommand}" CommandParameter="true">
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/Cut.png" />
-								</MenuItem.Icon>
-							</MenuItem>
+                            <Separator />
 
-							<MenuItem Header="Copy" Command="{Binding CopyControlCommand}" CommandParameter="false">
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/Copy.png" />
-								</MenuItem.Icon>
-							</MenuItem>
+                            <MenuItem Header="Cut" Command="{Binding CopyControlCommand}" CommandParameter="true">
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Cut.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
 
-							<MenuItem Header="Paste" Command="{Binding PasteControlCommand}" >
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/Paste.png" />
-								</MenuItem.Icon>
-							</MenuItem>
+                            <MenuItem Header="Copy" Command="{Binding CopyControlCommand}" CommandParameter="false">
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Copy.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
 
-							<MenuItem Header="Delete" Command="{Binding DeleteControlCommand}" >
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/Delete.png" />
-								</MenuItem.Icon>
-							</MenuItem>
+                            <MenuItem Header="Paste" Command="{Binding PasteControlCommand}" >
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Paste.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
 
-							<Separator />
+                            <MenuItem Header="Delete" Command="{Binding DeleteControlCommand}" >
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Delete.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
 
-							<MenuItem Header="Move Up" Command="{Binding MoveControlCommand}" CommandParameter="true">
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/MoveUp.png" />
-								</MenuItem.Icon>
-							</MenuItem>
+                            <Separator />
 
-							<MenuItem Header="Move Down" Command="{Binding MoveControlCommand}" CommandParameter="false">
-								<MenuItem.Icon>
-									<Image Source="/SkinEditor;component/Images/MoveDown.png" />
-								</MenuItem.Icon>
-							</MenuItem>
+                            <MenuItem Header="Move Up" Command="{Binding MoveControlCommand}" CommandParameter="true">
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/MoveUp.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
 
-						</ContextMenu>
+                            <MenuItem Header="Move Down" Command="{Binding MoveControlCommand}" CommandParameter="false">
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/MoveDown.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+
+                        </ContextMenu>
                     </TreeView.ContextMenu>
 
                 </TreeView>
-              
+
             </DockPanel>
             <GridSplitter Width="5" ResizeBehavior="BasedOnAlignment" />
-			<DockPanel  Margin="0,0,5,0" Grid.Column="1" MinWidth="40">
-				<TextBlock Text="{Binding SelectedTreeItem.DisplayName}" DockPanel.Dock="Top" />
-				<propGrid:PropertyGrid Tag="{Binding SkinInfo, Mode=OneWay}" 
+            <DockPanel  Margin="0,0,5,0" Grid.Column="1" MinWidth="40">
+                <TextBlock Text="{Binding SelectedTreeItem.DisplayName}" DockPanel.Dock="Top" />
+                <propGrid:PropertyGrid Tag="{Binding SkinInfo, Mode=OneWay}" 
 				                       SelectedObject="{Binding SelectedTreeItem,Mode=OneWay}"
 									   PropertyValueChanged="PropertyGrid_PropertyValueChanged" ShowSortOptions="False" 
 									   SelectedObjectDisplayName="{Binding SelectedTreeItem.DisplayType}"  />
-			</DockPanel>
-			
+            </DockPanel>
+
 
         </Grid>
 
@@ -301,36 +301,37 @@
         <Grid Grid.Column="1" Margin="0,0,0,0" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition Height="194*"/>
             </Grid.RowDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" >
 
 
-				<Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
-					<Expander x:Name="skinOptExpander" Header="Skin Options" >
-						<Border BorderBrush="Black" BorderThickness="1" Margin="2">
-							<Grid  Background="#FFE5E5E5" Height="132"  >
-								<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="1*" />
-									<ColumnDefinition Width="1*" />
-								</Grid.ColumnDefinitions>
-								<StackPanel Grid.Column="0" Margin="3">
-									<TextBlock Text="Style"/>
-									<ComboBox ItemsSource="{Binding Styles}" SelectedItem="{Binding SelectedStyle}" />
-								</StackPanel>
-								<StackPanel Grid.Column="1" Margin="3">
-									<TextBlock Text="Language"/>
-									<ComboBox ItemsSource="{Binding SkinInfo.Languages}" SelectedItem="{Binding SelectedLanguage}" />
-								</StackPanel>
-							</Grid>
-						</Border>
-					</Expander>
-				</Border>
+                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
+                    <Expander x:Name="skinOptExpander" Header="Skin Options" >
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="2">
+                            <Grid  Background="#FFE5E5E5" Height="132"  >
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="1*" />
+                                    <ColumnDefinition Width="1*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0" Margin="3">
+                                    <TextBlock Text="Style"/>
+                                    <ComboBox ItemsSource="{Binding Styles}" SelectedItem="{Binding SelectedStyle}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="3">
+                                    <TextBlock Text="Language"/>
+                                    <ComboBox ItemsSource="{Binding SkinInfo.Languages}" SelectedItem="{Binding SelectedLanguage}" />
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                    </Expander>
+                </Border>
 
 
-				<Border Margin="1,0,0,0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                <Border Margin="1,0,0,0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
 
-					<Expander x:Name="designOptExpander" Header="Designer Options"  Grid.Column="1" >
+                    <Expander x:Name="designOptExpander" Header="Designer Options"  Grid.Column="1" >
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid Background="#FFE5E5E5" Height="132"  >
                                 <Grid.ColumnDefinitions>
@@ -359,116 +360,274 @@
 
                             </Grid>
                         </Border>
-					</Expander>
+                    </Expander>
                 </Border>
 
 
-				<Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
-					<Expander  Header="" >
-						<Border BorderBrush="Black" BorderThickness="1" Margin="2">
-							<Grid  Background="#FFE5E5E5" Height="132" >
-							<!--	<Grid.ColumnDefinitions>
-									<ColumnDefinition Width="1*" />
-									<ColumnDefinition Width="1*" />
-								</Grid.ColumnDefinitions>
-								<StackPanel Grid.Column="0" Margin="3">
-									<TextBlock Text="Style"/>
-									<ComboBox ItemsSource="{Binding Styles}" SelectedItem="{Binding SelectedStyle}" />
-								</StackPanel>
-								<StackPanel Grid.Column="1" Margin="3">
-									<TextBlock Text="Language"/>
-									<ComboBox ItemsSource="{Binding Languages}" />
-								</StackPanel>-->
-							</Grid>
-						</Border>
-					</Expander>
-				</Border>
-			</StackPanel>
+                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
+                    <Expander  Header="Connection" >
+                        <Border BorderBrush="Black" BorderThickness="1" Margin="2">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="43*"/>
+                                    <RowDefinition Height="41*"/>
+                                </Grid.RowDefinitions>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="57*"/>
+                                    <ColumnDefinition Width="58*"/>
+                                </Grid.ColumnDefinitions>
+                                <Rectangle HorizontalAlignment="Left" Height="20" Margin="75,1,0,0" VerticalAlignment="Top" Width="20" RenderTransformOrigin="2.818,0.25" Grid.Row="1">
+                                    <Rectangle.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop Color="Red" Offset="0.5"/>
+                                            <GradientStop Color="#00000000" Offset="1"/>
+                                        </RadialGradientBrush>
+                                    </Rectangle.Fill>
+                                    <Rectangle.Style>
+                                        <Style TargetType="{x:Type Rectangle}">
+                                            <Setter Property="Fill">
+                                                <Setter.Value>
+                                                    <RadialGradientBrush>
+                                                        <GradientStop Color="Red" Offset="0.5"/>
+                                                        <GradientStop Color="#00000000" Offset="1"/>
+                                                    </RadialGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                                    <Setter Property="Fill" >
+                                                        <Setter.Value>
+                                                            <RadialGradientBrush>
+                                                                <GradientStop Color="#FF38742F" Offset="0.5"/>
+                                                                <GradientStop Color="#00000000" Offset="1"/>
+                                                            </RadialGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Rectangle.Style>
+                                </Rectangle>
+                                <Rectangle HorizontalAlignment="Left" Height="20" Margin="74,1,0,0" VerticalAlignment="Top" Width="20" RenderTransformOrigin="0.636,1.938" Grid.Column="1" Grid.Row="1">
+                                    <Rectangle.Fill>
+                                        <RadialGradientBrush>
+                                            <GradientStop Color="Red" Offset="0.5"/>
+                                            <GradientStop Offset="1" Color="#00000000"/>
+                                        </RadialGradientBrush>
+                                    </Rectangle.Fill>
+                                    <Rectangle.Style>
+                                        <Style TargetType="{x:Type Rectangle}">
+                                            <Setter Property="Fill">
+                                                <Setter.Value>
+                                                    <RadialGradientBrush>
+                                                        <GradientStop Color="Red" Offset="0.5"/>
+                                                        <GradientStop Color="#00000000" Offset="1"/>
+                                                    </RadialGradientBrush>
+                                                </Setter.Value>
+                                            </Setter>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding IsMediaPortalConnected}" Value="True">
+                                                    <Setter Property="Fill" >
+                                                        <Setter.Value>
+                                                            <RadialGradientBrush>
+                                                                <GradientStop Color="#FF38742F" Offset="0.5"/>
+                                                                <GradientStop Color="#00000000" Offset="1"/>
+                                                            </RadialGradientBrush>
+                                                        </Setter.Value>
+                                                    </Setter>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Rectangle.Style>
+                                </Rectangle>
+                                <Button Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="97"/>
+                                <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="112,10,0,0" VerticalAlignment="Top" Width="97" Grid.ColumnSpan="2"/>
 
-			<Border Margin="0,2,0,0" Grid.Row="1"  BorderBrush="Black" BorderThickness="1"  >
-				<Grid>
-					<Grid.RowDefinitions>
-						<RowDefinition Height="Auto"/>
-						<RowDefinition Height="Auto"/>
-					</Grid.RowDefinitions>
-					<TextBlock Grid.Row="0" Text="{Binding CurrentXmlWindow.DisplayName}" FontSize="14" FontWeight="Bold" />
-					<Viewbox MaxWidth="1280" MaxHeight="720" Grid.Row="1" Margin="5" x:Name="veiw" StretchDirection="Both"  >
-						<Border BorderBrush="Black" BorderThickness="1"  Height="{Binding SkinInfo.SkinHeight,FallbackValue=720}" Width="{Binding SkinInfo.SkinWidth,FallbackValue=1280}">
-							<Grid >
+                                <StackPanel Margin="10,2,41,0"   Grid.Column="0" Grid.Row="1">
+                                    <TextBlock Text="SkinEditor" Height="30" />
+                                </StackPanel>
+                                <StackPanel Margin="2,1,14,-1" Grid.Row="1" Grid.Column="1">
+                                    <TextBlock Text="MediaPortal" Margin="0,2,25,0" Height="32" />
+                                </StackPanel>
 
-								<!--Dialog-->
-								<Canvas Height="{Binding SkinInfo.SkinHeight,FallbackValue=720}" Width="{Binding SkinInfo.SkinWidth,FallbackValue=1280}" Visibility="{Binding CurrentXmlDialog, Converter={StaticResource NullToVisibilityConverter}}">
-									<Canvas Width="{Binding CurrentXmlDialog.Width, Mode=TwoWay}"
+                            </Grid>
+                        </Border>
+                    </Expander>
+                </Border>
+            </StackPanel>
+
+            <Border Margin="0,2,0,0" Grid.Row="1"  BorderBrush="Black" BorderThickness="1"  >
+                <Expander x:Name="I" Header="InfoBrowser" >
+                    <Border BorderBrush="Black" BorderThickness="1" Margin="2">
+                        <Grid  Background="#FFE5E5E5" Height="280"  >
+
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="300" />
+                                <ColumnDefinition Width="1*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Margin="3">
+                                <Grid Height="193">
+                                    <DataGrid Margin="0,0,0,31" ItemsSource="{Binding ListItemData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                                        <DataGrid.Columns>
+                                            <DataGridTextColumn Binding="{Binding Tag}" Header="Property Path" IsReadOnly="True"/>
+                                            <DataGridTextColumn Binding="{Binding Value}" Header="Value" Width="*" IsReadOnly="True">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="DataGridCell">
+                                                        <Setter Property="ToolTip">
+                                                            <Setter.Value>
+                                                                <Image Source="{Binding Value}" MaxWidth="300" />
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Button Content="Clear" Command="{Binding ClearListItemCommand}" HorizontalAlignment="Right" Height="23" Margin="0,0,0,3" VerticalAlignment="Bottom" Width="65"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Margin="3">
+                                <Grid Height="193">
+                                    <DataGrid Margin="0,0,0,31" ItemsSource="{Binding PropertyData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" >
+                                        <DataGrid.Columns>
+                                            <DataGridTemplateColumn >
+                                                <DataGridTemplateColumn.CellTemplate>
+                                                    <DataTemplate>
+                                                        <Button Width="22" Height="22" Command="{Binding PropertyEditCommand, ElementName=UI}" CommandParameter="{Binding}">
+                                                            <Image Margin="1">
+                                                                <Image.Style>
+                                                                    <Style TargetType="Image">
+                                                                        <Setter Property="Source" Value="/SkinEditor;component/Images/Plus.png" />
+                                                                        <Style.Triggers>
+                                                                            <DataTrigger Binding="{Binding IsDefined}" Value="True" >
+                                                                                <Setter Property="Source" Value="/SkinEditor;component/Images/Tick.png" />
+                                                                            </DataTrigger>
+                                                                        </Style.Triggers>
+                                                                    </Style>
+                                                                </Image.Style>
+                                                            </Image>
+                                                        </Button>
+                                                    </DataTemplate>
+                                                </DataGridTemplateColumn.CellTemplate>
+                                            </DataGridTemplateColumn>
+                                            <DataGridTextColumn Binding="{Binding Tag}" Header="Tag" IsReadOnly="True" />
+                                            <DataGridTextColumn Binding="{Binding Value}" Header="Value" Width="*" IsReadOnly="True">
+                                                <DataGridTextColumn.CellStyle>
+                                                    <Style TargetType="DataGridCell">
+                                                        <Setter Property="ToolTip">
+                                                            <Setter.Value>
+                                                                <Image Source="{Binding Value}" MaxWidth="300" />
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </DataGridTextColumn.CellStyle>
+                                            </DataGridTextColumn>
+
+                                        </DataGrid.Columns>
+                                    </DataGrid>
+                                    <Button Content="Clear" Command="{Binding ClearPropertyCommand}" HorizontalAlignment="Right" Height="23" Margin="0,0,0,3" VerticalAlignment="Bottom" Width="65"/>
+                                </Grid>
+                                <GroupBox Margin="0,0,0,0" Header="WindowData" Height="81" VerticalAlignment="Top">
+                                    <Grid>
+                                        <StackPanel Margin="5">
+                                            <TextBlock Text="{Binding WindowId, StringFormat=WindowId: \{0\}}" Margin="0,0,0,2" />
+                                            <TextBlock Text="{Binding DialogId, StringFormat=DialogId: \{0\}}" Margin="0,0,0,2"/>
+                                            <TextBlock Text="{Binding FocusedControlId, StringFormat=FocusedControlId: \{0\}}" Margin="0,0,0,2" />
+                                        </StackPanel>
+                                    </Grid>
+                                </GroupBox>
+
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Expander>
+            </Border>
+
+            <Border Margin="0,2,0,0" Grid.Row="2"  BorderBrush="Black" BorderThickness="1"  >
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Text="{Binding CurrentXmlWindow.DisplayName}" FontSize="14" FontWeight="Bold" />
+                    <Viewbox MaxWidth="1280" MaxHeight="720" Grid.Row="1" Margin="5" x:Name="veiw" StretchDirection="Both"  >
+                        <Border BorderBrush="Black" BorderThickness="1"  Height="{Binding SkinInfo.SkinHeight,FallbackValue=720}" Width="{Binding SkinInfo.SkinWidth,FallbackValue=1280}">
+                            <Grid >
+
+                                <!--Dialog-->
+                                <Canvas Height="{Binding SkinInfo.SkinHeight,FallbackValue=720}" Width="{Binding SkinInfo.SkinWidth,FallbackValue=1280}" Visibility="{Binding CurrentXmlDialog, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <Canvas Width="{Binding CurrentXmlDialog.Width, Mode=TwoWay}"
 												Height="{Binding CurrentXmlDialog.Height, Mode=TwoWay}"
 												Canvas.Left="{Binding CurrentXmlDialog.PosX, Mode=TwoWay}"
 												Canvas.Top="{Binding CurrentXmlDialog.PosY, Mode=TwoWay}">
-										<ContentControl Content="{Binding CurrentXmlDialog}" />
+                                        <ContentControl Content="{Binding CurrentXmlDialog}" />
 
-									</Canvas>
-									<Controls:MoveResizeControl Width="{Binding CurrentXmlDialog.Width, Mode=TwoWay, ElementName=UI}"
+                                    </Canvas>
+                                    <Controls:MoveResizeControl Width="{Binding CurrentXmlDialog.Width, Mode=TwoWay, ElementName=UI}"
 																Height="{Binding CurrentXmlDialog.Height, Mode=TwoWay, ElementName=UI}"
 																Canvas.Left="{Binding CurrentXmlDialog.PosX, Mode=TwoWay, ElementName=UI}"
 																Canvas.Top="{Binding CurrentXmlDialog.PosY, Mode=TwoWay, ElementName=UI}">
-										<Controls:MoveResizeControl.Style>
-											<Style TargetType="{x:Type Controls:MoveResizeControl}">
-												<Setter Property="Visibility" Value="{Binding CurrentXmlControl, Converter={StaticResource InverseNullToVisibilityConverter}}" />
-												<Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
-												<Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
-												<Setter Property="IsSnapToGrid" Value="{Binding Settings.SnapToGrid, ElementName=UI}" />
-												<Setter Property="GridSize" Value="{Binding Settings.GridSize, ElementName=UI}" />
-											</Style>
-										</Controls:MoveResizeControl.Style>
-									</Controls:MoveResizeControl>
-								</Canvas>
+                                        <Controls:MoveResizeControl.Style>
+                                            <Style TargetType="{x:Type Controls:MoveResizeControl}">
+                                                <Setter Property="Visibility" Value="{Binding CurrentXmlControl, Converter={StaticResource InverseNullToVisibilityConverter}}" />
+                                                <Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
+                                                <Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
+                                                <Setter Property="IsSnapToGrid" Value="{Binding Settings.SnapToGrid, ElementName=UI}" />
+                                                <Setter Property="GridSize" Value="{Binding Settings.GridSize, ElementName=UI}" />
+                                            </Style>
+                                        </Controls:MoveResizeControl.Style>
+                                    </Controls:MoveResizeControl>
+                                </Canvas>
 
-								<!--Window-->
-								<Canvas Visibility="{Binding CurrentXmlWindow, Converter={StaticResource NullToVisibilityConverter}}">
-									<ContentControl x:Name="windowContent" Content="{Binding CurrentXmlWindow}"  />
-								</Canvas>
-							
+                                <!--Window-->
+                                <Canvas Visibility="{Binding CurrentXmlWindow, Converter={StaticResource NullToVisibilityConverter}}">
+                                    <ContentControl x:Name="windowContent" Content="{Binding CurrentXmlWindow}"  />
+                                </Canvas>
 
-							    <!--Grid-->
-								<Canvas IsHitTestVisible="False" Height="{Binding SkinInfo.SkinHeight}" Width="{Binding SkinInfo.SkinWidth}" Visibility="{Binding Settings.ShowGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
-									<Canvas.Background>
-										<VisualBrush TileMode="Tile" Viewport="{Binding Settings.GridSizeRect}" Viewbox="{Binding Settings.GridSizeRect}"  ViewportUnits="Absolute" ViewboxUnits="Absolute">
-											<VisualBrush.Visual>
-												<Rectangle Width="2" Height="2" Visibility="{Binding SelectedTreeItem, Converter={StaticResource NullToVisibilityConverter}}" >
-													<Rectangle.Fill>
-														<SolidColorBrush Color="{Binding Settings.GridColor}" />
-													</Rectangle.Fill>
-												</Rectangle>
-											</VisualBrush.Visual>
-										</VisualBrush>
-									</Canvas.Background>
-								</Canvas>
 
-								<!--Background-->
-								<Grid.Background>
-									<DrawingBrush  Viewport="0,0,20,20" ViewportUnits="Absolute" TileMode="Tile">
-										<DrawingBrush.Drawing>
-											<DrawingGroup>
-												<GeometryDrawing Brush="White">
-													<GeometryDrawing.Geometry>
-														<RectangleGeometry Rect="0,0 100,100" />
-													</GeometryDrawing.Geometry>
-												</GeometryDrawing>
-												<GeometryDrawing Brush="LightGray">
-													<GeometryDrawing.Geometry>
-														<GeometryGroup>
-															<RectangleGeometry Rect="0,0 50,50" />
-															<RectangleGeometry Rect="50,50 50,50" />
-														</GeometryGroup>
-													</GeometryDrawing.Geometry>
-												</GeometryDrawing>
-											</DrawingGroup>
-										</DrawingBrush.Drawing>
-									</DrawingBrush>
-								</Grid.Background>
-							</Grid>
-						</Border>
-					</Viewbox>
-				</Grid>
-			</Border>
-		</Grid>
+                                <!--Grid-->
+                                <Canvas IsHitTestVisible="False" Height="{Binding SkinInfo.SkinHeight}" Width="{Binding SkinInfo.SkinWidth}" Visibility="{Binding Settings.ShowGrid, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                    <Canvas.Background>
+                                        <VisualBrush TileMode="Tile" Viewport="{Binding Settings.GridSizeRect}" Viewbox="{Binding Settings.GridSizeRect}"  ViewportUnits="Absolute" ViewboxUnits="Absolute">
+                                            <VisualBrush.Visual>
+                                                <Rectangle Width="2" Height="2" Visibility="{Binding SelectedTreeItem, Converter={StaticResource NullToVisibilityConverter}}" >
+                                                    <Rectangle.Fill>
+                                                        <SolidColorBrush Color="{Binding Settings.GridColor}" />
+                                                    </Rectangle.Fill>
+                                                </Rectangle>
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Canvas.Background>
+                                </Canvas>
+
+                                <!--Background-->
+                                <Grid.Background>
+                                    <DrawingBrush  Viewport="0,0,20,20" ViewportUnits="Absolute" TileMode="Tile">
+                                        <DrawingBrush.Drawing>
+                                            <DrawingGroup>
+                                                <GeometryDrawing Brush="White">
+                                                    <GeometryDrawing.Geometry>
+                                                        <RectangleGeometry Rect="0,0 100,100" />
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                                <GeometryDrawing Brush="LightGray">
+                                                    <GeometryDrawing.Geometry>
+                                                        <GeometryGroup>
+                                                            <RectangleGeometry Rect="0,0 50,50" />
+                                                            <RectangleGeometry Rect="50,50 50,50" />
+                                                        </GeometryGroup>
+                                                    </GeometryDrawing.Geometry>
+                                                </GeometryDrawing>
+                                            </DrawingGroup>
+                                        </DrawingBrush.Drawing>
+                                    </DrawingBrush>
+                                </Grid.Background>
+                            </Grid>
+                        </Border>
+                    </Viewbox>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </local:EditorViewModel>
