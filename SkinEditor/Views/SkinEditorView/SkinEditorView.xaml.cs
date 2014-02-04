@@ -732,17 +732,64 @@ namespace SkinEditor.Views
             HasPendingChanges = true;
         }
 
-    
-
-   
-
-
-    
 
 
 
-     
 
+
+
+
+
+
+
+        void s_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            if (sender is TreeViewItem && CurrentXmlControl != null)
+            {
+                TreeViewItem draggedItem = sender as TreeViewItem;
+                if (draggedItem.DataContext is XmlControl)
+                {
+                    DragDrop.DoDragDrop(draggedItem, CurrentXmlControl, DragDropEffects.Move);
+                }
+            }
+        }
+
+        void listbox1_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data != null && _currentXmlWindow != null && CurrentXmlControl != null)
+            {
+                try
+                {
+                    var droppedData = e.Data.GetData(CurrentXmlControl.GetType()) as XmlControl;
+                    var target = ((TreeViewItem)(sender)).DataContext as XmlControl;
+                    if (droppedData != null && target != null)
+                    {
+                        int removedIdx = _currentXmlWindow.Controls.IndexOf(droppedData);
+                        int targetIdx = _currentXmlWindow.Controls.IndexOf(target);
+                        if (removedIdx < targetIdx)
+                        {
+                            _currentXmlWindow.Controls.Insert(targetIdx + 1, droppedData);
+                            _currentXmlWindow.Controls.RemoveAt(removedIdx);
+                        }
+                        else
+                        {
+                            int remIdx = removedIdx + 1;
+                            if (_currentXmlWindow.Controls.Count + 1 > remIdx)
+                            {
+                                _currentXmlWindow.Controls.Insert(targetIdx, droppedData);
+                                _currentXmlWindow.Controls.RemoveAt(remIdx);
+                            }
+                        }
+                        SelectTreeItem(CurrentXmlControl);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Cannot move controls to a new Window/Dialog.");
+                  
+                }
+            }
+        }
     
 
      

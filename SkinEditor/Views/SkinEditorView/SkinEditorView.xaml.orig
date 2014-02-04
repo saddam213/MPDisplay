@@ -18,18 +18,7 @@
         <converters:TypeToImageConverter x:Key="TypeToImageConverter"/>
         <converters:TypeToFontWeightConverter x:Key="TypeToFontWeightConverter" />
 
-		<Style x:Name="txt" TargetType="TextBlock">
-			<Setter Property="Foreground" Value="White" />
-		</Style>
-
-		<Style x:Name="exp" TargetType="Expander">
-			<Setter Property="Foreground" Value="White" />
-		</Style>
-
-		<Style TargetType="CheckBox">
-			<Setter Property="Foreground" Value="White" />
-		</Style>
-
+<<<<<<< Updated upstream
         <Style TargetType="{x:Type Controls:MoveResizeControl}">
             <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
@@ -50,6 +39,40 @@
         </Style>
 
         <CollectionViewSource x:Key="allWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
+=======
+		<Style x:Name="txt" TargetType="TextBlock">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+
+		<Style x:Name="exp" TargetType="Expander">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+
+		<Style TargetType="CheckBox">
+			<Setter Property="Foreground" Value="White" />
+		</Style>
+
+		<Style TargetType="{x:Type Controls:MoveResizeControl}">
+			<Setter Property="Visibility" Value="Collapsed" />
+			<Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
+			<Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
+			<Setter Property="IsSnapToGrid" Value="{Binding Settings.SnapToGrid, ElementName=UI}" />
+			<Setter Property="GridSize" Value="{Binding Settings.GridSize, ElementName=UI}" />
+			<Style.Triggers>
+				<MultiDataTrigger>
+				<MultiDataTrigger.Conditions>
+						<Condition Binding="{Binding IsSelected, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" Value="True" />
+						<Condition Binding="{Binding Settings.DragMoveResize, ElementName=UI}" Value="True" />
+					</MultiDataTrigger.Conditions>
+					<MultiDataTrigger.Setters>
+						<Setter  Property="Visibility" Value="Visible" />
+					</MultiDataTrigger.Setters>
+				</MultiDataTrigger>
+			</Style.Triggers>
+		</Style>
+		
+		<CollectionViewSource x:Key="allWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
+>>>>>>> Stashed changes
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="DisplayType" />
             </CollectionViewSource.GroupDescriptions>
@@ -94,7 +117,8 @@
                     </Button>
                 </Grid>
 
-                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource allWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.Row="1"  >
+<<<<<<< Updated upstream
+                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource allWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.Row="1" >
 
                     <TreeView.Resources>
                         <!--SelectedItem with focus-->
@@ -103,9 +127,7 @@
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 
                         <Style TargetType="TreeViewItem">
-							<Setter Property="AllowDrop" Value="True" />
                             <EventSetter Event="UIElement.MouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown"/>
-						
                         </Style>
 
                         <Style TargetType="ContentControl">
@@ -167,6 +189,81 @@
 
                     </TreeView.Resources>
 
+                    <TreeView.GroupStyle>
+=======
+                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource allWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.Row="1"  >
+				
+					<TreeView.Resources>
+						<!--SelectedItem with focus-->
+						<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="DeepSkyBlue" />
+						<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DeepSkyBlue" />
+						<SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+
+						<Style TargetType="TreeViewItem">
+							<Setter Property="AllowDrop" Value="True" />
+							<EventSetter Event="UIElement.MouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown"/>
+						
+						</Style>
+
+						<Style TargetType="ContentControl">
+							<Setter Property="Template">
+								<Setter.Value>
+									<ControlTemplate TargetType="ContentControl">
+										<StackPanel Orientation="Horizontal" Margin="0,0,4,0" >
+										    <Image MaxHeight="16" MaxWidth="16" Margin="2,2,2,2" Stretch="Uniform" Source="{Binding ., Converter={StaticResource TypeToImageConverter}, Mode=OneWay}" />
+											<TextBlock Text="{Binding DisplayName}" Margin="2,1,0,0" FontWeight="{Binding ., Converter={StaticResource TypeToFontWeightConverter}, Mode=OneWay}" />
+										</StackPanel>
+									</ControlTemplate>
+								</Setter.Value>
+							</Setter>
+						</Style>
+
+						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPDWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlPlayerWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type xmlDialogs:XmlMPDialog}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
+						<HierarchicalDataTemplate DataType="{x:Type xmlControls:XmlGroup}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
+							<ContentControl />
+						</HierarchicalDataTemplate>
+
+						<DataTemplate DataType="{x:Type xmlControls:XmlButton}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlGuide}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlImage}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlLabel}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlList}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlProgressBar}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlRectangle}" >
+							<ContentControl />
+						</DataTemplate>
+						<DataTemplate DataType="{x:Type xmlControls:XmlEqualizer}" >
+							<ContentControl />
+						</DataTemplate>
+
+					</TreeView.Resources>
+
 					<TreeView.ItemContainerStyle>
 						<Style TargetType="TreeViewItem">
 							<Setter Property="AllowDrop" Value="True" />
@@ -175,7 +272,8 @@
 						</Style>
 					</TreeView.ItemContainerStyle>
 
-                    <TreeView.GroupStyle>
+					<TreeView.GroupStyle>
+>>>>>>> Stashed changes
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
                                 <DataTemplate>
