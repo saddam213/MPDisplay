@@ -13,8 +13,6 @@ using GUISkinFramework;
 using GUISkinFramework.Property;
 using MessageFramework.DataObjects;
 using MPDisplay.Common;
-using Common.Logging;
-using Common.Settings;
 
 namespace GUIFramework.Managers
 {

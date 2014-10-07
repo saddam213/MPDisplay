@@ -134,9 +134,6 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-
-      
-
         public void SendRecordings()
         {
             if (_getRecordings != null)

@@ -118,11 +118,11 @@ namespace SkinHelper
 
         private int _lastFocusedControl = -1;
         private object _syncObject = new object();
-        private Common.Logging.Log ActionLog;
-        private Common.Logging.Log PropertyLog;
-        private Common.Logging.Log ListItemLog;
-        private Common.Logging.Log DialogLog;
-        private Common.Logging.Log WindowLog;
+        //private Common.Logging.Log ActionLog;
+        //private Common.Logging.Log PropertyLog;
+        //private Common.Logging.Log ListItemLog;
+        //private Common.Logging.Log DialogLog;
+        //private Common.Logging.Log WindowLog;
 
 
         void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
@@ -197,7 +197,7 @@ namespace SkinHelper
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
             }
         }
@@ -239,7 +239,7 @@ namespace SkinHelper
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
 
             }
@@ -319,7 +319,7 @@ namespace SkinHelper
                     _isWorking = false;
                 }
             }
-            catch (Exception ex)
+            catch 
             {
                
             }
@@ -359,24 +359,18 @@ namespace SkinHelper
                                 }
                             }
                         }
-                        catch (Exception ex)
+                        catch 
                         {
                            
                         }
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
               
             }
         }
-
-
-
-
-
-
 
 
         private void RefectListItem(GUIListItem listItem)
@@ -414,7 +408,7 @@ namespace SkinHelper
                     LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail]{0}", Environment.NewLine);
                 }
             }
-            catch (Exception ex)
+            catch 
             {
 
             }
@@ -439,7 +433,7 @@ namespace SkinHelper
                     LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]{0}", Environment.NewLine);
                 }
             }
-            catch (Exception ex)
+            catch 
             {
 
             }

@@ -29,6 +29,7 @@ using SkinEditor.Dialogs;
 using MPDisplay.Common;
 using MPDisplay.Common.Utils;
 using Common.Helpers;
+using SkinEditor.ConnectionHelpers;
 
 namespace SkinEditor.Views
 {
@@ -51,14 +52,71 @@ namespace SkinEditor.Views
         /// <summary>
         /// Initializes a new instance of the <see cref="SkinEditorView"/> class.
         /// </summary>
-        public SkinEditorView()           
+        public SkinEditorView(ConnectionHelper _connectionHelper)           
         {
+            ConnectionHelper = _connectionHelper;
+
+            ConnectCommand = new RelayCommand(async () => await ConnectionHelper.InitializeServerConnection(), () => !ConnectionHelper.IsConnected);
+            DisconnectCommand = new RelayCommand(async () => await ConnectionHelper.Disconnect(), () => ConnectionHelper.IsConnected);
+            ClearPropertyCommand = new RelayCommand(ConnectionHelper.PropertyData.Clear);
+            ClearListItemCommand = new RelayCommand(ConnectionHelper.ListItemData.Clear);
+            PropertyEditCommand = new RelayCommand<SkinPropertyItem>(ConnectionHelper.OpenPropertyEditor);
+
             InitializeComponent();
             CreateContextMenuCommands();
         }
 
         #endregion
 
+        #region connection
+
+        public InfoEditorViewSettings ConnectionSettings
+        {
+            get { return ConnectSettings as InfoEditorViewSettings; }
+        }
+
+        public ICommand ConnectCommand { get; internal set; }
+        public ICommand DisconnectCommand { get; internal set; }
+        public ICommand ClearPropertyCommand { get; internal set; }
+        public ICommand PropertyEditCommand { get; internal set; }
+        public ICommand ClearListItemCommand { get; internal set; }
+
+        public bool IsConnected
+        {
+            get { return ConnectionHelper.IsConnected; }
+        }
+
+        public bool IsMediaPortalConnected
+        {
+            get { return ConnectionHelper.IsMediaPortalConnected; }
+        }
+
+        public ObservableCollection<SkinPropertyItem> PropertyData
+        {
+            get { return ConnectionHelper.PropertyData; }
+        }
+
+        public ObservableCollection<SkinPropertyItem> ListItemData
+        {
+            get { return ConnectionHelper.ListItemData; }
+        }
+
+        public int WindowId
+        {
+            get { return ConnectionHelper.WindowId; }
+        }
+
+        public int DialogId
+        {
+            get { return ConnectionHelper.DialogId; }
+        }
+
+        public int FocusedControlId
+        {
+            get { return ConnectionHelper.FocusedControlId; }
+        }
+
+        #endregion
 
         #region Properties
 
@@ -185,6 +243,10 @@ namespace SkinEditor.Views
 
         public override void Initialize()
         {
+            ConnectionHelper.settings = ConnectionSettings;
+            ConnectionHelper.baseclass = this;
+            ConnectionHelper.StartSecondTimer();
+
             NotifyPropertyChanged("Styles");
             NotifyPropertyChanged("Settings");
             NotifyPropertyChanged("AllWindows");
@@ -733,75 +795,56 @@ namespace SkinEditor.Views
         }
 
 
+        //void s_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        //{
+        //    if (sender is TreeViewItem && CurrentXmlControl != null)
+        //    {
+        //        TreeViewItem draggedItem = sender as TreeViewItem;
+        //        if (draggedItem.DataContext is XmlControl)
+        //        {
+        //            DragDrop.DoDragDrop(draggedItem, CurrentXmlControl, DragDropEffects.Move);
+        //        }
+        //    }
+        //}
 
-
-
-
-
-
-
-
-
-        void s_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (sender is TreeViewItem && CurrentXmlControl != null)
-            {
-                TreeViewItem draggedItem = sender as TreeViewItem;
-                if (draggedItem.DataContext is XmlControl)
-                {
-                    DragDrop.DoDragDrop(draggedItem, CurrentXmlControl, DragDropEffects.Move);
-                }
-            }
-        }
-
-        void listbox1_Drop(object sender, DragEventArgs e)
-        {
-            if (e.Data != null && _currentXmlWindow != null && CurrentXmlControl != null)
-            {
-                try
-                {
-                    var droppedData = e.Data.GetData(CurrentXmlControl.GetType()) as XmlControl;
-                    var target = ((TreeViewItem)(sender)).DataContext as XmlControl;
-                    if (droppedData != null && target != null)
-                    {
-                        int removedIdx = _currentXmlWindow.Controls.IndexOf(droppedData);
-                        int targetIdx = _currentXmlWindow.Controls.IndexOf(target);
-                        if (removedIdx < targetIdx)
-                        {
-                            _currentXmlWindow.Controls.Insert(targetIdx + 1, droppedData);
-                            _currentXmlWindow.Controls.RemoveAt(removedIdx);
-                        }
-                        else
-                        {
-                            int remIdx = removedIdx + 1;
-                            if (_currentXmlWindow.Controls.Count + 1 > remIdx)
-                            {
-                                _currentXmlWindow.Controls.Insert(targetIdx, droppedData);
-                                _currentXmlWindow.Controls.RemoveAt(remIdx);
-                            }
-                        }
-                        SelectTreeItem(CurrentXmlControl);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Cannot move controls to a new Window/Dialog.");
+        //void listbox1_Drop(object sender, DragEventArgs e)
+        //{
+        //    if (e.Data != null && _currentXmlWindow != null && CurrentXmlControl != null)
+        //    {
+        //        try
+        //        {
+        //            var droppedData = e.Data.GetData(CurrentXmlControl.GetType()) as XmlControl;
+        //            var target = ((TreeViewItem)(sender)).DataContext as XmlControl;
+        //            if (droppedData != null && target != null)
+        //            {
+        //                int removedIdx = _currentXmlWindow.Controls.IndexOf(droppedData);
+        //                int targetIdx = _currentXmlWindow.Controls.IndexOf(target);
+        //                if (removedIdx < targetIdx)
+        //                {
+        //                    _currentXmlWindow.Controls.Insert(targetIdx + 1, droppedData);
+        //                    _currentXmlWindow.Controls.RemoveAt(removedIdx);
+        //                }
+        //                else
+        //                {
+        //                    int remIdx = removedIdx + 1;
+        //                    if (_currentXmlWindow.Controls.Count + 1 > remIdx)
+        //                    {
+        //                        _currentXmlWindow.Controls.Insert(targetIdx, droppedData);
+        //                        _currentXmlWindow.Controls.RemoveAt(remIdx);
+        //                    }
+        //                }
+        //                SelectTreeItem(CurrentXmlControl);
+        //            }
+        //        }
+        //        catch 
+        //        {
+        //            MessageBox.Show("Cannot move controls to a new Window/Dialog.");
                   
-                }
-            }
-        }
-    
-
-     
-
-  
+        //        }
+        //    }
+        //}
      
     }
-
-
-
-
-
 
     #region SkinClipboard
 

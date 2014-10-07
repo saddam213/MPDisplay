@@ -86,7 +86,7 @@ namespace Common.Logging
                     File.Move(_fullPath, string.Format("{0}_1.log", System.IO.Path.Combine(_directory, _filename)));
                 }
             }
-            catch (Exception ex)
+            catch 
             {
                 // should I log this error, LMAO!!!!
             }

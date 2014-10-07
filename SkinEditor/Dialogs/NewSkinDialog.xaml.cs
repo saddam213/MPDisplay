@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using GUISkinFramework;
-using SkinEditor.Helpers;
+using SkinEditor.ConnectionHelpers;
 using System.IO;
 using Common.Settings;
 

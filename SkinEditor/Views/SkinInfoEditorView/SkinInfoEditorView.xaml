@@ -6,7 +6,7 @@
 			    xmlns:local="clr-namespace:SkinEditor.Views"
 				xmlns:gui="clr-namespace:GUIFramework;assembly=GUIFramework"
 				xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-          xmlns:fileSystemHelpers="clr-namespace:SkinEditor.Helpers" 
+          xmlns:fileSystemHelpers="clr-namespace:SkinEditor.ConnectionHelpers" 
              x:Class="SkinEditor.Views.SkinInfoEditorView"
              mc:Ignorable="d" 
              d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >

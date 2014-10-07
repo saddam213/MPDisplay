@@ -18,17 +18,17 @@
         <converters:TypeToImageConverter x:Key="TypeToImageConverter"/>
         <converters:TypeToFontWeightConverter x:Key="TypeToFontWeightConverter" />
 
-		<Style x:Name="txt" TargetType="TextBlock">
-			<Setter Property="Foreground" Value="White" />
-		</Style>
+        <Style x:Name="txt" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
 
-		<Style x:Name="exp" TargetType="Expander">
-			<Setter Property="Foreground" Value="White" />
-		</Style>
+        <Style x:Name="exp" TargetType="Expander">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
 
-		<Style TargetType="CheckBox">
-			<Setter Property="Foreground" Value="White" />
-		</Style>
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="White" />
+        </Style>
 
         <Style TargetType="{x:Type Controls:MoveResizeControl}">
             <Setter Property="Visibility" Value="Collapsed" />
@@ -103,9 +103,9 @@
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 
                         <Style TargetType="TreeViewItem">
-							<Setter Property="AllowDrop" Value="True" />
+                            <Setter Property="AllowDrop" Value="True" />
                             <EventSetter Event="UIElement.MouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown"/>
-						
+
                         </Style>
 
                         <Style TargetType="ContentControl">
@@ -167,13 +167,13 @@
 
                     </TreeView.Resources>
 
-					<TreeView.ItemContainerStyle>
-						<Style TargetType="TreeViewItem">
-							<Setter Property="AllowDrop" Value="True" />
-							<EventSetter Event="UIElement.PreviewMouseLeftButtonDown" Handler="s_PreviewMouseLeftButtonDown"/>
-							<EventSetter Event="UIElement.Drop" Handler="listbox1_Drop" />
-						</Style>
-					</TreeView.ItemContainerStyle>
+                    <!-- <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Setter Property="AllowDrop" Value="True" />
+                            <EventSetter Event="UIElement.PreviewMouseLeftButtonDown" Handler="s_PreviewMouseLeftButtonDown"/>
+                            <EventSetter Event="UIElement.Drop" Handler="listbox1_Drop" />
+                        </Style>
+                    </TreeView.ItemContainerStyle> -->
 
                     <TreeView.GroupStyle>
                         <GroupStyle>
@@ -361,7 +361,7 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
 
-								<CheckBox Content="Show Grid" IsChecked="{Binding Settings.ShowGrid}" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" />
+                                <CheckBox Content="Show Grid" IsChecked="{Binding Settings.ShowGrid}" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" />
                                 <StackPanel Margin="15,31,5,0"  IsEnabled="{Binding Settings.ShowGrid}">
                                     <TextBlock Text="Grid Size"  />
                                     <Controls:IntegerUpDown Value="{Binding Settings.GridSize}"  />
@@ -398,65 +398,25 @@
                                     <ColumnDefinition Width="57*"/>
                                     <ColumnDefinition Width="58*"/>
                                 </Grid.ColumnDefinitions>
-                                <Rectangle HorizontalAlignment="Left" Height="20" Margin="75,1,0,0" VerticalAlignment="Top" Width="20" RenderTransformOrigin="2.818,0.25" Grid.Row="1">
-                                    <Rectangle.Fill>
-                                        <RadialGradientBrush>
-                                            <GradientStop Color="Red" Offset="0.5"/>
-                                            <GradientStop Color="#00000000" Offset="1"/>
-                                        </RadialGradientBrush>
-                                    </Rectangle.Fill>
+                                <Rectangle HorizontalAlignment="Left" Height="11" Margin="75,5,0,0" VerticalAlignment="Top" Width="15" RenderTransformOrigin="2.818,0.25" Grid.Row="1">
                                     <Rectangle.Style>
                                         <Style TargetType="{x:Type Rectangle}">
-                                            <Setter Property="Fill">
-                                                <Setter.Value>
-                                                    <RadialGradientBrush>
-                                                        <GradientStop Color="Red" Offset="0.5"/>
-                                                        <GradientStop Color="#00000000" Offset="1"/>
-                                                    </RadialGradientBrush>
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter Property="Fill" Value="Red"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsConnected}" Value="True">
-                                                    <Setter Property="Fill" >
-                                                        <Setter.Value>
-                                                            <RadialGradientBrush>
-                                                                <GradientStop Color="#FF38742F" Offset="0.5"/>
-                                                                <GradientStop Color="#00000000" Offset="1"/>
-                                                            </RadialGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
+                                                    <Setter Property="Fill" Value="Green" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Rectangle HorizontalAlignment="Left" Height="20" Margin="74,1,0,0" VerticalAlignment="Top" Width="20" RenderTransformOrigin="0.636,1.938" Grid.Column="1" Grid.Row="1">
-                                    <Rectangle.Fill>
-                                        <RadialGradientBrush>
-                                            <GradientStop Color="Red" Offset="0.5"/>
-                                            <GradientStop Offset="1" Color="#00000000"/>
-                                        </RadialGradientBrush>
-                                    </Rectangle.Fill>
+                                <Rectangle HorizontalAlignment="Left" Height="11" Margin="75,5,0,0" VerticalAlignment="Top" Width="14" RenderTransformOrigin="0.636,1.938" Grid.Column="1" Grid.Row="1">
                                     <Rectangle.Style>
                                         <Style TargetType="{x:Type Rectangle}">
-                                            <Setter Property="Fill">
-                                                <Setter.Value>
-                                                    <RadialGradientBrush>
-                                                        <GradientStop Color="Red" Offset="0.5"/>
-                                                        <GradientStop Color="#00000000" Offset="1"/>
-                                                    </RadialGradientBrush>
-                                                </Setter.Value>
-                                            </Setter>
+                                            <Setter Property="Fill" Value="Red"/>
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding IsMediaPortalConnected}" Value="True">
-                                                    <Setter Property="Fill" >
-                                                        <Setter.Value>
-                                                            <RadialGradientBrush>
-                                                                <GradientStop Color="#FF38742F" Offset="0.5"/>
-                                                                <GradientStop Color="#00000000" Offset="1"/>
-                                                            </RadialGradientBrush>
-                                                        </Setter.Value>
-                                                    </Setter>
+                                                    <Setter Property="Fill" Value="Green" />
                                                 </DataTrigger>
                                             </Style.Triggers>
                                         </Style>
@@ -466,10 +426,10 @@
                                 <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="112,10,0,0" VerticalAlignment="Top" Width="97" Grid.ColumnSpan="2"/>
 
                                 <StackPanel Margin="10,2,41,0"   Grid.Column="0" Grid.Row="1">
-                                    <TextBlock Text="SkinEditor" Height="30" />
+                                    <TextBlock Text="SkinEditor" Height="18" Foreground="Black" />
                                 </StackPanel>
                                 <StackPanel Margin="2,1,14,-1" Grid.Row="1" Grid.Column="1">
-                                    <TextBlock Text="MediaPortal" Margin="0,2,25,0" Height="32" />
+                                    <TextBlock Text="MediaPortal" Margin="0,2,25,0" Height="16" Foreground="Black" />
                                 </StackPanel>
 
                             </Grid>

@@ -13,6 +13,7 @@ using GUISkinFramework.Common;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Skin;
 using SkinEditor.Controls;
+using Common.Settings;
 
 namespace SkinEditor.BindingConverters
 {
@@ -33,7 +34,7 @@ namespace SkinEditor.BindingConverters
                      case XmlListType.MediaPortalListControl:
                      case XmlListType.MediaPortalDialogList:
 
-                         var dummyItemPath = Environment.CurrentDirectory + "\\Data\\ListControl";
+                         var dummyItemPath = RegistrySettings.ProgramDataPath + "SkinEditor\\ListControl";
                          if (Directory.Exists(dummyItemPath))
                          {
                              int index = 0;

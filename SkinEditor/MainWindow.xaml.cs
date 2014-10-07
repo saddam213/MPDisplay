@@ -9,7 +9,7 @@ using System.Windows.Media.Animation;
 using GUISkinFramework;
 using Common.Logging;
 using SkinEditor.Dialogs;
-using SkinEditor.Helpers;
+using SkinEditor.ConnectionHelpers;
 using SkinEditor.Views;
 using System.Linq;
 using System.Windows.Input;
@@ -27,6 +27,7 @@ namespace SkinEditor
         private string _settingsFile;
         private XmlSkinInfo _currentSkinInfo;
         private SkinEditorSettings _settings;
+        private ConnectionHelper _connectionHelper;
 
         public MainWindow()
         {
@@ -48,7 +49,10 @@ namespace SkinEditor
             InitializeComponent();
             CreateContextMenuCommands();
           //  Application.Current.Resources = new ResourceDictionary { Source = new Uri("/GUIFramework;component/Themes/Generic.xaml", UriKind.RelativeOrAbsolute) };
+
             Settings = SkinEditorSettings.LoadSettings(_settingsFile);
+            _connectionHelper = new ConnectionHelper();
+
             LoadViews();
 
             SkinOpenRecent(App.StartupSkinInfoFilename);
@@ -98,11 +102,11 @@ namespace SkinEditor
         {
             if (EditorViews.Count == 0)
             {
-                EditorViews.Add(new SkinEditorView{ EditorSettings = Settings.SkinEditorViewSettings});
-                EditorViews.Add(new StyleEditorView{ EditorSettings = Settings.StyleEditorViewSettings});
-                EditorViews.Add(new ImageEditorView{ EditorSettings = Settings.ImageEditorViewSettings});
+                EditorViews.Add(new SkinEditorView( _connectionHelper){ EditorSettings = Settings.SkinEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
+                EditorViews.Add(new StyleEditorView { EditorSettings = Settings.StyleEditorViewSettings });
+                EditorViews.Add(new ImageEditorView { EditorSettings = Settings.ImageEditorViewSettings });
                 EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
-                EditorViews.Add(new InfoEditorView { EditorSettings = Settings.InfoEditorViewSettings });
+                EditorViews.Add(new InfoEditorView(_connectionHelper) { EditorSettings = Settings.InfoEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
                 EditorViews.Add(new TestEditorView {  });
             }
         }

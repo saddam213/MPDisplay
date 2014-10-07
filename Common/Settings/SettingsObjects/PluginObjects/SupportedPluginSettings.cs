@@ -60,7 +60,7 @@ namespace Common.Settings.SettingsObjects
         public string VerticalListItemThumb2Path
         {
             get { return _verticalListItemThumb2Path; }
-            set { _verticalListItemThumb3Path = value; }
+            set { _verticalListItemThumb2Path = value; }
         }
 
         public string VerticalListItemThumb3Path

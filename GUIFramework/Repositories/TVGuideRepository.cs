@@ -143,10 +143,6 @@ namespace GUIFramework.Managers
             }
         }
 
-
-
-     
-
         private void ProcessBatch(APITvGuideMessage message)
         {
             try
@@ -211,7 +207,7 @@ namespace GUIFramework.Managers
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
 
             }
@@ -248,19 +244,30 @@ namespace GUIFramework.Managers
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    bool anyRecording = false;
+                    bool anyRecording = false; 
+                    bool scheduled = false;
                     foreach (var channel in _guideData)
                     {
                         foreach (var program in channel.Programs)
                         {
                             var recording = recordings.FirstOrDefault(p => p.ChannelId == channel.Id && p.ProgramId == program.Id);
-                            bool scheduled = recording != null;
-                            if (program.IsScheduled != scheduled)
+                            if (recording != null)   
+                            {
+                                scheduled = true;
+
+                            } else {
+                                scheduled = false;
+                            }
+
+                             if (program.IsScheduled != scheduled)
                             {
                                 program.IsScheduled = scheduled;
+                                if (recording != null)
+                                {
                                 program.RecordPaddingStart = recording.RecordPaddingStart;
                                 program.RecordPaddingEnd = recording.RecordPaddingEnd;
-                            }
+                                }
+                           }
                         }
                         if (channel.UpdateCurrentProgram())
                         {
@@ -271,6 +278,7 @@ namespace GUIFramework.Managers
                     TVGuideService.NotifyListeners(TVGuideMessageType.RecordingData);
 
                     InfoRepository.Instance.IsTvRecording = anyRecording;
+
                 });
             }
         }
@@ -282,7 +290,7 @@ namespace GUIFramework.Managers
         {
             if (_guideData.Any())
             {
-                bool anyRecording = false;
+                bool anyRecording = false; 
                 foreach (var channel in _guideData)
                 {
                     if (channel.UpdateCurrentProgram())
@@ -293,10 +301,6 @@ namespace GUIFramework.Managers
                 InfoRepository.Instance.IsTvRecording = anyRecording;
             }
         }
-
-
-
-
     }
 
     public enum TVGuideMessageType
@@ -354,8 +358,7 @@ namespace GUIFramework.Managers
             }
             return anyRecording;
         }
-
-     
+  
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
@@ -419,7 +422,14 @@ namespace GUIFramework.Managers
 
         public bool IsProgramRecording()
         {
-            return IsScheduled && (StartTime > DateTime.Now.AddMinutes(-RecordPaddingStart) && EndTime < DateTime.Now.AddMinutes(RecordPaddingEnd));
+            if (IsScheduled)
+            {
+                if (DateTime.Now > StartTime.AddMinutes(-RecordPaddingStart) && DateTime.Now < EndTime.AddMinutes(RecordPaddingEnd))
+                {
+                    return true;
+                }
+            }
+            return false;
         }
 
 

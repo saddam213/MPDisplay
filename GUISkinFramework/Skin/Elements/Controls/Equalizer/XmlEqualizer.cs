@@ -22,6 +22,7 @@ namespace GUISkinFramework.Controls
         private int _medRangeValue = 200;
         private int _bandCount = 20;
         private int _bandSpacing = 1;
+        private int _eqchannel = 0;
         private int _bandBorderSize = 1;
         private int _bandCornerRadius = 2;
         private int _falloffSpeed = 10;
@@ -55,6 +56,7 @@ namespace GUISkinFramework.Controls
             set { _controlStyle = value; NotifyPropertyChanged("ControlStyle"); }
         }
 
+
         [DefaultValue(XmlEQStyle.SingleBar)]
         [PropertyOrder(200)]
         [EditorCategory("Equalizer", 8)]
@@ -63,6 +65,17 @@ namespace GUISkinFramework.Controls
         {
             get { return _eqStyle; }
             set { _eqStyle = value; NotifyPropertyChanged("EQStyle"); }
+        }
+
+        [DefaultValue(0)]
+        [PropertyOrder(205)]
+        [EditorCategory("Equalizer", 8)]
+        [DisplayName("Channel")]
+        [Editor(typeof(IntMinMaxValueEditor), typeof(ITypeEditor)), PropertyRange(0, 1)]
+        public int EQChannel
+        {
+            get { return _eqchannel; }
+            set { _eqchannel = value; NotifyPropertyChanged("EQChannel"); }
         }
 
         [DefaultValue(100)]

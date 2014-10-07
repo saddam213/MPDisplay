@@ -48,7 +48,7 @@ namespace GUISkinFramework.Controls
             set { _listType = value; NotifyPropertyChanged("ListType"); }
         }
         
-        [DefaultValue(XmlListLayout.Vertical)]
+        [DefaultValue(null)]
         [PropertyOrder(100)]
         [EditorCategory("List", 7)]
         [DisplayName("Layout")]

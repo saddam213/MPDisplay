@@ -8,152 +8,152 @@
              xmlns:commonConve="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
              xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >
-	<local:EditorViewModel.Resources>
+    <local:EditorViewModel.Resources>
 
-		<commonConve:InverseBoolConverter x:Key="InverseBoolConverter" />
-
-
-	</local:EditorViewModel.Resources>
-
-	<Grid DataContext="{Binding ElementName=UI}">
-		<Grid.ColumnDefinitions>
-			<ColumnDefinition Width="47*"/>
-			<ColumnDefinition Width="113*"/>
-		</Grid.ColumnDefinitions>
+        <commonConve:InverseBoolConverter x:Key="InverseBoolConverter" />
 
 
-		<GroupBox Margin="10,10,9,0" Header="Connection" Height="106" VerticalAlignment="Top">
-			<Grid>
-				<Grid.RowDefinitions>
-					<RowDefinition Height="43*"/>
-					<RowDefinition Height="41*"/>
-				</Grid.RowDefinitions>
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="57*"/>
-					<ColumnDefinition Width="58*"/>
-				</Grid.ColumnDefinitions>
-				<TextBlock HorizontalAlignment="Left" Margin="42,10,0,0" TextWrapping="Wrap" Text="SkinEditor" VerticalAlignment="Top" RenderTransformOrigin="3.472,-2.375" Grid.Column="1"/>
-				<Rectangle HorizontalAlignment="Left" Height="14" Margin="111,11,0,0" Stroke="Black" VerticalAlignment="Top" Width="22" RenderTransformOrigin="2.818,0.25" Grid.Column="1">
-					<Rectangle.Style>
-						<Style TargetType="{x:Type Rectangle}">
-							<Setter Property="Fill" Value="Red"/>
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding IsConnected}" Value="True">
-									<Setter Property="Fill" Value="Green" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</Rectangle.Style>
-				</Rectangle>
-				<TextBlock HorizontalAlignment="Left" Margin="42,26,0,0" TextWrapping="Wrap" Text="MediaPortal" VerticalAlignment="Top" RenderTransformOrigin="2.438,-0.5" Grid.Column="1"/>
-				<Rectangle HorizontalAlignment="Left" Height="14" Margin="111,27,0,0" Stroke="Black" VerticalAlignment="Top" Width="22" RenderTransformOrigin="0.636,1.938" Grid.Column="1">
-					<Rectangle.Style>
-						<Style TargetType="{x:Type Rectangle}">
-							<Setter Property="Fill" Value="Red"/>
-							<Style.Triggers>
-								<DataTrigger Binding="{Binding IsMediaPortalConnected}" Value="True">
-									<Setter Property="Fill" Value="Green" />
-								</DataTrigger>
-							</Style.Triggers>
-						</Style>
-					</Rectangle.Style>
-				</Rectangle>
-				<Button Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="31" Margin="0,11,0,0" VerticalAlignment="Top" Width="97"/>
-				<Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="102,10,0,0" VerticalAlignment="Top" Width="97" Grid.ColumnSpan="2"/>
-			
-				<StackPanel Margin="0,0,3,0"   Grid.Column="0" Grid.Row="1">
-					<TextBlock Text="IPAdddress" />
-					<TextBox x:Name="ip" Text="{Binding Settings.IpAddress}" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBoolConverter}}"/>
-				</StackPanel>
-				<StackPanel Margin="3,0,0,0" Grid.Column="1" Grid.Row="1">
+    </local:EditorViewModel.Resources>
 
-					<TextBlock Text="Port" />
-					<Controls:IntegerUpDown Height="{Binding ActualHeight, ElementName=ip}" Value="{Binding Settings.Port}" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBoolConverter}}"/>
-				</StackPanel>
-
-			</Grid>
-		</GroupBox>
+    <Grid DataContext="{Binding ElementName=UI}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="47*"/>
+            <ColumnDefinition Width="113*"/>
+        </Grid.ColumnDefinitions>
 
 
+        <GroupBox Margin="10,10,9,0" Header="Connection" Height="106" VerticalAlignment="Top">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="43*"/>
+                    <RowDefinition Height="41*"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="57*"/>
+                    <ColumnDefinition Width="58*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock HorizontalAlignment="Left" Margin="42,10,0,0" TextWrapping="Wrap" Text="SkinEditor" VerticalAlignment="Top" RenderTransformOrigin="3.472,-2.375" Grid.Column="1"/>
+                <Rectangle HorizontalAlignment="Left" Margin="111,11,0,18" Stroke="Black" Width="22" RenderTransformOrigin="2.818,0.25" Grid.Column="1">
+                    <Rectangle.Style>
+                        <Style TargetType="{x:Type Rectangle}">
+                            <Setter Property="Fill" Value="Red"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsConnected}" Value="True">
+                                    <Setter Property="Fill" Value="Green" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Rectangle.Style>
+                </Rectangle>
+                <TextBlock HorizontalAlignment="Left" Margin="42,26,0,0" TextWrapping="Wrap" Text="MediaPortal" VerticalAlignment="Top" RenderTransformOrigin="2.438,-0.5" Grid.Column="1"/>
+                <Rectangle HorizontalAlignment="Left" Height="14" Margin="111,27,0,0" Stroke="Black" VerticalAlignment="Top" Width="22" RenderTransformOrigin="0.636,1.938" Grid.Column="1">
+                    <Rectangle.Style>
+                        <Style TargetType="{x:Type Rectangle}">
+                            <Setter Property="Fill" Value="Red"/>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding IsMediaPortalConnected}" Value="True">
+                                    <Setter Property="Fill" Value="Green" />
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </Rectangle.Style>
+                </Rectangle>
+                <Button Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="31" Margin="0,11,0,0" VerticalAlignment="Top" Width="97"/>
+                <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="102,10,0,0" VerticalAlignment="Top" Width="97" Grid.ColumnSpan="2"/>
 
-		<GroupBox Margin="7,10,10,10" Header="Property" Grid.Column="1">
-			<Grid>
-				<DataGrid Margin="0,0,0,31" ItemsSource="{Binding PropertyData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" >
-					<DataGrid.Columns>
-						<DataGridTemplateColumn >
-							<DataGridTemplateColumn.CellTemplate>
-								<DataTemplate>
-									<Button Width="22" Height="22" Command="{Binding PropertyEditCommand, ElementName=UI}" CommandParameter="{Binding}">
-										<Image Margin="1">
-											<Image.Style>
-												<Style TargetType="Image">
-													<Setter Property="Source" Value="/SkinEditor;component/Images/Plus.png" />
-													<Style.Triggers>
-														<DataTrigger Binding="{Binding IsDefined}" Value="True" >
-															<Setter Property="Source" Value="/SkinEditor;component/Images/Tick.png" />
-														</DataTrigger>
-													</Style.Triggers>
-												</Style>
-											</Image.Style>
-										</Image>
+                <StackPanel Margin="0,0,3,0"   Grid.Column="0" Grid.Row="1">
+                    <TextBlock Text="IPAdddress" />
+                    <TextBox x:Name="ip" Text="{Binding Settings.IpAddress}" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBoolConverter}}"/>
+                </StackPanel>
+                <StackPanel Margin="3,0,0,0" Grid.Column="1" Grid.Row="1">
+
+                    <TextBlock Text="Port" />
+                    <Controls:IntegerUpDown Height="{Binding ActualHeight, ElementName=ip}" Value="{Binding Settings.Port}" IsEnabled="{Binding IsConnected, Converter={StaticResource InverseBoolConverter}}"/>
+                </StackPanel>
+
+            </Grid>
+        </GroupBox>
 
 
-									</Button>
-								</DataTemplate>
-							</DataGridTemplateColumn.CellTemplate>
-						</DataGridTemplateColumn>
-						<DataGridTextColumn Binding="{Binding Tag}" Header="Tag" IsReadOnly="True" />
-						<DataGridTextColumn Binding="{Binding Value}" Header="Value" Width="*" IsReadOnly="True">
-							<DataGridTextColumn.CellStyle>
-								<Style TargetType="DataGridCell">
-									<Setter Property="ToolTip">
-										<Setter.Value>
-											<Image Source="{Binding Value}" MaxWidth="300" />
-										</Setter.Value>
-									</Setter>
-								</Style>
-							</DataGridTextColumn.CellStyle>
-						</DataGridTextColumn>
 
-					</DataGrid.Columns>
-				</DataGrid>
-				<Button Content="Clear" Command="{Binding ClearPropertyCommand}" HorizontalAlignment="Right" Height="23" Margin="0,0,0,3" VerticalAlignment="Bottom" Width="65"/>
-			</Grid>
-		</GroupBox>
+        <GroupBox Margin="7,10,10,10" Header="Property" Grid.Column="1">
+            <Grid>
+                <DataGrid Margin="0,0,0,31" ItemsSource="{Binding PropertyData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False" >
+                    <DataGrid.Columns>
+                        <DataGridTemplateColumn >
+                            <DataGridTemplateColumn.CellTemplate>
+                                <DataTemplate>
+                                    <Button Width="22" Height="22" Command="{Binding PropertyEditCommand, ElementName=UI}" CommandParameter="{Binding}">
+                                        <Image Margin="1">
+                                            <Image.Style>
+                                                <Style TargetType="Image">
+                                                    <Setter Property="Source" Value="/SkinEditor;component/Images/Plus.png" />
+                                                    <Style.Triggers>
+                                                        <DataTrigger Binding="{Binding IsDefined}" Value="True" >
+                                                            <Setter Property="Source" Value="/SkinEditor;component/Images/Tick.png" />
+                                                        </DataTrigger>
+                                                    </Style.Triggers>
+                                                </Style>
+                                            </Image.Style>
+                                        </Image>
 
-		<GroupBox Margin="10,207,9,10" Header="ListItem">
-			<Grid>
-				<DataGrid Margin="0,0,0,31" ItemsSource="{Binding ListItemData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
-					<DataGrid.Columns>
-						<DataGridTextColumn Binding="{Binding Tag}" Header="Property Path" IsReadOnly="True"/>
-						<DataGridTextColumn Binding="{Binding Value}" Header="Value" Width="*" IsReadOnly="True">
-							<DataGridTextColumn.CellStyle>
-								<Style TargetType="DataGridCell">
-									<Setter Property="ToolTip">
-										<Setter.Value>
-											<Image Source="{Binding Value}" MaxWidth="300" />
-										</Setter.Value>
-									</Setter>
-								</Style>
-							</DataGridTextColumn.CellStyle>
-						</DataGridTextColumn>
-					</DataGrid.Columns>
-				</DataGrid>
-				<Button Content="Clear" Command="{Binding ClearListItemCommand}" HorizontalAlignment="Right" Height="23" Margin="0,0,0,3" VerticalAlignment="Bottom" Width="65"/>
-			</Grid>
-		</GroupBox>
 
-		<GroupBox Margin="10,121,9,0" Header="WindowData" Height="81" VerticalAlignment="Top">
-			<Grid>
-				<StackPanel Margin="5">
-					<TextBlock Text="{Binding WindowId, StringFormat=WindowId: {0}}" Margin="0,0,0,2" />
-					<TextBlock Text="{Binding DialogId, StringFormat=DialogId: {0}}" Margin="0,0,0,2"/>
-					<TextBlock Text="{Binding FocusedControlId, StringFormat=FocusedControlId: {0}}" Margin="0,0,0,2" />
-				</StackPanel>
-			</Grid>
-		</GroupBox>
+                                    </Button>
+                                </DataTemplate>
+                            </DataGridTemplateColumn.CellTemplate>
+                        </DataGridTemplateColumn>
+                        <DataGridTextColumn Binding="{Binding Tag}" Header="Tag" IsReadOnly="True" />
+                        <DataGridTextColumn Binding="{Binding Value}" Header="Value" Width="*" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip">
+                                        <Setter.Value>
+                                            <Image Source="{Binding Value}" MaxWidth="300" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
 
-	</Grid>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button Content="Clear" Command="{Binding ClearPropertyCommand}" HorizontalAlignment="Right" Height="23" Margin="0,0,0,3" VerticalAlignment="Bottom" Width="65"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Margin="10,207,9,10" Header="ListItem">
+            <Grid>
+                <DataGrid Margin="0,0,0,31" ItemsSource="{Binding ListItemData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Binding="{Binding Tag}" Header="Property Path" IsReadOnly="True"/>
+                        <DataGridTextColumn Binding="{Binding Value}" Header="Value" Width="*" IsReadOnly="True">
+                            <DataGridTextColumn.CellStyle>
+                                <Style TargetType="DataGridCell">
+                                    <Setter Property="ToolTip">
+                                        <Setter.Value>
+                                            <Image Source="{Binding Value}" MaxWidth="300" />
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </DataGridTextColumn.CellStyle>
+                        </DataGridTextColumn>
+                    </DataGrid.Columns>
+                </DataGrid>
+                <Button Content="Clear" Command="{Binding ClearListItemCommand}" HorizontalAlignment="Right" Height="23" Margin="0,0,0,3" VerticalAlignment="Bottom" Width="65"/>
+            </Grid>
+        </GroupBox>
+
+        <GroupBox Margin="10,121,9,0" Header="WindowData" Height="81" VerticalAlignment="Top">
+            <Grid>
+                <StackPanel Margin="5">
+                    <TextBlock Text="{Binding WindowId, StringFormat=WindowId: {0}}" Margin="0,0,0,2" />
+                    <TextBlock Text="{Binding DialogId, StringFormat=DialogId: {0}}" Margin="0,0,0,2"/>
+                    <TextBlock Text="{Binding FocusedControlId, StringFormat=FocusedControlId: {0}}" Margin="0,0,0,2" />
+                </StackPanel>
+            </Grid>
+        </GroupBox>
+
+    </Grid>
 
 
 </local:EditorViewModel>

@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using GUISkinFramework;
+using SkinEditor.ConnectionHelpers;
 
 namespace SkinEditor.Views
 {
@@ -68,6 +69,22 @@ namespace SkinEditor.Views
             set { _editorSettings = value; NotifyPropertyChanged("EditorSettings"); }
         }
 
+        private EditorSettingsObject _connectSettings;
+
+        public EditorSettingsObject ConnectSettings
+        {
+            get { return _connectSettings; }
+            set { _connectSettings = value; NotifyPropertyChanged("ConnectSettings"); }
+        }
+
+        private ConnectionHelper _connectHelper;
+
+        public ConnectionHelper ConnectionHelper
+        {
+            get { return _connectHelper; }
+            set { _connectHelper = value; NotifyPropertyChanged("ConnectHelper"); }
+        }
+
         private bool _hasPendingChanges;
 
         public bool HasPendingChanges
@@ -101,6 +118,37 @@ namespace SkinEditor.Views
             }
         }
 
+  
         #endregion
     }
+
+        public class SkinPropertyItem : INotifyPropertyChanged
+        {
+            public string Tag { get; set; }
+            private string _value;
+
+            public string Value
+            {
+                get { return _value; }
+                set { _value = value; NotifyPropertyChanged("Value"); }
+            }
+
+            private bool _isDefined;
+
+            public bool IsDefined
+            {
+                get { return _isDefined; }
+                set { _isDefined = value; NotifyPropertyChanged("IsDefined"); }
+            }
+
+            public event PropertyChangedEventHandler PropertyChanged;
+            public void NotifyPropertyChanged(string property)
+            {
+                if (PropertyChanged != null)
+                {
+                    PropertyChanged(this, new PropertyChangedEventArgs(property));
+                }
+            }
+
+        }
 }

@@ -36,6 +36,7 @@
 										BandSpacing="{Binding BaseXml.BandSpacing, Mode=OneWay}" 
 										BandCount="{Binding BaseXml.BandCount, Mode=OneWay}"
 										EQStyle="{Binding BaseXml.EQStyle, Converter={StaticResource GUIEQStyleEnumConverter}, Mode=OneWay}"
+										EQChannel="{Binding BaseXml.EQChannel, Mode=OneWay}"
 										LowRangeValue="{Binding BaseXml.LowRangeValue, Mode=OneWay}"
 										MedRangeValue="{Binding BaseXml.MedRangeValue, Mode=OneWay}"
 										LowRangeColor="{Binding BaseXml.ControlStyle.LowRangeColor, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"

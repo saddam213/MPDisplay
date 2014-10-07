@@ -64,17 +64,14 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty MaxRangeColorProperty = DependencyProperty.Register("MaxRangeColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Red));
         public static readonly DependencyProperty BandCountProperty = DependencyProperty.Register("BandCount", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(30));
         public static readonly DependencyProperty BandSpacingProperty = DependencyProperty.Register("BandSpacing", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(2));
+        public static readonly DependencyProperty EQChannelProperty = DependencyProperty.Register("EQChannel", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(0));
         public static readonly DependencyProperty BandBorderSizeProperty = DependencyProperty.Register("BandBorderSize", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(1, (d, e) => (d as EqualizerCanvas).SetBorderPen()));
         public static readonly DependencyProperty BandCornerRadiusProperty = DependencyProperty.Register("BandCornerRadius", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(2));
         public static readonly DependencyProperty BandBorderColorProperty = DependencyProperty.Register("BandBorderColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Silver, (d, e) => (d as EqualizerCanvas).SetBorderPen()));
         public static readonly DependencyProperty FallOffColorProperty = DependencyProperty.Register("FallOffColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Gray, (d, e) => (d as EqualizerCanvas).SetFalloffPen()));
         public static readonly DependencyProperty FalloffSpeedProperty = DependencyProperty.Register("FalloffSpeed", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(5));
         public static readonly DependencyProperty FallOffHeightProperty = DependencyProperty.Register("FallOffHeight", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(4, (d, e) => (d as EqualizerCanvas).SetFalloffPen()));
-        public static readonly DependencyProperty ShowDummyDataProperty =  DependencyProperty.Register("ShowDummyData", typeof(bool), typeof(EqualizerCanvas), new PropertyMetadata(false, (d, e) => (d as EqualizerCanvas).SetDummyData()));
-
-
-      
-        
+        public static readonly DependencyProperty ShowDummyDataProperty = DependencyProperty.Register("ShowDummyData", typeof(bool), typeof(EqualizerCanvas), new PropertyMetadata(false, (d, e) => (d as EqualizerCanvas).SetDummyData()));
 
         #endregion
 
@@ -126,6 +123,12 @@ namespace MPDisplay.Common.Controls
         {
             get { return (int)GetValue(BandSpacingProperty); }
             set { SetValue(BandSpacingProperty, value); }
+        }
+
+        public int EQChannel
+        {
+            get { return (int)GetValue(EQChannelProperty); }
+            set { SetValue(EQChannelProperty, value); }
         }
 
         public int BandBorderSize
@@ -223,12 +226,12 @@ namespace MPDisplay.Common.Controls
                 {
                     if (_ledCount > 0)
                     {
-                        for (int i = 0; i < BandCount; i++)
+                        for (int i = 0; i < BandCount; i++)            // array conatains interleaved values for 2 channels
                         {
-                            if (i < this._fftData.Length && i < arrayValue.Length)
+                            if (i < this._fftData.Length && i < arrayValue.Length/2)
                             {
                                 EQData pm = this._fftData[i];
-                                pm.Value = (int)arrayValue[i];
+                                pm.Value = (int)arrayValue[2*i+EQChannel]; // select data according to channel of this canvas
                                 if (pm.Falloff < pm.Value)
                                 {
                                     pm.Falloff = pm.Value;

@@ -33,8 +33,8 @@ namespace GUIFramework.GUI.Controls
         private TvGuideProgram _selectedProgram;
         private double _timelineLength = 0;
         private double _timelinePosition = 0;
-        private DateTime _timelineStart;
-        private DateTime _timelineEnd;
+        //private DateTime _timelineStart;
+        //private DateTime _timelineEnd;
         private string _timelineInfo;
         private double _timelineCenterPosition;
         private string _currentGuideGroup; 

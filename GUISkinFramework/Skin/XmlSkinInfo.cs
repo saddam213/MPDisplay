@@ -182,22 +182,6 @@ namespace GUISkinFramework
         }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-      
-         
-
-
         private string _skinFolderPath;
           [XmlIgnore]
           [Browsable(false)]
@@ -279,33 +263,6 @@ namespace GUISkinFramework
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
         }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         private Log Log = LoggingManager.GetLog(typeof(XmlSkinInfo));
         private ObservableCollection<XmlImageFile> _images = new ObservableCollection<XmlImageFile>();

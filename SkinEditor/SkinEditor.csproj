@@ -29,11 +29,14 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\Release\MPDisplay\GUI\</OutputPath>
+    <OutputPath>..\..\..\Release\MPDisplay\Config\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>MPDicon.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -81,6 +84,7 @@
     <Compile Include="Controls\Guide.xaml.cs">
       <DependentUpon>Guide.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\ConnectionHelper.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\FileSystemHelper.cs" />
     <Compile Include="SkinEditorSettings.cs" />
@@ -330,6 +334,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Tick.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="MPDicon.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

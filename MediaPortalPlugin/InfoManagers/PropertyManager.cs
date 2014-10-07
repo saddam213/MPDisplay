@@ -10,8 +10,6 @@ using Common.Settings;
 using Common.Status;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using Common.Logging;
-using Common.Settings;
 
 namespace MediaPortalPlugin.InfoManagers
 {

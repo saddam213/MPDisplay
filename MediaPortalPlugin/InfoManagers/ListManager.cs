@@ -648,7 +648,7 @@ namespace MediaPortalPlugin.InfoManagers
             return APIListLayout.Vertical;
         }
         
-        private int _lastMenuCotrolItemIndex = -1;
+        //private int _lastMenuCotrolItemIndex = -1;
         private bool _movingMenuControl = false;
         private MethodInfo _menuCotrolMoveUp;
         private MethodInfo _menuCotrolMoveDown;
@@ -897,6 +897,7 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     filename = item.PinImage;
                 }
+                
             }
 
             return ImageHelper.CreateImage(filename);

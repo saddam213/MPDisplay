@@ -50,7 +50,7 @@ namespace MediaPortalPlugin.PluginHelpers
             string filename = string.Empty;
             if (Settings != null && item != null)
             {
-                var view = ReflectionHelper.GetFieldValue<object>(PluginWindow, "listLevel", null);
+                var view = ReflectionHelper.GetStaticField<object>(PluginWindow, "CurrentViewLevel", null);
                 bool isSeason = view != null && view.ToString() == "Season";
 
                 switch (layout)

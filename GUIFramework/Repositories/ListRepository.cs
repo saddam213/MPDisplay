@@ -206,7 +206,7 @@ namespace GUIFramework.Managers
                     }
                 }
             }
-            catch (Exception ex)
+            catch 
             {
 
             }
