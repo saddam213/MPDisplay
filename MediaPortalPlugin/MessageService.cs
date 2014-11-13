@@ -3,6 +3,7 @@ using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
 using Common.Logging;
 using Common.Settings;
+using Common.Helpers;
 using System;
 using System.Linq;
 using System.ServiceModel;
@@ -108,34 +109,35 @@ namespace MediaPortalPlugin
                 string connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
                 Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", connectionString);
                 _serverEndpoint = new EndpointAddress(connectionString);
-                _serverBinding = new NetTcpBinding();
+                _serverBinding = ConnectHelper.getServerBinding();
 
-                // Security (lol)
-                _serverBinding.Security.Mode = SecurityMode.None;
-                _serverBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-                _serverBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-                _serverBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
+               //// Security (lol)
+               // _serverBinding.Security.Mode = SecurityMode.None;
+               // _serverBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
+               // _serverBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+               // _serverBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
 
-                // Connection
-                _serverBinding.Name = "NetTcpBinding_IMessage";
-                _serverBinding.CloseTimeout = new TimeSpan(0, 0, 5);
-                _serverBinding.OpenTimeout = new TimeSpan(0, 0, 5);
-                _serverBinding.ReceiveTimeout = new TimeSpan(0, 1, 0);
-                _serverBinding.SendTimeout = new TimeSpan(0, 1, 0);
-                _serverBinding.TransferMode = TransferMode.Buffered;
-                _serverBinding.ListenBacklog = 100;
-                _serverBinding.MaxConnections = 100;
-                _serverBinding.MaxReceivedMessageSize = int.MaxValue;
-                _serverBinding.MaxBufferSize = int.MaxValue;
-                _serverBinding.MaxBufferPoolSize = int.MaxValue;
+               // // Connection
+               // _serverBinding.Name = "NetTcpBinding_IMessage";
+               // _serverBinding.CloseTimeout = new TimeSpan(0, 0, 5);
+               // _serverBinding.OpenTimeout = new TimeSpan(0, 0, 5);
+               // _serverBinding.ReceiveTimeout = new TimeSpan(0, 1, 0);
+               // _serverBinding.SendTimeout = new TimeSpan(0, 1, 0);
+               // _serverBinding.TransferMode = TransferMode.Buffered;
+               // _serverBinding.ListenBacklog = 100;
+               // _serverBinding.MaxConnections = 100;
+               // _serverBinding.MaxReceivedMessageSize = int.MaxValue;
+               // _serverBinding.MaxBufferSize = int.MaxValue;
+               // _serverBinding.MaxBufferPoolSize = int.MaxValue;
 
-                // Message
-                _serverBinding.ReaderQuotas.MaxArrayLength = int.MaxValue;
-                _serverBinding.ReaderQuotas.MaxDepth = 32;
-                _serverBinding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
-                _serverBinding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
-                _serverBinding.ReliableSession.Enabled = true;
-                _serverBinding.ReliableSession.InactivityTimeout = new TimeSpan(0, 3, 0);
+               // // Message
+               // _serverBinding.ReaderQuotas.MaxArrayLength = int.MaxValue;
+               // _serverBinding.ReaderQuotas.MaxDepth = 32;
+               // _serverBinding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
+               // _serverBinding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
+               // _serverBinding.ReaderQuotas.MaxNameTableCharCount = int.MaxValue;
+               // _serverBinding.ReliableSession.Enabled = true;
+               // _serverBinding.ReliableSession.InactivityTimeout = new TimeSpan(0, 3, 0);
 
                 InstanceContext site = new InstanceContext(this);
                 if (_messageClient != null)
@@ -385,7 +387,7 @@ namespace MediaPortalPlugin
                     {
                         if (_messageClient != null && property != null)
                         {
-                            //  Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}.", property.SkinTag, property.PropertyType);
+                             Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}, Label: {2}.", property.SkinTag, property.PropertyType, property.Label); //Test
                             _messageClient.SendPropertyMessageAsync(property);
                         }
                     }

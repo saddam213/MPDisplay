@@ -102,11 +102,11 @@
                         <SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="DeepSkyBlue" />
                         <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 
-                        <Style TargetType="TreeViewItem">
+                        <!-- <Style TargetType="TreeViewItem">
                             <Setter Property="AllowDrop" Value="True" />
                             <EventSetter Event="UIElement.MouseRightButtonDown" Handler="TreeViewItem_PreviewMouseRightButtonDown"/>
 
-                        </Style>
+                        </Style> -->
 
                         <Style TargetType="ContentControl">
                             <Setter Property="Template">
@@ -173,7 +173,7 @@
                             <EventSetter Event="UIElement.PreviewMouseLeftButtonDown" Handler="s_PreviewMouseLeftButtonDown"/>
                             <EventSetter Event="UIElement.Drop" Handler="listbox1_Drop" />
                         </Style>
-                    </TreeView.ItemContainerStyle> -->
+                    </TreeView.ItemContainerStyle>-->
 
                     <TreeView.GroupStyle>
                         <GroupStyle>

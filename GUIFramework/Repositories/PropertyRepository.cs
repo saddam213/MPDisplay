@@ -148,8 +148,11 @@ namespace GUIFramework.Managers
         {
             if (propertyMessage != null)
             {
+                // Log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); //Test
+ 
                 if (_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage))
                 {
+                // Log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); //Test
                    NotifyPropertyChanged(propertyMessage.SkinTag);
                 }
             }

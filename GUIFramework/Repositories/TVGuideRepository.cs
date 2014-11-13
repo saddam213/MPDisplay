@@ -22,10 +22,9 @@ namespace GUIFramework.Managers
     {
         #region Singleton Implementation
 
-        private TVGuideRepository() { }
         private static TVGuideRepository _instance;
         public static TVGuideRepository Instance
-        {
+      {
             get
             {
                 if (_instance == null)
@@ -164,9 +163,6 @@ namespace GUIFramework.Managers
                         {
                             Console.WriteLine(string.Format("Received TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
 
-
-
-
                             var data = _data.Values.Select(x => new TvGuideChannel
                             {
                                 Id = x.Id,
@@ -245,29 +241,21 @@ namespace GUIFramework.Managers
                 Application.Current.Dispatcher.Invoke(() =>
                 {
                     bool anyRecording = false; 
-                    bool scheduled = false;
-                    foreach (var channel in _guideData)
+                     foreach (var channel in _guideData)
                     {
                         foreach (var program in channel.Programs)
                         {
                             var recording = recordings.FirstOrDefault(p => p.ChannelId == channel.Id && p.ProgramId == program.Id);
-                            if (recording != null)   
+                            if (recording != null)
                             {
-                                scheduled = true;
-
-                            } else {
-                                scheduled = false;
-                            }
-
-                             if (program.IsScheduled != scheduled)
-                            {
-                                program.IsScheduled = scheduled;
-                                if (recording != null)
-                                {
+                                program.IsScheduled = true;
                                 program.RecordPaddingStart = recording.RecordPaddingStart;
                                 program.RecordPaddingEnd = recording.RecordPaddingEnd;
-                                }
-                           }
+                            }
+                            else
+                            {
+                                program.IsScheduled = false;
+                            }
                         }
                         if (channel.UpdateCurrentProgram())
                         {
@@ -278,13 +266,9 @@ namespace GUIFramework.Managers
                     TVGuideService.NotifyListeners(TVGuideMessageType.RecordingData);
 
                     InfoRepository.Instance.IsTvRecording = anyRecording;
-
                 });
             }
         }
-
-
-
 
         private void SetProgramState()
         {
@@ -348,11 +332,7 @@ namespace GUIFramework.Managers
                     {
                         program.IsRecording = program.IsProgramRecording();
                     }
-
-                    if (program.IsRecording)
-                    {
-                        anyRecording = true;
-                    }
+                    if ( program.IsRecording ) anyRecording = true;
                   
                 }
             }
@@ -431,11 +411,8 @@ namespace GUIFramework.Managers
             }
             return false;
         }
-
-
-      
+     
         public event PropertyChangedEventHandler PropertyChanged;
-   
      
         public void NotifyPropertyChanged(string property)
         {

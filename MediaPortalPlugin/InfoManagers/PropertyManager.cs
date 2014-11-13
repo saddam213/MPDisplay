@@ -110,6 +110,9 @@ namespace MediaPortalPlugin.InfoManagers
                     _registeredProperties.Clear();
                 }
             }
+            Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Waiting 400ms now before sending properties..."); 
+            Thread.Sleep(400); 
+
             Suspend(false);
         }
 

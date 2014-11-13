@@ -61,6 +61,7 @@ namespace MediaPortalPlugin.PluginHelpers
                     Label = GetListItemLabel1(item, layout),
                     Label2 = GetListItemLabel2(item, layout),
                     Label3 = GetListItemLabel3(item, layout),
+
                     Image = GetListItemImage1(item, layout),
                     Image2 = GetListItemImage2(item, layout),
                     Image3 = GetListItemImage3(item, layout)

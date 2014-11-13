@@ -63,9 +63,7 @@ namespace MediaPortalPlugin.InfoManagers
         private bool _isFullScreenMusic;
         private APIPlayerMessage _lastPlayerMessage;
         private PluginHelper _currentPlugin;
-    
-
-    
+     
         public GUIWindow CurrentWindow
         {
             get { return _currentWindow; }
@@ -326,13 +324,10 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     _isFullscreenVideo = fullscreen;
                     SendPlayerMessage();
-                }
+               }
 
                 // SendFocusedControlMessage();
                 PropertyManager.Instance.Suspend(false);
-
-
-
 
             }
          

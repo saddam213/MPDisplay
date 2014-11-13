@@ -234,7 +234,7 @@ namespace GUIFramework.Managers
             get { return _mediaPortalWindowId; }
             set
             {
-                if (_mediaPortalWindowId != value)
+                if (_mediaPortalWindowId != value) 
                 {
                     _mediaPortalWindowId = value;
                     NotifiyValueChanged<int>(InfoMessageType.WindowId, value);
@@ -390,11 +390,6 @@ namespace GUIFramework.Managers
                 }
             }
         }
-
-
-
-
-
 
         private void AddPlayerMessage(APIPlayerMessage message)
         {

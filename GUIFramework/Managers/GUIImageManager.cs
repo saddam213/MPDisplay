@@ -112,8 +112,8 @@ namespace GUIFramework.Managers
                     using (MemoryStream stream = new MemoryStream(bytes, false))
                     {
                         image.BeginInit();
-                       // image.DecodePixelWidth = GetScaledImageWidth(bytes);
-                        image.CacheOption = BitmapCacheOption.None;
+                        // image.DecodePixelWidth = GetScaledImageWidth(bytes);
+                        image.CacheOption = BitmapCacheOption.OnLoad;
                         image.StreamSource = stream;
                         image.EndInit();
                         image.Freeze();

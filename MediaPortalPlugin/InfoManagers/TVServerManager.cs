@@ -13,6 +13,7 @@ using MediaPortal.Profile;
 using MediaPortal.Util;
 using MessageFramework.DataObjects;
 using Common.Settings;
+using Common.Logging;
 using System.Diagnostics;
 using Common;
 
@@ -71,10 +72,6 @@ namespace MediaPortalPlugin.InfoManagers
         }
 
    
-
-     
-     
-
         void GUIPropertyManager_OnPropertyChanged(string tag, string tagValue)
         {
             if (!string.IsNullOrEmpty(tag) && tag == "#TV.Guide.Group")
@@ -168,10 +165,7 @@ namespace MediaPortalPlugin.InfoManagers
             });
         }
 
-      
-
-
-        private void SetupTVServerInterface()
+         private void SetupTVServerInterface()
         {
             string tvBusinessLayerFile = Config.GetFolder(Config.Dir.Base) + @"\TvBusinessLayer.dll";
             string tvServerFile = Config.GetFolder(Config.Dir.Base) + @"\TVDatabase.dll";

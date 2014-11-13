@@ -136,34 +136,35 @@ namespace SkinEditor.ConnectionHelpers
 
             serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", _settings.IpAddress, _settings.Port));
             // Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", serverEndpoint);
-            serverBinding = new NetTcpBinding();
+            serverBinding = ConnectHelper.getServerBinding();
 
-            // Security (lol)
-            serverBinding.Security.Mode = SecurityMode.None;
-            serverBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-            serverBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-            serverBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
+            //// Security (lol)
+            //serverBinding.Security.Mode = SecurityMode.None;
+            //serverBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
+            //serverBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
+            //serverBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
 
-            // Connection
-            serverBinding.Name = "NetTcpBinding_IMessage";
-            serverBinding.CloseTimeout = new TimeSpan(0, 0, 5);
-            serverBinding.OpenTimeout = new TimeSpan(0, 0, 5);
-            serverBinding.ReceiveTimeout = new TimeSpan(0, 0, 30);
-            serverBinding.SendTimeout = new TimeSpan(0, 0, 30);
-            serverBinding.TransferMode = TransferMode.Buffered;
-            serverBinding.ListenBacklog = 10;
-            serverBinding.MaxConnections = 10;
-            serverBinding.MaxReceivedMessageSize = int.MaxValue;
-            serverBinding.MaxBufferSize = int.MaxValue;
-            serverBinding.MaxBufferPoolSize = int.MaxValue;
+            //// Connection
+            //serverBinding.Name = "NetTcpBinding_IMessage";
+            //serverBinding.CloseTimeout = new TimeSpan(0, 0, 5);
+            //serverBinding.OpenTimeout = new TimeSpan(0, 0, 5);
+            //serverBinding.ReceiveTimeout = new TimeSpan(0, 0, 30);
+            //serverBinding.SendTimeout = new TimeSpan(0, 0, 30);
+            //serverBinding.TransferMode = TransferMode.Buffered;
+            //serverBinding.ListenBacklog = 10;
+            //serverBinding.MaxConnections = 10;
+            //serverBinding.MaxReceivedMessageSize = int.MaxValue;
+            //serverBinding.MaxBufferSize = int.MaxValue;
+            //serverBinding.MaxBufferPoolSize = int.MaxValue;
 
-            // Message
-            serverBinding.ReaderQuotas.MaxArrayLength = int.MaxValue;
-            serverBinding.ReaderQuotas.MaxDepth = 32;
-            serverBinding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
-            serverBinding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
-            serverBinding.ReliableSession.Enabled = true;
-            serverBinding.ReliableSession.InactivityTimeout = new TimeSpan(0, 3, 0);
+            //// Message
+            //serverBinding.ReaderQuotas.MaxArrayLength = int.MaxValue;
+            //serverBinding.ReaderQuotas.MaxDepth = 32;
+            //serverBinding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
+            //serverBinding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
+            //serverBinding.ReaderQuotas.MaxNameTableCharCount = int.MaxValue;
+            //serverBinding.ReliableSession.Enabled = true;
+            //serverBinding.ReliableSession.InactivityTimeout = new TimeSpan(0, 3, 0);
 
             InstanceContext site = new InstanceContext(this);
             if (_messageBroker != null)

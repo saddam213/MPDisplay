@@ -244,11 +244,11 @@ namespace MediaPortalPlugin.InfoManagers
                         Thread.Sleep(500);
                         if (_facadeControls.Any())
                         {
-                            CheckFacadeForChanges();
+                            CheckFacadeForChanges(WindowManager.Instance.CurrentWindow.GetID); 
                         }
                         else
                         {
-                            CheckListsForChanges();
+                            CheckListsForChanges( ); 
                         }
                         _isRecheckingListItems = false;
                         if (_checkItemsNeedsRefresh)
@@ -334,14 +334,14 @@ namespace MediaPortalPlugin.InfoManagers
 
 
         private object _sync = new object();
-        private void CheckFacadeForChanges()
+        private void CheckFacadeForChanges(int WindowID)
         {
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
             if (currentFacade != null)
             {
                 int currentCount = -1;
                 DateTime timeout = DateTime.Now.AddSeconds(30);
-                while (currentFacade.SelectedListItem == null || currentCount < 0 || currentCount != GetCount(currentFacade))
+                while (WindowID == WindowManager.Instance.CurrentWindow.GetID && ( currentFacade.SelectedListItem == null || currentCount < 0 || currentCount != GetCount(currentFacade)))
                 {
                     Log.Message(LogLevel.Debug, "Facade not ready, Waiting 250ms");
                     currentCount = GetCount(currentFacade);
@@ -367,7 +367,7 @@ namespace MediaPortalPlugin.InfoManagers
                     {
                        count =  ReflectionHelper.GetFieldValue<List<GUIListItem>>(facade, "_itemList", new List<GUIListItem>()).Count;
                     });
-                return count == 0 ? -1 : count;
+                 return count == 0 ? -1 : count;
             }
             catch (Exception)
             {
