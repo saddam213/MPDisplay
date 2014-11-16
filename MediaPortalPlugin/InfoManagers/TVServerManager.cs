@@ -127,6 +127,7 @@ namespace MediaPortalPlugin.InfoManagers
                     });
 
                     SendChannelGroup();
+                    _lastRecordingMessage = null;           // make sure recordings are sent again 
                 }
             }
         }
@@ -136,7 +137,7 @@ namespace MediaPortalPlugin.InfoManagers
             if (_getRecordings != null)
             {
                 var recordings = _getRecordings();
-                if (!recordings.AreUnorderedEqualBy(_lastRecordingMessage, x => x.ProgramId))
+                if (_lastRecordingMessage == null || !recordings.AreUnorderedEqualBy(_lastRecordingMessage, x => x.ProgramId))
                 {
                     _lastRecordingMessage = recordings;
                     MessageService.Instance.SendListMessage(new APIListMessage

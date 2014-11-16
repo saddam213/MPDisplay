@@ -287,6 +287,7 @@ namespace MediaPortalPlugin.InfoManagers
             SetCurrentWindow(GUIWindowManager.ActiveWindow);
             SendPlayerMessage();
             TVServerManager.Instance.SendTvGuide();
+            TVServerManager.Instance.SendRecordings();
         }
 
         private void SetCurrentWindow(int windowId)
