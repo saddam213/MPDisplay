@@ -5,20 +5,20 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:settings="clr-namespace:GUIConfig.Settings;assembly="
              mc:Ignorable="d" 
-             Name="UI" MinWidth="218" Width="241">
+             Name="UI" MinWidth="241" Width="241" Height="260">
 	<UserControl.Style>
 		<Style TargetType="UserControl">
-			<Setter Property="MinHeight" Value="136" />
+			<Setter Property="MinHeight" Value="260" />
 			<Style.Triggers>
 				<DataTrigger Binding="{Binding CanEditConnectionName}" Value="True">
 					<Setter Property="MinHeight" Value="180" />
 				</DataTrigger>
-			</Style.Triggers>
+            </Style.Triggers>
 		</Style>
 	</UserControl.Style>
 
-	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}">
-			<StackPanel>
+	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}" Height="260" VerticalAlignment="Top">
+			<StackPanel Margin="0,0,0,5">
 			<Grid Margin="0,5,0,0">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="2*"/>
@@ -59,21 +59,47 @@
 				</StackPanel>
 			</Grid>
 
-			<Grid Margin="0,20,0,0">
+			<Grid Margin="0,10,0,10">
 				<Grid.ColumnDefinitions>
 					<ColumnDefinition Width="1*"/>
 					<ColumnDefinition Width="1*"/>
 				</Grid.ColumnDefinitions>
 				<StackPanel Grid.Column="0"  Margin="0,0,2,0">
 					<Button Content="{Binding FallbackValue=Test Connection, ConverterParameter=Test Connection, Converter={StaticResource LanguageConverter}}" Command="{Binding TestButtonCommand}" Height="30"/>
-					<TextBlock Text="{Binding TestStatus, FallbackValue=OK}" Margin="0,5,0,0" TextAlignment="Center"/>
 				</StackPanel>
 				<StackPanel Grid.Column="1"  Margin="2,0,0,0">
-					<Button Content="{Binding ServerButtonText, FallbackValue=Restart Server}" Command="{Binding ServerButtonCommand}" Height="30"/>
-					<TextBlock Text="{Binding ServerStatus, FallbackValue=Running}" Margin="0,5,0,0" TextAlignment="Center"/>
+					<TextBlock Text="{Binding TestStatus, FallbackValue=OK}" Margin="0,5,0,0" TextAlignment="Center"/>
 				</StackPanel>
 			</Grid>
-		</StackPanel>
+
+            <TextBlock Text="{Binding ConverterParameter=Message Service, Converter={StaticResource LanguageConverter}}" Visibility="{Binding CanManageService, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            <Grid Margin="0,10,0,10"   Visibility="{Binding CanManageService, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"  Margin="0,0,2,0" >
+                    <Button Content="{Binding ServerButtonText, FallbackValue=Restart Server}" Command="{Binding ServerButtonCommand}" Height="30"/>
+                 </StackPanel>
+                <StackPanel Grid.Column="1"  Margin="2,0,0,0">
+                    <TextBlock Text="{Binding ServerStatus, FallbackValue=Running}" Margin="0,5,0,0" TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+
+            <Grid Margin="0,0,0,0"  Visibility="{Binding CanManageService, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"  Margin="0,0,2,0">
+                    <Button Content="{Binding StartModeButtonText, FallbackValue=Change Mode}" Command="{Binding StartModeButtonCommand}" Height="30"/>
+                </StackPanel>
+                <StackPanel Grid.Column="1"  Margin="2,0,0,0">
+                    <TextBlock Text="{Binding ConverterParameter=Service Startmode, Converter={StaticResource LanguageConverter}}" Margin="0,0,0,0" TextAlignment="Center"/>
+                    <TextBlock Text="{Binding StartModeStatus, FallbackValue=Unknown}" Margin="0,0,0,0" TextAlignment="Center"/>
+                </StackPanel>
+            </Grid>
+        </StackPanel>
 
 
 

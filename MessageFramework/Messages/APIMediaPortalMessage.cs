@@ -55,6 +55,11 @@ namespace MessageFramework.DataObjects
     public class APIGuideAction
     {
         public APIGuideActionType ActionType { get; set; }
+        public int ChannelId { get; set; }
+        public string Title { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+        public bool Cancel { get; set; }
     }
 
     public class APIListAction
@@ -83,9 +88,6 @@ namespace MessageFramework.DataObjects
             return false;
         }
 
-     
-
-
     }
 
     public enum APIListActionType
@@ -99,6 +101,7 @@ namespace MessageFramework.DataObjects
     {
         UpdateData,
         UpdateRecordings,
+        EPGAction
     }
 
 

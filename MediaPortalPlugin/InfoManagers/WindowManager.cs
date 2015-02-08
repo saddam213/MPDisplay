@@ -58,6 +58,7 @@ namespace MediaPortalPlugin.InfoManagers
         private APIPlaybackType _currentPlayerPlugin = APIPlaybackType.None;
         private Timer _secondTimer;
         private DateTime _lastIteraction = DateTime.Now.AddYears(1);
+        private DateTime _lastPlayBackChanged;
         private bool _isUserInteracting = false;
         private List<string> _enabledlugins;
         private bool _isFullScreenMusic;
@@ -104,7 +105,7 @@ namespace MediaPortalPlugin.InfoManagers
 
           //  GUIWindowManager.Receivers += GUIGraphicsContext_Receivers;
             _secondTimer = new Timer( SecondTimerTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
-
+            _lastPlayBackChanged = DateTime.Now;
         }
 
         public void Shutdown()
@@ -134,7 +135,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             if (_isUserInteracting)
             {
-                if (DateTime.Now > _lastIteraction.AddSeconds(10))
+                if (DateTime.Now > _lastIteraction.AddSeconds(_settings.UserInteractionDelay))
                 {
                     _isUserInteracting = false;
                     _lastIteraction = DateTime.Now.AddYears(1);
@@ -169,8 +170,6 @@ namespace MediaPortalPlugin.InfoManagers
                 SendPlayerMessage();
             }
         }
-      
-
      
         private void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
         {
@@ -190,9 +189,20 @@ namespace MediaPortalPlugin.InfoManagers
                     default:
                         break;
                 }
-          
 
-            SendFocusedControlMessage();
+
+            // workaround for MovingPictures (WindowID 96742): When the detailed screen for a movie is selected focus is still on the movie selection (ControlID 50), but not on the first item of the
+            // detail screen (control 6). Therefore, instead of sending the actual focussed control 50 send control ID 6. If selecting a movie directly plays the movie (instead of the detail screen)
+            // the detail screen will shortly display on MPD, then the player screen will be activated.
+            if ((action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM || action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_KEY_PRESSED) &&
+                    _currentWindow.GetID == 96742 && CurrentWindowFocusedControlId == 50)
+            {
+                SendFocusedControlMessage(6);
+            }
+            else
+            {
+                SendFocusedControlMessage(-1);
+            }
 
             if (action.wID != MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_MOVE)
             {
@@ -318,6 +328,14 @@ namespace MediaPortalPlugin.InfoManagers
                     _currentPlugin = SupportedPluginManager.GetPluginHelper(WindowManager.Instance.CurrentWindow.GetID);
                     SendWindowMessage();
                     ListManager.Instance.SetWindowListControls();
+                    if (WindowManager.Instance.CurrentWindow.GetID == 600 || WindowManager.Instance.CurrentWindow.GetID == 604)
+                    {
+                        var firstEPG = WindowManager.Instance.CurrentWindow.GetControls().FirstOrDefault(c => c.GetID > 50000);
+                        if (firstEPG != null)
+                        {
+                            SendFocusedControlMessage(firstEPG.GetID);
+                        }
+                    }
                 }
 
                 // if fullscreen state has changed send player update
@@ -325,21 +343,13 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     _isFullscreenVideo = fullscreen;
                     SendPlayerMessage();
-               }
-
+                }
                 // SendFocusedControlMessage();
                 PropertyManager.Instance.Suspend(false);
 
             }
          
         }
-
-
-       
-
-
-
-    
 
         private void SendWindowMessage()
         {
@@ -362,22 +372,38 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private void SendFocusedControlMessage()
+        private void SendFocusedControlMessage(int controlID)
         {
             if (_currentWindow != null && MessageService.Instance.IsMPDisplayConnected)
             {
+                int channelId = -1;
+                int programId = -1;
+
                 int focusId = CurrentWindowFocusedControlId;
-                if (focusId != _previousFocusedControlId)
+                if (controlID >= 0) focusId = controlID;
+
+                // If control is a TVGuide item send also programId and channelId
+                if ((_currentWindow.GetID == 600 || _currentWindow.GetID == 604) && focusId >= 50000)
                 {
-                    _previousFocusedControlId = focusId;
-                    Log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
+                        var item = _currentWindow.GetControl(focusId);
+                        var program = item.Data;
+                        channelId = ReflectionHelper.GetPropertyValue<int>(program, "IdChannel", -1);
+                        programId = ReflectionHelper.GetPropertyValue<int>(program, "IdProgram", -1);
+                 }
+ 
+                if (focusId != _previousFocusedControlId || programId > 0)
+                {
+                _previousFocusedControlId = focusId;
+                Log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
                     MessageService.Instance.SendInfoMessage(new APIInfoMessage
                     {
                         MessageType = APIInfoMessageType.WindowMessage,
                         WindowMessage = new APIWindowMessage
                         {
                             MessageType = APIWindowMessageType.FocusedControlId,
-                            FocusedControlId = focusId
+                            FocusedControlId = focusId,
+                            ProgramId = programId,
+                            ChannelId = channelId
                         }
                     });
 
@@ -432,14 +458,18 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-            Log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
-            EqualizerManager.Instance.StopEqualizer();
-            _currentPlaybackState = APIPlaybackState.Stopped;
-            _currentPlaybackType = APIPlaybackType.None;
-            _currentPlayerPlugin = APIPlaybackType.None;
-            _isFullScreenMusic = false;
-            _isFullscreenVideo = false;
-            SendPlayerMessage();
+            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(3))                                  // Ignore Player Ended event due to MovingPictures Bug when playing multiple files
+            {
+
+                Log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
+                EqualizerManager.Instance.StopEqualizer();
+                _currentPlaybackState = APIPlaybackState.Stopped;
+                _currentPlaybackType = APIPlaybackType.None;
+                _currentPlayerPlugin = APIPlaybackType.None;
+                _isFullScreenMusic = false;
+                _isFullscreenVideo = false;
+                SendPlayerMessage();
+            }
         }
 
         private void Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename)
@@ -457,6 +487,10 @@ namespace MediaPortalPlugin.InfoManagers
         void Player_PlayBackChanged(g_Player.MediaType type, int stoptime, string filename)
         {
             Log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
+            if (type == g_Player.MediaType.Video)
+            {
+                _lastPlayBackChanged = DateTime.Now;                                                // remember time of this event for workaround MovingPictures bug when chanhing files
+            }
         }
         
         private void Player_PlayBackStarted(g_Player.MediaType type, string filename)

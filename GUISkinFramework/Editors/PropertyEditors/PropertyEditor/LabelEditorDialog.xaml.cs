@@ -129,11 +129,6 @@ namespace GUISkinFramework.Editor.PropertyEditors
             set { _labelItems = value; }
         }
 
-
-    
-        
-
-
         private string _selectedLabelItem;
 
         public string SelectedLabelItem
@@ -173,13 +168,6 @@ namespace GUISkinFramework.Editor.PropertyEditors
             set { _selectedLabelItemIndex = value;  NotifyPropertyChanged("SelectedLabelItemIndex"); }
         }
 
-
-
-
-
-
-    
-
         public string DisplayLabel
         {
             get
@@ -216,9 +204,6 @@ namespace GUISkinFramework.Editor.PropertyEditors
         }
 
 
-
-
-    
 
         private void Button_OK_Click(object sender, RoutedEventArgs e)
         {
@@ -313,7 +298,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_LanguageEdit_Click(object sender, RoutedEventArgs e)
         {
-            new EditorDialog(new LanguageEditor(SkinInfo)).ShowDialog();
+            new EditorDialog(new LanguageEditor(SkinInfo), false).ShowDialog();
             SkinInfo.Language.NotifyPropertyChanged("LanguageEntries");
         }
 
@@ -324,7 +309,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             {
                 editor.SelectedProperty = SelectedPropertyEntry;
             }
-            new EditorDialog(editor).ShowDialog();
+            new EditorDialog(editor, false).ShowDialog();
         }
     }
 }

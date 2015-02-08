@@ -17,10 +17,6 @@ namespace MediaPortalPlugin
             string imageFile = File.Exists(filename)
                 ? filename : GUIGraphicsContext.GetThemedSkinFile("\\media\\" + filename);
 
-            if (RegistrySettings.InstallType == MPDisplayInstallType.Full)
-            {
-                return new APIImage(imageFile);
-            }
             return new APIImage(FileHelpers.ReadBytesFromFile(imageFile));
         }
     }

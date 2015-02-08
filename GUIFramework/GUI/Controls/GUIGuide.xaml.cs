@@ -9,6 +9,8 @@ using System.Windows.Threading;
 using GUIFramework.Managers;
 using GUISkinFramework.Controls;
 using GUISkinFramework.ExtensionMethods;
+using GUISkinFramework.Common;
+using MessageFramework.DataObjects;
 using MPDisplay.Common.Utils;
 using MPDisplay.Common.ExtensionMethods;
 using Common;
@@ -33,11 +35,12 @@ namespace GUIFramework.GUI.Controls
         private TvGuideProgram _selectedProgram;
         private double _timelineLength = 0;
         private double _timelinePosition = 0;
-        //private DateTime _timelineStart;
-        //private DateTime _timelineEnd;
         private string _timelineInfo;
         private double _timelineCenterPosition;
-        private string _currentGuideGroup; 
+        private string _currentGuideGroup;
+        private DateTime _lastProgramClick;
+        private const int _doubleClickDelay = 500;
+        private DateTime _lastMediaportalAction;
 
         #endregion
 
@@ -46,7 +49,7 @@ namespace GUIFramework.GUI.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="GUIGuide"/> class.
         /// </summary>
-        public GUIGuide()
+        public GUIGuide() : base()
         {
             InitializeComponent();
             _channelScrollViewer = channelListBox.GetDescendantByType<ScrollViewer>();
@@ -65,14 +68,13 @@ namespace GUIFramework.GUI.Controls
             _updateTimer.Tick += (s, e) => UpdateTimeline();
             _updateTimer.Stop();
 
-
+            _lastProgramClick = DateTime.MinValue;
+            _lastMediaportalAction = DateTime.MinValue;
 
             ChannelData = new ListCollectionView(TVGuideRepository.Instance.GuideData);
-            ChannelData.Filter = new Predicate<object>(ChannelGroupFilter);
             ChannelData.SortDescriptions.Add(new SortDescription("SortOrder", ListSortDirection.Ascending));
-
+ 
             TVGuideRepository.RegisterMessage(TVGuideMessageType.TVGuideData, CreateTimeline);
-            TVGuideRepository.RegisterMessage(TVGuideMessageType.TvGuideGroup, OnChannelGroupChanged);
         }
 
         #endregion
@@ -203,7 +205,18 @@ namespace GUIFramework.GUI.Controls
                 {
                     _selectedProgram.IsSelected = true;
                 }
-                UpdateGuideProperties();
+                if (SelectedChannel == null)
+                {
+                    SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
+                }
+                if (_selectedProgram.ChannelId != SelectedChannel.Id)
+                {
+                    SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
+                }
+                else
+                {
+                    UpdateGuideProperties();
+                }
                 NotifyPropertyChanged("SelectedProgram");
             }
         }
@@ -246,8 +259,6 @@ namespace GUIFramework.GUI.Controls
         public override void OnDeregisterInfoData()
         {
             base.OnDeregisterInfoData();
-          //  TVGuideRepository.DeregisterMessage(TVGuideMessageType.TVGuideData, this);
-       //     TVGuideRepository.DeregisterMessage(TVGuideMessageType.TvGuideGroup, this);
             _updateTimer.Stop();
         }
 
@@ -255,13 +266,44 @@ namespace GUIFramework.GUI.Controls
         {
             base.OnWindowOpen();
             TVGuideRepository.NotifyListeners(TVGuideMessageType.RefreshRecordings);
+            InfoRepository.RegisterMessage<int, int>(InfoMessageType.FocusedTVGuideId, OnFocusedTVProgramChanged);
         }
 
+        public override void OnWindowClose()
+        {
+            base.OnWindowClose();
+            InfoRepository.DeregisterMessage(InfoMessageType.FocusedTVGuideId, this);
+        }
         #endregion
 
         #region Methods
 
-        /// <summary>
+        // callback when a message from Mediaportal is received from TVGuide: Set focus on selected program and scroll program
+        // into viewport of EPG
+        public void OnFocusedTVProgramChanged(int programId, int channelId)
+        {
+            if ( programId > 0 && channelId > 0 ) 
+            {
+                var channel = TVGuideRepository.Instance.GuideData.FirstOrDefault(p => p.Id == channelId);
+                if (channel != null)
+                {
+                    var program = channel.Programs.FirstOrDefault(p => p.ChannelId == channelId && p.Id == programId);
+                    if (program != null)
+                    {
+                        _lastMediaportalAction = DateTime.Now;
+                        SelectedProgram = program;
+                        TimelinePosition = (TimelineLength - ((TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+                        programListBox.Dispatcher.BeginInvoke(new Action(delegate()
+                        {
+                              programListBox.ScrollIntoView(channel);
+                             _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+                        }));
+                    }
+                }
+            }
+        }
+
+         /// <summary>
         /// Creates the timeline.
         /// </summary>
         private void CreateTimeline()
@@ -276,7 +318,7 @@ namespace GUIFramework.GUI.Controls
                  {
                      StartTime = begin.AddMinutes(30 * x),
                      EndTime = begin.AddMinutes((30 * x) + 30),
-                     Title = begin.AddMinutes(30 * x).ToString("hh:mm")
+                     Title = begin.AddMinutes(30 * x).ToString("t")
                  }).ToList();
 
                 TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
@@ -291,42 +333,14 @@ namespace GUIFramework.GUI.Controls
         {
             if (ChannelData != null)
             {
-                TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
-
-                if (DateTime.Now > LastUserInteraction.AddSeconds(20))
+                if (DateTime.Now > LastUserInteraction.AddSeconds(20) && DateTime.Now > _lastMediaportalAction.AddSeconds(30))
                 {
-                    _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+                    TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+                    TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
+                   _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
                 }
 
             }
-        }
-
-        /// <summary>
-        /// Called when the channel group changes.
-        /// </summary>
-        private void OnChannelGroupChanged()
-        {
-            CurrentGuideGroup = TVGuideRepository.Instance.GuideGroup;
-            if (ChannelData != null)
-            {
-                ChannelData.Refresh();
-            }
-        }
-
-        /// <summary>
-        /// Filter predicate for channel group.
-        /// </summary>
-        /// <param name="item">The item.</param>
-        /// <returns></returns>
-        private bool ChannelGroupFilter(object item)
-        {
-            var channel = item as TvGuideChannel;
-            if (channel != null)
-            {
-                return string.IsNullOrEmpty(CurrentGuideGroup) || channel.Groups.Any(g => g.Equals(CurrentGuideGroup, StringComparison.OrdinalIgnoreCase));
-            }
-            return false;
         }
 
         /// <summary>
@@ -334,13 +348,11 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         private void UpdateGuideProperties()
         {
-            PropertyRepository.AddLabelProperty("#MPD.Guide.Group", CurrentGuideGroup);
-            PropertyRepository.AddLabelProperty("#MPD.Guide.Channel", SelectedChannel != null ? SelectedChannel.Name : string.Empty);
-            PropertyRepository.AddImageProperty("#MPD.Guide.ChannelThumb", SelectedChannel != null ? SelectedChannel.Logo : null);
-            PropertyRepository.AddLabelProperty("#MPD.Guide.Program", SelectedProgram != null ? SelectedProgram.Title : string.Empty);
-            PropertyRepository.AddLabelProperty("#MPD.Guide.Description", SelectedProgram != null ? SelectedProgram.Description : string.Empty);
-            PropertyRepository.AddLabelProperty("#MPD.Guide.EndTime", SelectedProgram != null ? SelectedProgram.EndTime.ToString("hh:mm d/M") : string.Empty);
-            PropertyRepository.AddLabelProperty("#MPD.Guide.StartTime", SelectedProgram != null ? SelectedProgram.StartTime.ToString("hh:mm d/M") : string.Empty);
+            PropertyRepository.AddLabelProperty("#TV.Guide.ChannelName", SelectedChannel != null ? SelectedChannel.Name : string.Empty);
+            PropertyRepository.AddImageProperty("#TV.Guide.thumb", SelectedChannel != null ? SelectedChannel.Logo : null);
+            PropertyRepository.AddLabelProperty("#TV.Guide.Title", SelectedProgram != null ? SelectedProgram.Title : string.Empty);
+            PropertyRepository.AddLabelProperty("#TV.Guide.Description", SelectedProgram != null ? SelectedProgram.Description : string.Empty);
+            PropertyRepository.AddLabelProperty("#TV.Guide.Time", SelectedProgram != null ? SelectedProgram.StartTime.ToString("HH:mm d/M") + " - " + SelectedProgram.EndTime.ToString("HH:mm d/M") : string.Empty);
         }
 
         #endregion
@@ -395,18 +407,69 @@ namespace GUIFramework.GUI.Controls
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void OnProgramItemSelected(object sender, MouseButtonEventArgs e)
         {
+            TvGuideProgram pg;
+            APIGuideAction action;
+
             if (sender is Border)
             {
-                SelectedProgram = (sender as Border).Tag as TvGuideProgram;
-            }
+                pg = (sender as Border).Tag as TvGuideProgram;
+        
+                // double-click selects the program for scheduling or cancel of the schedule
+                if (pg == SelectedProgram && DateTime.Now < _lastProgramClick.AddMilliseconds(_doubleClickDelay))
+                {
+                    action = new APIGuideAction();
+                    action.ChannelId = pg.ChannelId;
+                    action.Title = pg.Title;
+                    action.StartTime = pg.StartTime;
+                    action.EndTime = pg.EndTime;
+                    action.Cancel = pg.IsScheduled;
+
+                    TVGuideRepository.Instance.CurrentGuideAction = action;
+
+                    if (pg.IsScheduled)                             // program has already been scheduled, so cancel now
+                    {
+                        if (!openConfirmationDialog((BaseXml as XmlGuide).CancelDialogId))
+                        {
+                            TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
+                            pg.IsScheduled = false;
+                            pg.IsRecording = false;
+                        }
+                    }
+                    else
+                    {
+                         if (!openConfirmationDialog((BaseXml as XmlGuide).CreateDialogId))
+                         {
+                             TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
+                             pg.IsScheduled = true;
+                         }
+                    }
+                    NotifyPropertyChanged("SelectedChannel");
+                 }
+                else if (pg != SelectedProgram ) 
+                {
+                    SelectedProgram = pg;
+                 }
+                _lastProgramClick = DateTime.Now;
+             }
+        }
+
+        // open the confirmation dialog, if any is configured
+        // result is false if no dialog is configured, else true
+        private bool openConfirmationDialog( int dialogId )
+        {
+                if (dialogId > 0)
+                {
+                    XmlAction openaction = new XmlAction();
+                    openaction.ActionType = XmlActionType.OpenDialog;
+                    openaction.Param1 = dialogId.ToString();
+                    GUIActionManager.ActionService.NotifyListeners(XmlActionType.OpenDialog, new object[] { openaction } );
+                    return true;
+                }
+                return false;
         }
 
         #endregion
     }
 
-
- 
-
-  
 
 }

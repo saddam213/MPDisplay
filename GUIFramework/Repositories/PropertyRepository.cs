@@ -250,7 +250,7 @@ namespace GUIFramework.Managers
                       else
                       {
                           string filename = GetControlLabelValue(xmlstring).Result;
-                          return SkinInfo.GetImageValue(filename);
+                                return SkinInfo.GetImageValue(filename);
                       }
                   }
                   return null;

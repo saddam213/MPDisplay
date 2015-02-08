@@ -13,12 +13,20 @@ namespace Common.Settings.SettingsObjects
     {
         private SupportedPlugin _pluginType = SupportedPlugin.None;
         private ObservableCollection<int> _windowIds = new ObservableCollection<int>();
+
         private string _verticalListItemThumb1Path = "ThumbnailImage";
         private string _verticalListItemThumb2Path = "";
         private string _verticalListItemThumb3Path = "";
         private string _verticalListItemLabel1Path = "Label";
         private string _verticalListItemLabel2Path = "Label2";
         private string _verticalListItemLabel3Path = "Label3";
+
+        private string _verticalIconListItemThumb1Path = "ThumbnailImage";
+        private string _verticalIconListItemThumb2Path = "";
+        private string _verticalIconListItemThumb3Path = "";
+        private string _verticalIconListItemLabel1Path = "Label";
+        private string _verticalIconListItemLabel2Path = "Label2";
+        private string _verticalIconListItemLabel3Path = "Label3";
 
         private string _horizontalListItemThumb1Path = "ThumbnailImage";
         private string _horizontalListItemThumb2Path = "";
@@ -34,8 +42,13 @@ namespace Common.Settings.SettingsObjects
         private string _coverflowListItemLabel2Path = "Label2";
         private string _coverflowListItemLabel3Path = "Label3";
 
-      
-
+        private string _listLayoutAlbumview = "Coverflow";
+        private string _listLayoutCoverflow = "Coverflow";
+        private string _listLayoutFilmstrip = "Horizontal";
+        private string _listLayoutSmallIcons = "Horizontal";
+        private string _listLayoutList = "Vertical";
+        private string _listLayoutPlaylist = "Vertical";
+        private string _listLayoutLargeIcons = "Horizontal";
 
         [XmlAttribute("Plugin")]
         public SupportedPlugin PluginType
@@ -85,6 +98,42 @@ namespace Common.Settings.SettingsObjects
         {
             get { return _verticalListItemLabel3Path; }
             set { _verticalListItemLabel3Path = value; }
+        }
+
+        public string VerticalIconListItemThumb1Path
+        {
+            get { return _verticalIconListItemThumb1Path; }
+            set { _verticalIconListItemThumb1Path = value; }
+        }
+
+        public string VerticalIconListItemThumb2Path
+        {
+            get { return _verticalIconListItemThumb2Path; }
+            set { _verticalIconListItemThumb2Path = value; }
+        }
+
+        public string VerticalIconListItemThumb3Path
+        {
+            get { return _verticalIconListItemThumb3Path; }
+            set { _verticalIconListItemThumb3Path = value; }
+        }
+
+        public string VerticalIconListItemLabel1Path
+        {
+            get { return _verticalIconListItemLabel1Path; }
+            set { _verticalIconListItemLabel1Path = value; }
+        }
+
+        public string VerticalIconListItemLabel2Path
+        {
+            get { return _verticalIconListItemLabel2Path; }
+            set { _verticalIconListItemLabel2Path = value; }
+        }
+
+        public string VerticalIconListItemLabel3Path
+        {
+            get { return _verticalIconListItemLabel3Path; }
+            set { _verticalIconListItemLabel3Path = value; }
         }
 
         public string HorizontalListItemThumb1Path
@@ -157,6 +206,48 @@ namespace Common.Settings.SettingsObjects
         {
             get { return _coverflowListItemLabel3Path; }
             set { _coverflowListItemLabel3Path = value; }
+        }
+
+        public string ListLayoutAlbumview
+        {
+            get { return _listLayoutAlbumview; }
+            set { _listLayoutAlbumview = value; }
+        }
+
+        public string ListLayoutCoverflow
+        {
+            get { return _listLayoutCoverflow; }
+            set { _listLayoutCoverflow = value; }
+        }
+
+        public string ListLayoutFilmstrip
+        {
+            get { return _listLayoutFilmstrip; }
+            set { _listLayoutFilmstrip = value; }
+        }
+
+        public string ListLayoutSmallIcons
+        {
+            get { return _listLayoutSmallIcons; }
+            set { _listLayoutSmallIcons = value; }
+        }
+
+        public string ListLayoutList
+        {
+            get { return _listLayoutList; }
+            set { _listLayoutList = value; }
+        }
+
+        public string ListLayoutPlaylist
+        {
+            get { return _listLayoutPlaylist; }
+            set { _listLayoutPlaylist = value; }
+        }
+
+        public string ListLayoutLargeIcons
+        {
+            get { return _listLayoutLargeIcons; }
+            set { _listLayoutLargeIcons = value; }
         }
     }
 

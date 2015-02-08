@@ -21,18 +21,26 @@ namespace GUISkinFramework.PropertyEditors
     public partial class EditorDialog : Window, INotifyPropertyChanged
     {
         private UserControl _editorContent;
+        private bool _hasCancelButton = true;
 
-        public EditorDialog(UserControl editorContent)
+        public EditorDialog(UserControl editorContent, bool canCancel)
         {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
             EditorContent = editorContent;
+            HasCancelButton = canCancel;
         }
 
         public UserControl EditorContent
         {
             get { return _editorContent; }
             set { _editorContent = value; NotifyPropertyChanged("EditorContent"); }
+        }
+
+        public bool HasCancelButton
+        {
+            get { return _hasCancelButton; }
+            set { _hasCancelButton = value; NotifyPropertyChanged("HasCancelButton"); }
         }
 
         private void Button_OK_Click(object sender, RoutedEventArgs e)

@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using System.Windows.Media;
 using Common.Helpers;
 using Common.Logging;
 using Common.Settings;
@@ -33,17 +34,6 @@ namespace GUI
         {
             AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
             Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
-            //Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 30 });
-            //RenderOptions.ProcessRenderMode = System.Windows.Interop.RenderMode.Default;
-            //RenderOptions.SetEdgeMode(this, EdgeMode.Aliased);
-            //RenderOptions.SetCachingHint(this, CachingHint.Cache);
-            //RenderOptions.SetBitmapScalingMode(this, BitmapScalingMode.LowQuality);
-            //TextOptions.SetTextFormattingMode(this, TextFormattingMode.Display);
-            //TextOptions.SetTextHintingMode(this, TextHintingMode.Animated);
-            //TextOptions.SetTextRenderingMode(this, TextRenderingMode.ClearType);
-            //Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 30 });
-            //TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
-            //TextOptions.TextRenderingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextRenderingMode.Aliased });
             InitializeComponent();
             DataContext = this;
             LoadSettings();
@@ -89,6 +79,26 @@ namespace GUI
             Settings = settings.GUISettings;
 
 
+            if (!_settings.DesktopMode)
+            {
+                this.WindowStyle = WindowStyle.None;
+                this.ResizeMode = System.Windows.ResizeMode.NoResize;
+            }
+
+            await surface.LoadSkin(Settings);
+        }
+
+        #endregion
+
+        #region Window Events/Overrides
+
+        /// <summary>
+        /// Called when the Window has been loaded
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
             // Set base screen size/location, scaled to screens DPI
             var screen = GetDisplayByDeviceName(_settings.Display);
             double left = _settings.CustomResolution ? screen.Bounds.X + _settings.ScreenOffSetX : screen.Bounds.X;
@@ -113,21 +123,9 @@ namespace GUI
             this.Top = top;
             this.Width = width;
             this.Height = height;
+            Log.Message(LogLevel.Info, "[Load_Window] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
 
-            if (!_settings.DesktopMode)
-            {
-                this.WindowStyle = WindowStyle.None;
-                this.ResizeMode = System.Windows.ResizeMode.NoResize;
-            }
-
-            Log.Message(LogLevel.Info, "[LoadSettings] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
-
-            await surface.LoadSkin(Settings);
-        }
-
-        #endregion
-
-        #region Window Events/Overrides
+        }  
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Window.Closing" /> event.

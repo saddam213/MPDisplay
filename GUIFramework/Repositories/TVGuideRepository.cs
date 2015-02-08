@@ -41,7 +41,7 @@ namespace GUIFramework.Managers
             Instance.TVGuideService.Register(messageType, callback);
         }
 
-        public static void DeregisterMessage(TVGuideMessageType message, object owner)
+         public static void DeregisterMessage(TVGuideMessageType message, object owner)
         {
             Instance.TVGuideService.Deregister(message, owner);
         }
@@ -63,22 +63,28 @@ namespace GUIFramework.Managers
         public XmlSkinInfo SkinInfo { get; set; }
         private MessengerService<TVGuideMessageType> _tvGuideService = new MessengerService<TVGuideMessageType>();
 
+        private const int _updateInterval = 5;          // update every x seconds
+        private const int _updateCounterInit = 12;      // update complete guide only every y * x seconds
+
+        private APIGuideAction _currentGuideAction;     // current EPG action, if any
+
         public void Initialize(GUISettings settings, XmlSkinInfo skininfo)
         {
             Settings = settings;
             SkinInfo = skininfo;
             if (_updateTimer == null)
             {
-                _updateTimer = new Timer((o) => UpdateGuideData(), null, TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1));
+                _updateCounter = _updateCounterInit;
+                _updateTimer = new Timer((o) => UpdateGuideData(), null, TimeSpan.FromSeconds(_updateInterval), TimeSpan.FromSeconds(_updateInterval));
             }
         }
 
      
         private Timer _updateTimer;
+        private int _updateCounter;
 
         public void ClearRepository()
         {
-
         }
 
         public void ResetRepository()
@@ -97,6 +103,11 @@ namespace GUIFramework.Managers
             get { return _guideData; }
         }
 
+        public ObservableCollection<TVRecording> RecordingData
+        {
+            get { return _recordingData; }
+        }
+
         public string GuideGroup
         {
             get { return _guideGroup; }
@@ -112,9 +123,17 @@ namespace GUIFramework.Managers
             get { return _guideDataEnd; }
         }
 
+        public APIGuideAction CurrentGuideAction
+        {
+            get { return _currentGuideAction; }
+            set { _currentGuideAction = value; }
+        }
+
         private ObservableCollection<TvGuideChannel> _guideData = new ObservableCollection<TvGuideChannel>();
         private DateTime _guideDataStart = DateTime.MinValue;
         private DateTime _guideDataEnd = DateTime.MinValue;
+
+        private ObservableCollection<TVRecording> _recordingData = new ObservableCollection<TVRecording>();
 
         private string _guideGroup;
         private SortedDictionary<int, APIChannel> _data = new SortedDictionary<int, APIChannel>();
@@ -142,6 +161,10 @@ namespace GUIFramework.Managers
             }
         }
 
+        /// <summary>
+        ///  Process a batch of the TVGuide message
+        /// </summary>
+        /// <param name="message"></param>
         private void ProcessBatch(APITvGuideMessage message)
         {
             try
@@ -197,8 +220,6 @@ namespace GUIFramework.Managers
                                 SetProgramState();
                                 TVGuideService.NotifyListeners(TVGuideMessageType.TVGuideData);
                             });
-
-                            
                         }
                     }
                 }
@@ -209,19 +230,30 @@ namespace GUIFramework.Managers
             }
         }
 
+        /// <summary>
+        /// Background thread to update the TVGuide and recording status
+        /// </summary>
         private void UpdateGuideData()
         {
             lock (_syncObject)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    SetProgramState();
+                    SetRecordingState();                            // update recording state at every call
+                    _updateCounter--;                               // upadte entire guide only at defined intervals
+                    if (_updateCounter <= 0)
+                    {
+                        _updateCounter = _updateCounterInit;
+                        SetProgramState();
+                    }
                 });
             }
         }
 
-    
-
+        /// <summary>
+        /// Process the TVGuideGRoup message
+        /// </summary>
+        /// <param name="group"></param>
         private void ProcessGuideGroup(string group)
         {
             Application.Current.Dispatcher.Invoke(() =>
@@ -234,32 +266,45 @@ namespace GUIFramework.Managers
             });
         }
 
+        /// <summary>
+        /// Process the recording message
+        /// </summary>
+        /// <param name="recordings"></param>
         private void ProcessRecordings(List<APIRecording> recordings)
         {
             lock (_syncObject)
             {
                 Application.Current.Dispatcher.Invoke(() =>
                 {
-                    bool anyRecording = false; 
-                     foreach (var channel in _guideData)
+                    bool anyRecording = false;
+
+                    _recordingData.Clear();                             // copy recordings into list 
+                    foreach (var recording in recordings)
                     {
-                        foreach (var program in channel.Programs)
+                        _recordingData.Add( new TVRecording {
+                            ChannelId = recording.ChannelId,
+                            ProgramId = recording.ProgramId,
+                            StartTime = recording.StartTime,
+                            EndTime = recording.EndTime,
+                            RecordPaddingStart = recording.RecordPaddingStart,
+                            RecordPaddingEnd = recording.RecordPaddingEnd
+                        });
+                    }
+
+                    foreach (var recording in _recordingData)          // update guide data accordingly so the EPG displays status correctly
+                    {
+                        if (recording.IsProgramRecording()) anyRecording = true;
+
+                        var channel = _guideData.FirstOrDefault(p => p.Id == recording.ChannelId);
+                        if( channel != null )
                         {
-                            var recording = recordings.FirstOrDefault(p => p.ChannelId == channel.Id && p.ProgramId == program.Id);
-                            if (recording != null)
+                            var program = channel.Programs.FirstOrDefault(p => p.ChannelId == recording.ChannelId && p.Id == recording.ProgramId);
+                            if (program != null)
                             {
                                 program.IsScheduled = true;
                                 program.RecordPaddingStart = recording.RecordPaddingStart;
                                 program.RecordPaddingEnd = recording.RecordPaddingEnd;
                             }
-                            else
-                            {
-                                program.IsScheduled = false;
-                            }
-                        }
-                        if (channel.UpdateCurrentProgram())
-                        {
-                            anyRecording = true;
                         }
                     }
 
@@ -270,17 +315,27 @@ namespace GUIFramework.Managers
             }
         }
 
+        // update the status properties of the TV guide
         private void SetProgramState()
         {
             if (_guideData.Any())
             {
-                bool anyRecording = false; 
                 foreach (var channel in _guideData)
                 {
-                    if (channel.UpdateCurrentProgram())
-                    {
-                        anyRecording = true;
-                    }
+                    channel.UpdateCurrentProgram();
+               }
+            }
+        }
+
+        // update recording flag from the recordings
+        private void SetRecordingState()
+        {
+            if (_recordingData.Any())
+            {
+                bool anyRecording = false;
+                foreach (var recording in _recordingData)
+                {
+                    if (recording.IsProgramRecording()) anyRecording = true;
                 }
                 InfoRepository.Instance.IsTvRecording = anyRecording;
             }
@@ -293,7 +348,8 @@ namespace GUIFramework.Managers
         RecordingData,
         TvGuideGroup,
         RefreshGuideData,
-        RefreshRecordings
+        RefreshRecordings,
+        EPGItemSelected
     }
 
     public class TvGuideChannel : INotifyPropertyChanged
@@ -307,8 +363,6 @@ namespace GUIFramework.Managers
         public List<TvGuideProgram> Programs { get; set; }
         public List<string> Groups { get; set; }
         public byte[] Logo { get; set; }
-
-    
 
         public bool IsSelected
         {
@@ -349,7 +403,6 @@ namespace GUIFramework.Managers
             }
         }
 
-     
     }
 
     public class TvGuideProgram : INotifyPropertyChanged
@@ -422,4 +475,43 @@ namespace GUIFramework.Managers
             }
         }
     }
+
+    public class TVRecording : INotifyPropertyChanged
+    {
+        public int ChannelId { get; set; }
+        public int ProgramId { get; set; }
+        public int RecordPaddingStart { get; set; }
+        public int RecordPaddingEnd { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
+
+        private bool _isRecording;
+
+        public bool IsRecording
+        {
+            get { return _isRecording; }
+            set { _isRecording = value; NotifyPropertyChanged("IsRecording"); }
+        }
+
+        public bool IsProgramRecording()
+        {
+             if (DateTime.Now > StartTime.AddMinutes(-RecordPaddingStart) && DateTime.Now < EndTime.AddMinutes(RecordPaddingEnd))
+             {
+                return true;
+             }
+             return false;
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void NotifyPropertyChanged(string property)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+            }
+        }
+
+    }
+
 }

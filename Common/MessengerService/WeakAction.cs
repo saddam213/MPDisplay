@@ -53,7 +53,20 @@ namespace Common
             {
                 _delegateType = typeof(Action<,,>).MakeGenericType(parameterTypes);
             }
+            else if (parameterTypes.Count() == 4)
+            {
+                _delegateType = typeof(Action<,,,>).MakeGenericType(parameterTypes);
+            }
+            else if (parameterTypes.Count() == 5)
+            {
+                _delegateType = typeof(Action<,,,,>).MakeGenericType(parameterTypes);
+            }
+            else if (parameterTypes.Count() == 6)
+            {
+                _delegateType = typeof(Action<,,,,,>).MakeGenericType(parameterTypes);
+            }
         }
+
 
         #endregion
 

@@ -14,6 +14,7 @@ namespace GUIFramework.GUI
     {
         private XmlWindow _baseXml;
         protected Log Log = LoggingManager.GetLog(typeof(GUIWindow));
+        private bool _firstOpen;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GUIWindow"/> class.
@@ -25,6 +26,7 @@ namespace GUIFramework.GUI
             RenderTransformOrigin = new Point(0.5, 0.5);
             DataContext = this;
             ClipToBounds = true;
+            _firstOpen = true;
         }
 
         /// <summary>
@@ -69,6 +71,24 @@ namespace GUIFramework.GUI
         }
 
         /// <summary>
+        /// Return the flag of the windows has been already opened 
+        /// </summary>
+        /// <returns></returns>
+        public bool FirstOpen
+        {
+            get { if (_firstOpen)
+                {
+                    _firstOpen = false;
+                    return true;
+                }
+                else
+                {
+                    return false;
+                }
+           }       
+        }
+
+        /// <summary>
         /// Creates the controls.
         /// </summary>
         public override void CreateControls()
@@ -79,7 +99,7 @@ namespace GUIFramework.GUI
                 control.ParentId = Id;
                 Controls.Add(control);
             }
-        }
+         }
 
         /// <summary>
         /// Opens the window

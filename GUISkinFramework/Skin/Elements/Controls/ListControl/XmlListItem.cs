@@ -12,8 +12,8 @@ namespace GUISkinFramework.Controls
     [XmlType(TypeName = "ListItem")]
     public class XmlListItem : XmlButton
     {
-        private string _label2Text;
-        private string _label3Text;
+        private string _label2Text = "";
+        private string _label3Text = "";
        
         public string Label2Text
         {

@@ -17,8 +17,8 @@ namespace GUISkinFramework.Controls
     [ExpandableObject]
     public class XmlEqualizerStyle : XmlControlStyle
     {
-        private string _borderThickness;
-        private string _borderCornerRadius;
+        private string _borderThickness = "0,0,0,0";
+        private string _borderCornerRadius = "0,0,0,0";
         private XmlBrush _backgroundBrush;
         private XmlBrush _borderBrush;
         private XmlBrush _lowRangeColor;
@@ -26,9 +26,9 @@ namespace GUISkinFramework.Controls
         private XmlBrush _maxRangeColor;
         private XmlBrush _bandBorderColor;
         private XmlBrush _fallOffColor;
-     
 
-        [DefaultValue("0")]
+
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(50)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -38,7 +38,7 @@ namespace GUISkinFramework.Controls
             set { _borderThickness = value; NotifyPropertyChanged("BorderThickness"); }
         }
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(51)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]

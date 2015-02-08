@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes;assembly=MPDisplay.UICommon"
              xmlns:Converters="clr-namespace:GUISkinFramework.Converters"
-             xmlns:editors="clr-namespace:GUISkinFramework.Editor.PropertyEditors.PropertyEditor"
+             xmlns:editors="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
              mc:Ignorable="d" 
              Name="UI" Width="Auto">
     <UserControl.Resources>

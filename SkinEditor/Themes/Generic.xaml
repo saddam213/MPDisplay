@@ -37,6 +37,7 @@
 	<skinEditorConverters:SkinEditorXmlImageConverter x:Key="ImageConverter" />
 	<skinEditorConverters:SkinEditorXmlBrushConverter x:Key="BrushConverter" />
 	<skinEditorConverters:SkinEditorProgressValueConverter x:Key="PercentToWidth" />
+	<skinEditorConverters:SkinEditorProgressLabelConverter x:Key="PercentToMargin" />
 
 
 	<Style TargetType="{x:Type TextBlock}">
@@ -78,9 +79,6 @@
 		<Canvas IsItemsHost="True" >
 		</Canvas>
 	</ItemsPanelTemplate>
-
-
-
 
 	<DataTemplate DataType="{x:Type skinWindows:XmlMPWindow}" >
 		<Border Width="{Binding Width, Mode=OneWay}" 
@@ -158,31 +156,6 @@
 		</Border>
 	</DataTemplate>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 	<DataTemplate DataType="{x:Type skinControls:XmlButton}"  >
 		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
 			                    Height="{Binding Height,Mode=OneWay}"
@@ -191,7 +164,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 			<Border x:Name="focus" 
 		        Width="{Binding Width,Mode=OneWay}" 
 			    Height="{Binding Height,Mode=OneWay}"
@@ -279,12 +253,6 @@
 		</commonControls:Surface3D>
 	</DataTemplate>
 
-
-
-
-
-
-
 	<DataTemplate DataType="{x:Type skinControls:XmlGroup}"  >
 		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
 			                    Height="{Binding Height,Mode=OneWay}"
@@ -293,7 +261,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 		<Border x:Name="background" Width="{Binding Width, Mode=OneWay}" Height="{Binding Height, Mode=OneWay}"
                 Background="{Binding ControlStyle.BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding ControlStyle.BorderBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
@@ -323,7 +292,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 		<Border x:Name="background" Width="{Binding Width, Mode=OneWay}" Height="{Binding Height, Mode=OneWay}"
                 Background="{Binding BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding BorderBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
@@ -344,12 +314,15 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 
 			<commonControls:ScrollingTextBlock Width="{Binding Width, Mode=OneWay}" 
 			                                   Height="{Binding Height, Mode=OneWay}"
 											   FontFamily="{Binding ControlStyle.FontType, Converter={StaticResource FontConverter}, Mode=OneWay}" 
 											   FontSize="{Binding ControlStyle.FontSize, Mode=OneWay}" 
+                                               TextBlock.LineHeight="{Binding LineHeight, Mode=OneWay}"
+                                               TextBlock.LineStackingStrategy="BlockLineHeight"
 											   Foreground="{Binding ControlStyle.FontBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
 											   FontWeight="{Binding ControlStyle.FontWeight, Converter={StaticResource FontConverter}, Mode=OneWay}"
 											   Text="{Binding LabelText, Converter={StaticResource LabelConverter}, Mode=OneWay}"
@@ -373,7 +346,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
             <Border x:Name="border" 
                     Width="{Binding Width, Mode=OneWay}"
                     Height="{Binding Height, Mode=OneWay}" 
@@ -405,16 +379,17 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 		<Border x:Name="background" Width="{Binding Width, Mode=OneWay}" Height="{Binding Height, Mode=OneWay}"
                 Background="{Binding ControlStyle.BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding ControlStyle.BorderBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                 BorderThickness="{Binding ControlStyle.BorderThickness, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding ControlStyle.CornerRadius, Converter={StaticResource CornerRadiusConverter}, Mode=OneWay}" >
 			<Border x:Name="focusShading" Background="{Binding ControlStyle.ShadeBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-                <Grid  x:Name="bar">
-                    <Border
-                            HorizontalAlignment="Left"
+                    <Grid  x:Name="bar">
+
+                        <Border HorizontalAlignment="Left" Visibility="{Binding ControlStyle.EnableProgressbar, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
                             Margin="{Binding ControlStyle.BarMargin, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                             Background="{Binding ControlStyle.BarBackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                             BorderBrush="{Binding ControlStyle.BarBorderBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
@@ -424,22 +399,50 @@
                             <MultiBinding Converter="{StaticResource PercentToWidth}">
                                 <Binding Path="ActualWidth" ElementName="bar" Mode="OneWay" />
                                 <Binding Path="ProgressValue" Mode="OneWay" />
-                                <Binding  Path="ControlStyle.BarMargin" Mode="OneWay" />
+                                <Binding Path="ControlStyle.BarMargin" Mode="OneWay" />
                             </MultiBinding>
                         </Border.Width>
                     </Border>
-					<Border x:Name="focusgloss" Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
-                </Grid>
+                        <Border x:Name="focusgloss" Visibility="{Binding ControlStyle.EnableProgressbar, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                            Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
+                            CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
+
+                        <TextBlock Text="{Binding LabelFixedText, Converter={StaticResource LabelConverter},Mode=OneWay}"
+                               HorizontalAlignment="{Binding ControlStyle.LabelFixedHorizontalAlignment,Mode=OneWay}"
+						       VerticalAlignment="{Binding ControlStyle.LabelFixedVerticalAlignment,Mode=OneWay}"
+                               FontFamily="{Binding ControlStyle.LabelFixedFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
+                               FontSize="{Binding ControlStyle.LabelFixedFontSize,Mode=OneWay}" 
+                               FontWeight="{Binding ControlStyle.LabelFixedFontWeight, Converter={StaticResource GUIFontConverter},Mode=OneWay}"
+                               Foreground="{Binding ControlStyle.LabelFixedFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}"
+							   Margin="{Binding ControlStyle.LabelFixedMargin}" 
+							   Visibility="{Binding ControlStyle.EnableLabelFixed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                        </TextBlock>
+
+                        <TextBlock Text="{Binding LabelMovingText, Converter={StaticResource LabelConverter},Mode=OneWay}"
+                               HorizontalAlignment="Left"
+						       VerticalAlignment="{Binding ControlStyle.LabelMovingVerticalAlignment,Mode=OneWay}"
+                               FontFamily="{Binding ControlStyle.LabelMovingFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
+                               FontSize="{Binding ControlStyle.LabelMovingFontSize,Mode=OneWay}" 
+                               FontWeight="{Binding ControlStyle.LabelMovingFontWeight, Converter={StaticResource GUIFontConverter},Mode=OneWay}"
+                               Foreground="{Binding ControlStyle.LabelMovingFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}"
+							   Visibility="{Binding ControlStyle.EnableLabelMoving, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                               <TextBlock.Margin>
+                                    <MultiBinding Converter="{StaticResource PercentToMargin}">
+                                        <Binding Path="ActualWidth" ElementName="bar" Mode="OneWay" />
+                                        <Binding Path="ProgressValue" Mode="OneWay" />
+                                        <Binding Path="ControlStyle.BarMargin" Mode="OneWay" />
+                                        <Binding Path="ControlStyle.LabelMovingMargin" Mode="OneWay" />
+                                    </MultiBinding>
+                                </TextBlock.Margin>
+                        </TextBlock>
+
+                    </Grid>
             </Border>
         </Border>
 		</commonControls:Surface3D>
 	</DataTemplate>
 
-  
-
-
-	
-
+ 
 	<DataTemplate x:Name="temp" DataType="{x:Type skinControls:XmlList}"  >
 		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
 			                    Height="{Binding Height,Mode=OneWay}"
@@ -448,24 +451,30 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 		<Border x:Name="background" Width="{Binding Width, Mode=OneWay}" Height="{Binding Height, Mode=OneWay}"  
                 Background="{Binding ControlStyle.BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding ControlStyle.BorderBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                 BorderThickness="{Binding ControlStyle.BorderThickness, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding ControlStyle.CornerRadius, Converter={StaticResource CornerRadiusConverter}, Mode=OneWay}" >
 			<Border x:Name="focusShading" Background="{Binding ControlStyle.ShadeBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-					<skinSubControls:CoverFlowListBox ListItems="{Binding ListType, Converter={StaticResource DummyListItemsConverter}}"
-												 LayoutVertical="{Binding VerticalItemStyle, Mode=OneWay}"
+					<skinSubControls:CoverFlowListBox LayoutVertical="{Binding VerticalItemStyle, Mode=OneWay}"
+												 LayoutVerticalIcon="{Binding VerticalIconItemStyle, Mode=OneWay}"
 												 LayoutHorizontal="{Binding HorizontalItemStyle, Mode=OneWay}"
 												 LayoutCoverFlow="{Binding CoverFlowItemStyle, Mode=OneWay}"
 												 ListOrientation="{Binding ListLayout}" >
+                        <skinSubControls:CoverFlowListBox.ListItems>
+                            <MultiBinding Converter="{StaticResource DummyListItemsConverter}">
+                                <Binding Path="ListType" />
+                                <Binding Path="ListLayout" />
+                            </MultiBinding>
+                        </skinSubControls:CoverFlowListBox.ListItems>
 				</skinSubControls:CoverFlowListBox>
 			</Border>
         </Border>
 		</commonControls:Surface3D>
     </DataTemplate>
-
 
 	<DataTemplate DataType="{x:Type skinControls:XmlEqualizer}"  >
 		<commonControls:Surface3D Width="{Binding Width,Mode=OneWay}" 
@@ -475,7 +484,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 			<Border x:Name="background" 
 			        Width="{Binding Width, Mode=OneWay}"
 					Height="{Binding Height, Mode=OneWay}"
@@ -494,6 +504,7 @@
 												BandSpacing="{Binding BandSpacing, Mode=OneWay}" 
 												BandCount="{Binding BandCount, Mode=OneWay}"
 												EQStyle="{Binding EQStyle, Converter={StaticResource EQStyleEnumConverter}, Mode=OneWay}"
+                                                EQChannel="{Binding EQChannel, Mode=OneWay}"
 												LowRangeValue="{Binding LowRangeValue, Mode=OneWay}"
 												MedRangeValue="{Binding MedRangeValue, Mode=OneWay}"
 												LowRangeColor="{Binding ControlStyle.LowRangeColor, Converter={StaticResource BrushConverter}, Mode=OneWay}"
@@ -514,7 +525,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 			<Border x:Name="focus" 
 		        Width="{Binding Width,Mode=OneWay}" 
 			    Height="{Binding Height,Mode=OneWay}"
@@ -662,7 +674,8 @@
 								RotationZ="{Binding Pos3DZ,Mode=OneWay}"
 								RotationCenterX="{Binding Center3DX,Mode=OneWay}"
 								RotationCenterY="{Binding Center3DY,Mode=OneWay}"
-								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}">
+								RotationCenterZ="{Binding Center3DZ,Mode=OneWay}"
+                                Visibility="{Binding DesignerVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 			<skinSubControls:Guide Width="{Binding Width,Mode=OneWay}"
 			                    Height="{Binding Height,Mode=OneWay}" BaseXml="{Binding DataContext, ElementName=UI}"/>
 		</commonControls:Surface3D>

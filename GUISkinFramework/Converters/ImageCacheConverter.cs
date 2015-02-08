@@ -22,17 +22,24 @@ namespace GUISkinFramework.Converters
             var path = (string)value;
             // load the image, specify CacheOption so the file is not locked
             var image = new BitmapImage();
-            image.BeginInit();
-            image.CacheOption = BitmapCacheOption.OnLoad;
-            if (parameter != null && int.TryParse(parameter.ToString(), out width))
+            try
             {
-                image.DecodePixelWidth = width;
-            }
-            image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
-            image.UriSource = new Uri(path);
-            image.EndInit();
+                image.BeginInit();
+                image.CacheOption = BitmapCacheOption.OnLoad;
+                if (parameter != null && int.TryParse(parameter.ToString(), out width))
+                {
+                    image.DecodePixelWidth = width;
+                }
+                image.CreateOptions = BitmapCreateOptions.IgnoreImageCache;
+                image.UriSource = new Uri(path);
+                image.EndInit();
 
-            return image;
+                return image;
+            }
+            catch
+            {
+                return new BitmapImage();
+            }
 
         }
 

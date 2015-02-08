@@ -38,6 +38,7 @@ namespace MessageFramework.DataObjects
     public enum APIListLayout
     {
         Vertical,
+        VerticalIcon,
         Horizontal,
         CoverFlow
     }

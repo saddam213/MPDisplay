@@ -69,6 +69,7 @@
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
     <Compile Include="BindingConverters\ContextMenuTemplateSelector.cs" />
+    <Compile Include="BindingConverters\SkinEditorProgressLabelConverter.cs" />
     <Compile Include="BindingConverters\SkinEditorProgressValueConverter.cs" />
     <Compile Include="BindingConverters\SnapToGridConverter.cs" />
     <Compile Include="BindingConverters\DummyListItemsConverter.cs" />
@@ -320,7 +321,9 @@
     <Resource Include="Images\DVDCover.jpg" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="DesignerStyle.xml" />
+    <None Include="DesignerStyle.xml">
+      <SubType>Designer</SubType>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\XmlEqualizer.png" />
@@ -337,6 +340,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="MPDicon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Hide.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Unhide.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

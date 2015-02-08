@@ -49,6 +49,11 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
+        public virtual bool MustResendListOnLayoutChange()
+        {
+            return false;
+        }
+
         public virtual List<APIListItem> GetListItems(List<GUIListItem> items, APIListLayout layout) 
         {
             var returnValue = new List<APIListItem>();
@@ -81,6 +86,10 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.Vertical:
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb1Path, string.Empty);
                         break;
+                    case APIListLayout.VerticalIcon:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalIconListItemThumb1Path, string.Empty);
+                        break;
+
                     case APIListLayout.Horizontal:
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb1Path, string.Empty);
                         break;
@@ -124,6 +133,9 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.Vertical:
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb2Path, string.Empty);
                         break;
+                    case APIListLayout.VerticalIcon: 
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalIconListItemThumb2Path, string.Empty);
+                        break;
                     case APIListLayout.Horizontal:
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb2Path, string.Empty);
                         break;
@@ -147,6 +159,9 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.Vertical:
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb3Path, string.Empty);
                         break;
+                    case APIListLayout.VerticalIcon:
+                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalIconListItemThumb3Path, string.Empty);
+                        break;
                     case APIListLayout.Horizontal:
                         filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb3Path, string.Empty);
                         break;
@@ -169,6 +184,9 @@ namespace MediaPortalPlugin.PluginHelpers
                 {
                     case APIListLayout.Vertical:
                         propertyPath = _settings.VerticalListItemLabel1Path;
+                        break;
+                    case APIListLayout.VerticalIcon:
+                        propertyPath = _settings.VerticalIconListItemLabel1Path;
                         break;
                     case APIListLayout.Horizontal:
                         propertyPath = _settings.HorizontalListItemLabel1Path;
@@ -200,6 +218,9 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.Vertical:
                         propertyPath = _settings.VerticalListItemLabel2Path;
                         break;
+                    case APIListLayout.VerticalIcon:
+                        propertyPath = _settings.VerticalIconListItemLabel2Path;
+                        break;
                     case APIListLayout.Horizontal:
                         propertyPath = _settings.HorizontalListItemLabel2Path;
                         break;
@@ -230,6 +251,9 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.Vertical:
                         propertyPath = _settings.VerticalListItemLabel3Path;
                         break;
+                    case APIListLayout.VerticalIcon:
+                        propertyPath = _settings.VerticalIconListItemLabel3Path;
+                        break;
                     case APIListLayout.Horizontal:
                         propertyPath = _settings.HorizontalListItemLabel3Path;
                         break;
@@ -249,8 +273,6 @@ namespace MediaPortalPlugin.PluginHelpers
             }
             return string.Empty;
         }
-
-      
-      
+     
     }
 }

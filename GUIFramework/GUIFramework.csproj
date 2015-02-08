@@ -60,8 +60,10 @@
     <Compile Include="Converters\GUIImageConverter.cs" />
     <Compile Include="Converters\CoverFlowGreaterThanSelectedIndexConverter.cs" />
     <Compile Include="Converters\GUIBrushConverter.cs" />
+    <Compile Include="Converters\ProgressLabelConverter.cs" />
     <Compile Include="Converters\ProgramTimeToWidthConverter.cs" />
     <Compile Include="Converters\ProgressValueConverter.cs" />
+    <Compile Include="GUI\Base\GUIDraggableListView.cs" />
     <Compile Include="GUI\GUISkinElementAttribute.cs" />
     <Compile Include="GUI\GUIStoryboard.cs" />
     <Compile Include="GUISurface.xaml.cs">

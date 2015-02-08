@@ -25,6 +25,7 @@
     
     <base:GUIControl.Resources>
         <converters:ProgressValueConverter x:Key="ProgressValueConverter" />
+        <converters:ProgressLabelConverter x:Key="ProgressLabelConverter" />
     </base:GUIControl.Resources>
     
 	<Border x:Name="background" Width="{Binding BaseXml.Width, Mode=OneWay}" Height="{Binding BaseXml.Height, Mode=OneWay}"
@@ -43,7 +44,7 @@
 							<Binding Path="ActualWidth" ElementName="bar" Mode="OneWay" />
 							<Binding Path="Progress" Mode="OneWay" />
 							<Binding  Path="BaseXml.ControlStyle.BarMargin" Mode="OneWay" />
-						</MultiBinding>
+                        </MultiBinding>
 					</Border.Width>
 				</Border>
 				<Border HorizontalAlignment="Left" Background="White"
@@ -59,15 +60,49 @@
 					</Border.OpacityMask>
 				</Border>
 
-				<Border HorizontalAlignment="Left"  
+                <Border HorizontalAlignment="Left" Visibility="{Binding BaseXml.ControlStyle.EnableProgressbar, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" 
 				        Width="{Binding Width, ElementName=opacityMask}" 
 					    BorderBrush="{Binding BaseXml.ControlStyle.BarBorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
 					    Margin="{Binding BaseXml.ControlStyle.BarMargin, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                         BorderThickness="{Binding BaseXml.ControlStyle.BarBorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                         CornerRadius="{Binding BaseXml.ControlStyle.BarCornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" />
 
-				<Border x:Name="focusgloss" Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
-			</Grid>
+                <Border x:Name="focusgloss" Visibility="{Binding BaseXml.ControlStyle.EnableProgressbar, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}"
+                        Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" 
+                        CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
+
+                <TextBlock Text="{Binding LabelFixed, Mode=OneWay}"
+                               HorizontalAlignment="{Binding BaseXml.ControlStyle.LabelFixedHorizontalAlignment,Mode=OneWay}"
+						       VerticalAlignment="{Binding BaseXml.ControlStyle.LabelFixedVerticalAlignment,Mode=OneWay}"
+                               FontFamily="{Binding BaseXml.ControlStyle.LabelFixedFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
+                               FontSize="{Binding BaseXml.ControlStyle.LabelFixedFontSize,Mode=OneWay}" 
+                               FontWeight="{Binding BaseXml.ControlStyle.LabelFixedFontWeight, Converter={StaticResource GUIFontConverter},Mode=OneWay}"
+                               Foreground="{Binding BaseXml.ControlStyle.LabelFixedFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}"
+							   Margin="{Binding BaseXml.ControlStyle.LabelFixedMargin}" 
+							   Visibility="{Binding BaseXml.ControlStyle.EnableLabelFixed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                </TextBlock>
+                
+                <TextBlock Text="{Binding LabelMoving, Mode=OneWay}"
+                               HorizontalAlignment="Left"
+						       VerticalAlignment="{Binding BaseXml.ControlStyle.LabelMovingVerticalAlignment,Mode=OneWay}"
+                               FontFamily="{Binding BaseXml.ControlStyle.LabelMovingFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
+                               FontSize="{Binding BaseXml.ControlStyle.LabelMovingFontSize,Mode=OneWay}" 
+                               FontWeight="{Binding BaseXml.ControlStyle.LabelMovingFontWeight, Converter={StaticResource GUIFontConverter},Mode=OneWay}"
+                               Foreground="{Binding BaseXml.ControlStyle.LabelMovingFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}"
+							   Visibility="{Binding BaseXml.ControlStyle.EnableLabelMoving, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
+                    <TextBlock.Margin>
+                        <MultiBinding Converter="{StaticResource ProgressLabelConverter}">
+                            <Binding Path="ActualWidth" ElementName="bar" Mode="OneWay" />
+                            <Binding Path="Progress" Mode="OneWay" />
+                            <Binding Path="BaseXml.ControlStyle.BarMargin" Mode="OneWay" />
+                            <Binding Path="BaseXml.ControlStyle.LabelMovingMargin" Mode="OneWay" />
+                        </MultiBinding>
+                    </TextBlock.Margin>
+
+                </TextBlock>
+
+            </Grid>
+            
 		</Border>
 	</Border>
 

@@ -25,9 +25,10 @@ namespace GUISkinFramework.Controls
     {
         private XmlBrush _borderBrush;
         private XmlBrush _backgroundBrush;
-        private string _borderCornerRadius;
-        private string _borderThickness;
-        [DefaultValue("0")]
+        private string _borderCornerRadius = "0,0,0,0";
+        private string _borderThickness = "0,0,0,0";
+
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -37,7 +38,7 @@ namespace GUISkinFramework.Controls
             set { _borderThickness = value; NotifyPropertyChanged("BorderThickness"); }
         }
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(61)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]

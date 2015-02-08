@@ -28,12 +28,12 @@ namespace GUISkinFramework.Controls
 
         private string _borderThickness = "0,0,0,0";
         private string _borderCornerRadius = "0,0,0,0";
-        private XmlBrush _glossBrush = null;//new XmlColorBrush();
-        private XmlBrush _shadeBrush = null;//new XmlColorBrush();
-        private XmlBrush _noFocusBrush = null;//new XmlColorBrush();
-        private XmlBrush _noFocusBorderBrush = null;//new XmlColorBrush();
-        private XmlBrush _focusBrush = null;//new XmlColorBrush();
-        private XmlBrush _focusBorderBrush = null;//new XmlColorBrush();
+        private XmlBrush _glossBrush = null;
+        private XmlBrush _shadeBrush = null;
+        private XmlBrush _noFocusBrush = null;
+        private XmlBrush _noFocusBorderBrush = null;
+        private XmlBrush _focusBrush = null;
+        private XmlBrush _focusBorderBrush = null;
         private XmlBrush _focusFontBrush;
         private XmlBrush _noFocusFontBrush; 
         private string _fontType = "Microsoft Sans Serif";

@@ -24,8 +24,9 @@ namespace GUISkinFramework.Controls
         private int _channelListWidth;
         private int _guideItemHeight;
         private int _timelineHeight;
-        private string _guideItemMargin;
-
+        private string _guideItemMargin = "0,0,0,0";
+        private int _createDialogId = 0;
+        private int _cancelDialogId = 0;
 
         public XmlGuide()
         {
@@ -74,7 +75,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(100)]
-        [EditorCategory("Guide", 6)]
+        [EditorCategory("Guide", 5)]
         [DefaultValue(40)]
         public int TimelineHeight
         {
@@ -83,7 +84,7 @@ namespace GUISkinFramework.Controls
         }
 
         [PropertyOrder(101)]
-        [EditorCategory("Guide", 6)]
+        [EditorCategory("Guide", 5)]
         [DefaultValue(6)]
         public double TimelineMultiplier
         {
@@ -92,11 +93,7 @@ namespace GUISkinFramework.Controls
         }
 
 
-
-
-
-
-        [PropertyOrder(67)]
+        [PropertyOrder(60)]
         [EditorCategory("Appearance", 7)]
         [DefaultValue(null)]
         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
@@ -106,8 +103,8 @@ namespace GUISkinFramework.Controls
             set { _guideChannelStyle = value; NotifyPropertyChanged("ChannelStyle"); }
         }
 
-        [PropertyOrder(67)]
-        [EditorCategory("Appearance", 8)]
+        [PropertyOrder(70)]
+        [EditorCategory("Appearance", 7)]
         [DefaultValue(null)]
         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
         public XmlGuideProgramStyle ProgramStyle
@@ -117,7 +114,24 @@ namespace GUISkinFramework.Controls
         }
 
 
-     
+        [PropertyOrder(200)]
+        [EditorCategory("Schedule", 9)]
+        [DefaultValue(0)]
+        public int CreateDialogId
+        {
+            get { return _createDialogId; }
+            set { _createDialogId = value; NotifyPropertyChanged("CreateDialogId"); }
+        }
+
+        [PropertyOrder(210)]
+        [EditorCategory("Schedule", 9)]
+        [DefaultValue(0)]
+        public int CancelDialogId
+        {
+            get { return _cancelDialogId; }
+            set { _cancelDialogId = value; NotifyPropertyChanged("CreateDialogId"); }
+        }
+
 
         public override void ApplyStyle(XmlStyleCollection style)
         {

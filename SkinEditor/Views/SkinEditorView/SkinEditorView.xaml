@@ -19,15 +19,15 @@
         <converters:TypeToFontWeightConverter x:Key="TypeToFontWeightConverter" />
 
         <Style x:Name="txt" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
         </Style>
 
         <Style x:Name="exp" TargetType="Expander">
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
         </Style>
 
         <Style TargetType="CheckBox">
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="Black" />
         </Style>
 
         <Style TargetType="{x:Type Controls:MoveResizeControl}">
@@ -64,9 +64,6 @@
                 </Setter.Value>
             </Setter>
         </Style>
-
-
-
 
     </local:EditorViewModel.Resources>
 
@@ -119,7 +116,7 @@
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                        </Style>
+                         </Style>
 
                         <HierarchicalDataTemplate DataType="{x:Type xmlWindows:XmlMPDWindow}" ItemsSource="{Binding Controls, Mode=OneWay, IsAsync=True}" >
                             <ContentControl />
@@ -175,6 +172,16 @@
                         </Style>
                     </TreeView.ItemContainerStyle>-->
 
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="TreeViewItem">
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding DesignerVisible}" Value="false">
+                                    <Setter Property="Background" Value="Salmon" />
+                                </DataTrigger>                         
+                            </Style.Triggers>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    
                     <TreeView.GroupStyle>
                         <GroupStyle>
                             <GroupStyle.HeaderTemplate>
@@ -296,6 +303,18 @@
                                 </MenuItem.Icon>
                             </MenuItem>
 
+                            <MenuItem Header="Hide" Command="{Binding HideControlCommand}" >
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Hide.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+
+                            <MenuItem Header="Unhide" Command="{Binding UnhideControlCommand}" >
+                                <MenuItem.Icon>
+                                    <Image Source="/SkinEditor;component/Images/Unhide.png" />
+                                </MenuItem.Icon>
+                            </MenuItem>
+
                         </ContextMenu>
                     </TreeView.ContextMenu>
 
@@ -313,10 +332,6 @@
 
 
         </Grid>
-
-
-
-
 
         <GridSplitter Margin="0,11,0,0" Width="5" ResizeBehavior="BasedOnAlignment" />
 

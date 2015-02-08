@@ -445,7 +445,14 @@ namespace MediaPortalPlugin
                     {
                         if (dataMessage.DataType != APIDataMessageType.EQData)
                         {
-                            Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}.", dataMessage.DataType);
+                            if (dataMessage.IntArray != null)
+                            {
+                                Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}, ArraySize {2}.", dataMessage.DataType, dataMessage.IntValue, dataMessage.IntArray.Count());
+                            }
+                            else
+                            {
+                                Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}.", dataMessage.DataType, dataMessage.IntValue);
+                            }
                         }
                         _messageClient.SendDataMessageAsync(dataMessage);
                     }

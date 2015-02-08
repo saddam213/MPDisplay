@@ -121,6 +121,9 @@ namespace GUISkinFramework.Common
 
         [XmlActionTypeDetails("Connect", "Connects to the MPDisplay Server if connection is lost.")]
         Connect,
+
+        [XmlActionTypeDetails("ScheduleEPGAction", "Creates or cancels the currently selected EPG schedule.")]
+        ScheduleEPGAction,
     }
 
     [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]

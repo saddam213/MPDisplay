@@ -22,6 +22,7 @@ namespace Common.Settings
         private bool _restartOnError = true;
         private string _cursorStyle = "Arrow";
         private bool _isSystemInfoEnabled = false;
+        private int _userInteractionDelay = 10;
 
         public string SkinName
         {
@@ -83,6 +84,11 @@ namespace Common.Settings
             set { _priority = value; NotifyPropertyChanged("Priority"); }
         }
 
+        public int UserInteractionDelay
+        {
+            get { return _userInteractionDelay; }
+            set { _userInteractionDelay = value; NotifyPropertyChanged("UserInteractionDelay"); }
+        }
 
         public ConnectionSettings ConnectionSettings
         {

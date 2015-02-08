@@ -23,8 +23,9 @@ namespace GUISkinFramework.Controls
         private XmlListLayout _listLayout;
         private XmlListItemStyle _horizontalItemStyle;
         private XmlListItemStyle _verticalItemStyle;
+        private XmlListItemStyle _verticalIconItemStyle;
         private XmlListItemStyle _coverFlowItemStyle;
-        private XmlListType _listType;
+        private XmlListType _listType = XmlListType.None;
 
         [XmlElement("ListControlStyle")]
         [DefaultValue(null)]
@@ -70,9 +71,21 @@ namespace GUISkinFramework.Controls
             set { _verticalItemStyle = value; NotifyPropertyChanged("VerticalItemStyle"); }
         }
 
-        [XmlElement("HorizontalItemStyle")]
+        [XmlElement("VerticalIconItemStyle")]
         [DefaultValue(null)]
         [PropertyOrder(2)]
+        [EditorCategory("ListItems", 8)]
+        [DisplayName("VerticalIcon Style")]
+        [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
+        public XmlListItemStyle VerticalIconItemStyle
+        {
+            get { return _verticalIconItemStyle; }
+            set { _verticalIconItemStyle = value; NotifyPropertyChanged("VerticalIconItemStyle"); }
+        }
+
+        [XmlElement("HorizontalItemStyle")]
+        [DefaultValue(null)]
+        [PropertyOrder(3)]
         [EditorCategory("ListItems", 8)]
         [DisplayName("Horizontal Style")]
         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
@@ -84,7 +97,7 @@ namespace GUISkinFramework.Controls
 
         [XmlElement("CoverFlowItemStyle")]
         [DefaultValue(null)]
-        [PropertyOrder(2)]
+        [PropertyOrder(4)]
         [EditorCategory("ListItems", 8)]
         [DisplayName("CoverFlow Style")]
         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
@@ -99,6 +112,7 @@ namespace GUISkinFramework.Controls
             base.ApplyStyle(style);
             ControlStyle = style.GetControlStyle<XmlListStyle>(ControlStyle);
             VerticalItemStyle = style.GetControlStyle<XmlListItemStyle>(VerticalItemStyle);
+            VerticalIconItemStyle = style.GetControlStyle<XmlListItemStyle>(VerticalIconItemStyle);
             HorizontalItemStyle = style.GetControlStyle<XmlListItemStyle>(HorizontalItemStyle);
             CoverFlowItemStyle = style.GetControlStyle<XmlListItemStyle>(CoverFlowItemStyle);
         }
@@ -109,6 +123,7 @@ namespace GUISkinFramework.Controls
         Auto = 0,
         Vertical = 1,
         Horizontal = 2,
-        CoverFlow = 3
+        CoverFlow = 3,
+        VerticalIcon = 4
     }
 }

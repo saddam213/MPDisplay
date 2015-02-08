@@ -264,6 +264,8 @@ namespace GUIFramework.Managers
                 {
                     case APIListLayout.Vertical:
                         return XmlListLayout.Vertical;
+                    case APIListLayout.VerticalIcon:
+                        return XmlListLayout.VerticalIcon;
                     case APIListLayout.Horizontal:
                         return XmlListLayout.Horizontal;
                     case APIListLayout.CoverFlow:
@@ -514,12 +516,7 @@ namespace GUIFramework.Managers
             });
         }
 
-   
-
-
-
-
-
+ 
         public static List<APIListType> GetRegisteredLists(IControlHost window)
         {
             if (window != null)

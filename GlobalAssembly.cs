@@ -12,6 +12,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyCopyright("Copyright © Team MPDisplay 2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
-[assembly: AssemblyVersion("0.9.5.1")]
-[assembly: AssemblyFileVersion("0.9.5.1")]
+[assembly: AssemblyVersion("0.9.7.0")]
+[assembly: AssemblyFileVersion("0.9.7.0")]
 [assembly: ComVisible(false)]

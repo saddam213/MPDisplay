@@ -40,6 +40,8 @@ namespace MessageFramework.DataObjects
         public int WindowId { get; set; }
         public int FocusedControlId { get; set; }
         public List<string> EnabledPlugins { get; set; }
+        public int ChannelId { get; set; }
+        public int ProgramId { get; set; }
     }
 
     public enum APIWindowMessageType

@@ -17,16 +17,40 @@ using Common.Settings;
 
 namespace SkinEditor.BindingConverters
 {
-    public class DummyListItemsConverter : IValueConverter
+    public class DummyListItemsConverter : IMultiValueConverter
     {
         private List<string> _allowedsExtensions = new List<string>(new string[] { ".BMP", ".JPG", ".GIF", ".PNG" });
 
-        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
-             var items = new ObservableCollection<CoverFlowListBoxItem>();
-             if (value is XmlListType)
+            var items = new ObservableCollection<CoverFlowListBoxItem>();
+            bool vertical;                                                  // layout of list to load the suitable images
+
+            if (value[1] is XmlListLayout)                                  // determine layout
+            {
+                XmlListLayout listLayout = (XmlListLayout)value[1];
+                switch (listLayout)
+                {
+                    case XmlListLayout.Auto:
+                    case XmlListLayout.Vertical:
+                    case XmlListLayout.VerticalIcon:
+                        vertical = true;
+                        break;
+                    case XmlListLayout.Horizontal:
+                    case XmlListLayout.CoverFlow:
+                    default:
+                        vertical = false;
+                        break;
+                }
+            }
+            else
+            {
+                vertical = true;
+            }
+
+             if (value[0] is XmlListType)
              {
-                 XmlListType listType = (XmlListType)value;
+                 XmlListType listType = (XmlListType)value[0];
                  switch (listType)
                  {
                      case XmlListType.None:
@@ -38,19 +62,26 @@ namespace SkinEditor.BindingConverters
                          if (Directory.Exists(dummyItemPath))
                          {
                              int index = 0;
+                             string filename;
+
                              foreach (var file in Directory.GetFiles(dummyItemPath))
                              {
                                  if (_allowedsExtensions.Contains(System.IO.Path.GetExtension(file).ToUpper()))
                                  {
-                                     items.Add(new CoverFlowListBoxItem
+                                     filename = Path.GetFileNameWithoutExtension(file);
+                                     if ((vertical && filename.StartsWith("_")) || (!vertical && !filename.StartsWith("_")))
                                      {
-                                         Label = Path.GetFileNameWithoutExtension(file),
-                                         Label2 = "Label2",
-                                         Label3 = "Label3",
-                                         Image = file,
-                                         Index = index
-                                     });
-                                     index++;
+                                         if (filename.StartsWith("_")) filename = filename.Remove(0, 1);
+                                         items.Add(new CoverFlowListBoxItem
+                                         {
+                                             Label = filename,
+                                             Label2 = "Label2",
+                                             Label3 = "Label3",
+                                             Image = file,
+                                             Index = index
+                                         });
+                                         index++;
+                                     }
                                  }
                              }
                          }
@@ -104,8 +135,7 @@ namespace SkinEditor.BindingConverters
          
         }
 
-
-        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetType, object parameter, CultureInfo culture)
         {
             return null;
         }

@@ -59,6 +59,7 @@ namespace SkinEditor.Controls
 
         public static readonly DependencyProperty ListItemsProperty = DependencyProperty.Register("ListItems", typeof(ObservableCollection<CoverFlowListBoxItem>), typeof(CoverFlowListBox), new PropertyMetadata(new ObservableCollection<CoverFlowListBoxItem>()));
         public static readonly DependencyProperty LayoutVerticalProperty = DependencyProperty.Register("LayoutVertical", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
+        public static readonly DependencyProperty LayoutVerticalIconProperty = DependencyProperty.Register("LayoutVerticalIcon", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
         public static readonly DependencyProperty LayoutHorizontalProperty = DependencyProperty.Register("LayoutHorizontal", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
         public static readonly DependencyProperty LayoutCoverFlowProperty = DependencyProperty.Register("LayoutCoverFlow", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
         public static readonly DependencyProperty UserSelectedItemProperty = DependencyProperty.Register("UserSelectedItem", typeof(CoverFlowListBoxItem), typeof(CoverFlowListBox), new PropertyMetadata(null));
@@ -84,6 +85,15 @@ namespace SkinEditor.Controls
         {
             get { return (XmlListItemStyle)GetValue(LayoutVerticalProperty); }
             set { SetValue(LayoutVerticalProperty, value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the layout verticalIcon.
+        /// </summary>
+        public XmlListItemStyle LayoutVerticalIcon
+        {
+            get { return (XmlListItemStyle)GetValue(LayoutVerticalIconProperty); }
+            set { SetValue(LayoutVerticalIconProperty, value); }
         }
 
         /// <summary>
@@ -284,6 +294,9 @@ namespace SkinEditor.Controls
                 case XmlListLayout.Vertical:
                     CurrentLayout = LayoutVertical;
                     break;
+                case XmlListLayout.VerticalIcon:
+                    CurrentLayout = LayoutVerticalIcon;
+                    break;
                 case XmlListLayout.Horizontal:
                     CurrentLayout = LayoutHorizontal;
                     break;
@@ -369,7 +382,7 @@ namespace SkinEditor.Controls
         /// </value>
         private bool IsLayoutVertical
         {
-            get { return _currentOrientation == XmlListLayout.Vertical; }
+            get { return _currentOrientation == XmlListLayout.Vertical || _currentOrientation == XmlListLayout.VerticalIcon; }
         }
 
         #endregion

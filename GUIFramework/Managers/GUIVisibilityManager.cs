@@ -431,12 +431,14 @@ namespace GUIFramework.Managers
                                 var window = elements.FirstOrDefault(w => w.Id == details[0]);
                                 var control = window.Controls.GetControls().FirstOrDefault(c => c.Id == details[1]);
                                 Log.Message(LogLevel.Error, "An error occured creating control VisibleCondition, Error: {0}, Window: {1} ({2}), Control: {3} ({4})", error.ErrorText, window.Name, window.Id, control.Name, control.Id);
+                                Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                             }
                             else
                             {
                                 int details = int.Parse(errorLine.Replace("W", "").Trim());
                                 var window = elements.FirstOrDefault(w => w.Id == details);
                                 Log.Message(LogLevel.Error, "An error occured creating window VisibleCondition, Error: {0}, Window: {1} ({2})", error.ErrorText, window.Name, window.Id);
+                                Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                             }
 
                             for (int i = 0; i < _methodTemplate.Replace("\r", "").Split('\n').Count(); i++)
@@ -453,6 +455,7 @@ namespace GUIFramework.Managers
                         else
                         {
                             Log.Message(LogLevel.Error, "An error occured loading VisibleConditions, Error: {0}", error.ErrorText);
+                            Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                         }
                     }
                   
@@ -460,6 +463,7 @@ namespace GUIFramework.Managers
                 catch (Exception ex)
                 {
                     Log.Exception("An error occured loading VisibleConditions", ex);
+                    Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                 }
             }
             else

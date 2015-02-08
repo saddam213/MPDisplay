@@ -14,13 +14,14 @@
 			 Canvas.ZIndex="{Binding BaseXml.PosZ,Mode=OneWay}"
 			 Width="{Binding BaseXml.Width,Mode=OneWay}" 
 			 Height="{Binding BaseXml.Height,Mode=OneWay}"
-			 RotationX="{Binding BaseXml.Pos3DX,Mode=OneWay}"
+			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <!-- 			 RotationX="{Binding BaseXml.Pos3DX,Mode=OneWay}"
 			 RotationY="{Binding BaseXml.Pos3DY,Mode=OneWay}"
 			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
 			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
-			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+-->
 	<Grid >
 
 		<Grid.Resources>
@@ -28,7 +29,6 @@
 			<SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
 			<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent"/>
 			<converters:ProgramTimeToWidthConverter x:Key="ProgramWidthConverter" />
-
 
 			<Style TargetType="ListBox">
 				<Setter Property="BorderBrush" Value="{x:Null}" />
@@ -49,7 +49,7 @@
 				<Setter Property="Height" Value="{Binding BaseXml.GuideItemHeight, ElementName=UI}" />
 				<Setter Property="VerticalContentAlignment" Value="Top" />
 				<Setter Property="HorizontalContentAlignment" Value="Stretch" />
-			</Style>
+            </Style>
 
 
 			<Style x:Key="ProgramItem" TargetType="ContentPresenter">
@@ -251,9 +251,9 @@
 			         SelectedItem="{Binding SelectedChannel}" 
 					 ItemsSource="{Binding ChannelData, IsAsync=True, Mode=OneWay}"  
 					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged" >
-				<ListBox.ItemTemplate>
+               <ListBox.ItemTemplate>
 					<DataTemplate>
-						<ItemsControl Background="Brown" Padding="0" Margin="1" 
+                        <ItemsControl Background="Brown" Padding="0" Margin="1" 
 						              Width="{Binding TimelineLength, ElementName=UI}" 
 									  ItemContainerStyle="{StaticResource ProgramItem}"  
 									  ItemsSource="{Binding Programs, IsAsync=True, Mode=OneWay}" 
@@ -266,7 +266,7 @@
 							</ItemsControl.ItemsPanel>
 							<ItemsControl.ItemTemplate>
 								<DataTemplate>
-									<Border x:Name="focusp"  Tag="{Binding}" PreviewMouseDown="OnProgramItemSelected"
+                                    <Border x:Name="focusp"  Tag="{Binding}" PreviewMouseDown="OnProgramItemSelected"
 								Margin="{Binding BaseXml.GuideItemMargin, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"  
 								BorderThickness="{Binding BaseXml.ProgramStyle.BorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 								CornerRadius="{Binding BaseXml.ProgramStyle.CornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}" >
@@ -333,10 +333,6 @@
 									</Border>
 
 								</DataTemplate>
-
-
-
-
 
 							</ItemsControl.ItemTemplate>
 						</ItemsControl>

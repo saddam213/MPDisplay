@@ -20,12 +20,13 @@ namespace GUISkinFramework.Controls
     [XmlType(TypeName = "Label")]
     public class XmlLabel : XmlControl
     {
-        private string _labelText;
-        private string _defaultLabelText;
-        private TextAlignment _labelTextAlignment;
-        private bool _isScrollingEnabled;
+        private string _labelText = "";
+        private string _defaultLabelText = "";
+        private int _lineHeight = 0;
+        private TextAlignment _labelTextAlignment = TextAlignment.Left;
+        private bool _isScrollingEnabled = true;
         private XmlLabelStyle _controlStyle;
-        private bool _isScrollWrapEnabled;
+        private bool _isScrollWrapEnabled = false;
         private int _scrollDelay = 3;
         private int _scrollSpeed = 2;
         private string _scrollSeperator = " | ";
@@ -46,8 +47,6 @@ namespace GUISkinFramework.Controls
             set { _controlStyle = value; NotifyPropertyChanged("ControlStyle"); }
         }
         
-
-
         [DefaultValue(""), Editor(typeof(LabelEditor), typeof(ITypeEditor))]
         [PropertyOrder(10)]
         [EditorCategory("Label", 4)]
@@ -75,8 +74,14 @@ namespace GUISkinFramework.Controls
             set { _labelTextAlignment = value; NotifyPropertyChanged("LabelTextAlignment"); }
         }
 
-
-     
+        [DefaultValue(0)]
+        [PropertyOrder(30)]
+        [EditorCategory("Label", 4)]
+        public int LineHeight
+        {
+            get { return _lineHeight; }
+            set { _lineHeight = value; NotifyPropertyChanged("LineHeight"); }
+        }
 
         private bool _isVertical;
 

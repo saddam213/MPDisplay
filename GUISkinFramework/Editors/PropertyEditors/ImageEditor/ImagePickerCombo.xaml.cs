@@ -17,7 +17,7 @@ using System.Windows.Shapes;
 using GUISkinFramework.Common;
 using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
+namespace GUISkinFramework.Editor.PropertyEditors
 {
     /// <summary>
     /// Interaction logic for ImagePicker.xaml

@@ -148,6 +148,8 @@ namespace GUIConfig
         /// </summary>
         private void SaveChanges()
         {
+            MPDisplaySettings.PluginSettings.UserInteractionDelay = MPDisplaySettings.GUISettings.UserInteractionDelay;
+
             foreach (var view in Views)
             {
                 view.SaveChanges();

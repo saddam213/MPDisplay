@@ -125,7 +125,7 @@ namespace MediaPortalPlugin.InfoManagers
                 bool isSelect = action.ActionType == APIListActionType.SelectedItem;
                 if (action.ItemListType == APIListType.List)
                 {
-                    SetFacdeSelectedItem(action, isSelect);
+                    SetFacadeSelectedItem(action, isSelect);
                     SetListSelectedItem(action, isSelect);
                 }
 
@@ -150,7 +150,7 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     SendFacadeList();
                     SendListControlList();
-                    SendFacdeSelectedItem();
+                    SendFacadeSelectedItem();
                 }
 
                 if (_registeredListTypes.Contains(APIListType.GroupMenu))
@@ -175,7 +175,7 @@ namespace MediaPortalPlugin.InfoManagers
                     case GUIMessage.MessageType.GUI_MSG_ITEM_FOCUS_CHANGED:
                         if (_listFocused && !_isRecheckingListItems)
                         {
-                            SendFacdeSelectedItem();
+                            SendFacadeSelectedItem();
                             SendListSelectedItem();
                         }
                         break;
@@ -218,7 +218,14 @@ namespace MediaPortalPlugin.InfoManagers
                 if (tag.Equals("#facadeview.layout"))
                 {
                     SendFacadeLayout();
-                }
+                    if (WindowManager.Instance.CurrentPlugin != null)
+                    {
+                        if (WindowManager.Instance.CurrentPlugin.MustResendListOnLayoutChange())
+                        {
+                            SendFacadeList();
+                        }
+                    }
+               }
 
                 if (tag.Equals("#highlightedbutton"))
                 {
@@ -311,7 +318,7 @@ namespace MediaPortalPlugin.InfoManagers
                                 if (_listFocused)
                                 {
                                     _groupFocused = false;
-                                    SendFacdeSelectedItem();
+                                    SendFacadeSelectedItem();
                                     SendListSelectedItem();
                                     _isRecheckingListType = false;
                                     return;
@@ -321,9 +328,7 @@ namespace MediaPortalPlugin.InfoManagers
                           
                         }
 
-                        SendFacadeLayout();
-
-                       
+                        SendFacadeLayout();                    
                     }
                     _isRecheckingListType = false;
                 });
@@ -354,7 +359,7 @@ namespace MediaPortalPlugin.InfoManagers
                 }
 
                 SendFacadeList();
-                SendFacdeSelectedItem();
+                SendFacadeSelectedItem();
             }
         }
 
@@ -377,7 +382,10 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendFacadeList()
         {
-            var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus) ?? _facadeControls.FirstOrDefault(f => f.Count > 0);
+            var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+            if (currentFacade == null) currentFacade = _facadeControls.FirstOrDefault(f => f.Count > 0);
+            if (currentFacade == null) currentFacade = _facadeControls.FirstOrDefault();
+
             if (currentFacade != null)
             {
                 var layout = GetAPIListLayout(currentFacade);
@@ -385,18 +393,18 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private void SendFacdeSelectedItem()
+        private void SendFacadeSelectedItem()
         {
-            var currentFacde = _facadeControls.FirstOrDefault(f => f.Focus);
-            if (currentFacde != null && currentFacde.SelectedListItem != null)
+            var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+            if (currentFacade != null && currentFacade.SelectedListItem != null)
             {
-                SendSelectedItem(APIListType.List, currentFacde.SelectedListItem.Label, currentFacde.SelectedListItemIndex);
+                SendSelectedItem(APIListType.List, currentFacade.SelectedListItem.Label, currentFacade.SelectedListItemIndex);
 
-                SendSkinEditorData(currentFacde.SelectedListItem);
+                SendSkinEditorData(currentFacade.SelectedListItem);
             }
         }
 
-        private void SetFacdeSelectedItem(APIListAction item, bool isSelect)
+        private void SetFacadeSelectedItem(APIListAction item, bool isSelect)
         {
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
             if (currentFacade == null)
@@ -434,6 +442,9 @@ namespace MediaPortalPlugin.InfoManagers
             if (_registeredListTypes.Contains(APIListType.List))
             {
                 var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+                if( currentFacade == null ) currentFacade = _facadeControls.FirstOrDefault(f => f.Count > 0);
+                if( currentFacade == null ) currentFacade = _facadeControls.FirstOrDefault();
+
                 if (currentFacade != null)
                 {
                     var layout = GetAPIListLayout(currentFacade);
@@ -716,7 +727,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
             catch (Exception ex)
             {
-             Log.Exception("Here",ex);
+             Log.Exception("Exception SendMenuControlSelectedItem(): ",ex);
             }
         }
 
@@ -853,24 +864,68 @@ namespace MediaPortalPlugin.InfoManagers
 
         private APIListLayout _currentLayout;
 
+        // get APILayout from confuguration string
+        private APIListLayout getAPIListLayout(string layout)
+        {
+            switch (layout)
+            {
+                case "Coverflow":
+                    return APIListLayout.CoverFlow;
+                case "Vertical":
+                    return APIListLayout.Vertical;
+                case "VerticalIcon":
+                    return APIListLayout.VerticalIcon;
+                case "Horizontal":
+                    return APIListLayout.Horizontal;
+            }
+            return APIListLayout.Vertical;
+
+        }
+
         public APIListLayout GetAPIListLayout(GUIFacadeControl facade)
         {
             if (facade != null)
             {
-                switch (facade.CurrentLayout)
+                // get layout for plugins from plugin settings
+                if (WindowManager.Instance.CurrentPlugin != null)
                 {
-                    case GUIFacadeControl.Layout.AlbumView:
-                    case GUIFacadeControl.Layout.CoverFlow:
-                        return APIListLayout.CoverFlow;
-                    case GUIFacadeControl.Layout.Filmstrip:
-                    case GUIFacadeControl.Layout.LargeIcons:
-                    case GUIFacadeControl.Layout.SmallIcons:
-                        return APIListLayout.Horizontal;
-                    case GUIFacadeControl.Layout.List:
-                    case GUIFacadeControl.Layout.Playlist:
-                        return APIListLayout.Vertical;
-                    default:
-                        break;
+                    switch (facade.CurrentLayout)
+                    {
+                        case GUIFacadeControl.Layout.AlbumView:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutAlbumview);
+                        case GUIFacadeControl.Layout.CoverFlow:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutCoverflow);
+                        case GUIFacadeControl.Layout.Filmstrip:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutFilmstrip);
+                        case GUIFacadeControl.Layout.SmallIcons:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutSmallIcons);
+                        case GUIFacadeControl.Layout.List:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutList);
+                        case GUIFacadeControl.Layout.Playlist:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutPlaylist);
+                        case GUIFacadeControl.Layout.LargeIcons:
+                            return getAPIListLayout(WindowManager.Instance.CurrentPlugin.Settings.ListLayoutLargeIcons);
+                        default:
+                            break;
+                    }
+                }
+                else
+                {
+                    switch (facade.CurrentLayout)
+                    {
+                        case GUIFacadeControl.Layout.AlbumView:
+                        case GUIFacadeControl.Layout.CoverFlow:
+                            return APIListLayout.CoverFlow;
+                        case GUIFacadeControl.Layout.Filmstrip:
+                        case GUIFacadeControl.Layout.SmallIcons:
+                        case GUIFacadeControl.Layout.LargeIcons:
+                            return APIListLayout.Horizontal;
+                        case GUIFacadeControl.Layout.List:
+                        case GUIFacadeControl.Layout.Playlist:
+                            return APIListLayout.Vertical;
+                        default:
+                            break;
+                    }
                 }
             }
             return APIListLayout.Vertical;

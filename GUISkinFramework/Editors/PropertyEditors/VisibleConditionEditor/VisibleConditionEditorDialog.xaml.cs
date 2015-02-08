@@ -3,6 +3,7 @@ using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -251,6 +252,51 @@ namespace GUISkinFramework.Editor.PropertyEditors
             return string.Empty;
         }
 
+
+        public static string FullReference(string relativeReference)
+        {
+            // First, get the path for this executing assembly.
+            Assembly a = Assembly.GetExecutingAssembly();
+            string path = System.IO.Path.GetDirectoryName(a.Location);
+
+            // if the file exists in this Path - prepend the path
+            string fullReference = System.IO.Path.Combine(path, relativeReference);
+            if (System.IO.File.Exists(fullReference))
+                return fullReference;
+            else
+            {
+                // Strip off any trailing ".dll" if present.
+                if (string.Compare(relativeReference.Substring(relativeReference.Length - 4),".dll", true) == 0)
+                    fullReference = relativeReference.Substring(0, relativeReference.Length - 4);
+                else
+                    fullReference = relativeReference;
+
+                // See if the required assembly is already present in our current AppDomain
+                foreach (Assembly currAssembly in AppDomain.CurrentDomain.GetAssemblies())
+                {
+                    if (string.Compare(currAssembly.GetName().Name, fullReference, true) == 0)
+                    {
+                        // Found it, return the location as the full reference.
+                        return currAssembly.Location;
+                    }
+                }
+
+                // The assembly isn't present in our current application, so attempt to
+                // load it from the GAC, using the partial name.
+                try
+                {
+                    Assembly tempAssembly = Assembly.Load(fullReference);
+                    return tempAssembly.Location;
+                }
+                catch
+                {
+                    // If we cannot load or otherwise access the assembly from the GAC then just
+                    // return the relative reference and hope for the best.
+                    return relativeReference;
+                }
+            }
+        }
+
         private void LoadCompilerSettings()
         {
             if (!_compilerLoaded)
@@ -260,7 +306,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 _compilerParams.TreatWarningsAsErrors = false;
                 _compilerParams.GenerateExecutable = false;
                 _compilerParams.CompilerOptions = "/optimize";
-                string[] references = { "System.dll", "GUIFramework.dll" };
+                string[] references = { "System.dll", FullReference("GUIFramework.dll") };
                 _compilerParams.ReferencedAssemblies.AddRange(references);
                 _codeProvider = new CSharpCodeProvider();
                 _compilerLoaded = true;

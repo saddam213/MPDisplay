@@ -58,5 +58,7 @@ namespace MessageFramework.DataObjects
         public int ProgramId { get; set; }
         public int RecordPaddingStart { get; set; }
         public int RecordPaddingEnd { get; set; }
+        public DateTime StartTime { get; set; }
+        public DateTime EndTime { get; set; }
     }
 }

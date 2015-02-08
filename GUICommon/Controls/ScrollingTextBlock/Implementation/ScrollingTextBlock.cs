@@ -38,8 +38,6 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty ScrollSeperatorProperty = DependencyProperty.Register("ScrollSeperator", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(string.Empty, (d, e) => (d as ScrollingTextBlock).Reset()));
         public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register("TextAlignment", typeof(TextAlignment), typeof(ScrollingTextBlock), new PropertyMetadata(TextAlignment.Left, (d, e) => (d as ScrollingTextBlock).Reset()));
 
-
-
         public string Text
         {
             get { return (string)GetValue(TextProperty); }

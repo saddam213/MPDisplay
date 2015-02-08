@@ -159,7 +159,7 @@ namespace GUIFramework
         /// </value>
         public bool IsUserInteracting
         {
-            get { return DateTime.Now < _lastUserInteraction.AddSeconds(10); }
+            get { return DateTime.Now < _lastUserInteraction.AddSeconds(_settings.UserInteractionDelay); }
         } 
         #endregion
 
@@ -317,12 +317,14 @@ namespace GUIFramework
             GUIActionManager.RegisterAction(XmlActionType.NowPlaying, action => NowPlaying());
             GUIActionManager.RegisterAction(XmlActionType.RunProgram, StartApplication);
             GUIActionManager.RegisterAction(XmlActionType.KillProgram, StopApplication);
+            GUIActionManager.RegisterAction(XmlActionType.ScheduleEPGAction, action => ScheduleEPGAction());
 
             InfoRepository.RegisterMessage<int>(InfoMessageType.DialogId, async windowId => await OpenMediaPortalDialog());
             ListRepository.RegisterMessage<APIListAction>(ListServiceMessage.SendItem, async item => await SendListAction(item));
 
             TVGuideRepository.RegisterMessage(TVGuideMessageType.RefreshGuideData, async () => await SendGuideAction(APIGuideActionType.UpdateData));
             TVGuideRepository.RegisterMessage(TVGuideMessageType.RefreshRecordings, async () => await SendGuideAction(APIGuideActionType.UpdateRecordings));
+            TVGuideRepository.RegisterMessage(TVGuideMessageType.EPGItemSelected, async () => await SendGuideAction(APIGuideActionType.EPGAction));
         }
 
      
@@ -345,11 +347,13 @@ namespace GUIFramework
             GUIActionManager.DeregisterAction(XmlActionType.NowPlaying, this);
             GUIActionManager.DeregisterAction(XmlActionType.RunProgram, this);
             GUIActionManager.DeregisterAction(XmlActionType.KillProgram, this);
+            GUIActionManager.DeregisterAction(XmlActionType.ScheduleEPGAction, this);
 
             InfoRepository.DeregisterMessage(InfoMessageType.DialogId, this);
             ListRepository.DeregisterMessage(ListServiceMessage.SendItem, this);
             TVGuideRepository.DeregisterMessage(TVGuideMessageType.RefreshGuideData, this);
             TVGuideRepository.DeregisterMessage(TVGuideMessageType.RefreshRecordings, this);
+            TVGuideRepository.DeregisterMessage(TVGuideMessageType.EPGItemSelected, this);
         }
 
         /// <summary>
@@ -375,6 +379,7 @@ namespace GUIFramework
             Log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
             if (isExit)
             {
+                TVGuideRepository.Instance.ResetRepository();
                 InfoRepository.Instance.ResetRepository();
                 ListRepository.Instance.ResetRepository();
                 PropertyRepository.Instance.ResetRepository();
@@ -382,6 +387,7 @@ namespace GUIFramework
             }
              else
             {
+                TVGuideRepository.Instance.ClearRepository();
                 InfoRepository.Instance.ClearRepository();
                 ListRepository.Instance.ClearRepository();
                 PropertyRepository.Instance.ClearRepository();
@@ -469,8 +475,13 @@ namespace GUIFramework
                         await _currentWindow.WindowClose();
                     }
                     await RegisterWindowData(newWindow);
-                    _currentWindow = newWindow;
+                     _currentWindow = newWindow;
+                    if ( _currentWindow.FirstOpen)
+                    {
+                        Thread.Sleep(750);
+                    }
                     await _currentWindow.WindowOpen();
+                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
         }
@@ -967,20 +978,34 @@ namespace GUIFramework
 
         private Task SendGuideAction(APIGuideActionType actionType)
         {
+            APIGuideAction action;
+
+            if (actionType == APIGuideActionType.EPGAction && TVGuideRepository.Instance.CurrentGuideAction != null)
+            {
+                action = TVGuideRepository.Instance.CurrentGuideAction;
+            }
+            else
+            {
+                action = new APIGuideAction();
+            }
+
+            action.ActionType = actionType;
+
             return SendMediaPortalMessage(new APIMediaPortalMessage
             {
                 MessageType = APIMediaPortalMessageType.ActionMessage,
                 ActionMessage = new APIActionMessage
                 {
                     ActionType = APIActionMessageType.GuideAction,
-                    GuideAction = new APIGuideAction
-                    {
-                        ActionType = actionType
-                    }
+                    GuideAction = action
                 }
             });
         }
 
+        private void ScheduleEPGAction()
+        {
+            TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
+        }
 
         public async Task SendKeepAlive()
         {

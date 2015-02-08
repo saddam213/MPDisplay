@@ -65,7 +65,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         {
             var propEditor = new PropertyEditor.PropertyEditor(SkinInfo);
             propEditor.SelectedProperty = SkinInfo.Properties.FirstOrDefault(p => p.SkinTag == Value);
-            if (new EditorDialog(propEditor).ShowDialog() == true && propEditor.SelectedProperty != null)
+            if (new EditorDialog(propEditor, true).ShowDialog() == true && propEditor.SelectedProperty != null)
             {
                 NotifyPropertyChanged("NumberProperties");
                 Value = propEditor.SelectedProperty.SkinTag;

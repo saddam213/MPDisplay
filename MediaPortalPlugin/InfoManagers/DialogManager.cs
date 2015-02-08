@@ -51,6 +51,7 @@ namespace MediaPortalPlugin.InfoManagers
         private List<GUIButtonControl> _buttonControls;
         private int _lastFocusedControlId;
         private APIListAction _lastSelectedAction;
+        private int _lastListCount;
 
         #endregion
 
@@ -75,10 +76,7 @@ namespace MediaPortalPlugin.InfoManagers
             
         }
 
-    
-
-
-        #region Process
+         #region Process
 
         public void OnActionMessageReceived(APIActionMessage action)
         {
@@ -247,7 +245,7 @@ namespace MediaPortalPlugin.InfoManagers
         /// <summary>
         /// On new dialog action
         /// </summary>
-        private void DialogUpdate()
+         private void DialogUpdate()
         {
             try
             {
@@ -259,6 +257,11 @@ namespace MediaPortalPlugin.InfoManagers
                         if (currentList != null && currentList.SelectedListItem != null)
                         {
                            SendSelectedItem(currentList.SelectedListItem.Label, currentList.SelectedListItemIndex);
+                        }
+                        if (currentList.ListItems.Count != _lastListCount)
+                        {
+                            _lastListCount = currentList.ListItems.Count;
+                            SendList(ListManager.Instance.GetAPIListItems(currentList, APIListLayout.Vertical));
                         }
                     }
                     else if (_currentDialogType == DialogType.Button)

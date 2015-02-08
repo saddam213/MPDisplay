@@ -34,6 +34,11 @@ namespace GUIFramework.Managers
             Instance.InfoService.Register<T>(message, callback);
         }
 
+        public static void RegisterMessage<T, U>(InfoMessageType message, Action<T, U> callback)
+        {
+            Instance.InfoService.Register<T, U>(message, callback);
+        }
+
         public static void DeregisterMessage(InfoMessageType message, object owner)
         {
             Instance.InfoService.Deregister(message, owner);
@@ -61,6 +66,8 @@ namespace GUIFramework.Managers
         private int _previousWindowId = -1;
         private int _focusedDialogControlId = -1;
         private int _focusedWindowControlId = -1;
+        private int _focusedProgramId = -1;
+        private int _focusedChannelId = -1;
         private bool _isTVServerConnected;
         private bool _isMediaPortalConnected;
         private bool _isMPDisplayConnected;
@@ -289,10 +296,43 @@ namespace GUIFramework.Managers
                 {
                     _focusedWindowControlId = value;
                     NotifiyValueChanged<int>(InfoMessageType.FocusedWindowControlId, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+                   GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
         }
+
+
+        /// <summary>
+        /// Gets the current focused media portal program id in TVGuide.
+        /// </summary>
+        public int FocusedProgramId
+        {
+            get { return _focusedProgramId; }
+            set
+            {
+                if (_focusedProgramId != value)
+                {
+                    _focusedProgramId = value;
+                    NotifiyValueChanged<int,int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
+                 }
+            }
+        }
+        /// <summary>
+        /// Gets the current focused media portal channel id in TVGuide.
+        /// </summary>
+        public int FocusedChannelId
+        {
+            get { return _focusedChannelId; }
+            set
+            {
+                if (_focusedChannelId != value)
+                {
+                    _focusedChannelId = value;
+                    NotifiyValueChanged<int, int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
+                }
+            }
+        }
+
 
         /// <summary>
         /// Gets the current focused media portal dialog control id.
@@ -369,6 +409,11 @@ namespace GUIFramework.Managers
             InfoService.NotifyListeners(type, value);
         }
 
+        public void NotifiyValueChanged<T, U>(InfoMessageType type, T value1, U value2)
+        {
+            InfoService.NotifyListeners(type, value1, value2);
+        }
+
 
         public void AddInfo(APIInfoMessage message)
         {
@@ -423,6 +468,16 @@ namespace GUIFramework.Managers
                 else if (message.MessageType == APIWindowMessageType.FocusedControlId)
                 {
                     FocusedWindowControlId = message.FocusedControlId;
+
+                    FocusedChannelId = -1;
+                    FocusedProgramId = -1;
+
+                    // message contains EPG update
+                    if (message.ProgramId > 0 && message.ChannelId > 0)
+                    {
+                        FocusedProgramId = message.ProgramId;
+                        FocusedChannelId = message.ChannelId;
+                    }
                 }
             }
         }
@@ -459,6 +514,7 @@ namespace GUIFramework.Managers
         PreviousWindowId,
         FocusedWindowControlId,
         FocusedDialogControlId,
+        FocusedTVGuideId,
         IsMPDisplayConnected,
         IsMediaPortalConnected,
         IsTVServerConnected,

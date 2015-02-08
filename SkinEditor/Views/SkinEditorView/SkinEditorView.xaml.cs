@@ -469,6 +469,8 @@ namespace SkinEditor.Views
                     IsWindowOpenVisible = true,
                     WindowId = windowId,
                     ProgressValue = "60",
+                    LabelFixedText = "1:23:45",
+                    LabelMovingText = "0:34:56",
                     ControlStyle = controlStyle as XmlProgressBarStyle ?? new XmlProgressBarStyle(),
                 };
             }
@@ -516,6 +518,7 @@ namespace SkinEditor.Views
             {
                 var coverFlowItemStyle = Settings.DesignerStyle.GetDesignerStyle("CoverFlowItemStyle") as XmlListItemStyle;
                 var verticalItemStyle = Settings.DesignerStyle.GetDesignerStyle("VerticalItemStyle") as XmlListItemStyle;
+                var verticalIconItemStyle = Settings.DesignerStyle.GetDesignerStyle("VerticalIconItemStyle") as XmlListItemStyle;
                 var horizontalItemStyle = Settings.DesignerStyle.GetDesignerStyle("HorizontalItemStyle") as XmlListItemStyle;
                 return new XmlList
                 {
@@ -528,6 +531,7 @@ namespace SkinEditor.Views
                     ControlStyle = controlStyle as XmlListStyle ?? new XmlListStyle(),
                     CoverFlowItemStyle = coverFlowItemStyle ?? new XmlListItemStyle(),
                     VerticalItemStyle = verticalItemStyle ?? new XmlListItemStyle(),
+                    VerticalIconItemStyle = verticalIconItemStyle ?? new XmlListItemStyle(),
                     HorizontalItemStyle = horizontalItemStyle ?? new XmlListItemStyle(),
                     ListLayout = XmlListLayout.Auto,
                 };
@@ -545,6 +549,8 @@ namespace SkinEditor.Views
         public ICommand PasteControlCommand { get; internal set; }
         public ICommand DeleteControlCommand { get; internal set; }
         public ICommand MoveControlCommand { get; internal set; }
+        public ICommand HideControlCommand { get; internal set; }
+        public ICommand UnhideControlCommand { get; internal set; }
 
         /// <summary>
         /// Populates the context menu.
@@ -556,10 +562,10 @@ namespace SkinEditor.Views
             PasteControlCommand = new RelayCommand(PasteControl,CanExecutePasteControlCommand);
             DeleteControlCommand = new RelayCommand(DeleteControl,CanExecuteDeleteControlCommand);
             MoveControlCommand = new RelayCommand<string>(p => MoveControl(bool.Parse(p)), param => CanExecuteMoveControlCommand());
+            HideControlCommand = new RelayCommand(HideControl, CanExecuteHideControlCommand);
+            UnhideControlCommand = new RelayCommand(UnhideControl, CanExecuteUnhideControlCommand);
         }
-
-    
-
+  
         /// <summary>
         /// Determines whether AddControlCommand can execute.
         /// </summary>
@@ -757,6 +763,124 @@ namespace SkinEditor.Views
         }
 
         /// <summary>
+        /// Determines whether HideControlCommand can execute.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if HideControlCommand can execute; otherwise, <c>false</c>.
+        /// </returns>
+        private bool CanExecuteHideControlCommand()
+        {
+            if (SelectedTreeItem != null)
+            {
+                if (SelectedTreeItem is XmlControl)
+                {
+                    var control = SelectedTreeItem as XmlControl;
+                    return getControlsVisible(control, true);
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Hide the control and all childen.
+        /// </summary>
+        private void HideControl()
+        {
+            if (SelectedTreeItem is XmlControl)
+            {
+                var control = SelectedTreeItem as XmlControl;
+                setControlsVisible(control, false);
+            }
+        }
+
+        /// <summary>
+        /// Determines whether UnhideControlCommand can execute.
+        /// </summary>
+        /// <returns>
+        ///   <c>true</c> if UnhideControlCommand can execute; otherwise, <c>false</c>.
+        /// </returns>
+        private bool CanExecuteUnhideControlCommand()
+        {
+            if (SelectedTreeItem != null)
+            {
+                if (SelectedTreeItem is XmlControl)
+                {
+                    var control = SelectedTreeItem as XmlControl;
+                    return getControlsVisible(control, false);
+                }
+            }
+            return false;
+        }
+
+        /// <summary>
+        /// Unhide the control and all childen.
+        /// </summary>
+        private void UnhideControl()
+        {
+            if (SelectedTreeItem is XmlControl)
+            {
+                var control = SelectedTreeItem as XmlControl;
+                setControlsVisible(control, true);
+                setParentControlsVisible(control, true);
+            }
+        }
+
+        // set recursivle the DesignerVisibile property of control and all childs
+        private void setControlsVisible( XmlControl control, bool value ) 
+        {
+            if (control != null)
+            {
+                if (control is XmlGroup)
+                {
+                    foreach (var control2 in (control as IXmlControlHost).Controls)
+                    {
+                        setControlsVisible(control2, value);
+                    }
+                }
+                control.DesignerVisible = value;
+            }
+        }
+
+        // set recursivly the DesignerVisibility property of all parents of control
+        private void setParentControlsVisible(XmlControl control, bool value)
+        {
+            if (control != null)
+            {
+                var control2 = GetControlParent(control);
+                if (control2 != null)
+                {
+                    if (control2 is XmlGroup)
+                    {
+                        (control2 as XmlGroup).DesignerVisible = value;
+                        setParentControlsVisible((control2 as XmlGroup), value);
+                    }
+                }
+            }
+        }
+
+        // get recursively the property DesignerVisible.
+        // if control is a group check if any of the childs has the value 'value'
+        private bool getControlsVisible(XmlControl control, bool value)
+        {
+            bool result = false;
+            if (control != null)
+            {
+                if (control is XmlGroup)
+                {
+                    foreach (var control2 in (control as IXmlControlHost).Controls)
+                    {
+                        result |= getControlsVisible(control2, value);
+                    }
+                }
+                else
+                {
+                    result |= control.DesignerVisible == value;
+                }
+            }
+            return result;
+        }
+
+        /// <summary>
         /// On Skins context menu opening.
         /// </summary>
         /// <param name="sender">The sender.</param>
@@ -773,9 +897,6 @@ namespace SkinEditor.Views
 
         #endregion
 
-    
-
-     
         private void Button_AddWindow_Click(object sender, RoutedEventArgs e)
         {
             var newWindowDialog = new NewWindowDialog(SkinInfo, Settings.DesignerStyle);
@@ -786,8 +907,6 @@ namespace SkinEditor.Views
                 SelectTreeItem(newWindowDialog.NewWindow);
             }
         }
-
-     
 
         private void PropertyGrid_PropertyValueChanged(object sender, PropertyValueChangedEventArgs e)
         {

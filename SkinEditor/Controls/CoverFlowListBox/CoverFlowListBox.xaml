@@ -48,7 +48,7 @@
 						<DataTrigger Binding="{Binding ListOrientation, ElementName=UI}" Value="Vertical" >
 							<Setter Property="ScrollViewer.PanningDeceleration" Value="0.001" />
 						</DataTrigger>
-					</Style.Triggers>
+                    </Style.Triggers>
 				</Style>
 			</ListBox.Style>
 
@@ -63,7 +63,10 @@
 									<DataTrigger Binding="{Binding ListOrientation, ElementName=UI}" Value="Vertical" >
 										<Setter Property="Orientation" Value="Vertical" />
 									</DataTrigger>
-									<DataTrigger Binding="{Binding ListOrientation, ElementName=UI}" Value="Auto" >
+                                    <DataTrigger Binding="{Binding ListOrientation, ElementName=UI}" Value="VerticalIcon" >
+                                        <Setter Property="Orientation" Value="Vertical" />
+                                    </DataTrigger>
+                                    <DataTrigger Binding="{Binding ListOrientation, ElementName=UI}" Value="Auto" >
 										<Setter Property="Orientation" Value="Vertical" />
 									</DataTrigger>
 									<DataTrigger Binding="{Binding ListOrientation, ElementName=UI}" Value="CoverFlow" >

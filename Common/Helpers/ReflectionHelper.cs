@@ -129,6 +129,28 @@ namespace Common.Helpers
             return defaultValue;
         }
 
+       /// <summary>
+        /// Sets a property value to an object
+        /// </summary>
+        /// <typeparam name="T">Property Type</typeparam>
+        /// <param name="obj">The Object To Find Property In</param>
+        /// <param name="property">The Property Name To Find</param>
+        /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
+        public static void SetPropertyValue<T>(object obj, string property, T value)
+        {
+            try
+            {
+                if (obj != null)
+                {
+                    PropertyInfo _prop = obj.GetType().GetProperty(property);
+                    if (_prop != null ) _prop.SetValue(obj, value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Message(LogLevel.Debug, "[SetPropertyValue] - An exception occured setting property value, property: {1} - {0}", ex, property);
+            }
+        }
         /// <summary>
         /// Gets a property value from an object
         /// </summary>

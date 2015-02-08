@@ -32,8 +32,8 @@ using SkinEditor.Views;
 
 namespace SkinEditor.ConnectionHelpers
 {
-          [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
-    public class ConnectionHelper : EditorViewModel, IMessageCallback
+    [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
+    public class ConnectionHelper : UserControl, IMessageCallback 
     {
 
         private MessageClient _messageBroker;
@@ -55,11 +55,12 @@ namespace SkinEditor.ConnectionHelpers
 
         private InfoEditorViewSettings _settings;
 
-        private List<EditorViewModel> _baseclasses = new List<EditorViewModel>();
+        private EditorViewModel _baseclass = null;
 
         public EditorViewModel baseclass
         {
-            set { _baseclasses.Add( value); }
+            set { _baseclass = value; }
+            get { return _baseclass; }
         }
 
         public InfoEditorViewSettings settings
@@ -115,7 +116,10 @@ namespace SkinEditor.ConnectionHelpers
             {
                 if (_propertyTagCache == null)
                 {
-                    _propertyTagCache = SkinInfo.Properties.SelectMany(x => x.MediaPortalTags).Select(m => m.Tag).ToList();
+                    if (_baseclass != null)
+                    {
+                        _propertyTagCache = _baseclass.SkinInfo.Properties.SelectMany(x => x.MediaPortalTags).Select(m => m.Tag).ToList();
+                    }
                 }
                 return _propertyTagCache;
             }
@@ -125,11 +129,8 @@ namespace SkinEditor.ConnectionHelpers
          // call notifyer of all registered baseclasses uning this instance
         private void NotifyPropertyChangedAll(string _property)
         {
-            foreach ( var _baseclass in _baseclasses )
-            {
-               if ( _baseclass != null ) _baseclass.NotifyPropertyChanged(_property);
-            }
-        }
+                if ( _baseclass != null ) _baseclass.NotifyPropertyChanged(_property);
+         }
 
         public async Task InitializeServerConnection()
         {
@@ -387,23 +388,23 @@ namespace SkinEditor.ConnectionHelpers
 
         public void OpenPropertyEditor(SkinPropertyItem item)
         {
-            if (item != null)
+            if (item != null && _baseclass != null)
             {
-                var propEditor = new PropertyEditor(SkinInfo);
+                var propEditor = new PropertyEditor(_baseclass.SkinInfo);
 
                 if (item.IsDefined)
                 {
-                    var selection = SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item.Tag && x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag))
-                                 ?? SkinInfo.Properties.FirstOrDefault(x => x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag));
+                    var selection = _baseclass.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item.Tag && x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag))
+                                 ?? _baseclass.SkinInfo.Properties.FirstOrDefault(x => x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag));
                     propEditor.SelectedProperty = selection;
                 }
                 else
                 {
                     var newProp = new XmlProperty { SkinTag = item.Tag, MediaPortalTags = new ObservableCollection<XmlMediaPortalTag> { new XmlMediaPortalTag { Tag = item.Tag } } };
-                    SkinInfo.Properties.Add(newProp);
+                    _baseclass.SkinInfo.Properties.Add(newProp);
                     propEditor.SelectedProperty = newProp;
                 }
-                new EditorDialog(propEditor).ShowDialog();
+                new EditorDialog(propEditor, false).ShowDialog();
                 PropertyTagCache = null;
 
                 foreach (var property in PropertyData)

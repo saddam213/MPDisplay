@@ -22,11 +22,11 @@ namespace GUISkinFramework.Controls
     [XmlType(TypeName = "Button")]
     public class XmlButton : XmlControl
     {
-        private string _labelText;
+        private string _labelText= "";
         private XmlButtonStyle _controlStyle;
         private string _image = "";
-        private string _defaultImage;
-        private string _defaultLabelText;
+        private string _defaultImage = "";
+        private string _defaultLabelText = "";
        
         [DefaultValue(null)]
         [PropertyOrder(100)]

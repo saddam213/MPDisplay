@@ -19,14 +19,13 @@ namespace Common.Settings
         private int _listBatchThreshold = 600;
         private int _listBatchSize = 200;
         private int _epgDays = 3;
+        private int _userInteractionDelay = 10;
 
         public ConnectionSettings ConnectionSettings
         {
             get { return _connectionSettings; }
             set { _connectionSettings = value; NotifyPropertyChanged("ConnectionSettings"); }
-        }
-
-   
+        } 
 
         public bool LaunchMPDisplayOnStart
         {
@@ -45,7 +44,6 @@ namespace Common.Settings
             get { return _closeMPDisplayOnExit; }
             set { _closeMPDisplayOnExit = value; NotifyPropertyChanged("CloseMPDisplayOnExit"); }
         }
-
 
 
         public bool IsSystemInfoEnabled
@@ -71,5 +69,12 @@ namespace Common.Settings
             get { return _epgDays; }
             set { _epgDays = value; NotifyPropertyChanged("EPGDays"); }
         }
+
+        public int UserInteractionDelay
+        {
+            get { return _userInteractionDelay; }
+            set { _userInteractionDelay = value; NotifyPropertyChanged("UserInteractionDelay"); }
+        }
+
     }
 }

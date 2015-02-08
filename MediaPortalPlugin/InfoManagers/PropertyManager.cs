@@ -110,9 +110,6 @@ namespace MediaPortalPlugin.InfoManagers
                     _registeredProperties.Clear();
                 }
             }
-            Log.Message(LogLevel.Verbose, "[RegisterWindowProperties] - Waiting 400ms now before sending properties..."); 
-            Thread.Sleep(400); 
-
             Suspend(false);
         }
 
@@ -223,25 +220,6 @@ namespace MediaPortalPlugin.InfoManagers
                 Number = tagValue
             });
         }
-
-
-
-        //private byte[] GetImageBytes(string tagValue)
-        //{
-        //    if (!string.IsNullOrEmpty(tagValue) && File.Exists(tagValue))
-        //    {
-        //        try
-        //        {
-        //            return File.ReadAllBytes(tagValue);
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            Log.Message(LogLevel.Error, "An exception occured processing property image, FileName: {0}{1}Excption:{1}{2}", tagValue, Environment.NewLine, ex.ToString());
-        //        }
-        //    }
-        //    return null;
-        //}
-
 
         private void SystemInfo_OnNumberDataChanged(string tag, double tagValue)
         {

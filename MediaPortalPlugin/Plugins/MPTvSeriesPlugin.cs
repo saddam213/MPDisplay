@@ -40,6 +40,11 @@ namespace MediaPortalPlugin.PluginHelpers
             return false;
         }
 
+        public override bool MustResendListOnLayoutChange()
+        {
+            return true;
+        }
+
         public override APIPlaybackType PlayType
         {
             get { return APIPlaybackType.MPTVSeries; }
@@ -58,6 +63,10 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.Vertical:
                         filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewVerticalListItemThumbPath, string.Empty)
                                             : ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeriesViewVerticalListItemThumbPath, string.Empty);
+                        break;
+                    case APIListLayout.VerticalIcon:
+                        filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewVerticalIconListItemThumbPath, string.Empty)
+                                            : ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeriesViewVerticalIconListItemThumbPath, string.Empty);
                         break;
                     case APIListLayout.Horizontal:
                         filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewHorizontalListItemThumbPath, string.Empty)

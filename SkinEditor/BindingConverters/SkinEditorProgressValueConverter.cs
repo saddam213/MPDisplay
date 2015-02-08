@@ -33,8 +33,6 @@ namespace SkinEditor.BindingConverters
                     double.TryParse(property, out percentage);
                 }
 
-
-
                 try
                 {
                     var margin = values[2] != null ? values[2].ToString().ToThickness() : new Thickness(0);

@@ -24,14 +24,14 @@ namespace GUISkinFramework.Controls
     [ExpandableObject]
     public class XmlGroupStyle : XmlControlStyle
     {
-        private string _borderThickness;
-        private string _borderCornerRadius;
+        private string _borderThickness = "0,0,0,0";
+        private string _borderCornerRadius = "0,0,0,0";
         private XmlBrush _backgroundBrush;
         private XmlBrush _shadeBrush;
         private XmlBrush _glossBrush;
         private XmlBrush _borderBrush;
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -41,7 +41,7 @@ namespace GUISkinFramework.Controls
             set { _borderThickness = value; NotifyPropertyChanged("BorderThickness"); }
         }
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(61)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]

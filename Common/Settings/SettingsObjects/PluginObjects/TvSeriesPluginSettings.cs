@@ -10,9 +10,11 @@ namespace Common.Settings.SettingsObjects
     public  class TvSeriesPluginSettings : SupportedPluginSettings
     {
         private string _seasonViewVerticalListItemThumbPath;
+        private string _seasonViewVerticalIconListItemThumbPath;
         private string _seasonViewHorizontalListItemThumbPath;
         private string _seasonViewCoverflowListItemThumbPath;
         private string _seriesViewVerticalListItemThumbPath;
+        private string _seriesViewVerticalIconListItemThumbPath;
         private string _seriesViewHorizontalListItemThumbPath;
         private string _seriesViewCoverflowListItemThumbPath;
 
@@ -20,6 +22,12 @@ namespace Common.Settings.SettingsObjects
         {
             get { return _seasonViewVerticalListItemThumbPath; }
             set { _seasonViewVerticalListItemThumbPath = value; }
+        }
+
+        public string SeasonViewVerticalIconListItemThumbPath
+        {
+            get { return _seasonViewVerticalIconListItemThumbPath; }
+            set { _seasonViewVerticalIconListItemThumbPath = value; }
         }
 
         public string SeasonViewHorizontalListItemThumbPath
@@ -40,6 +48,12 @@ namespace Common.Settings.SettingsObjects
         {
             get { return _seriesViewVerticalListItemThumbPath; }
             set { _seriesViewVerticalListItemThumbPath = value; }
+        }
+
+        public string SeriesViewVerticalIconListItemThumbPath
+        {
+            get { return _seriesViewVerticalIconListItemThumbPath; }
+            set { _seriesViewVerticalIconListItemThumbPath = value; }
         }
 
         public string SeriesViewHorizontalListItemThumbPath

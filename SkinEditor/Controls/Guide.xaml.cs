@@ -204,8 +204,6 @@ namespace SkinEditor.Controls
                     channel.UpdateCurrentProgram(Now());
                 }
 
-              
-
             }, DispatcherPriority.Background);
         }
 
@@ -246,7 +244,7 @@ namespace SkinEditor.Controls
                 {
                     StartTime = begin.AddMinutes(30 * x),
                     EndTime = begin.AddMinutes((30 * x) + 30),
-                    Title = begin.AddMinutes(30 * x).ToString("hh:mm")
+                    Title = begin.AddMinutes(30 * x).ToString("t")
                 }).ToList();
 
                 TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);

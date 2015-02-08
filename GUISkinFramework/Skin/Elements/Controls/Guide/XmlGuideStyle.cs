@@ -23,43 +23,42 @@ namespace GUISkinFramework.Controls
     [ExpandableObject]
     public class XmlGuideStyle : XmlControlStyle
     {
-        private string _borderThickness;
-        private string _borderCornerRadius;
+        private string _borderThickness = "0,0,0,0";
+        private string _borderCornerRadius = "0,0,0,0";
         private XmlBrush _backgroundBrush;
         private XmlBrush _shadeBrush;
         private XmlBrush _glossBrush;
         private XmlBrush _borderBrush;
         private XmlBrush _channelListBackgroundBrush;
         private XmlBrush _channelListBorderBrush;
-        private string _channelListCornerRadius;
+        private string _channelListCornerRadius = "0,0,0,0";
         private XmlBrush _programListBackgroundBrush;
         private XmlBrush _programListBorderBrush;
-        private string _programListCornerRadius;
-        private string _channelListBorderThickness;
-        private string _programListBorderThickness;
+        private string _programListCornerRadius = "0,0,0,0";
+        private string _channelListBorderThickness = "0,0,0,0";
+        private string _programListBorderThickness = "0,0,0,0";
         private XmlBrush _timelineBackground;
         private XmlBrush _timelineMarkerBrush;
         private int _timelineMarkerThickness;
-        private string _timelineFontType;
-        private string _timelineFontWeight;
-        private int _timelineFontSize;
+        private string _timelineFontType = "Microsoft Sans Serif";
+        private string _timelineFontWeight = "Normal";
+        private int _timelineFontSize = 30;
         private XmlBrush _timelineFontBrush;
         private HorizontalAlignment _timelineLabelHorizontalAlignment;
         private VerticalAlignment _timelineLabelVerticalAlignment;
-        private string _timelineItemBorderThickness;
-        private string _timelineItemCornerRadius;
+        private string _timelineItemBorderThickness = "0,0,0,0";
+        private string _timelineItemCornerRadius = "0,0,0,0";
         private XmlBrush _timelineItemBorderBrush;
         private XmlBrush _timelineBorderBrush;
-        private string _timelineBorderThickness;
-        private string _timelineCornerRadius;
-
+        private string _timelineBorderThickness = "0,0,0,0";
+        private string _timelineCornerRadius = "0,0,0,0";
 
         public XmlGuideStyle()
         {
             this.SetDefaultValues();
         }
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -69,7 +68,7 @@ namespace GUISkinFramework.Controls
             set { _borderThickness = value; NotifyPropertyChanged("BorderThickness"); }
         }
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(61)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -201,14 +200,6 @@ namespace GUISkinFramework.Controls
             get { return _glossBrush; }
             set { _glossBrush = value; NotifyPropertyChanged("GlossBrush"); }
         }
-
-
-
-     
-     
-
-
-       
 
         #region Timeline
 

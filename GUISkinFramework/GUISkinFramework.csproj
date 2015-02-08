@@ -60,7 +60,6 @@
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
     <Compile Include="Converters\XmlEQStyleEnumConverter.cs" />
     <Compile Include="Converters\XmlCornerRadiusConverter.cs" />
-    <Compile Include="Converters\XmlPercentToWidthConverter.cs" />
     <Compile Include="Converters\ImageCacheConverter.cs" />
     <Compile Include="Converters\XmlFontConverter.cs" />
     <Compile Include="Converters\XmlThicknessConverter.cs" />

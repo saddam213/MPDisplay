@@ -13,6 +13,8 @@ namespace GUIFramework.GUI.Controls
         #region Fields
 
         private double _progress;
+        private string _labelFixed;
+        private string _labelMoving;
 
         #endregion
 
@@ -54,6 +56,24 @@ namespace GUIFramework.GUI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or sets the fixed label.
+        /// </summary>
+        public string LabelFixed
+        {
+            get { return _labelFixed; }
+            set { _labelFixed = value; NotifyPropertyChanged("LabelFixed"); }
+        }
+
+        /// <summary>
+        /// Gets or sets the moving label.
+        /// </summary>
+        public string LabelMoving
+        {
+            get { return _labelMoving; }
+            set { _labelMoving = value; NotifyPropertyChanged("LabelMoving"); }
+        }
+
         #endregion
 
         #region GUIControl Overrides
@@ -65,6 +85,8 @@ namespace GUIFramework.GUI.Controls
         {
             base.CreateControl();
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.ProgressValue);
+            RegisteredProperties.AddRange(PropertyRepository.GetRegisteredProperties(this, SkinXml.LabelFixedText));
+            RegisteredProperties.AddRange(PropertyRepository.GetRegisteredProperties(this, SkinXml.LabelMovingText));
         }
 
         /// <summary>
@@ -74,6 +96,8 @@ namespace GUIFramework.GUI.Controls
         {
             base.OnRegisterInfoData();
             PropertyRepository.RegisterPropertyMessage(this, SkinXml.ProgressValue);
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.LabelFixedText);
+            PropertyRepository.RegisterPropertyMessage(this, SkinXml.LabelMovingText);
         }
 
         /// <summary>
@@ -83,6 +107,8 @@ namespace GUIFramework.GUI.Controls
         {
             base.OnDeregisterInfoData();
             PropertyRepository.DeregisterPropertyMessage(this, SkinXml.ProgressValue);
+            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelFixedText);
+            PropertyRepository.DeregisterPropertyMessage(this, SkinXml.LabelMovingText);
         }
 
         /// <summary>
@@ -90,8 +116,15 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         public async override void UpdateInfoData()
         {
+            string text;
+
             base.UpdateInfoData();
             Progress = await PropertyRepository.GetProperty<double>(SkinXml.ProgressValue);
+            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelFixedText);
+            LabelFixed = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelFixedText);
+            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelMovingText);
+            LabelMoving = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelMovingText);
+
         }
 
         /// <summary>
@@ -101,6 +134,8 @@ namespace GUIFramework.GUI.Controls
         {
             base.ClearInfoData();
             Progress = 0;
+            LabelFixed = string.Empty;
+            LabelMoving = string.Empty;
         }
 
         #endregion

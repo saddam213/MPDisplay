@@ -14,7 +14,7 @@ using System.Linq;
 using GUISkinFramework.Common;
 using Common.Helpers;
 
-namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
+namespace GUISkinFramework.Editor.PropertyEditors
 {
     /// <summary>
     /// Interaction logic for ImagePicker.xaml
@@ -23,8 +23,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
     {
         private List<string> _allowedsExtensions = new List<string>(new string[] { ".BMP", ".JPG", ".GIF", ".PNG" });
         private string _imageFilter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG";
-        private FileSystemWatcher _imageWatcher;
-      //  private ImageFile _selectedImage;
+        private FileSystemWatcher _imageWatcher = null;
         private ObservableCollection<ImageFile> _imageFiles = new ObservableCollection<ImageFile>();
         private ObservableCollection<object> _folderMenu = new ObservableCollection<object>();
         private ObservableCollection<object> _imageMenu = new ObservableCollection<object>();
@@ -33,7 +32,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
         public ImagePicker()
         {
             InitializeComponent();
-            CreateContextMenu();
+            CreateContextMenu();      
         }
 
 

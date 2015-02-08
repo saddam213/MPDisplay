@@ -50,6 +50,7 @@ namespace GUISkinFramework.Controls
         private string _visibleCondition = string.Empty;
         private ObservableCollection<XmlAnimation> _animations = new ObservableCollection<XmlAnimation>();
         private ObservableCollection<int> _mediaPortalFocusControls = new ObservableCollection<int>();
+        private bool _designerVisible = true;
 
         public XmlControl()
         {
@@ -65,6 +66,13 @@ namespace GUISkinFramework.Controls
         public string DisplayName
         {
             get { return Name; }
+        }
+
+        [XmlIgnore]
+        [Browsable(false)]
+        public bool DesignerVisible {
+            get { return _designerVisible; }
+            set { _designerVisible = value; NotifyPropertyChanged("DesignerVisible"); }
         }
 
         [PropertyOrder(0)]

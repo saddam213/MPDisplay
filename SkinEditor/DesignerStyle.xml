@@ -114,8 +114,30 @@
       <Height>50</Height>
 	  <ItemMargin>1,1,1,1</ItemMargin>
     </ControlStyle>
-	
-    <ControlStyle x:type="ListItemStyle" StyleId="CoverFlowItemStyle">
+
+   <ControlStyle x:type="ListItemStyle" StyleId="VerticalIconItemStyle">
+     <BorderThickness>1,1,1,1</BorderThickness>
+     <CornerRadius>4,4,4,4</CornerRadius>
+     <NoFocusBrush x:type="ColorBrush" Color="#FF000000" />
+     <NoFocusBorderBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <FocusBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <FocusBorderBrush x:type="ColorBrush" Color="#FF000000" />
+     <GlossBrush StyleId="Gloss" />
+     <FocusFontBrush x:type="ColorBrush" Color="#FF000000" />
+     <NoFocusFontBrush x:type="ColorBrush" Color="#FF00BFFF" />
+     <LabelMargin>50,0,0,0</LabelMargin>
+     <LabelHorizontalAlignment>Left</LabelHorizontalAlignment>
+     <EnableImage>true</EnableImage>
+     <ImageMargin>3,3,3,3</ImageMargin>
+     <ImageHorizontalAlignment>Left</ImageHorizontalAlignment>
+     <ImageVerticalAlignment>Top</ImageVerticalAlignment>
+     <ImageCornerRadius>4</ImageCornerRadius>
+     <Width>600</Width>
+     <Height>50</Height>
+     <ItemMargin>1,1,1,1</ItemMargin>
+   </ControlStyle>
+
+   <ControlStyle x:type="ListItemStyle" StyleId="CoverFlowItemStyle">
       <BorderThickness>1,1,1,1</BorderThickness>
       <CornerRadius>4,4,4,4</CornerRadius>
       <NoFocusBrush x:type="ColorBrush" Color="#FF000000" />

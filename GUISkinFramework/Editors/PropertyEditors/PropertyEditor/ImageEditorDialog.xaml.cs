@@ -303,7 +303,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_ImageEdit_Click(object sender, RoutedEventArgs e)
         {
-            new EditorDialog(new ImagePicker() { Width = 700, Height = 600 , SkinInfo = SkinInfo}).ShowDialog();
+            new EditorDialog(new ImagePicker() { Width = 700, Height = 600 , SkinInfo = SkinInfo}, false).ShowDialog();
         }
 
         private void Button_PropertyEdit_Click(object sender, RoutedEventArgs e)
@@ -313,7 +313,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             {
                 editor.SelectedProperty = SelectedPropertyEntry;
             }
-            new EditorDialog(editor).ShowDialog();
+            new EditorDialog(editor, false).ShowDialog();
         }
     }
 }

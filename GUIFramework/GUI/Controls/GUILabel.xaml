@@ -23,6 +23,8 @@
 			                            Height="{Binding BaseXml.Height, Mode=OneWay}"
 										FontFamily="{Binding BaseXml.ControlStyle.FontType, Converter={StaticResource GUIFontConverter}, Mode=OneWay}" 
 										FontSize="{Binding BaseXml.ControlStyle.FontSize, Mode=OneWay}" 
+                                        TextBlock.LineHeight="{Binding BaseXml.LineHeight, Mode=OneWay}"
+                                        TextBlock.LineStackingStrategy="BlockLineHeight"
 										Foreground="{Binding BaseXml.ControlStyle.FontBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" 
 										FontWeight="{Binding BaseXml.ControlStyle.FontWeight, Converter={StaticResource GUIFontConverter}, Mode=OneWay}"
 										Text="{Binding Label}"
@@ -34,7 +36,4 @@
 										ScrollSpeed="{Binding BaseXml.ScrollSpeed, Mode=OneWay}"
 										ScrollSeperator="{Binding BaseXml.ScrollSeperator, Mode=OneWay}">
 	</commonControls:ScrollingTextBlock>
-
-
-
 </base:GUIControl>

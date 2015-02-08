@@ -23,7 +23,7 @@ namespace GUISkinFramework.Controls
         private XmlBrush _glossBrush;
         private XmlBrush _borderBrush;
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
@@ -33,7 +33,7 @@ namespace GUISkinFramework.Controls
             set { _borderThickness = value; NotifyPropertyChanged("BorderThickness"); }
         }
 
-        [DefaultValue("0")]
+        [DefaultValue("0,0,0,0")]
         [PropertyOrder(61)]
         [EditorCategory("Appearance", 3)]
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]

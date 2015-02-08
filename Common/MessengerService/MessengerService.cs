@@ -70,6 +70,26 @@ namespace Common
         }
 
         /// <summary>
+        /// Registers a callback method, with 4 parameters, to be invoked when a specific message is broadcasted.
+        /// </summary>
+        /// <param name="message">The message to register for.</param>
+        /// <param name="callback">The callback to be called when this message is broadcasted.</param>
+        public void Register<T, U, V, W>(MessageType message, Action<T, U, V, W> callback)
+        {
+            this.Register(message, callback, typeof(T), typeof(U), typeof(V), typeof(W));
+        }
+
+        /// <summary>
+        /// Registers a callback method, with 5 parameters, to be invoked when a specific message is broadcasted.
+        /// </summary>
+        /// <param name="message">The message to register for.</param>
+        /// <param name="callback">The callback to be called when this message is broadcasted.</param>
+        public void Register<T, U, V, W, X>(MessageType message, Action<T, U, V, W, X> callback)
+        {
+            this.Register(message, callback, typeof(T), typeof(U), typeof(V), typeof(W), typeof(X));
+        }
+
+        /// <summary>
         /// Registers the specified message.
         /// </summary>
         /// <param name="message">The message.</param>

@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using GUIFramework.Managers;
+using GUIFramework.GUI;
 using GUISkinFramework.Common;
 using GUISkinFramework.Controls;
 using GUISkinFramework.Skin;
@@ -22,8 +23,8 @@ namespace GUIFramework.GUI.Controls
     /// <summary>
     /// Interaction logic for GUIList.xaml
     /// </summary>
-    [GUISkinElement(typeof(XmlList))]  
-    public partial class GUIList : GUIControl
+    [GUISkinElement(typeof(XmlList))]
+    public partial class GUIList : GUIDraggableListView
     {
         #region Fields
 
@@ -33,16 +34,11 @@ namespace GUIFramework.GUI.Controls
         private XmlListItemStyle _currentListItemStyle = new XmlListItemStyle();
         private XmlListLayout _currentListLayout = XmlListLayout.Vertical;
 
-        private ScrollViewer _scrollViewer;
-        private Point _itemMouseDownPoint = new Point();
-        private bool _itemMouseDown;
-        private DispatcherTimer _selectionTimer;
-
         private ListBoxItem _selectedContainer;
         private Storyboard _selectedZoomAnimation;
         private Storyboard _selectedZoomBackAnimation;
         private DoubleAnimation _selectedZoomX;
-        private DoubleAnimation _selectedZoomY; 
+        private DoubleAnimation _selectedZoomY;
 
         #endregion
 
@@ -54,9 +50,13 @@ namespace GUIFramework.GUI.Controls
         public GUIList() : base()
         {
             InitializeComponent();
-            _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
+            this.AddHandler(GUIList.MouseDownEvent, new MouseButtonEventHandler(GUIList_MouseButtonDown), true);
+             _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
             _scrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
-            MouseTouchDevice.RegisterEvents(listbox.GetDescendantByType<VirtualizingStackPanel>());
+            // Check for page updates if ScrollChanged event fires
+
+            // Setup listViewScrollViewer
+            _scrollViewer.ScrollChanged += new ScrollChangedEventHandler(GUIList_ScrollChanged);
         }
 
         #endregion
@@ -267,12 +267,18 @@ namespace GUIFramework.GUI.Controls
         /// </value>
         private bool IsLayoutVertical
         {
-            get { return _currentListLayout == XmlListLayout.Vertical; }
+            get { return _currentListLayout == XmlListLayout.Vertical || _currentListLayout == XmlListLayout.VerticalIcon; }
         }
 
         #endregion
 
         #region Methods
+
+        protected override void SelectListItem()
+        {
+            ScrollItemToCenter(listbox.SelectedItem as APIListItem);
+            ListRepository.Instance.SelectListControlItem(this, listbox.SelectedItem as APIListItem);
+        }
 
         /// <summary>
         /// Selects the item.
@@ -283,23 +289,6 @@ namespace GUIFramework.GUI.Controls
             listbox.ScrollIntoView(item);
             ScrollItemToCenter(item);
             listbox.SelectedItem = item;
-        }
-
-        /// <summary>
-        /// Selects the user item.
-        /// </summary>
-        public void SelectUserItem()
-        {
-            StopSelectionTimer();
-
-            double newPos = IsLayoutVertical
-                ? (_itemMouseDownPoint.Y - Mouse.GetPosition(this).Y)
-                : (_itemMouseDownPoint.X - Mouse.GetPosition(this).X);
-
-            if (_itemMouseDown && Math.Abs(newPos) < DragThreshold)
-            {
-                ListRepository.Instance.SelectListControlItem(this, listbox.SelectedItem as APIListItem);
-            }
         }
 
         /// <summary>
@@ -385,7 +374,10 @@ namespace GUIFramework.GUI.Controls
                 case XmlListLayout.Vertical:
                     ListLayoutType = XmlListLayout.Vertical;
                     CurrentLayout = SkinXml.VerticalItemStyle;
-                 
+                    break;
+                case XmlListLayout.VerticalIcon: 
+                    ListLayoutType = XmlListLayout.VerticalIcon;
+                    CurrentLayout = SkinXml.VerticalIconItemStyle;
                     break;
                 case XmlListLayout.Horizontal:
                     ListLayoutType = XmlListLayout.Horizontal;
@@ -457,34 +449,6 @@ namespace GUIFramework.GUI.Controls
         }
 
         /// <summary>
-        /// Starts the selection timer.
-        /// </summary>
-        private void StartSelectionTimer()
-        {
-            StopSelectionTimer();
-            _selectionTimer = new DispatcherTimer();
-            _selectionTimer.Interval = TimeSpan.FromSeconds(2);
-            _selectionTimer.Tick += (s, e) =>
-            {
-                StopSelectionTimer();
-                SelectUserItem();
-            };
-            _selectionTimer.Start();
-        }
-
-        /// <summary>
-        /// Stops the selection timer.
-        /// </summary>
-        private void StopSelectionTimer()
-        {
-            if (_selectionTimer != null)
-            {
-                _selectionTimer.Stop();
-                _selectionTimer = null;
-            }
-        }
-
-        /// <summary>
         /// Gets the center item.
         /// </summary>
         /// <returns></returns>
@@ -501,49 +465,6 @@ namespace GUIFramework.GUI.Controls
         #endregion
 
         #region Item Events
-
-        /// <summary>
-        /// Handles the MouseButtonUp event of the Item.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void OnListItem_MouseButtonUp(object sender, MouseButtonEventArgs e)
-        {
-            StopSelectionTimer();
-            _itemMouseDown = false;
-            double newPos = IsLayoutVertical
-                ? (_itemMouseDownPoint.Y - e.GetPosition(this).Y)
-                : (_itemMouseDownPoint.X - e.GetPosition(this).X);
-
-            if (Math.Abs(newPos) < DragThreshold)
-            {
-                ScrollItemToCenter(listbox.SelectedItem as APIListItem);
-                ListRepository.Instance.FocusListControlItem(this, listbox.SelectedItem as APIListItem);
-            }
-        }
-
-        /// <summary>
-        /// Handles the MouseButtonDown event of the Item.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
-        private void OnListItem_MouseButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            StartSelectionTimer();
-            _itemMouseDown = true;
-            _itemMouseDownPoint = e.GetPosition(this);
-        }
-
-        /// <summary>
-        /// Handles the MouseLeave event of the Item.
-        /// </summary>
-        /// <param name="sender">The source of the event.</param>
-        /// <param name="e">The <see cref="MouseEventArgs"/> instance containing the event data.</param>
-        private void OnListItem_MouseLeave(object sender, MouseEventArgs e)
-        {
-            StopSelectionTimer();
-            _itemMouseDown = false;
-        }
 
         /// <summary>
         /// Called when [list item_ selected].
@@ -571,6 +492,49 @@ namespace GUIFramework.GUI.Controls
             catch { }
         }
 
+        /// <summary>
+        /// Event: Mouse Single Click on list item
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnListItem_PreviewMouseDown(object sender, RoutedEventArgs e)
+        {
+            if (isMouseDown == true && isMouseDoubleClick == false)
+            {
+                // This may be one of the following cases:
+                // 1) mouse single click
+                // 2) mouse drag from one item to next
+                mayBeOutOfSync = true;
+            }
+            
+        }
+
+        /// <summary>
+        /// Event: Mouse released on an item: Set Focus on item if list is not scrolling
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
+        private void OnListItem_PreviewMouseUp(object sender, RoutedEventArgs e)
+        {
+            if (isScrolling == false && isMouseDoubleClick == false)
+            {
+                var item = (sender as ListBoxItem).Content as APIListItem;
+                if (item != null)
+                {
+                    ListRepository.Instance.FocusListControlItem(this, item);
+                }
+            }
+        }
+
+        private void OnListItem_PreviewMouseDoubleClick(object sender, RoutedEventArgs e)
+        {
+            ScrollItemToCenter(listbox.SelectedItem as APIListItem);
+            ListRepository.Instance.SelectListControlItem(this, listbox.SelectedItem as APIListItem);
+        }
+
         #endregion
+
+ 
+
     }
 }

@@ -420,7 +420,9 @@ namespace SkinEditor.Views
                     ControlStyle = _selectedControlStyle as XmlProgressBarStyle,
                     Width = 500,
                     Height = 70,
-                    ProgressValue = "60"
+                    ProgressValue = "60",
+                    LabelFixedText = "1:23:45",
+                    LabelMovingText = "0:34:56"
                 };
             }
             SetControlStyleSizeFromSettings(_selectedControlStyle);
