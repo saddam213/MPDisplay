@@ -407,7 +407,7 @@
                             Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}"
                             CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
 
-                        <TextBlock Text="{Binding LabelFixedText, Converter={StaticResource LabelConverter},Mode=OneWay}"
+                        <TextBlock x:Name="labelfixed" Text="{Binding LabelFixedText, Converter={StaticResource LabelConverter},Mode=OneWay}"
                                HorizontalAlignment="{Binding ControlStyle.LabelFixedHorizontalAlignment,Mode=OneWay}"
 						       VerticalAlignment="{Binding ControlStyle.LabelFixedVerticalAlignment,Mode=OneWay}"
                                FontFamily="{Binding ControlStyle.LabelFixedFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
@@ -418,7 +418,7 @@
 							   Visibility="{Binding ControlStyle.EnableLabelFixed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                         </TextBlock>
 
-                        <TextBlock Text="{Binding LabelMovingText, Converter={StaticResource LabelConverter},Mode=OneWay}"
+                        <TextBlock x:Name="labelmoving" Text="{Binding LabelMovingText, Converter={StaticResource LabelConverter},Mode=OneWay}"
                                HorizontalAlignment="Left"
 						       VerticalAlignment="{Binding ControlStyle.LabelMovingVerticalAlignment,Mode=OneWay}"
                                FontFamily="{Binding ControlStyle.LabelMovingFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
@@ -432,6 +432,7 @@
                                         <Binding Path="ProgressValue" Mode="OneWay" />
                                         <Binding Path="ControlStyle.BarMargin" Mode="OneWay" />
                                         <Binding Path="ControlStyle.LabelMovingMargin" Mode="OneWay" />
+                                        <Binding Path="ActualWidth" ElementName="labelmoving" Mode="OneWay" />
                                     </MultiBinding>
                                 </TextBlock.Margin>
                         </TextBlock>

@@ -78,10 +78,12 @@
     <Compile Include="Settings\RegistrySettings.cs" />
     <Compile Include="Settings\SettingsBase.cs" />
     <Compile Include="Settings\SettingsManager.cs" />
-    <Compile Include="Settings\SettingsObjects\AdvancedPluginSettings.cs" />
     <Compile Include="Settings\SettingsObjects\ConnectionSettings.cs" />
     <Compile Include="Settings\SettingsObjects\GUISettings.cs" />
+    <Compile Include="Settings\SettingsObjects\AddImagePropertySettings.cs" />
     <Compile Include="Settings\SettingsObjects\MPDisplaySettings.cs" />
+    <Compile Include="Settings\SettingsObjects\PluginObjects\AdvancedPluginSettings.cs" />
+    <Compile Include="Settings\SettingsObjects\PluginObjects\AddImageSettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginObjects\SupportedPluginSettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginObjects\TvSeriesPluginSettings.cs" />
     <Compile Include="Settings\SettingsObjects\PluginSettings.cs" />

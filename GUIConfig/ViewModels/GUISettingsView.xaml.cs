@@ -113,21 +113,32 @@ namespace GUIConfig.ViewModels
         /// <param name="settings">The settings.</param>
         private void SetScreenSettings(GUISettings settings)
         {
-            if (settings != null && !settings.CustomResolution)
+            if (settings != null)
             {
-                settings.ScreenHeight = SelectedDisplay.Bounds.Height;
-                settings.ScreenWidth = SelectedDisplay.Bounds.Width;
-                settings.ScreenOffSetX = SelectedDisplay.Bounds.X;
-                settings.ScreenOffSetY = SelectedDisplay.Bounds.Y;
+                if (!settings.CustomResolution)
+                {
+                    if (SelectedDisplay != null)
+                    {
+                        settings.ScreenHeight = SelectedDisplay.Bounds.Height;
+                        settings.ScreenWidth = SelectedDisplay.Bounds.Width;
+                        settings.ScreenOffSetX = SelectedDisplay.Bounds.X;
+                        settings.ScreenOffSetY = SelectedDisplay.Bounds.Y;
+                    }
+                }
+                else
+                {
+                    settings.ScreenOffSetX = 0;
+                    settings.ScreenOffSetY = 0;
+                }
             }
         }
 
         /// <summary>
-        /// Handles the Unchecked event of the CheckBox control.
+        /// Handles the Checked and Unchecked event of the CheckBox control.
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
-        private void CheckBox_Unchecked(object sender, RoutedEventArgs e)
+        private void CheckBox_Changed(object sender, RoutedEventArgs e)
         {
             SetScreenSettings(DataObject as GUISettings);
         }

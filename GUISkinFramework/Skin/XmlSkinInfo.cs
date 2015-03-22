@@ -17,6 +17,7 @@ using GUISkinFramework.Property;
 using GUISkinFramework.Skin;
 using GUISkinFramework.Styles;
 using GUISkinFramework.Windows;
+using Common.Settings;
 
 namespace GUISkinFramework
 {
@@ -680,10 +681,24 @@ namespace GUISkinFramework
             if (File.Exists(propertyXmlFile))
             {
                 Log.Message(LogLevel.Info, "PropertyInfo file found: {0}", propertyXmlFile);
-                 var info = SerializationHelper.Deserialize<XmlPropertyInfo>(propertyXmlFile);
+                var info = SerializationHelper.Deserialize<XmlPropertyInfo>(propertyXmlFile);
                 if (info != null)
                 {
+                    var addImageSettings = SettingsManager.Load<AddImageSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+                    if (addImageSettings == null)
+                    {
+                        addImageSettings = new AddImageSettings();
+                    }
+
                     _propertyInfo = new XmlPropertyInfo();
+
+                    if (addImageSettings != null)
+                    {
+                        foreach (var p in addImageSettings.AddImagePropertySettings)
+                        {
+                            _propertyInfo.AddInternalProperty(new XmlProperty { SkinTag = p.MPDSkinTag, DesignerValue = "New...", PropertyType = XmlPropertyType.Image });
+                        }
+                    }
 
                     var internals = info.AllProperties.Where(x => x.IsInternal).Select(x => x.SkinTag).ToList();
                     foreach (var item in info.AllProperties.Where(x => !x.IsInternal).OrderByDescending(p => p.PropertyType))

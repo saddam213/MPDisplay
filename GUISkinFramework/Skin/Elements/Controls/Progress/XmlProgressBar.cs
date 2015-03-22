@@ -21,8 +21,10 @@ namespace GUISkinFramework.Controls
         private string _progressValue = "";
         private string _labelMovingText = "";
         private string _defaultLabelMovingText = "";
+        private string _labelMovingNumberFormat = "";
         private string _labelFixedText = "";
         private string _defaultLabelFixedText = "";
+        private string _labelFixedNumberFormat = "";
  
         [XmlElement("ProgressBarStyle")]
         [DefaultValue(null)]
@@ -69,6 +71,15 @@ namespace GUISkinFramework.Controls
 
         [DefaultValue("")]
         [PropertyOrder(160)]
+        [EditorCategory("Label", 7)]
+        public string LabelMovingNumberFormat
+        {
+            get { return _labelMovingNumberFormat; }
+            set { _labelMovingNumberFormat = value; NotifyPropertyChanged("LabelMovingNumberFormat"); }
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(165)]
         [EditorCategory("Label", 8)]
         [Editor(typeof(LabelEditor), typeof(ITypeEditor))]
         public string LabelFixedText
@@ -78,13 +89,22 @@ namespace GUISkinFramework.Controls
         }
 
         [DefaultValue("")]
-        [PropertyOrder(165)]
+        [PropertyOrder(170)]
         [EditorCategory("Label", 7)]
         [Editor(typeof(LabelEditor), typeof(ITypeEditor))]
         public string DefaultLabelFixedText
         {
             get { return _defaultLabelFixedText; }
             set { _defaultLabelFixedText = value; NotifyPropertyChanged("DefaultLabelFixedText"); }
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(175)]
+        [EditorCategory("Label", 7)]
+        public string LabelFixedNumberFormat
+        {
+            get { return _labelFixedNumberFormat; }
+            set { _labelFixedNumberFormat = value; NotifyPropertyChanged("LabelFixedNumberFormat"); }
         }
 
         public override void ApplyStyle(XmlStyleCollection style)

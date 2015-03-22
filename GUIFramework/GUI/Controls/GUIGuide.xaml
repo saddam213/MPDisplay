@@ -14,14 +14,13 @@
 			 Canvas.ZIndex="{Binding BaseXml.PosZ,Mode=OneWay}"
 			 Width="{Binding BaseXml.Width,Mode=OneWay}" 
 			 Height="{Binding BaseXml.Height,Mode=OneWay}"
-			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
-    <!-- 			 RotationX="{Binding BaseXml.Pos3DX,Mode=OneWay}"
+			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}"
+ 		     RotationX="{Binding BaseXml.Pos3DX,Mode=OneWay}"
 			 RotationY="{Binding BaseXml.Pos3DY,Mode=OneWay}"
 			 RotationZ="{Binding BaseXml.Pos3DZ,Mode=OneWay}"
 			 RotationCenterX="{Binding BaseXml.Center3DX,Mode=OneWay}"
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
-			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
--->
+			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}">
 	<Grid >
 
 		<Grid.Resources>
@@ -55,7 +54,7 @@
 			<Style x:Key="ProgramItem" TargetType="ContentPresenter">
 				<Setter Property="ScrollViewer.CanContentScroll" Value="False" />
 				<Setter Property="Height" Value="{Binding BaseXml.GuideItemHeight, ElementName=UI}" />
-				<Setter Property="Canvas.Left">
+ 				<Setter Property="Canvas.Left">
 					<Setter.Value>
 						<MultiBinding Converter="{StaticResource ProgramWidthConverter}" ConverterParameter="ProgramPosition">
 							<Binding />
@@ -256,7 +255,7 @@
                         <ItemsControl Background="Brown" Padding="0" Margin="1" 
 						              Width="{Binding TimelineLength, ElementName=UI}" 
 									  ItemContainerStyle="{StaticResource ProgramItem}"  
-									  ItemsSource="{Binding Programs, IsAsync=True, Mode=OneWay}" 
+									  ItemsSource="{Binding FilteredPrograms, IsAsync=True, Mode=OneWay}" 
 									  ScrollViewer.HorizontalScrollBarVisibility="Hidden" 
 									  ScrollViewer.VerticalScrollBarVisibility="Disabled" >
 							<ItemsControl.ItemsPanel>

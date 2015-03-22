@@ -52,6 +52,7 @@ namespace MediaPortalPlugin.InfoManagers
         private GUIWindow _currentWindow;
         private PluginSettings _settings;
         private AdvancedPluginSettings _advancedSettings;
+        private AddImageSettings _addImageSettings;
         private int _previousFocusedControlId = -1;
         private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
         private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
@@ -80,10 +81,11 @@ namespace MediaPortalPlugin.InfoManagers
             get { return _currentWindow != null ? _currentWindow.GetFocusControlId() : -1; }
         }
 
-        public void Initialize(PluginSettings settings, AdvancedPluginSettings advancedSettings)
+        public void Initialize(PluginSettings settings, AdvancedPluginSettings advancedSettings, AddImageSettings addImageSettings)
         {
             _settings = settings;
             _advancedSettings = advancedSettings;
+            _addImageSettings = addImageSettings;
 
             if (_enabledlugins == null)
             {
@@ -92,7 +94,7 @@ namespace MediaPortalPlugin.InfoManagers
             SupportedPluginManager.LoadPlugins(_advancedSettings);
 
             ListManager.Instance.Initialize(_settings);
-            PropertyManager.Instance.Initialize(_settings);
+            PropertyManager.Instance.Initialize(_settings, _addImageSettings);
             EqualizerManager.Instance.Initialize(_settings);
             DialogManager.Instance.Initialize(_settings);
 
@@ -105,7 +107,7 @@ namespace MediaPortalPlugin.InfoManagers
 
           //  GUIWindowManager.Receivers += GUIGraphicsContext_Receivers;
             _secondTimer = new Timer( SecondTimerTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
-            _lastPlayBackChanged = DateTime.Now;
+            _lastPlayBackChanged = DateTime.MinValue;
         }
 
         public void Shutdown()
@@ -458,7 +460,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(3))                                  // Ignore Player Ended event due to MovingPictures Bug when playing multiple files
+            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(10))   // Ignore Player Ended event due to MovingPictures Bug when playing multiple files
             {
 
                 Log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
@@ -469,6 +471,10 @@ namespace MediaPortalPlugin.InfoManagers
                 _isFullScreenMusic = false;
                 _isFullscreenVideo = false;
                 SendPlayerMessage();
+            }
+            else
+            {
+                _lastPlayBackChanged = DateTime.MinValue;           // reset changed flag after first stop event
             }
         }
 
@@ -489,7 +495,7 @@ namespace MediaPortalPlugin.InfoManagers
             Log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
             if (type == g_Player.MediaType.Video)
             {
-                _lastPlayBackChanged = DateTime.Now;                                                // remember time of this event for workaround MovingPictures bug when chanhing files
+                _lastPlayBackChanged = DateTime.Now;                                                // remember time of this event for workaround MovingPictures bug when changing files
             }
         }
         

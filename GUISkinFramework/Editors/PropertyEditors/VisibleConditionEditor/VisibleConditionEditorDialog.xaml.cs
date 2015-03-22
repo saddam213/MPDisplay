@@ -359,6 +359,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             PandoraMusicBox,
             RadioTime,
             Streamradio,
+            TuneIn,
         }
 
 

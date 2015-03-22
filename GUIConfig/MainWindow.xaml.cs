@@ -34,6 +34,7 @@ namespace GUIConfig
         private Log Log = LoggingManager.GetLog(typeof(MainWindow));
         private ObservableCollection<ViewModelBase> _views = new ObservableCollection<ViewModelBase>();
         private MPDisplaySettings _mpdisplaySettings;
+        private AddImageSettings _addImageSettings;
         private bool _hasChanges = false;
 
         #endregion
@@ -63,6 +64,15 @@ namespace GUIConfig
                 MPDisplaySettings = new MPDisplaySettings();
             }
             Log.Message(LogLevel.Info, "MPDisplay.xml sucessfully loaded.");
+
+            AddImageSettings = SettingsManager.Load<AddImageSettings>(System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            if (AddImageSettings == null)
+            {
+                Log.Message(LogLevel.Warn, "AddImageSettings.xml not found!, creating new settings file.");
+                AddImageSettings = new AddImageSettings();
+            }
+            Log.Message(LogLevel.Info, "AddIMageSettings.xml sucessfully loaded.");
+
             LoadViews();
         }
 
@@ -88,6 +98,15 @@ namespace GUIConfig
             set { _mpdisplaySettings = value; NotifyPropertyChanged(); }
         }
 
+        /// <summary>
+        /// Gets or sets the additional image settings.
+        /// </summary>
+        public AddImageSettings AddImageSettings
+        {
+            get { return _addImageSettings; }
+            set { _addImageSettings = value; NotifyPropertyChanged(); }
+        }
+
         #endregion
 
         #region Methods
@@ -104,6 +123,10 @@ namespace GUIConfig
                 Views.Add(new PluginSettingsView { DataObject = MPDisplaySettings.PluginSettings });
                 MPDisplaySettings.PluginSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
                 MPDisplaySettings.PluginSettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
+
+                Log.Message(LogLevel.Info, "Adding AddImage section.");
+                Views.Add(new AddImageSettingsView { DataObject = AddImageSettings });
+                AddImageSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
             }
 
             if (RegistrySettings.InstallType != MPDisplayInstallType.Plugin)
@@ -155,6 +178,7 @@ namespace GUIConfig
                 view.SaveChanges();
             }
             SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
+            SettingsManager.Save<AddImageSettings>(AddImageSettings, System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
             _hasChanges = false;
         }
 

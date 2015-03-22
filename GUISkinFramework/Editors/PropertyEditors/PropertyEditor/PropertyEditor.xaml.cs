@@ -24,8 +24,10 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
     /// </summary>
     public partial class PropertyEditor : UserControl, INotifyPropertyChanged
     {
+ 
         private XmlProperty _selectedProperty;
         private int _mediaPortalTagSelectedIndex = 0;
+        private FilterOptions _currentFilter;
 
         public PropertyEditor(XmlSkinInfo skinInfo)
         {
@@ -36,6 +38,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
             Properties.SortDescriptions.Clear();
             Properties.GroupDescriptions.Add(new PropertyGroupDescription("PropertyType"));
             Properties.SortDescriptions.Add(new SortDescription("SkinTag", ListSortDirection.Ascending));
+            Properties.Filter = FilterPropertyList;
            // SelectedProperty = skinInfo.Properties.FirstOrDefault();
         }
 
@@ -48,6 +51,11 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
             set { _skinInfo = value; NotifyPropertyChanged("SkinInfo"); }
         }
 
+        public FilterOptions CurrentFilter
+        {
+            get { return _currentFilter; }
+            set { _currentFilter = value; Properties.Refresh();  NotifyPropertyChanged("CurrentFilter"); }
+        }
 
         private ICollectionView _properties;
 
@@ -56,9 +64,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
             get { return _properties; }
             set { _properties = value; NotifyPropertyChanged("Properties"); }
         }
-        
-
-     
+          
         public XmlProperty SelectedProperty
         { 
             get { return _selectedProperty; }
@@ -69,8 +75,6 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
                 NotifyPropertyChanged("SelectedProperty");
             }
         }
-
-       
 
         public int MediaPortalTagSelectedIndex
         {
@@ -107,6 +111,8 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
             SelectedProperty = prop;
         }
 
+        #region UIEvents
+
         private void Button_PropertyRemove_Click(object sender, RoutedEventArgs e)
         {
             SkinInfo.Properties.Remove(SelectedProperty);
@@ -135,9 +141,31 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
         {
             Properties.Refresh();
         }
-    }
 
-    public class PropertyTagValidationRule : ValidationRule
+       // Filter the property list
+        private bool FilterPropertyList(object item)
+        {
+            bool value = true;
+
+            XmlProperty property = item as XmlProperty;
+
+            switch (CurrentFilter)
+            {
+                case FilterOptions.ShowMP:
+                    if (property.IsInternal) value = false;
+                    break;
+
+                case FilterOptions.ShowMPD:
+                     if (!property.IsInternal) value = false;
+                   break;
+            }
+            return value;
+        } 
+
+    #endregion
+     }
+
+  public class PropertyTagValidationRule : ValidationRule
     {
         public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
         {
@@ -157,5 +185,8 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
             return new ValidationResult(true, null);
         }
     }
+
+    // enum for the property list filter
+    public enum FilterOptions { ShowAll, ShowMP, ShowMPD }
 
 }

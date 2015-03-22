@@ -71,7 +71,7 @@
                         Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" 
                         CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
 
-                <TextBlock Text="{Binding LabelFixed, Mode=OneWay}"
+                <TextBlock x:Name="labelfixed" Text="{Binding LabelFixed, Mode=OneWay}"
                                HorizontalAlignment="{Binding BaseXml.ControlStyle.LabelFixedHorizontalAlignment,Mode=OneWay}"
 						       VerticalAlignment="{Binding BaseXml.ControlStyle.LabelFixedVerticalAlignment,Mode=OneWay}"
                                FontFamily="{Binding BaseXml.ControlStyle.LabelFixedFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
@@ -82,7 +82,7 @@
 							   Visibility="{Binding BaseXml.ControlStyle.EnableLabelFixed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
                 </TextBlock>
                 
-                <TextBlock Text="{Binding LabelMoving, Mode=OneWay}"
+                <TextBlock x:Name="labelmoving" Text="{Binding LabelMoving, Mode=OneWay}"
                                HorizontalAlignment="Left"
 						       VerticalAlignment="{Binding BaseXml.ControlStyle.LabelMovingVerticalAlignment,Mode=OneWay}"
                                FontFamily="{Binding BaseXml.ControlStyle.LabelMovingFontType, Converter={StaticResource GUIFontConverter},Mode=OneWay}" 
@@ -96,6 +96,7 @@
                             <Binding Path="Progress" Mode="OneWay" />
                             <Binding Path="BaseXml.ControlStyle.BarMargin" Mode="OneWay" />
                             <Binding Path="BaseXml.ControlStyle.LabelMovingMargin" Mode="OneWay" />
+                            <Binding Path="ActualWidth" ElementName="labelmoving" Mode="OneWay" />
                         </MultiBinding>
                     </TextBlock.Margin>
 

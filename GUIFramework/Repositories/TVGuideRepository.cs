@@ -79,7 +79,25 @@ namespace GUIFramework.Managers
             }
         }
 
-     
+        public DateTime FilterProgramStart { get; set; }
+        public DateTime FilterProgramEnd { get; set; }
+
+        // Set the filter for the 'visible' programs
+        public void FilterPrograms(DateTime _start, DateTime _end)
+        {
+            FilterProgramStart = _start;
+            FilterProgramEnd = _end;
+
+            // update properties (filtered programs) of the programs, if any
+            if (_guideData != null && _guideData.Any())
+            {
+                foreach (var _channel in _guideData )
+                {
+                    _channel.FilteredPrograms = null;   // this will notify the listeners
+                }
+            }
+        }
+
         private Timer _updateTimer;
         private int _updateCounter;
 
@@ -158,6 +176,33 @@ namespace GUIFramework.Managers
                     default:
                         break;
                 }
+            }
+        }
+
+        // if a CurrentGuideAction exists, this method will update the guidedata, assuming that
+        // the action has been sent to MP and has been properly processed. This avoids lag in
+        // the update of EPG and Recordings on MPD side
+        public void CurrentGuideActionProcessed()
+        {
+            if( CurrentGuideAction != null )
+            {
+                  var channel = _guideData.FirstOrDefault(p => p.Id == CurrentGuideAction.ChannelId);
+                  if (channel != null)
+                  {
+                      var program = channel.Programs.FirstOrDefault(p => p.ChannelId == CurrentGuideAction.ChannelId && p.Id == CurrentGuideAction.ProgramId);
+                      if (program != null)
+                      {
+                          if (CurrentGuideAction.Cancel)                             // program has already been scheduled, so cancel now
+                          {
+                                  program.IsScheduled = false;
+                                  program.IsRecording = false;
+                          }
+                          else
+                          {
+                                  program.IsScheduled = true;
+                          }
+                      }
+                  }
             }
         }
 
@@ -363,6 +408,16 @@ namespace GUIFramework.Managers
         public List<TvGuideProgram> Programs { get; set; }
         public List<string> Groups { get; set; }
         public byte[] Logo { get; set; }
+
+        public List<TvGuideProgram> FilteredPrograms
+        {
+            get
+            {
+                return Programs.Where(p => p.EndTime >= TVGuideRepository.Instance.FilterProgramStart && p.StartTime <= TVGuideRepository.Instance.FilterProgramEnd).ToList();
+            }
+            set { NotifyPropertyChanged("FilteredPrograms"); }
+
+        }
 
         public bool IsSelected
         {

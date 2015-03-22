@@ -265,6 +265,6 @@ namespace Common.Settings.SettingsObjects
         //PandoraMusicBox,
         //RadioTime,
         //Streamradio
-        RadioTime = 25650,
+        TuneIn = 25650,
     }
 }

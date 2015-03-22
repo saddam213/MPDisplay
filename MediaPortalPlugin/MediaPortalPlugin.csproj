@@ -94,7 +94,7 @@
     <Compile Include="InfoManagers\WindowManager.cs" />
     <Compile Include="MPDisplayPlugin.cs" />
     <Compile Include="InfoManagers\SupportedPluginManager.cs" />
-    <Compile Include="Plugins\RadioTimePlugin.cs" />
+    <Compile Include="Plugins\TuneInPlugin.cs" />
     <Compile Include="Plugins\PluginHelper.cs" />
     <Compile Include="Plugins\MovingPicturesPlugin.cs" />
     <Compile Include="Plugins\MPTvSeriesPlugin.cs" />

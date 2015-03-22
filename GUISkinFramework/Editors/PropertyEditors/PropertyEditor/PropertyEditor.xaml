@@ -26,6 +26,7 @@
         </Style>
 
 		<converters:InverseBoolConverter x:Key="InverseBoolConverter" />
+        <converters:EnumMatchToBooleanConverter x:Key="EnumMatchToBooleanConverter" />
 	</UserControl.Resources>
     
     <Grid DataContext="{Binding ElementName=UI}">
@@ -69,7 +70,7 @@
          
 		</DockPanel>
 
-		<StackPanel Margin="10,16,0,0" Grid.Column="1" IsEnabled="{Binding SelectedProperty.IsInternal, Converter={StaticResource InverseBoolConverter}}">
+		<StackPanel Margin="10,16,0,230" Grid.Column="1" IsEnabled="{Binding SelectedProperty.IsInternal, Converter={StaticResource InverseBoolConverter}}">
             <TextBlock TextWrapping="Wrap" Text="Skin Tag"/>
 			<TextBox  TextWrapping="Wrap" >
                 <TextBox.Text>
@@ -114,6 +115,14 @@
                     <Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
                 </Button>
             </StackPanel>
+
+        </StackPanel>
+        <StackPanel Margin="10,400,0,121" Grid.Column="1" Orientation="Vertical" >
+            <TextBlock TextWrapping="Wrap" Text="Property Filter"/>
+            <RadioButton GroupName="PropertyFilter" Content="All Tags" Margin="0,3,0,3" IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterOptions.ShowAll}}" />
+            <RadioButton GroupName="PropertyFilter" Content="MP Tags only"  Margin="0,3,0,3" IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterOptions.ShowMP}}" />
+            <RadioButton GroupName="PropertyFilter" Content="MPD Tags only"  Margin="0,3,0,3" IsChecked="{Binding CurrentFilter, Converter={StaticResource EnumMatchToBooleanConverter}, ConverterParameter={x:Static local:FilterOptions.ShowMPD}}" />
+
         </StackPanel>
 
     </Grid>

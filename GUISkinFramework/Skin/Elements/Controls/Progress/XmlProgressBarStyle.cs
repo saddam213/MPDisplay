@@ -41,13 +41,13 @@ namespace GUISkinFramework.Controls
         private string _labelMovingFontWeight = "Normal";
         private int _labelMovingFontSize = 30;
         private string _labelMovingMargin = "0,0,0,0";
-        private VerticalAlignment _labelMovingVerticalAlignment;
+        private VerticalAlignment _labelMovingVerticalAlignment = VerticalAlignment.Center;
         private string _labelFixedFontType = "Microsoft Sans Serif";
         private string _labelFixedFontWeight = "Normal";
         private int _labelFixedFontSize = 30;
         private string _labelFixedMargin = "0,0,0,0";
-        private HorizontalAlignment _labelFixedHorizontalAlignment;
-        private VerticalAlignment _labelFixedVerticalAlignment;
+        private HorizontalAlignment _labelFixedHorizontalAlignment = HorizontalAlignment.Center;
+        private VerticalAlignment _labelFixedVerticalAlignment = VerticalAlignment.Center;
         private XmlBrush _labelMovingFontBrush;
         private XmlBrush _labelFixedFontBrush;
         private bool _enableLabelMoving = false;

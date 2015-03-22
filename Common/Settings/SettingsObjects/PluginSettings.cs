@@ -75,6 +75,5 @@ namespace Common.Settings
             get { return _userInteractionDelay; }
             set { _userInteractionDelay = value; NotifyPropertyChanged("UserInteractionDelay"); }
         }
-
     }
 }

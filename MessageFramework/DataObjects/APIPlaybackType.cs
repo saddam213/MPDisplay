@@ -27,6 +27,7 @@ namespace MessageFramework.DataObjects
         PandoraMusicBox,
         RadioTime,
         Streamradio,
+        TuneIn,
     }
 
     public enum APIPlaybackState

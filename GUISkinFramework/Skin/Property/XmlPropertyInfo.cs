@@ -12,6 +12,7 @@ namespace GUISkinFramework.Property
     {
         private List<XmlProperty> _properties = new List<XmlProperty>();
         private ObservableCollection<XmlProperty> _allPropertes;
+        private List<XmlProperty> _internalProperties = new List<XmlProperty>();
 
         public List<XmlProperty> Properties
         {
@@ -19,8 +20,6 @@ namespace GUISkinFramework.Property
             set { _properties = value; }
         }
 
-
-        
         [XmlIgnore]
         public ObservableCollection<XmlProperty> AllProperties
         {
@@ -32,6 +31,16 @@ namespace GUISkinFramework.Property
                 }
                 return _allPropertes; 
             } 
+        }
+
+        public void AddInternalProperty(XmlProperty prop)
+        {
+            if (prop != null && _internalProperties.FirstOrDefault(p => p.SkinTag == prop.SkinTag ) == null )
+            {
+                prop.IsInternal = true;
+                prop.MediaPortalTags.Add(new XmlMediaPortalTag { Tag = prop.SkinTag });
+               _internalProperties.Add(prop);
+            }
         }
 
         [XmlIgnore]
@@ -132,6 +141,12 @@ namespace GUISkinFramework.Property
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Label.Drive{0}.PercentFree", i), DesignerValue = percentFree2+" %" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Number.Drive{0}.PercentFree", i), DesignerValue = percentFree2.ToString(), PropertyType = XmlPropertyType.Number };
                 }
+
+                foreach (var p in _internalProperties)
+                {
+                    yield return p;
+                }
+
             }
         }
     }

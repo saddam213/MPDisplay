@@ -313,7 +313,7 @@ namespace GUIFramework.Managers
                 if (_focusedProgramId != value)
                 {
                     _focusedProgramId = value;
-                    NotifiyValueChanged<int,int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
+                    if( _focusedProgramId > 0 && _focusedChannelId > 0 ) NotifiyValueChanged<int, int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
                  }
             }
         }
@@ -328,7 +328,7 @@ namespace GUIFramework.Managers
                 if (_focusedChannelId != value)
                 {
                     _focusedChannelId = value;
-                    NotifiyValueChanged<int, int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
+                    if (_focusedProgramId > 0 && _focusedChannelId > 0) NotifiyValueChanged<int, int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
                 }
             }
         }

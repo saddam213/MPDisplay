@@ -86,8 +86,8 @@ namespace GUIFramework.GUI.Controls
         {
             base.UpdateInfoData();
 
-            var img = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image) 
-                   ?? await PropertyRepository.GetProperty<byte[]>(SkinXml.DefaultImage);
+            var img = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image, null) 
+                   ?? await PropertyRepository.GetProperty<byte[]>(SkinXml.DefaultImage, null);
             Image = GUIImageManager.GetImage(img);
         }
 

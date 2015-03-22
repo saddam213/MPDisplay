@@ -41,6 +41,7 @@ namespace GUIFramework.GUI.Controls
         private DateTime _lastProgramClick;
         private const int _doubleClickDelay = 500;
         private DateTime _lastMediaportalAction;
+        private double _viewportHorizontalPosition = 0.0;
 
         #endregion
 
@@ -155,7 +156,8 @@ namespace GUIFramework.GUI.Controls
         public ICollectionView ChannelData
         {
             get { return _channelData; }
-            set { _channelData = value; NotifyPropertyChanged("ChannelData"); }
+            set { _channelData = value; NotifyPropertyChanged("ChannelData");
+            }
         }
 
         /// <summary>
@@ -209,9 +211,16 @@ namespace GUIFramework.GUI.Controls
                 {
                     SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
                 }
-                if (_selectedProgram.ChannelId != SelectedChannel.Id)
+                if (_selectedProgram != null && _selectedChannel != null)
                 {
-                    SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
+                    if (_selectedProgram.ChannelId != SelectedChannel.Id)
+                    {
+                        SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
+                    }
+                    else
+                    {
+                        UpdateGuideProperties();
+                    }
                 }
                 else
                 {
@@ -278,7 +287,7 @@ namespace GUIFramework.GUI.Controls
 
         #region Methods
 
-        // callback when a message from Mediaportal is received from TVGuide: Set focus on selected program and scroll program
+         // callback when a message from Mediaportal is received from TVGuide: Set focus on selected program and scroll program
         // into viewport of EPG
         public void OnFocusedTVProgramChanged(int programId, int channelId)
         {
@@ -299,6 +308,25 @@ namespace GUIFramework.GUI.Controls
                              _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
                         }));
                     }
+                }
+            }
+        }
+
+        ///
+        ///<summary>
+        /// Updates the filter for visible program items
+        ///</summary>
+        private void UpdateProgramFilter()
+        {
+            if (_programScrollViewer.HorizontalOffset > 0.0 && _viewportHorizontalPosition != _programScrollViewer.HorizontalOffset)
+            {
+                if (_programScrollViewer.HorizontalOffset > (_viewportHorizontalPosition + (2 * _programScrollViewer.ViewportWidth)) ||
+                    _programScrollViewer.HorizontalOffset < (_viewportHorizontalPosition - _programScrollViewer.ViewportWidth))
+                {
+                    _viewportHorizontalPosition = _programScrollViewer.HorizontalOffset;
+                    DateTime _start = TimelineStart.AddMinutes((_viewportHorizontalPosition - (2 * _programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+                    DateTime _end = TimelineStart.AddMinutes((_viewportHorizontalPosition + (3 *_programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+                    TVGuideRepository.Instance.FilterPrograms(_start, _end);
                 }
             }
         }
@@ -389,16 +417,17 @@ namespace GUIFramework.GUI.Controls
                     _programScrollViewer.ScrollToHorizontalOffset(hoffset);
                     markerScrollviewer.ScrollToHorizontalOffset(hoffset);
                     TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
-                }
+                 }
 
                 if (sender == programListBox && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
                 {
                     _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
                     markerScrollviewer.ScrollToHorizontalOffset(hoffset);
-                    TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
+                    TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");                       
                 }
             }
-        }
+            UpdateProgramFilter();
+       }
 
         /// <summary>
         /// Called when a program item selected.
@@ -419,6 +448,7 @@ namespace GUIFramework.GUI.Controls
                 {
                     action = new APIGuideAction();
                     action.ChannelId = pg.ChannelId;
+                    action.ProgramId = pg.Id;
                     action.Title = pg.Title;
                     action.StartTime = pg.StartTime;
                     action.EndTime = pg.EndTime;

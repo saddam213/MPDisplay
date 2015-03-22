@@ -53,7 +53,7 @@ namespace MediaPortalPlugin
             _supportedPlugins.Add(SupportedPlugin.OnlineVideos, new OnlineVideosPlugin(GetPluginWindow(SupportedPlugin.OnlineVideos), GetPluginSettings(SupportedPlugin.OnlineVideos)));
             _supportedPlugins.Add(SupportedPlugin.MyAnime, new MyAnimePlugin(GetPluginWindow(SupportedPlugin.MyAnime), GetPluginSettings(SupportedPlugin.MyAnime)));
             _supportedPlugins.Add(SupportedPlugin.Rockstar, new RockStarPlugin(GetPluginWindow(SupportedPlugin.Rockstar), GetPluginSettings(SupportedPlugin.Rockstar)));
-            _supportedPlugins.Add(SupportedPlugin.RadioTime, new RadioTimePlugin(GetPluginWindow(SupportedPlugin.RadioTime), GetPluginSettings(SupportedPlugin.RadioTime)));
+            _supportedPlugins.Add(SupportedPlugin.TuneIn, new TuneInPlugin(GetPluginWindow(SupportedPlugin.TuneIn), GetPluginSettings(SupportedPlugin.TuneIn)));
  
         }
 

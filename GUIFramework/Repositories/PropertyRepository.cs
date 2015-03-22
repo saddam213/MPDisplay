@@ -44,11 +44,11 @@ namespace GUIFramework.Managers
             Instance.DeregisterProperty(control, property);
         }
 
-        public static async Task<T> GetProperty<T>(string property)
+        public static async Task<T> GetProperty<T>(string property, string format)
         {
             if (typeof(T) == typeof(string))
             {
-                return (T)(object)await Instance.GetControlLabelValue(property);
+                return (T)(object)await Instance.GetControlLabelValue(property, format);
             }
             if (typeof(T) == typeof(double))
             {
@@ -110,7 +110,6 @@ namespace GUIFramework.Managers
         private List<APIPropertyMessage> _skinProperties = new List<APIPropertyMessage>();
         private MessengerService<string> _propertyService = new MessengerService<string>();
         private DataRepository<string, APIPropertyMessage> _propertyRepository;
-      //  private DataRepository<string, string> _propertyDefaults;
         private SystemStatusInfo _systemInfo;
 
         public GUISettings Settings { get; set; }
@@ -210,7 +209,7 @@ namespace GUIFramework.Managers
             }
         }
 
-        public Task<string> GetControlLabelValue(string xmlstring)
+        public Task<string> GetControlLabelValue(string xmlstring, string format)
         {
             return Task.Factory.StartNew<string>(() =>
             {
@@ -227,7 +226,14 @@ namespace GUIFramework.Managers
                         }
                         if (part.StartsWith("#"))
                         {
-                            returnValue += GetPropertyLabelValue(part);
+                            if (string.IsNullOrEmpty(format))
+                            {
+                                returnValue += GetPropertyLabelValue(part);
+                            }
+                            else
+                            {
+                                returnValue += GetPropertyNumberValue(part).ToString(format);
+                            }
                             continue;
                         }
                         returnValue += part;
@@ -249,7 +255,7 @@ namespace GUIFramework.Managers
                       }
                       else
                       {
-                          string filename = GetControlLabelValue(xmlstring).Result;
+                          string filename = GetControlLabelValue(xmlstring, null).Result;
                                 return SkinInfo.GetImageValue(filename);
                       }
                   }

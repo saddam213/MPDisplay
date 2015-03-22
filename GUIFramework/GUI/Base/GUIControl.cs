@@ -345,7 +345,6 @@ namespace GUIFramework.GUI
         private void OnVisibleFalse()
         {
             Animations.StartAnimation(XmlAnimationCondition.VisibleFalse);
-            DeregisterInfoData();
         }
 
         /// <summary>

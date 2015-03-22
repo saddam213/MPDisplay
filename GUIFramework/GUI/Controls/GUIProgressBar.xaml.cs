@@ -119,11 +119,13 @@ namespace GUIFramework.GUI.Controls
             string text;
 
             base.UpdateInfoData();
-            Progress = await PropertyRepository.GetProperty<double>(SkinXml.ProgressValue);
-            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelFixedText);
-            LabelFixed = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelFixedText);
-            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelMovingText);
-            LabelMoving = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelMovingText);
+            Progress = await PropertyRepository.GetProperty<double>(SkinXml.ProgressValue, null);
+
+            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelFixedText, SkinXml.LabelFixedNumberFormat);
+            LabelFixed = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelFixedText, SkinXml.LabelFixedNumberFormat);
+
+            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelMovingText, SkinXml.LabelMovingNumberFormat);
+            LabelMoving = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelMovingText, SkinXml.LabelMovingNumberFormat);
 
         }
 

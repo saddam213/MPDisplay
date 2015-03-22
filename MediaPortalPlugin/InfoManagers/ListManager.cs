@@ -721,7 +721,10 @@ namespace MediaPortalPlugin.InfoManagers
                     var menuButtons = _menuControlButtonList.GetValue(_menuControl) as List<GUIButtonControl>;
                     if (menuButtons != null)
                     {
-                        SendSelectedItem(APIListType.Menu, menuButtons[_menuControl.FocusedButton].Label, -1);
+                        if (_menuControl.FocusedButton > -1 && _menuControl.FocusedButton < menuButtons.Count)
+                        {
+                            SendSelectedItem(APIListType.Menu, menuButtons[_menuControl.FocusedButton].Label, -1);
+                        }
                     }
                 }
             }

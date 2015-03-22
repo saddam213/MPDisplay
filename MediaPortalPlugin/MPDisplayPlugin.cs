@@ -24,6 +24,7 @@ namespace MediaPortalPlugin
     {
         private PluginSettings _settings;
         private AdvancedPluginSettings _advancedSettings;
+        private AddImageSettings _addImageSettings;
         private Common.Logging.Log Log;
 
         public MPDisplayPlugin()
@@ -35,19 +36,28 @@ namespace MediaPortalPlugin
             var settings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (settings == null)
             {
-                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file not found, Loading defaults..");
+                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file for MPDisplay not found, Loading defaults..");
                 settings = new MPDisplaySettings();
                 SettingsManager.Save<MPDisplaySettings>(settings, RegistrySettings.MPDisplaySettingsFile);
             }
             var advancedSettings = SettingsManager.Load<AdvancedPluginSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AdvancedPluginSettings.xml"));
             if (advancedSettings == null)
             {
-                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file not found, Loading defaults..");
+                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file AdvancedPluginSettings not found, Loading defaults..");
                 advancedSettings = new AdvancedPluginSettings();
-              //  SettingsManager.Save<AdvancedPluginSettings>(advancedSettings, Path.Combine(RegistrySettings.ProgramDataPath, "AdvancedPluginSettings.xml"));
             }
+            var addImageSettings = SettingsManager.Load<AddImageSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            if (addImageSettings == null)
+            {
+                Log.Message(LogLevel.Info, "[OnPluginStart] - Settings file AddImageSettings not found, Loading defaults..");
+                addImageSettings = new AddImageSettings();
+            }
+
             _advancedSettings = advancedSettings;
+            _addImageSettings = addImageSettings;
             _settings = settings.PluginSettings;
+
+            _addImageSettings.InitAddImagePropertySettings(Config.GetFolder(Config.Dir.Thumbs));
         }
 
         private void OnPluginStart()
@@ -71,7 +81,7 @@ namespace MediaPortalPlugin
                 }
 
                 MessageService.InitializeMessageService(_settings.ConnectionSettings);
-                WindowManager.Instance.Initialize(_settings, _advancedSettings);
+                WindowManager.Instance.Initialize(_settings, _advancedSettings, _addImageSettings);
                 TVServerManager.Instance.Initialize(_settings);
                 Log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
               

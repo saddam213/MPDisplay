@@ -83,8 +83,8 @@ namespace GUIFramework.GUI.Controls
         public async override void UpdateInfoData()
         {
             base.UpdateInfoData();
-            string text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText);
-            Label = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelText);
+            string text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText, SkinXml.LabelNumberFormat);
+            Label = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelText, SkinXml.LabelNumberFormat);
         }
 
         /// <summary>

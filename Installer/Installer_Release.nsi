@@ -2,11 +2,11 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "0.9.7.0_D6"
+!define VERSION "0.9.7.0"
 !define BUILD_FOLDER "C:\Entwicklung\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"
-!define COPYRIGHT "MPDisplay Team  © 2014"
+!define COPYRIGHT "MPDisplay Team  © 2015"
 !define DESCRIPTION "MPDisplay++ - TouchScreen/External Display Interface For MediaPortal"
 !define MUI_ABORTWARNING
 !define MUI_UNABORTWARNING
@@ -146,7 +146,7 @@ LangString ChangelogHeader ${LANG_GERMAN} "Änderungsliste"
 LangString ChangelogSubHeader ${LANG_GERMAN} "${APP_NAME} Änderungsliste"
 LangString ChangelogTextTop ${LANG_GERMAN} "Nachfolgend die Änderungsliste"
 
-LangString DESC_SECTION_FullInstall ${LANG_GERMAN} "Komplettinstalltion"
+LangString DESC_SECTION_FullInstall ${LANG_GERMAN} "Komplettinstallation"
 LangString DESC_SECTION_MediaPortalPlugin ${LANG_GERMAN} "nur Plugin/Server Installation"
 LangString DESC_SECTION_MPDisplayGUI ${LANG_GERMAN} "nur MPDisplay++ Installation"
 LangString DESC_SECTION_DesktopShortcutInstall ${LANG_GERMAN} "Desktop Verknüpfungen"
@@ -469,6 +469,7 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
      	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
 		File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
+		File /r "${BUILD_FOLDER}\Data\AddImageSettings.xml"
 		File /r "${BUILD_FOLDER}\Data\Skin\*.*"
 		
 	# Install Language Files
@@ -550,7 +551,8 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
 	  	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
 		File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
-		
+		File /r "${BUILD_FOLDER}\Data\AddImageSettings.xml"
+
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
 		CreateDirectory "${PROGRAM_DATA}Language"
@@ -868,6 +870,7 @@ Section Uninstall
 		
         Delete "$0\MPDisplay.xml"
         Delete "$0\AdvancedPluginSettings.xml"			
+        Delete "$0\AddImageSettings.xml"
 	    RmDir "$0"
 		DeleteRegKey ${REG_HKLM} "${REG_APP_PATH}" 
 		DeleteRegKey ${REG_HKLM} "${REG_UNINSTALL_PATH}" 

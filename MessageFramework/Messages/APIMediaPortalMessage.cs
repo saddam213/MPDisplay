@@ -56,6 +56,7 @@ namespace MessageFramework.DataObjects
     {
         public APIGuideActionType ActionType { get; set; }
         public int ChannelId { get; set; }
+        public int ProgramId { get; set; }
         public string Title { get; set; }
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }

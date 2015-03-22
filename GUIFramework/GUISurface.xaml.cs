@@ -27,8 +27,6 @@ using GUISkinFramework;
 using GUISkinFramework.Common;
 using GUISkinFramework.Windows;
 using MessageFramework.DataObjects;
-
-
 using System.Windows.Threading;
 using GUISkinFramework.Editor.PropertyEditors;
 using Microsoft.Win32;
@@ -983,6 +981,7 @@ namespace GUIFramework
             if (actionType == APIGuideActionType.EPGAction && TVGuideRepository.Instance.CurrentGuideAction != null)
             {
                 action = TVGuideRepository.Instance.CurrentGuideAction;
+                TVGuideRepository.Instance.CurrentGuideActionProcessed();
             }
             else
             {

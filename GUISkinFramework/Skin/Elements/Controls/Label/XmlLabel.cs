@@ -22,6 +22,7 @@ namespace GUISkinFramework.Controls
     {
         private string _labelText = "";
         private string _defaultLabelText = "";
+        private string _labelNumberFormat = "";
         private int _lineHeight = 0;
         private TextAlignment _labelTextAlignment = TextAlignment.Left;
         private bool _isScrollingEnabled = true;
@@ -63,6 +64,15 @@ namespace GUISkinFramework.Controls
         {
             get { return _defaultLabelText; }
             set { _defaultLabelText = value; NotifyPropertyChanged("DefaultLabelText"); }
+        }
+
+        [DefaultValue("")]
+        [PropertyOrder(12)]
+        [EditorCategory("Label", 4)]
+        public string LabelNumberFormat
+        {
+            get { return _labelNumberFormat; }
+            set { _labelNumberFormat = value; NotifyPropertyChanged("LabelNumberFormat"); }
         }
 
         [DefaultValue(TextAlignment.Left)]

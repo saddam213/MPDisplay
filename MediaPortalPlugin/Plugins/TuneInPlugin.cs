@@ -13,16 +13,16 @@ using System.Net;
 
 namespace MediaPortalPlugin.PluginHelpers
 {
-    public class RadioTimePlugin : PluginHelper
+    public class TuneInPlugin : PluginHelper
     {
-        public RadioTimePlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+        public TuneInPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
             : base(pluginindow, settings)
         {
         }
 
         public override APIPlaybackType PlayType
         {
-            get { return APIPlaybackType.RadioTime; }
+            get { return APIPlaybackType.TuneIn; }
         }
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)

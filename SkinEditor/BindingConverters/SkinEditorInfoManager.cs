@@ -15,7 +15,7 @@ namespace SkinEditor
             get { return _skinInfo; }
         }
 
-        public static void LoasSkinInfo(XmlSkinInfo skinInfo)
+        public static void LoadSkinInfo(XmlSkinInfo skinInfo)
         {
             _skinInfo = skinInfo;
         }

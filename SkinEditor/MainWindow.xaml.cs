@@ -39,13 +39,10 @@ namespace SkinEditor
             TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
             TextOptions.TextRenderingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextRenderingMode.Aliased });
 
-//#if DEBUG
-//            LoggingManager.AddLog(new WindowLogger("SkinEditor"));
-//#else
            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "SkinEditor", RegistrySettings.LogLevel));
-//#endif
 
             _settingsFile = System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\Settings.xml");
+
             InitializeComponent();
             CreateContextMenuCommands();
           //  Application.Current.Resources = new ResourceDictionary { Source = new Uri("/GUIFramework;component/Themes/Generic.xaml", UriKind.RelativeOrAbsolute) };
@@ -114,7 +111,7 @@ namespace SkinEditor
         private void LoadSkin(XmlSkinInfo skinInfo)
         {
             skinInfo.LoadXmlSkin();
-            SkinEditorInfoManager.LoasSkinInfo(skinInfo);
+            SkinEditorInfoManager.LoadSkinInfo(skinInfo);
             foreach (var editorView in EditorViews)
             {
                 editorView.SkinInfo = skinInfo;

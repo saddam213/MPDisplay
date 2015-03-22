@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Common.Helpers;
-using MediaPortal.Configuration;
 using MediaPortal.Player;
 using MessageFramework.DataObjects;
 using Common.Logging;
