@@ -1,11 +1,9 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
-using MPDisplay.Common.Controls.Primitives;
-using MPDisplay.Common.Controls.Core.Utilities;
-using System.Windows.Data;
+using MPDisplay.Common.Controls.Core;
 
 namespace MPDisplay.Common.Controls
 {
@@ -172,7 +170,11 @@ namespace MPDisplay.Common.Controls
         protected virtual void OnHexadecimalStringChanged(string oldValue, string newValue)
         {
             if (!SelectedColor.ToString().Equals(newValue))
-                UpdateSelectedColor((Color)ColorConverter.ConvertFromString(newValue));
+            {
+                var convertFromString = ColorConverter.ConvertFromString(newValue);
+                if (convertFromString != null)
+                    UpdateSelectedColor((Color)convertFromString);
+            }
         }
 
         #endregion //HexadecimalString
@@ -235,7 +237,7 @@ namespace MPDisplay.Common.Controls
             if (e.Key == Key.Enter && e.OriginalSource is TextBox)
             {
                 BindingExpression be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
-                be.UpdateSource();
+                if (be != null) be.UpdateSource();
             }
         }
 
@@ -269,13 +271,13 @@ namespace MPDisplay.Common.Controls
         {
             if (_currentColorPosition != null)
             {
-                Point _newPoint = new Point
+                Point newPoint = new Point
                 {
                     X = ((Point)_currentColorPosition).X * e.NewSize.Width,
                     Y = ((Point)_currentColorPosition).Y * e.NewSize.Height
                 };
 
-                UpdateColorShadeSelectorPositionAndCalculateColor(_newPoint, false);
+                UpdateColorShadeSelectorPositionAndCalculateColor(newPoint, false);
             }
         }
 

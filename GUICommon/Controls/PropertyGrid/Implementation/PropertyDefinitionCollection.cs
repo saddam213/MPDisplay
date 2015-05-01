@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -7,15 +8,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         public PropertyDefinition this[string propertyName]
         {
             get
-            {
-                foreach (var item in Items)
-                {
-                    if (item.Name == propertyName)
-                        return item;
-                }
-
-                return null;
-            }
+            { return Items.FirstOrDefault(item => item.Name == propertyName); }
         }
     }
 }

@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using GUIFramework.Managers;
+using GUIFramework.Repositories;
 
 namespace GUIFramework.Converters
 {
@@ -21,16 +19,16 @@ namespace GUIFramework.Converters
             return ((startTime - guideStart).TotalMinutes * multi);
         }
 
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             if (parameter.ToString() == "ProgramWidth")
             {
                 if (values != null && values.Count(d => d != DependencyProperty.UnsetValue) == 3)
                 {
-
-                    if (values[0] is TvGuideProgram)
+                    var guideProgram = values[0] as TvGuideProgram;
+                    if (guideProgram != null)
                     {
-                        var program = values[0] as TvGuideProgram;
+                        var program = guideProgram;
                         return GetItemWidth(program.StartTime, program.EndTime, (double)values[2]);
                     }
                 }
@@ -39,10 +37,10 @@ namespace GUIFramework.Converters
             {
                 if (values != null && values.Count(d => d != DependencyProperty.UnsetValue) == 3)
                 {
-
-                    if (values[0] is TvGuideProgram)
+                    var guideProgram = values[0] as TvGuideProgram;
+                    if (guideProgram != null)
                     {
-                        var program = values[0] as TvGuideProgram;
+                        var program = guideProgram;
                         return GetStartPoint(program.StartTime, (DateTime)values[1], (double)values[2]);
                     }
                 }
@@ -50,7 +48,7 @@ namespace GUIFramework.Converters
             return 0.0;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             return null;
         }

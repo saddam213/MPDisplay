@@ -2,7 +2,7 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "0.9.7.0"
+!define VERSION "1.0.0_D1"
 !define BUILD_FOLDER "C:\Entwicklung\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"
@@ -110,8 +110,6 @@ LangString DESC_SECTION_FirewallException  ${LANG_ENGLISH} "Configure Firewall"
 
 LangString DESC_UnInstall_Full ${LANG_ENGLISH} "There is 3rd party skins installed, Would you like to remove these also?"
 
-
-
 LangString DESC_LanguageFile ${LANG_ENGLISH} "Language_en"
 LangString DESC_MediaPortalPlugin ${LANG_ENGLISH} "MediaPortal Plugin/Server Only$\n$\nUse This Option If Your TouchScreen/Display Is On A Different PC"
 LangString DESC_MPDisplayGUI ${LANG_ENGLISH} "MPDisplay++ TouchScreen/Display Application Only$\n$\nUse This Option If You Are Installing MPDisplay++ On A Different PC To Mediaportal"
@@ -124,7 +122,7 @@ LangString MSGDotNet ${LANG_ENGLISH} "${APP_NAME} requires that the .NET Framewo
 LangString MSGDotNet_Cancel ${LANG_ENGLISH} "Setup Cannot Procced Until .NET Framework 4.5 is installed $\n$\nSetup Will Now Exit"
 LangString MSGUnIninstall_ConfirmBackup ${LANG_ENGLISH} "All Current MPDisplay++ Settings/Skins Will Be Lost $\n$\n Would You Like To Backup These Settings Now?."
 LangString MSGUnIninstall_Confirm ${LANG_ENGLISH} "Are You Sure You Want To Uninstall Now?."
-LangString MSGUnInstall ${LANG_ENGLISH} "The current version of MPDisplay++ must be removed before install $\n$\nWould you like to uninstall now?"
+LangString MSGUnInstall ${LANG_ENGLISH} "The current version of MPDisplay++ must be removed before install. $\n$\nMPDisplay++ settings will be preserved. $\n$\nWould you like to uninstall now?"
 LangString MSGUnInstall_Cancel ${LANG_ENGLISH} "Setup Cannot Procced Until Existing MPDisplay++ Instance is Removed $\n$\nSetup Will Now Exit"
 LangString MSGDotNet_NeedRestart ${LANG_ENGLISH} "Failed To Install MPDisplay Server $\n$\nRetry?$\n$\nNote: If You Have Just Installed .NET Framework 4.5 a restart may be required before MPDisplay Server is installed"
 LangString MSGMediaPortalNotFound ${LANG_ENGLISH} "Installer Could Not Locate Your MediaPortal Installation, Please Select Your MediaPortal Directory  $\n$\n eg: C:\Program Files\Team MediaPortal\MediaPortal"
@@ -167,7 +165,7 @@ LangString MSGDotNet ${LANG_GERMAN} "${APP_NAME} .NET Framework 4.5 muss install
 LangString MSGDotNet_Cancel ${LANG_GERMAN} "Setup kann nicht durchgeführt werden solange das .NET Framework 4.5 nicht installiert ist. $\n$\nSetup wird beendet!"
 LangString MSGUnIninstall_Confirm ${LANG_GERMAN} "Alle Einstellungen/Skins von MPDisplay++ werden gelöscht. $\n$\n Bist Du sicher das die Anwendung deinstalliert werden soll?"
 LangString MSGUnIninstall_ConfirmBackup ${LANG_GERMAN} "Alle Einstellungen/Skins von MPDisplay++ werden gelöscht. $\n$\n Willst Du ein Backup durchführen lassen?"
-LangString MSGUnInstall ${LANG_GERMAN} "Die aktuell installierte Version von MPD++ muss vorher deinstalliert werden. $\n$\nSoll die alte Version jetzt deinstalliert werden?"
+LangString MSGUnInstall ${LANG_GERMAN} "Die aktuell installierte Version von MPD++ muss vorher deinstalliert werden. $\n$\nDie MPDisplay++ Einstellungen bleiben dabei erhalten. $\n$\nSoll die alte Version jetzt deinstalliert werden?"
 LangString MSGUnInstall_Cancel ${LANG_GERMAN} "Das Setup kann nicht fortgeführt werden sollange noch ein MPD++ Prozess durchgeführt wird. $\n$\nSetup wird beendet!"
 LangString MSGDotNet_NeedRestart ${LANG_GERMAN} "Fehler bei der Installation des MPDisplay++ Servers. $\n$\nWiederholen?$\n$\nHinweis: Wenn Du gerade erst das .NET Framework 4.5 installiert hast, muss der Rechner eventuell erst neu gestartet werden."
 LangString MSGMediaPortalNotFound ${LANG_GERMAN} "Der Installer kann das Installationsverzeichnis von MediaPortal nicht finden. Bitte suchen Sie es manuell.  $\n$\n z.B.: C:\Program Files\Team MediaPortal\MediaPortal"
@@ -209,7 +207,7 @@ LangString MSGDotNet ${LANG_DUTCH} "${APP_NAME} requires that the .NET Framework
 LangString MSGDotNet_Cancel ${LANG_DUTCH} "Setup Cannot Procced Until .NET Framework 4.5 is installed $\n$\nSetup Will Now Exit"
 LangString MSGUnIninstall_Confirm ${LANG_DUTCH} "All Current MPDisplay++ Settings/Skins Will Be Lost $\n$\n Are You Sure You Want To Uninstall Now?gtgttt."
 LangString MSGUnIninstall_ConfirmBackup ${LANG_DUTCH} "All Current MPDisplay++ Settings/Skins Will Be Lost $\n$\n Would You Like To Backup These Settings Now?."
-LangString MSGUnInstall ${LANG_DUTCH} "The current version of MPDisplay++ must be removed before install $\n$\nWould you like to uninstall now?"
+LangString MSGUnInstall ${LANG_DUTCH} "The current version of MPDisplay++ must be removed before install. $\n$\nMPDisplay++ settings will be preserved. $\n$\nWould you like to uninstall now?"
 LangString MSGUnInstall_Cancel ${LANG_DUTCH} "Setup Cannot Procced Until Existing MPDisplay++ Instance is Removed $\n$\nSetup Will Now Exit"
 LangString MSGDotNet_NeedRestart ${LANG_DUTCH} "Failed To Install MPDisplay Server $\n$\nRetry?$\n$\nNote: If You Have Just Installed .NET Framework 4.5 a restart may be required before MPDisplay Server is installed"
 LangString MSGMediaPortalNotFound ${LANG_DUTCH} "Installer Could Not Locate Your MediaPortal Installation, Please Select Your MediaPortal Directory  $\n$\n eg: C:\Program Files\Team MediaPortal\MediaPortal"
@@ -252,7 +250,7 @@ LangString MSGDotNet ${LANG_FRENCH} "${APP_NAME} .NET Framework 4.5 doit être in
 LangString MSGDotNet_Cancel ${LANG_FRENCH} "L'installation ne peut pas être effectuée jusqu'à ce que le. NET Framework 4.0 n'est pas installé. $\n$\nL'installation est terminée!"
 LangString MSGUnIninstall_Confirm ${LANG_FRENCH} "Tous les réglages et peaux de MPDisplay++ sera supprimé. $\n$\n Etes-vous sûr que l'application sera désinstallée?"
 LangString MSGUnIninstall_ConfirmBackup ${LANG_FRENCH} "Tous les réglages et peaux de MPDisplay++ sera supprimé. $\n$\n Voulez-vous être d'effectuer une sauvegarde?"
-LangString MSGUnInstall ${LANG_FRENCH} "La version actuellement installée de MPD++ doit être désinstallé avant. $\n$\nDevrait maintenant être désinstallé l'ancienne version?"
+LangString MSGUnInstall ${LANG_FRENCH} "La version actuellement installée de MPD++ doit être désinstallé avant. $\n$\nTous les réglages de MPDisplay++ sereont préservées. $\n$\nDevrait maintenant être désinstallé l'ancienne version?"
 LangString MSGUnInstall_Cancel ${LANG_FRENCH} "Ne devrait pas être la configuration de procéder dans un autre MPD++ processus est effectuée. $\n$\nL'installation est terminée!"
 LangString MSGDotNet_NeedRestart ${LANG_FRENCH} "Erreur lors de l'installation de la MPDisplay++ serveur. $\n$\nRépéter?$\n$\nRemarque:. Si vous avez juste le NET Framework 4.0 est installé, l'ordinateur doit être démarré avant toute nouvelle."
 LangString MSGMediaPortalNotFound ${LANG_FRENCH} "Le programme d'installation ne peut pas trouver le répertoire d'installation de MediaPortal. S'il vous plaît chercher manuellement. $\n$\n par exemple: C:\Program Files\Team MediaPortal\MediaPortal"
@@ -309,14 +307,6 @@ LangString MSGUAC_Error ${LANG_ITALIAN} "Impossibile ottenere privilegi amminist
 ##-------------------------------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------------------------------##
-
-
-
-
-
-
-
-
 
 
 # Function to Elevate UAC to Admin #
@@ -386,6 +376,7 @@ Function WelcomePagePre
 				Quit
 		
 			UninstallYes:
+			        WriteRegDWORD ${REG_HKLM} "${REG_APP_PATH}"  "KeepSettings" 1
 				ExecWait '$1 _?=${PROGRAM_DATA}' $3
 				#If Uninstall was canceled(0) Exit installer
 				${If} $3 == 0
@@ -429,15 +420,7 @@ Function WelcomePagePre
 	    MessageBox MB_OK|MB_ICONINFORMATION $(MSGXPWarn)
     ${EndIf} 
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 FunctionEnd
 
 ##-------------------------------------------------------------------------------------------------##
@@ -467,10 +450,14 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
+    
+        SetOverwrite off
      	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
-		File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
-		File /r "${BUILD_FOLDER}\Data\AddImageSettings.xml"
-		File /r "${BUILD_FOLDER}\Data\Skin\*.*"
+	File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
+	File /r "${BUILD_FOLDER}\Data\AddImageSettings.xml"
+	SetOverwrite on
+	
+	File /r "${BUILD_FOLDER}\Data\Skin\*.*"
 		
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
@@ -501,14 +488,14 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 	${EndIf}
 			  
 	# Write Registry Entries
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
+        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDisplayServer.exe"	
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor.exe"
+        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Full"
+        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Full"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
 	 
 	# Install And Start Service
@@ -525,9 +512,6 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 SectionEnd	
 ##-------------------------------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------------------------------##
-
-
-
 
 
 ##-------------------------------------------------------------------------------------------------##
@@ -549,9 +533,11 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
+                SetOverwrite off
 	  	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
 		File /r "${BUILD_FOLDER}\Data\AdvancedPluginSettings.xml"
 		File /r "${BUILD_FOLDER}\Data\AddImageSettings.xml"
+		SetOverwrite on
 
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
@@ -623,8 +609,11 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
 	# Set Access On Data Folder so we can edit files	
     AccessControl::GrantOnFile \
     "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
-		 File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
-	     File /r "${BUILD_FOLDER}\Data\Skin\*.*"
+        SetOverwrite off
+     	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
+	File /r "${BUILD_FOLDER}\Data\AddImageSettings.xml"
+	SetOverwrite on
+	File /r "${BUILD_FOLDER}\Data\Skin\*.*"
   		
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
@@ -778,20 +767,22 @@ Section -WriteUninstaller
 	${Else}
 		WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayIcon" "$INSTDIR\${MAIN_APP_EXE}"
 	${EndIf}
-    WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayName" "${APP_NAME}" 
-	WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "UninstallString" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
-	WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayVersion" "${VERSION}"
-    WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "Publisher" "${GROUP_NAME}"
-		SetOutPath "$INSTDIR\"
-			WriteUninstaller "$INSTDIR\${UNINSTALLER_EXE_NAME}"
+        WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayName" "${APP_NAME}"
+        WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "UninstallString" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
+        WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "DisplayVersion" "${VERSION}"
+        WriteRegStr ${REG_HKLM} "${REG_UNINSTALL_PATH}"  "Publisher" "${GROUP_NAME}"
+        
+	SetOutPath "$INSTDIR\"
+	WriteUninstaller "$INSTDIR\${UNINSTALLER_EXE_NAME}"
 SectionEnd
 
 Section Uninstall
 	SetAutoClose true
-	    
+
 	    ReadRegDWORD $0 ${REG_HKLM} "${REG_APP_PATH}" MPDisplayPath
 			Delete "$0\${UNINSTALLER_EXE_NAME}"
-		
+            ReadRegDWORD $3 ${REG_HKLM} "${REG_APP_PATH}" "KeepSettings"
+            
         # Check User Rights----------------------------------------------------##
 		!insertmacro Check_UAC "UnInstaller"
 		SetShellVarContext all 
@@ -855,9 +846,9 @@ Section Uninstall
 		ReadRegDWORD $0 ${REG_HKLM} "${REG_APP_PATH}" ProgramDataPath
 		RmDir /r "$0\Language"
 		RmDir /r "$0\Logs"
-        RmDir /r "$0\SkinEditor"
+                RmDir /r "$0\SkinEditor"
 		RmDir /r "$0\Skin\Titan"
-        RmDir /r "$0\Skin\Titan-WS"
+                RmDir /r "$0\Skin\Titan-WS"
 		RmDir "$0\Skin"
 	
 		# Ask if the user wants to remove all 3rd party skins.
@@ -868,10 +859,13 @@ Section Uninstall
 				  BackupNo:
 		${EndIf}	
 		
-        Delete "$0\MPDisplay.xml"
-        Delete "$0\AdvancedPluginSettings.xml"			
-        Delete "$0\AddImageSettings.xml"
-	    RmDir "$0"
+		${If} $3 != 1
+                      Delete "$0\MPDisplay.xml"
+                      Delete "$0\AdvancedPluginSettings.xml"
+                      Delete "$0\AddImageSettings.xml"
+	              RmDir "$0"
+	        ${EndIf}
+	        
 		DeleteRegKey ${REG_HKLM} "${REG_APP_PATH}" 
 		DeleteRegKey ${REG_HKLM} "${REG_UNINSTALL_PATH}" 
 	 

@@ -1,22 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading;
 using Common.Helpers;
-using Common.Settings.SettingsObjects;
+using Common.Log;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using MediaPortal.Player;
-using MessageFramework.DataObjects;
-using Common.Logging;
-using Common.Settings;
-using System.Xml.Linq;
 using MediaPortal.Profile;
-using MediaPortalPlugin.PluginHelpers;
-using MediaPortal.Configuration;
+using MediaPortalPlugin.Plugins;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
+using Action = MediaPortal.GUI.Library.Action;
+using Log = Common.Log.Log;
 
 namespace MediaPortalPlugin.InfoManagers
 {
@@ -26,28 +22,21 @@ namespace MediaPortalPlugin.InfoManagers
     {
         #region Singleton Implementation
 
-        private static WindowManager instance;
+        private static WindowManager _instance;
 
         private WindowManager()
         {
-            Log = Common.Logging.LoggingManager.GetLog(typeof(WindowManager));
+            _log = LoggingManager.GetLog(typeof(WindowManager));
         }
 
         public static WindowManager Instance
         {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new WindowManager();
-                }
-                return instance;
-            }
+            get { return _instance ?? (_instance = new WindowManager()); }
         }
 
         #endregion
 
-        private Common.Logging.Log Log;
+        private Log _log;
         private bool _isFullscreenVideo;
         private GUIWindow _currentWindow;
         private PluginSettings _settings;
@@ -60,7 +49,7 @@ namespace MediaPortalPlugin.InfoManagers
         private Timer _secondTimer;
         private DateTime _lastIteraction = DateTime.Now.AddYears(1);
         private DateTime _lastPlayBackChanged;
-        private bool _isUserInteracting = false;
+        private bool _isUserInteracting;
         private List<string> _enabledlugins;
         private bool _isFullScreenMusic;
         private APIPlayerMessage _lastPlayerMessage;
@@ -173,22 +162,20 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
      
-        private void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
+        private void GUIWindowManager_OnNewAction(Action action)
         {
          
                 switch (action.wID)
                 {
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_DOWN:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_LEFT:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_RIGHT:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOVE_UP:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_SHOW_ACTIONMENU:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_PREVIOUS_MENU:
-                    case MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_CLICK:
+                    case Action.ActionType.ACTION_MOVE_DOWN:
+                    case Action.ActionType.ACTION_MOVE_LEFT:
+                    case Action.ActionType.ACTION_MOVE_RIGHT:
+                    case Action.ActionType.ACTION_MOVE_UP:
+                    case Action.ActionType.ACTION_SHOW_ACTIONMENU:
+                    case Action.ActionType.ACTION_SELECT_ITEM:
+                    case Action.ActionType.ACTION_PREVIOUS_MENU:
+                    case Action.ActionType.ACTION_MOUSE_CLICK:
                         ResetUserInteraction();
-                        break;
-                    default:
                         break;
                 }
 
@@ -196,7 +183,7 @@ namespace MediaPortalPlugin.InfoManagers
             // workaround for MovingPictures (WindowID 96742): When the detailed screen for a movie is selected focus is still on the movie selection (ControlID 50), but not on the first item of the
             // detail screen (control 6). Therefore, instead of sending the actual focussed control 50 send control ID 6. If selecting a movie directly plays the movie (instead of the detail screen)
             // the detail screen will shortly display on MPD, then the player screen will be activated.
-            if ((action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_SELECT_ITEM || action.wID == MediaPortal.GUI.Library.Action.ActionType.ACTION_KEY_PRESSED) &&
+            if ((action.wID == Action.ActionType.ACTION_SELECT_ITEM || action.wID == Action.ActionType.ACTION_KEY_PRESSED) &&
                     _currentWindow.GetID == 96742 && CurrentWindowFocusedControlId == 50)
             {
                 SendFocusedControlMessage(6);
@@ -206,7 +193,7 @@ namespace MediaPortalPlugin.InfoManagers
                 SendFocusedControlMessage(-1);
             }
 
-            if (action.wID != MediaPortal.GUI.Library.Action.ActionType.ACTION_MOUSE_MOVE)
+            if (action.wID != Action.ActionType.ACTION_MOUSE_MOVE)
             {
                 SendActionIdMessage((int)action.wID);
             }
@@ -214,28 +201,15 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void GUIWindowManager_OnActivateWindow(int windowId)
         {
-            ThreadPool.QueueUserWorkItem((o) => SetCurrentWindow(windowId));
+            ThreadPool.QueueUserWorkItem(o => SetCurrentWindow(windowId));
         }
 
-
-        private void GUIWindowManager_Receivers(GUIMessage message)
-        {
-       //  GUIWaitCursor
-            //Log.Message(LogLevel.Debug, "[GUIWindowManager_Receivers] - Message: {0}, SenderControlId: {1}, SendToTargetWindow: {2}, TargetControlId: {3}, TargetWindowId: {4}"
-            //    + ", TargetWindowId: {5}, TargetWindowId: {6}, TargetWindowId: {7}, TargetWindowId: {8}"
-            //    +", TargetWindowId: {9}, TargetWindowId: {10}"
-            //    +", TargetWindowId: {11}, TargetWindowId: {12}, TargetWindowId: {13}, TargetWindowId: {14}"
-            //  , message.Message, message.SenderControlId, message.SendToTargetWindow, message.TargetControlId, message.TargetWindowId
-            //  ,message.Label, message.Label2, message.Label3, message.Label4
-            //  , message.Object, message.Object2
-            //  , message.Param1, message.Param2, message.Param3, message.Param4);
-        }
 
         public void OnMediaPortalMessageReceived(APIMediaPortalMessage message)
         {
             if (message != null)
             {
-                Log.Message(LogLevel.Debug, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
+                _log.Message(LogLevel.Debug, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
                 if (message.MessageType == APIMediaPortalMessageType.WindowInfoMessage)
                 {
                     if (message.WindowMessage != null)
@@ -267,17 +241,17 @@ namespace MediaPortalPlugin.InfoManagers
                         }
                         else if (message.ActionMessage.ActionType == APIActionMessageType.GuideAction)
                         {
-                            TVServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                            TvServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
                         }
                         else
                         {
                             if (message.ActionMessage.MediaPortalAction != null)
                             {
-                                SupportedPluginManager.GUISafeInvoke(() =>
+                                SupportedPluginManager.GuiSafeInvoke(() =>
                                 {
                                     if (message.ActionMessage.ActionType == APIActionMessageType.MediaPortalAction)
                                     {
-                                        GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)(int)message.ActionMessage.MediaPortalAction.ActionId, 0f, 0f));
+                                        GUIGraphicsContext.OnAction(new Action((Action.ActionType)message.ActionMessage.MediaPortalAction.ActionId, 0f, 0f));
                                     }
 
                                     if (message.ActionMessage.ActionType == APIActionMessageType.MediaPortalWindow)
@@ -295,11 +269,11 @@ namespace MediaPortalPlugin.InfoManagers
     
         public void SendFullUpdate()
         {
-            Log.Message(LogLevel.Debug, "[SendFullUpdate] - Sending full information update");
+            _log.Message(LogLevel.Debug, "[SendFullUpdate] - Sending full information update");
             SetCurrentWindow(GUIWindowManager.ActiveWindow);
             SendPlayerMessage();
-            TVServerManager.Instance.SendTvGuide();
-            TVServerManager.Instance.SendRecordings();
+            TvServerManager.Instance.SendTvGuide();
+            TvServerManager.Instance.SendRecordings();
         }
 
         private void SetCurrentWindow(int windowId)
@@ -312,11 +286,11 @@ namespace MediaPortalPlugin.InfoManagers
                 int retry = 0;
                 while (GUIWindowManager.IsSwitchingToNewWindow || !GUIWindowManager.Initalized)
                 {
-                    Log.Message(LogLevel.Debug, "[SetCurrentWindow] - Waiting for window to initalize, WindowId: {0}", windowId);
+                    _log.Message(LogLevel.Debug, "[SetCurrentWindow] - Waiting for window to initalize, WindowId: {0}", windowId);
                     Thread.Sleep(200);
                     if (retry > 100)
                     {
-                        Log.Message(LogLevel.Error, "[SetCurrentWindow] - I've been waiting for ages... So I am giving up.., WindowId: {0}", windowId);
+                        _log.Message(LogLevel.Error, "[SetCurrentWindow] - I've been waiting for ages... So I am giving up.., WindowId: {0}", windowId);
                         break;
                     }
                     retry++;
@@ -327,15 +301,15 @@ namespace MediaPortalPlugin.InfoManagers
 
                 if (!fullscreen)
                 {
-                    _currentPlugin = SupportedPluginManager.GetPluginHelper(WindowManager.Instance.CurrentWindow.GetID);
+                    _currentPlugin = SupportedPluginManager.GetPluginHelper(Instance.CurrentWindow.GetID);
                     SendWindowMessage();
                     ListManager.Instance.SetWindowListControls();
-                    if (WindowManager.Instance.CurrentWindow.GetID == 600 || WindowManager.Instance.CurrentWindow.GetID == 604)
+                    if (Instance.CurrentWindow.GetID == 600 || Instance.CurrentWindow.GetID == 604)
                     {
-                        var firstEPG = WindowManager.Instance.CurrentWindow.GetControls().FirstOrDefault(c => c.GetID > 50000);
-                        if (firstEPG != null)
+                        var firstEpg = Instance.CurrentWindow.GetControls().FirstOrDefault(c => c.GetID > 50000);
+                        if (firstEpg != null)
                         {
-                            SendFocusedControlMessage(firstEPG.GetID);
+                            SendFocusedControlMessage(firstEpg.GetID);
                         }
                     }
                 }
@@ -355,9 +329,9 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendWindowMessage()
         {
-            if (_currentWindow != null && MessageService.Instance.IsMPDisplayConnected)
+            if (_currentWindow != null && MessageService.Instance.IsMpDisplayConnected)
             {
-                Log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
+                _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
                    , _currentWindow.GetID, _currentWindow.GetFocusControlId());
                 MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
@@ -374,29 +348,29 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private void SendFocusedControlMessage(int controlID)
+        private void SendFocusedControlMessage(int controlId)
         {
-            if (_currentWindow != null && MessageService.Instance.IsMPDisplayConnected)
+            if (_currentWindow != null && MessageService.Instance.IsMpDisplayConnected)
             {
                 int channelId = -1;
                 int programId = -1;
 
                 int focusId = CurrentWindowFocusedControlId;
-                if (controlID >= 0) focusId = controlID;
+                if (controlId >= 0) focusId = controlId;
 
                 // If control is a TVGuide item send also programId and channelId
                 if ((_currentWindow.GetID == 600 || _currentWindow.GetID == 604) && focusId >= 50000)
                 {
                         var item = _currentWindow.GetControl(focusId);
                         var program = item.Data;
-                        channelId = ReflectionHelper.GetPropertyValue<int>(program, "IdChannel", -1);
-                        programId = ReflectionHelper.GetPropertyValue<int>(program, "IdProgram", -1);
+                        channelId = ReflectionHelper.GetPropertyValue(program, "IdChannel", -1);
+                        programId = ReflectionHelper.GetPropertyValue(program, "IdProgram", -1);
                  }
  
                 if (focusId != _previousFocusedControlId || programId > 0)
                 {
                 _previousFocusedControlId = focusId;
-                Log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
+                _log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
                     MessageService.Instance.SendInfoMessage(new APIInfoMessage
                     {
                         MessageType = APIInfoMessageType.WindowMessage,
@@ -418,7 +392,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendPlayerMessage()
         {
-            if (_currentWindow != null && MessageService.Instance.IsMPDisplayConnected)
+            if (_currentWindow != null && MessageService.Instance.IsMpDisplayConnected)
             {
                 var message = new APIPlayerMessage
                     {
@@ -430,7 +404,7 @@ namespace MediaPortalPlugin.InfoManagers
 
                 if (!message.IsEquals(_lastPlayerMessage))
                 {
-                    Log.Message(LogLevel.Debug, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
+                    _log.Message(LogLevel.Debug, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
                                                                 , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin, _isFullScreenMusic || _isFullscreenVideo);
                     _lastPlayerMessage = message;
                     MessageService.Instance.SendInfoMessage(new APIInfoMessage
@@ -445,7 +419,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendActionIdMessage(int actionId)
         {
-            if (MessageService.Instance.IsMPDisplayConnected)
+            if (MessageService.Instance.IsMpDisplayConnected)
             {
                 MessageService.Instance.SendDataMessage(new APIDataMessage
                 {
@@ -460,10 +434,11 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(10))   // Ignore Player Ended event due to MovingPictures Bug when playing multiple files
+            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(10))   // Ignore Player Ended event due to MovingPictures
+                                                                     // bug when playing multiple files
             {
 
-                Log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
+                _log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
                 EqualizerManager.Instance.StopEqualizer();
                 _currentPlaybackState = APIPlaybackState.Stopped;
                 _currentPlaybackType = APIPlaybackType.None;
@@ -480,7 +455,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackStopped(g_Player.MediaType type, int stoptime, string filename)
         {
-            Log.Message(LogLevel.Debug, "[Player_PlayBackStopped] - PlayType: {0}", type);
+            _log.Message(LogLevel.Debug, "[Player_PlayBackStopped] - PlayType: {0}", type);
             EqualizerManager.Instance.StopEqualizer();
             _currentPlaybackState = APIPlaybackState.Stopped;
             _currentPlaybackType = APIPlaybackType.None;
@@ -492,7 +467,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         void Player_PlayBackChanged(g_Player.MediaType type, int stoptime, string filename)
         {
-            Log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
+            _log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
             if (type == g_Player.MediaType.Video)
             {
                 _lastPlayBackChanged = DateTime.Now;                                                // remember time of this event for workaround MovingPictures bug when changing files
@@ -501,7 +476,7 @@ namespace MediaPortalPlugin.InfoManagers
         
         private void Player_PlayBackStarted(g_Player.MediaType type, string filename)
         {
-            Log.Message(LogLevel.Debug, "[Player_PlayBackStarted] - PlayType: {0}", type);
+            _log.Message(LogLevel.Debug, "[Player_PlayBackStarted] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Playing;
             _currentPlaybackType = GetPlaybackType(type);
             _currentPlayerPlugin = SupportedPluginManager.GetPluginPlayerType(_currentPlaybackType, filename);
@@ -532,8 +507,6 @@ namespace MediaPortalPlugin.InfoManagers
                     return APIPlaybackType.None;
                 case g_Player.MediaType.Video:
                     return APIPlaybackType.IsVideo;
-                default:
-                    break;
             }
             return APIPlaybackType.None;
         }

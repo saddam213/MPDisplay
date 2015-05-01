@@ -48,10 +48,10 @@ namespace MPDisplay.Common.Controls
 
         protected override double? ConvertTextToValue(string text)
         {
-            double? result = null;
+            double? result;
 
             if (String.IsNullOrEmpty(text))
-                return result;
+                return null;
 
             try
             {

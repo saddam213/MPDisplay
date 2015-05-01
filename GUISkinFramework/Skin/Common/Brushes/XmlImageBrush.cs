@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media;
 using System.Xml.Serialization;
 
-namespace GUISkinFramework.Common.Brushes
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "ImageBrush")]

@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using GUISkinFramework;
+using GUISkinFramework.ExtensionMethods;
 
 namespace SkinEditor.BindingConverters
 {
@@ -47,7 +44,10 @@ namespace SkinEditor.BindingConverters
                     if (margin.Left < 0.0) margin.Left = 0.0;
                     if (margin.Left > (width - labelwidth)) margin.Left = width - labelwidth;
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
             return margin;
         }

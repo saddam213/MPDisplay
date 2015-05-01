@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms;
 
-namespace SkinEditor.ConnectionHelpers
+namespace SkinEditor.Helpers
 {
     public static class FileSystemHelper
     {
         public static string OpenFolderDialog(string startDirectory)
         {
-            var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var dialog = new FolderBrowserDialog();
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
                 return dialog.SelectedPath;
             }
@@ -29,12 +29,14 @@ namespace SkinEditor.ConnectionHelpers
         public static string OpenFileDialog(string startDirectory, string filter)
         {
              // Filter Example = "Png Images (*.png)|*.png";
-            var dialog = new System.Windows.Forms.OpenFileDialog();
-            dialog.Filter = filter;
-            dialog.RestoreDirectory = true;
-            dialog.ShowReadOnly = true;
-            dialog.InitialDirectory = startDirectory;
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var dialog = new OpenFileDialog
+            {
+                Filter = filter,
+                RestoreDirectory = true,
+                ShowReadOnly = true,
+                InitialDirectory = startDirectory
+            };
+            if (dialog.ShowDialog() == DialogResult.OK)
             {
                 return dialog.FileName;
             }
@@ -49,6 +51,7 @@ namespace SkinEditor.ConnectionHelpers
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -69,6 +72,7 @@ namespace SkinEditor.ConnectionHelpers
             }
             catch
             {
+                // ignored
             }
             return false;
         }
@@ -116,7 +120,7 @@ namespace SkinEditor.ConnectionHelpers
 
     public class FilePathValidationRule : ValidationRule
     {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             if (value != null && value.GetType() != typeof(string))
                 return new ValidationResult(false, "Input value was of the wrong type, expected a text");

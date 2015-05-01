@@ -1,9 +1,10 @@
 ﻿using System;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
+using System.Collections;
+using System.Windows.Controls;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
-    public class ItemsSourceAttributeEditor : TypeEditor<System.Windows.Controls.ComboBox>
+    public class ItemsSourceAttributeEditor : TypeEditor<ComboBox>
     {
         private readonly ItemsSourceAttribute _attribute;
 
@@ -14,7 +15,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         protected override void SetValueDependencyProperty()
         {
-            ValueProperty = System.Windows.Controls.ComboBox.SelectedValueProperty;
+            ValueProperty = ComboBox.SelectedValueProperty;
         }
 
         protected override void ResolveValueBinding(PropertyItem propertyItem)
@@ -34,10 +35,11 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
             Editor.ItemsSource = CreateItemsSource();
         }
 
-        private System.Collections.IEnumerable CreateItemsSource()
+        private IEnumerable CreateItemsSource()
         {
             var instance = Activator.CreateInstance(_attribute.Type);
-            return (instance as IItemsSource).GetValues();
+            var itemsSource = instance as IItemsSource;
+            return itemsSource != null ? itemsSource.GetValues() : null;
         }
     }
 }

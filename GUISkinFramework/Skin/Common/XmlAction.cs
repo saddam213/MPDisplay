@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using GUISkinFramework.Styles;
 
-namespace GUISkinFramework.Common
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "Action")]
@@ -134,18 +124,18 @@ namespace GUISkinFramework.Common
 
         public XmlActionTypeDetailsAttribute(string displayName, string paramName)
         {
-            this._displayName = displayName;
-            this._paramName = paramName;
+            _displayName = displayName;
+            _paramName = paramName;
         }
 
         public string DisplayName
         {
-            get { return this._displayName; }
+            get { return _displayName; }
         }
 
         public string ParamName
         {
-            get { return this._paramName; }
+            get { return _paramName; }
         }
     }
 }

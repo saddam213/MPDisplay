@@ -1,9 +1,7 @@
 ﻿using System;
-using Common;
+using Common.MessengerService;
 using GUIFramework.GUI;
-using GUISkinFramework.Common;
-using MPDisplay.Common;
-
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.Managers
 {
@@ -29,7 +27,7 @@ namespace GUIFramework.Managers
         /// <param name="callback">The callback.</param>
         public static void RegisterAction(XmlActionType action, Action<XmlAction> callback)
         {
-            ActionService.Register<XmlAction>(action, callback);
+            ActionService.Register(action, callback);
         }
 
         /// <summary>
@@ -40,7 +38,7 @@ namespace GUIFramework.Managers
         /// <param name="callback">The callback.</param>
         public static void RegisterAction(this IControlHost window, XmlActionType action, Action<XmlAction> callback)
         {
-            ActionService.Register<XmlAction>(action, callback);
+            ActionService.Register(action, callback);
         }
 
         /// <summary>
@@ -51,7 +49,7 @@ namespace GUIFramework.Managers
         /// <param name="callback">The callback.</param>
         public static void RegisterAction(this GUIControl control, XmlActionType action, Action<XmlAction> callback)
         {
-            ActionService.Register<XmlAction>(action, callback);
+            ActionService.Register(action, callback);
         }
 
         /// <summary>
@@ -99,7 +97,10 @@ namespace GUIFramework.Managers
                 {
                   return (T)Convert.ChangeType(action.Param1, typeof(T));
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
             return defaultValue;
         }
@@ -119,7 +120,10 @@ namespace GUIFramework.Managers
                 {
                     return (T)Convert.ChangeType(action.Param1, typeof(T));
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
             return defaultValue;
         }

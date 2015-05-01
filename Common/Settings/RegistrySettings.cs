@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Common.Logging;
+using Common.Log;
 using Microsoft.Win32;
 
 namespace Common.Settings
@@ -19,12 +16,12 @@ namespace Common.Settings
     {
         #region Vars
 
-        private static string _programDataPath = null;
+        private static string _programDataPath;
         private static MPDisplayInstallType _installType = MPDisplayInstallType.None;
-        private static string _mpdServerExePath = null;
-        private static string _mpdisplayConfigExePath = null;
-        private static string _mpdisplayExePath = null;
-        private static string _skinEditorExePath = null;
+        private static string _mpdServerExePath;
+        private static string _mpdisplayConfigExePath;
+        private static string _mpdisplayExePath;
+        private static string _skinEditorExePath;
         private static LogLevel _logLevel = LogLevel.None;
 
         #endregion
@@ -36,14 +33,7 @@ namespace Common.Settings
         /// </summary>
         public static string ProgramDataPath
         {
-            get
-            {
-                if (_programDataPath == null)
-                {
-                    _programDataPath = GetRegistryValue("ProgramDataPath");
-                }
-                return _programDataPath;
-            }
+            get { return _programDataPath ?? (_programDataPath = GetRegistryValue("ProgramDataPath")); }
         }
 
 
@@ -88,14 +78,7 @@ namespace Common.Settings
         /// </summary>
         public static string MPDisplayExePath
         {
-            get
-            {
-                if (_mpdisplayExePath == null)
-                {
-                    _mpdisplayExePath = GetRegistryValue("MPDisplayExePath");
-                }
-                return _mpdisplayExePath;
-            }
+            get { return _mpdisplayExePath ?? (_mpdisplayExePath = GetRegistryValue("MPDisplayExePath")); }
         }
 
         /// <summary>
@@ -103,13 +86,8 @@ namespace Common.Settings
         /// </summary>
         public static string MPDisplayConfigExePath
         {
-            get
-            {
-                if (_mpdisplayConfigExePath == null)
-                {
-                    _mpdisplayConfigExePath = GetRegistryValue("MPDisplayConfigExePath");
-                }
-                return _mpdisplayConfigExePath;
+            get {
+                return _mpdisplayConfigExePath ?? (_mpdisplayConfigExePath = GetRegistryValue("MPDisplayConfigExePath"));
             }
         }
 
@@ -118,14 +96,7 @@ namespace Common.Settings
         /// </summary>
         public static string MPDServerExePath
         {
-            get
-            {
-                if (_mpdServerExePath == null)
-                {
-                    _mpdServerExePath = GetRegistryValue("MPDServerExePath");
-                }
-                return _mpdServerExePath;
-            }
+            get { return _mpdServerExePath ?? (_mpdServerExePath = GetRegistryValue("MPDServerExePath")); }
         }
 
         /// <summary>
@@ -133,14 +104,7 @@ namespace Common.Settings
         /// </summary>
         public static string SkinEditorExePath
         {
-            get
-            {
-                if (_skinEditorExePath == null)
-                {
-                    _skinEditorExePath = GetRegistryValue("SkinEditorExePath");
-                }
-                return _skinEditorExePath;
-            }
+            get { return _skinEditorExePath ?? (_skinEditorExePath = GetRegistryValue("SkinEditorExePath")); }
         }
 
         /// <summary>
@@ -164,7 +128,10 @@ namespace Common.Settings
                     {
                         _installType = (MPDisplayInstallType)Enum.Parse(typeof(MPDisplayInstallType), GetRegistryValue("InstallType"));
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
                 return _installType;
             }
@@ -184,7 +151,10 @@ namespace Common.Settings
                     {
                         _logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), GetRegistryValue("LogLevel"));
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
                 return _logLevel;
             }

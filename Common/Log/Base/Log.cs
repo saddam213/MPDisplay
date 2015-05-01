@@ -1,6 +1,6 @@
 using System;
 
-namespace Common.Logging
+namespace Common.Log
 {
     public class Log
     {
@@ -48,11 +48,12 @@ namespace Common.Logging
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="ex">The ex.</param>
+        /// <param name="args"></param>
         public void Exception(string message, Exception ex, params object[] args)
         {
             string logMessage = args.Length > 0 ? string.Format(message, args) : message;
             string timeLevel = string.Format("{0}[{1}] ", LogTime, LogLevel.Error);
-            string logLine = string.Format("{0}[{1}] - {2}{3}{4}", timeLevel.PadRight(38), _owner.Name, logMessage, Environment.NewLine, ex.ToString());
+            string logLine = string.Format("{0}[{1}] - {2}{3}{4}", timeLevel.PadRight(38), _owner.Name, logMessage, Environment.NewLine, ex);
             if (_logAction != null)
             {
                 _logAction(LogLevel.Error, logLine);

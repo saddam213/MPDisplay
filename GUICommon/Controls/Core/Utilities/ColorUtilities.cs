@@ -1,15 +1,15 @@
 using System;
-using System.Linq;
-using System.Windows.Media;
-using System.Reflection;
 using System.Collections.Generic;
-using MPDisplay.Common.Controls.Primitives;
+using System.Linq;
+using System.Reflection;
+using System.Windows.Media;
 
-namespace MPDisplay.Common.Controls.Core.Utilities
+namespace MPDisplay.Common.Controls.Core
 {
     static class ColorUtilities
     {
         public static readonly Dictionary<string, Color> KnownColors = GetKnownColors();
+        private const double Tolerance = 0.001;
 
         public static string GetColorName(this Color color)
         {
@@ -36,30 +36,29 @@ namespace MPDisplay.Common.Controls.Core.Utilities
         /// <returns></returns>
         public static HsvColor ConvertRgbToHsv(int r, int b, int g)
         {
-            double delta, min;
-            double h = 0, s, v;
+            double h = 0, s;
 
-            min = Math.Min(Math.Min(r, g), b);
-            v = Math.Max(Math.Max(r, g), b);
-            delta = v - min;
+            double min = Math.Min(Math.Min(r, g), b);
+            double v = Math.Max(Math.Max(r, g), b);
+            var delta = v - min;
 
-            if (v == 0.0)
+            if (Math.Abs(v) < Tolerance)
             {
                 s = 0;
             }
             else
                 s = delta / v;
 
-            if (s == 0)
+            if (Math.Abs(s) < Tolerance)
                 h = 0.0;
 
             else
             {
-                if (r == v)
+                if (Math.Abs(r - v) < Tolerance)
                     h = (g - b) / delta;
-                else if (g == v)
+                else if (Math.Abs(g - v) < Tolerance)
                     h = 2 + (b - r) / delta;
-                else if (b == v)
+                else if (Math.Abs(b - v) < Tolerance)
                     h = 4 + (r - g) / delta;
 
                 h *= 60;
@@ -80,9 +79,9 @@ namespace MPDisplay.Common.Controls.Core.Utilities
         /// <returns></returns>
         public static Color ConvertHsvToRgb(double h, double s, double v)
         {
-            double r = 0, g = 0, b = 0;
+            double r, g, b;
 
-            if (s == 0)
+            if (Math.Abs(s) < Tolerance)
             {
                 r = v;
                 g = v;
@@ -90,20 +89,17 @@ namespace MPDisplay.Common.Controls.Core.Utilities
             }
             else
             {
-                int i;
-                double f, p, q, t;
-
-                if (h == 360)
+                if (Math.Abs(h - 360) < Tolerance)
                     h = 0;
                 else
                     h = h / 60;
 
-                i = (int)Math.Truncate(h);
-                f = h - i;
+                var i = (int)Math.Truncate(h);
+                var f = h - i;
 
-                p = v * (1.0 - s);
-                q = v * (1.0 - (s * f));
-                t = v * (1.0 - (s * (1.0 - f)));
+                var p = v * (1.0 - s);
+                var q = v * (1.0 - (s * f));
+                var t = v * (1.0 - (s * (1.0 - f)));
 
                 switch (i)
                 {
@@ -166,10 +162,10 @@ namespace MPDisplay.Common.Controls.Core.Utilities
 
             for (int i = 0; i < 29; i++)
             {
-                colorsList.Add(ColorUtilities.ConvertHsvToRgb(i * 12, 1, 1));
+                colorsList.Add(ConvertHsvToRgb(i * 12, 1, 1));
             }
 
-            colorsList.Add(ColorUtilities.ConvertHsvToRgb(0, 1, 1));
+            colorsList.Add(ConvertHsvToRgb(0, 1, 1));
 
             return colorsList;
         }

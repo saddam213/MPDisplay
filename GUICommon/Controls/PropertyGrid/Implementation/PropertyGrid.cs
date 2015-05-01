@@ -7,9 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Commands;
-
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -164,7 +161,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         public static readonly DependencyProperty SelectedObjectProperty = DependencyProperty.Register("SelectedObject", typeof(object), typeof(PropertyGrid), new UIPropertyMetadata(null, OnSelectedObjectChanged));
         public object SelectedObject
         {
-            get { return (object)GetValue(SelectedObjectProperty); }
+            get { return GetValue(SelectedObjectProperty); }
             set { SetValue(SelectedObjectProperty, value); }
         }
 
@@ -172,7 +169,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             PropertyGrid propertyInspector = o as PropertyGrid;
             if (propertyInspector != null)
-                propertyInspector.OnSelectedObjectChanged((object)e.OldValue, (object)e.NewValue);
+                propertyInspector.OnSelectedObjectChanged(e.OldValue, e.NewValue);
         }
 
         protected virtual void OnSelectedObjectChanged(object oldValue, object newValue)
@@ -285,7 +282,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             //if (newValue != null)
             //    newValue.IsSelected = true;
 
-            RaiseEvent(new RoutedEventArgs(PropertyGrid.SelectedPropertyItemChangedEvent, newValue));
+            RaiseEvent(new RoutedEventArgs(SelectedPropertyItemChangedEvent, newValue));
         }
 
         #endregion //SelectedProperty
@@ -372,12 +369,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             //hitting enter on textbox will update value of underlying source
-            if (this.SelectedProperty != null && e.Key == Key.Enter && e.OriginalSource is TextBox)
+            if (SelectedProperty != null && e.Key == Key.Enter && e.OriginalSource is TextBox)
             {
-                if (!(e.OriginalSource as TextBox).AcceptsReturn)
+                if (!((TextBox) e.OriginalSource).AcceptsReturn)
                 {
                     BindingExpression be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
-                    be.UpdateSource();
+                    if (be != null) be.UpdateSource();
                 }
             }
         }
@@ -423,10 +420,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             //clear any filters first
             Filter = String.Empty;
 
-            if (isCategorized)
-                Properties = PropertyGridUtilities.GetCategorizedProperties(_propertyItemsCache);
-            else
-                Properties = PropertyGridUtilities.GetAlphabetizedProperties(_propertyItemsCache);
+            Properties = isCategorized ? PropertyGridUtilities.GetCategorizedProperties(_propertyItemsCache) : PropertyGridUtilities.GetAlphabetizedProperties(_propertyItemsCache);
         }
 
         private List<PropertyItem> GetObjectProperties(object instance)
@@ -475,10 +469,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             if (selectedObject is FrameworkElement)
             {
-                var binding = new Binding("Name");
-                binding.Source = selectedObject;
-                binding.Mode = BindingMode.OneWay;
-                BindingOperations.SetBinding(this, PropertyGrid.SelectedObjectNameProperty, binding);
+                var binding = new Binding("Name") {Source = selectedObject, Mode = BindingMode.OneWay};
+                BindingOperations.SetBinding(this, SelectedObjectNameProperty, binding);
             }
         }
 
@@ -487,10 +479,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             if (_dragThumb == null)
                 return;
 
-            if (isCategorized)
-                _dragThumb.Margin = new Thickness(6, 0, 0, 0);
-            else
-                _dragThumb.Margin = new Thickness(-1, 0, 0, 0);
+            _dragThumb.Margin = isCategorized ? new Thickness(6, 0, 0, 0) : new Thickness(-1, 0, 0, 0);
         }
 
         private void ResetPropertyGrid()
@@ -509,7 +498,9 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             foreach (var item in Properties)
             {
-                BindingOperations.GetBindingExpressionBase(item, PropertyItem.ValueProperty).UpdateTarget();
+                var bindingExpressionBase = BindingOperations.GetBindingExpressionBase(item, PropertyItem.ValueProperty);
+                if (bindingExpressionBase != null)
+                    bindingExpressionBase.UpdateTarget();
             }
         }
 

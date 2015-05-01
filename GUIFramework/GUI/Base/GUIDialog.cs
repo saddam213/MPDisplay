@@ -1,12 +1,11 @@
 ﻿using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
+using Common.Log;
 using GUIFramework.Managers;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Dialogs;
-using Common.Logging;
-
+using GUIFramework.Repositories;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -28,7 +27,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIDialog()
         {
-            Visibility = System.Windows.Visibility.Collapsed;
+            Visibility = Visibility.Collapsed;
             RenderTransform = new ScaleTransform(1, 1);
             RenderTransformOrigin = new Point(0.5, 0.5);
             DataContext = this;
@@ -81,7 +80,7 @@ namespace GUIFramework.GUI
             BaseXml = skinXml;
             Id = BaseXml.Id;
             VisibleCondition = new GUIVisibleCondition(this);
-            Animations = new AnimationCollection(this, BaseXml.Animations, (condition) => OnAnimationStarted(condition), (condition) => OnAnimationCompleted(condition));
+            Animations = new AnimationCollection(this, BaseXml.Animations, condition => OnAnimationStarted(condition), condition => OnAnimationCompleted(condition));
             CreateControls();
             NotifyPropertyChanged("Controls");
         }
@@ -168,7 +167,7 @@ namespace GUIFramework.GUI
                 case XmlAnimationCondition.WindowOpen:
                     break;
                 case XmlAnimationCondition.WindowClose:
-                    Visibility = System.Windows.Visibility.Collapsed;
+                    Visibility = Visibility.Collapsed;
                     foreach (var control in Controls.GetControls())
                     {
                         control.ClearInfoData();

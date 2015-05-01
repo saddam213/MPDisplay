@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System.Collections;
-using System.Reflection;
 
 namespace MPDisplay.Common.Controls
 {
@@ -44,7 +43,7 @@ namespace MPDisplay.Common.Controls
             }
         }
 
-        public static readonly DependencyProperty ItemsSourceTypeProperty = DependencyProperty.Register("ItemsSourceType", typeof(Type), typeof(CollectionEditor), new UIPropertyMetadata(null, new PropertyChangedCallback(ItemsSourceTypeChanged)));
+        public static readonly DependencyProperty ItemsSourceTypeProperty = DependencyProperty.Register("ItemsSourceType", typeof(Type), typeof(CollectionEditor), new UIPropertyMetadata(null, ItemsSourceTypeChanged));
         public Type ItemsSourceType
         {
             get { return (Type)GetValue(ItemsSourceTypeProperty); }
@@ -73,7 +72,7 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(CollectionEditor), new UIPropertyMetadata(null));
         public object SelectedItem
         {
-            get { return (object)GetValue(SelectedItemProperty); }
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
@@ -168,10 +167,8 @@ namespace MPDisplay.Common.Controls
 
         private object CreateClone(object source)
         {
-            object clone = null;
-
             Type type = source.GetType();
-            clone = Activator.CreateInstance(type);
+            var clone = Activator.CreateInstance(type);
             CopyValues(source, clone);
 
             return clone;

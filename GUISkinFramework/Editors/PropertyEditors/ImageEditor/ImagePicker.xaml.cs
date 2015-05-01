@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Skin;
-using System.Linq;
-using GUISkinFramework.Common;
 using Common.Helpers;
+using GUISkinFramework.Skin;
+using Microsoft.VisualBasic.FileIO;
+using SearchOption = System.IO.SearchOption;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for ImagePicker.xaml
@@ -50,8 +52,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
         private static void OnSkinInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var _this = d as ImagePicker;
-            _this.GetFolderImages((e.NewValue as XmlSkinInfo).SkinImageFolder);
-            _this.CreateFileWatcher();
+            if (_this != null)
+            {
+                _this.GetFolderImages((e.NewValue as XmlSkinInfo).SkinImageFolder);
+                _this.CreateFileWatcher();
+            }
         }
 
 
@@ -177,7 +182,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 }
                 foreach (string imageFile in Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly))
                 {
-                    if (_allowedsExtensions.Contains(System.IO.Path.GetExtension(imageFile).ToUpper()))
+                    if (_allowedsExtensions.Contains(Path.GetExtension(imageFile).ToUpper()))
                     {
                         _imageFiles.Add(new ImageFile() { Directory = new DirectoryInfo(path), File = new FileInfo(imageFile) });
                     }
@@ -253,7 +258,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         {
             var menuItem = new MenuItem();
             menuItem.Header = header;
-            menuItem.Icon = new Image { Margin = new Thickness(2), Stretch = System.Windows.Media.Stretch.Uniform, Width = 16, Height = 16, Source = new BitmapImage(new Uri(string.Format(@"/GUISkinFramework;component/Images/{0}.png", icon), UriKind.RelativeOrAbsolute)) };
+            menuItem.Icon = new Image { Margin = new Thickness(2), Stretch = Stretch.Uniform, Width = 16, Height = 16, Source = new BitmapImage(new Uri(string.Format(@"/GUISkinFramework;component/Images/{0}.png", icon), UriKind.RelativeOrAbsolute)) };
             if (handler != null)
             {
                 menuItem.Click += (s, e) => handler();
@@ -267,10 +272,10 @@ namespace GUISkinFramework.Editor.PropertyEditors
             {
                 if (isfolder)
                 {
-                    System.Diagnostics.Process.Start("explorer.exe", SelectedImage.Directory.FullName);
+                    Process.Start("explorer.exe", SelectedImage.Directory.FullName);
                     return;
                 }
-                System.Diagnostics.Process.Start(SelectedImage.File.FullName);
+                Process.Start(SelectedImage.File.FullName);
             }
         }
 
@@ -281,14 +286,14 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 string folder = DirectoryHelpers.FolderBrowserDialog();
                 if (!string.IsNullOrEmpty(folder))
                 {
-                    Microsoft.VisualBasic.FileIO.FileSystem.CopyDirectory(folder, System.IO.Path.Combine(_currentFolder, new DirectoryInfo(folder).Name), Microsoft.VisualBasic.FileIO.UIOption.AllDialogs, Microsoft.VisualBasic.FileIO.UICancelOption.DoNothing);
+                    FileSystem.CopyDirectory(folder, Path.Combine(_currentFolder, new DirectoryInfo(folder).Name), UIOption.AllDialogs, UICancelOption.DoNothing);
                 }
                 return;
             }
             string file = FileHelpers.OpenFileDialog(SkinInfo.SkinImageFolder, _imageFilter);
             if (!string.IsNullOrEmpty(file))
             {
-                FileHelpers.CopyFile(file, System.IO.Path.Combine(_currentFolder, System.IO.Path.GetFileName(file)));
+                FileHelpers.CopyFile(file, Path.Combine(_currentFolder, Path.GetFileName(file)));
             }
         }
 

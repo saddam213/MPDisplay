@@ -1,24 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
+using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editors.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for GradientBrushEditor.xaml
@@ -54,7 +41,7 @@ public static readonly DependencyProperty GradientBrushProperty =
         {
             var _value = e.NewValue as XmlGradientBrush;
             var _this = d as GradientBrushEditor;
-            _this.SetBackgroundValues(_value);
+            if (_this != null) _this.SetBackgroundValues(_value);
         }
 
         private void SetBackgroundValues(XmlGradientBrush value)

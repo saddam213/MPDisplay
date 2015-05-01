@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "Image")]
@@ -29,8 +19,9 @@ namespace GUISkinFramework.Controls
         private string _defaultImage = string.Empty;
         private string _coverCornerRadius = "0,0,0,0";
         private XmlImageStyle _controlStyle;
-
-
+        private string _mapData = string.Empty;
+        private bool _showMapControls;
+        private int _defaultMapZoom = 15;
       
         [XmlElement("ImageStyle")]
         [Editor(typeof(StyleEditor), typeof(ITypeEditor))]
@@ -110,11 +101,39 @@ namespace GUISkinFramework.Controls
             set { _coverCornerRadius = value; NotifyPropertyChanged("CoverCornerRadius"); }
         }
 
+        [DefaultValue("")]
+        [PropertyOrder(100)]
+        [EditorCategory("GPSMap", 9)]
+        [Editor(typeof(LabelEditor), typeof(ITypeEditor))]
+        public string MapData
+        {
+            get { return _mapData; }
+            set { _mapData = value; NotifyPropertyChanged("MapData"); }
+        }
+
+        [PropertyOrder(101)]
+        [DefaultValue(false)]
+        [EditorCategory("GPSMap", 9)]
+        public bool ShowMapControls
+        {
+            get { return _showMapControls; }
+            set { _showMapControls = value; NotifyPropertyChanged("ShowMapControls"); }
+        }
+
+        [PropertyOrder(102)]
+        [DefaultValue(15)]
+        [EditorCategory("GPSMap", 9)]
+        public int DefaultMapZoom
+        {
+            get { return _defaultMapZoom; }
+            set { _defaultMapZoom = value; NotifyPropertyChanged("DefaultMapZoom"); }
+        }
+
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlImageStyle>(ControlStyle);
-            CoverImage = style.GetStyle<XmlBrush>(CoverImage);
+            ControlStyle = style.GetControlStyle(ControlStyle);
+            CoverImage = style.GetStyle(CoverImage);
         }
     }
 }

@@ -1,40 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using GUISkinFramework;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common;
-using SkinEditor.Dialogs;
-using GUISkinFramework.Windows;
-using GUIFramework.Managers;
-using MPDisplay.Common.Utils;
-using GUISkinFramework.Common;
-using GUISkinFramework.ExtensionMethods;
 using System.Text.RegularExpressions;
+using System.Windows.Controls;
+using System.Windows.Input;
+using GUISkinFramework.ExtensionMethods;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Utils;
 
 namespace SkinEditor.Views
 {
     /// <summary>
     /// Interaction logic for StyleEditorView.xaml
     /// </summary>
-    public partial class SkinInfoEditorView : EditorViewModel
+    public partial class SkinInfoEditorView
     {
         public SkinInfoEditorView()
         {
@@ -60,7 +40,7 @@ namespace SkinEditor.Views
             }
         }
 
-        void SkinOptions_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        void SkinOptions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             HasPendingChanges = true;
         }
@@ -94,7 +74,7 @@ namespace SkinEditor.Views
 
     public class SkinOptionNameValidationRule : ValidationRule
     {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             var filePath = value as string;
             //check for empty/null file path:

@@ -1,7 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MPDisplay.Common.Controls.Core.Utilities
+namespace MPDisplay.Common.Controls.Core
 {
     public class ContextMenuUtilities
     {

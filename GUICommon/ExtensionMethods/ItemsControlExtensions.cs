@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
-using MPDisplay.Common.ExtensionMethods;
 
 namespace MPDisplay.Common.ExtensionMethods
 {
@@ -40,7 +35,7 @@ namespace MPDisplay.Common.ExtensionMethods
         private static void OnHorizontalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ScrollViewer viewer = d as ScrollViewer;
-            viewer.ScrollToHorizontalOffset((double)e.NewValue);
+            if (viewer != null) viewer.ScrollToHorizontalOffset((double)e.NewValue);
         }
 
 

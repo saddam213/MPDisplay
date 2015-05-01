@@ -1,37 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Common;
-using Common.Logging;
+using Common.Log;
+using Common.MessengerService;
 using Common.Settings;
 using Common.Status;
 using GUIFramework.GUI;
-using GUISkinFramework;
-using GUISkinFramework.Property;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
-using MPDisplay.Common;
+using MessageFramework.Messages;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public class PropertyRepository : IRepository
     {
         #region Singleton Implementation
 
-        private PropertyRepository() { }
+        private PropertyRepository()
+        {
+            _log = LoggingManager.GetLog(typeof (PropertyRepository));
+        }
+
         private static PropertyRepository _instance;
         public static PropertyRepository Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new PropertyRepository();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new PropertyRepository()); }
         }
 
         public static void RegisterPropertyMessage(GUIControl control, string property)
@@ -104,13 +100,12 @@ namespace GUIFramework.Managers
 
         #endregion
 
-        private Log Log = LoggingManager.GetLog(typeof(PropertyRepository));
-
 
         private List<APIPropertyMessage> _skinProperties = new List<APIPropertyMessage>();
         private MessengerService<string> _propertyService = new MessengerService<string>();
         private DataRepository<string, APIPropertyMessage> _propertyRepository;
         private SystemStatusInfo _systemInfo;
+        private Log _log;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -141,17 +136,16 @@ namespace GUIFramework.Managers
         /// <summary>
         /// Adds an APIProperty property.
         /// </summary>
-        /// <param name="tag">The property tag.</param>
-        /// <param name="tagValue">The property value.</param>
+        /// <param name="propertyMessage">The property message.</param>
         public void AddProperty(APIPropertyMessage propertyMessage)
         {
             if (propertyMessage != null)
             {
-                // Log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); //Test
+                _log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); 
  
                 if (_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage))
                 {
-                // Log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); //Test
+                _log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); 
                    NotifyPropertyChanged(propertyMessage.SkinTag);
                 }
             }
@@ -211,7 +205,7 @@ namespace GUIFramework.Managers
 
         public Task<string> GetControlLabelValue(string xmlstring, string format)
         {
-            return Task.Factory.StartNew<string>(() =>
+            return Task.Factory.StartNew(() =>
             {
                 string returnValue = string.Empty;
                 if (!string.IsNullOrEmpty(xmlstring))
@@ -245,7 +239,7 @@ namespace GUIFramework.Managers
 
         public Task<byte[]> GetControlImageValue(string xmlstring)
         {
-            return Task.Factory.StartNew<byte[]>(() =>
+            return Task.Factory.StartNew(() =>
               {
                   if (!string.IsNullOrEmpty(xmlstring))
                   {
@@ -265,10 +259,7 @@ namespace GUIFramework.Managers
 
         public Task<double> GetControlNumberValue(string xmlstring)
         {
-            return Task.Factory.StartNew<double>(() =>
-            {
-                return GetPropertyNumberValue(xmlstring);
-            });
+            return Task.Factory.StartNew(() => GetPropertyNumberValue(xmlstring));
         }
 
         public List<XmlProperty> GetControlProperties(GUIControl control, string xmlstring)
@@ -276,10 +267,7 @@ namespace GUIFramework.Managers
             var returnValue = new List<XmlProperty>();
             if (HasProperties(xmlstring))
             {
-                foreach (var property in GetPropertiesFromXmlString(xmlstring))
-                {
-                    returnValue.Add(SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == property));
-                }
+                returnValue.AddRange(GetPropertiesFromXmlString(xmlstring).Select(property => SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == property)));
             }
             return returnValue;
         }
@@ -366,7 +354,7 @@ namespace GUIFramework.Managers
             {
                 foreach (var xmlProperty in SkinInfo.Properties)
                 {
-                    if (!properties.Any(x => x.SkinTag == xmlProperty.SkinTag))
+                    if (properties.All(x => x.SkinTag != xmlProperty.SkinTag))
                     {
                         properties.Add(new APIPropertyMessage
                         {
@@ -396,8 +384,7 @@ namespace GUIFramework.Managers
         {
             if (Settings.IsSystemInfoEnabled)
             {
-                _systemInfo = new SystemStatusInfo();
-                _systemInfo.TagPrefix = "MPD";
+                _systemInfo = new SystemStatusInfo {TagPrefix = "MPD"};
                 _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
                 _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
                 _systemInfo.StartMonitoring();
@@ -406,13 +393,11 @@ namespace GUIFramework.Managers
 
         private void StopSystemInfoMonitoring()
         {
-            if (Settings.IsSystemInfoEnabled)
-            {
-                _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
-                _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
-                _systemInfo.StopMonitoring();
-                _systemInfo = null;
-            }
+            if (!Settings.IsSystemInfoEnabled) return;
+            _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
+            _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
+            _systemInfo.StopMonitoring();
+            _systemInfo = null;
         }
 
 

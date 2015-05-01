@@ -1,36 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.ServiceProcess;
+﻿using System.ComponentModel;
 using System.Management;
+using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.ComponentModel;
-using MPDisplay.Common.Utils;
 using Common.Helpers;
-using GUIConfig.Settings.Language;
 using Common.Settings;
-
+using GUIConfig.Settings;
+using MPDisplay.Common.Utils;
 
 namespace GUIConfig.ViewModels
 {
     /// <summary>
     /// Interaction logic for ConnectionSettingsView.xaml
     /// </summary>
-    public partial class ConnectionSettingsView : UserControl, INotifyPropertyChanged
+    public partial class ConnectionSettingsView : INotifyPropertyChanged
     {
         #region Fields
 
-        private const string _servicename = "MPDisplayServer";
+        private const string Servicename = "MPDisplayServer";
         private bool _canEditConnectionName;
         private bool _canManageService;
         private string _testStatus;
@@ -42,8 +29,8 @@ namespace GUIConfig.ViewModels
         private ICommand _testButtonCommand;
         private ICommand _serverButtonCommand;
         private ICommand _startmodeButtonCommand;
-        private bool _isTestingConnection = false;
-        private bool _isStartModeKnown = false;
+        private bool _isTestingConnection;
+        private bool _isStartModeKnown;
  
         #endregion
 
@@ -190,14 +177,14 @@ namespace GUIConfig.ViewModels
             {
                 if (!isRunning)
                 {
-                    ServiceHelper.StartService(_servicename, 5000);
+                    ServiceHelper.StartService(Servicename, 5000);
                 }
                 else
                 {
-                    ServiceHelper.StopService(_servicename, 5000);
+                    ServiceHelper.StopService(Servicename, 5000);
                 }
             });
-            ServerButtonText = ServiceHelper.GetServiceStatus(_servicename) != ServiceStatus.Running
+            ServerButtonText = ServiceHelper.GetServiceStatus(Servicename) != ServiceStatus.Running
                 ? LanguageHelper.GetLanguageValue("Start Server")
                 : LanguageHelper.GetLanguageValue("Stop Server");
             CommandManager.InvalidateRequerySuggested();
@@ -209,7 +196,7 @@ namespace GUIConfig.ViewModels
         /// <returns></returns>
         public bool CanServerButtonExecute()
         {
-            var status = ServiceHelper.GetServiceStatus(_servicename);
+            var status = ServiceHelper.GetServiceStatus(Servicename);
             ServerStatus = LanguageHelper.GetLanguageValue(status.ToString());
             ServerButtonText = status != ServiceStatus.Running
                ? LanguageHelper.GetLanguageValue("Start Server")
@@ -256,14 +243,7 @@ namespace GUIConfig.ViewModels
         public bool CanStartModeButtonExecute()
         {
 
-            if (StartModeStatus.Length > 0)
-            {
-                _isStartModeKnown = true;
-            }
-            else
-            {
-                _isStartModeKnown = false;
-            }
+            _isStartModeKnown = StartModeStatus.Length > 0;
             StartModeButtonText = _startmodeStatus == "Auto"
                 ? "--> " + LanguageHelper.GetLanguageValue("Manual")
                 : "--> " + LanguageHelper.GetLanguageValue("Auto");
@@ -300,12 +280,12 @@ namespace GUIConfig.ViewModels
         private  string  getServiceStartupType()
         {
             //construct the management path
-            string path = "Win32_Service.Name='" + _servicename + "'";
+            const string path = "Win32_Service.Name='" + Servicename + "'";
             //construct the management object
-            if( ServiceHelper.CheckIfServiceExists(_servicename) )
+            if( ServiceHelper.CheckIfServiceExists(Servicename) )
             {
-                ManagementObject ManagementObj = new ManagementObject(path);
-               return ManagementObj["StartMode"].ToString();
+                ManagementObject managementObj = new ManagementObject(path);
+               return managementObj["StartMode"].ToString();
             }
             else
             {
@@ -316,13 +296,13 @@ namespace GUIConfig.ViewModels
         private void setServiceStartupType(string mode )
         {
                 //construct the management path
-                string path = "Win32_Service.Name='" + _servicename + "'";
+                const string path = "Win32_Service.Name='" + Servicename + "'";
                 //construct the management object
-                ManagementObject ManagementObj = new ManagementObject(path);
+                ManagementObject managementObj = new ManagementObject(path);
                 //we will use the invokeMethod method of the ManagementObject class
                 object[] parameters = new object[1];
                 parameters[0] = mode;
-                ManagementObj.InvokeMethod("ChangeStartMode", parameters);
+                managementObj.InvokeMethod("ChangeStartMode", parameters);
        }
 
         #endregion

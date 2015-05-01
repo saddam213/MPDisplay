@@ -9,22 +9,18 @@ using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using GUIFramework.Managers;
-using GUIFramework.GUI;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
+using GUIFramework.Repositories;
 using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
-using MPDisplay.Common;
-using MPDisplay.Common.Utils;
 using MPDisplay.Common.ExtensionMethods;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIList.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlList))]
-    public partial class GUIList : GUIDraggableListView
+    public partial class GUIList
     {
         #region Fields
 
@@ -45,18 +41,18 @@ namespace GUIFramework.GUI.Controls
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ListBox3D"/> class.
+        /// Initializes a new instance of the ListBox3D class.
         /// </summary>
-        public GUIList() : base()
+        public GUIList()
         {
             InitializeComponent();
-            this.AddHandler(GUIList.MouseDownEvent, new MouseButtonEventHandler(GUIList_MouseButtonDown), true);
-             _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
-            _scrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
+            AddHandler(MouseDownEvent, new MouseButtonEventHandler(GUIList_MouseButtonDown), true);
+             ScrollViewer = listbox.GetDescendantByType<ScrollViewer>();
+            ScrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             // Check for page updates if ScrollChanged event fires
 
             // Setup listViewScrollViewer
-            _scrollViewer.ScrollChanged += new ScrollChangedEventHandler(GUIList_ScrollChanged);
+            ScrollViewer.ScrollChanged += GUIList_ScrollChanged;
         }
 
         #endregion
@@ -149,14 +145,6 @@ namespace GUIFramework.GUI.Controls
         }
 
         /// <summary>
-        /// Clears the info data.
-        /// </summary>
-        public override void ClearInfoData()
-        {
-            base.ClearInfoData();
-        }
-
-        /// <summary>
         /// Called when [list items received].
         /// </summary>
         public async void OnListItemsReceived()
@@ -212,7 +200,7 @@ namespace GUIFramework.GUI.Controls
                Dispatcher.InvokeAsync(() =>
                {
                    XmlListLayout layout = XmlListLayout.Vertical;
-                   if (Enum.TryParse<XmlListLayout>(action.Param1, out layout))
+                   if (Enum.TryParse(action.Param1, out layout))
                    {
                        ChangeLayout(layout);
                    }
@@ -305,51 +293,50 @@ namespace GUIFramework.GUI.Controls
                     Point newpos = positionFromCenter.Value;
                     if (IsLayoutVertical)
                     {
-                        if (newpos.Y != 0 && newpos.Y != _scrollViewer.VerticalOffset)
+                        if (Math.Abs(newpos.Y) > 0.0000001 && Math.Abs(newpos.Y - ScrollViewer.VerticalOffset) > 0.0000001)
                         {
-                            int duration = newpos.Y < _scrollViewer.VerticalOffset
-                               ? (int)Math.Min(1000, Math.Max(0, _scrollViewer.VerticalOffset - newpos.Y))
-                               : (int)Math.Min(1000, Math.Max(0, newpos.Y - _scrollViewer.VerticalOffset));
+                            int duration = newpos.Y < ScrollViewer.VerticalOffset
+                               ? (int)Math.Min(1000, Math.Max(0, ScrollViewer.VerticalOffset - newpos.Y))
+                               : (int)Math.Min(1000, Math.Max(0, newpos.Y - ScrollViewer.VerticalOffset));
 
                             if (duration != 0)
                             {
-                                var animation = new DoubleAnimation(_scrollViewer.VerticalOffset, newpos.Y, new Duration(TimeSpan.FromMilliseconds(duration)));
+                                var animation = new DoubleAnimation(ScrollViewer.VerticalOffset, newpos.Y, new Duration(TimeSpan.FromMilliseconds(duration)));
                                 animation.Completed += (s, e) => AdjustItemCenter();
-                                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
+                                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
                             }
                         }
                         return;
                     }
                     else
                     {
-                        if (newpos.X != 0 && newpos.X != _scrollViewer.HorizontalOffset)
+                        if (Math.Abs(newpos.X) > 0.0000001 && Math.Abs(newpos.X - ScrollViewer.HorizontalOffset) > 0.0000001)
                         {
-                            int duration = newpos.X < _scrollViewer.HorizontalOffset
-                                ? (int)Math.Min(500, Math.Max(0, (_scrollViewer.HorizontalOffset - newpos.X) / 2))
-                                : (int)Math.Min(500, Math.Max(0, (newpos.X - _scrollViewer.HorizontalOffset) / 2));
+                            int duration = newpos.X < ScrollViewer.HorizontalOffset
+                                ? (int)Math.Min(500, Math.Max(0, (ScrollViewer.HorizontalOffset - newpos.X) / 2))
+                                : (int)Math.Min(500, Math.Max(0, (newpos.X - ScrollViewer.HorizontalOffset) / 2));
 
                             if (duration != 0)
                             {
-                                var animation = new DoubleAnimation(_scrollViewer.HorizontalOffset, newpos.X, new Duration(TimeSpan.FromMilliseconds(duration)));
+                                var animation = new DoubleAnimation(ScrollViewer.HorizontalOffset, newpos.X, new Duration(TimeSpan.FromMilliseconds(duration)));
                                 animation.Completed += (s, e) => AdjustItemCenter();
-                                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
+                                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
                             }
                         }
                         return;
                     }
                    
                 }
-                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty,null);
+                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty,null);
             }
         }
 
         /// <summary>
         /// Adjusts the item center.
         /// </summary>
-        /// <param name="item">The item.</param>
         private void AdjustItemCenter()
         {
-            ThreadPool.QueueUserWorkItem((o) =>
+            ThreadPool.QueueUserWorkItem(o =>
             {
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
@@ -366,7 +353,7 @@ namespace GUIFramework.GUI.Controls
         /// <summary>
         /// Changes the layout.
         /// </summary>
-        /// <param name="orientation">The orientation.</param>
+        /// <param name="layout">The layout.</param>
         private void ChangeLayout(XmlListLayout layout)
         {
             switch (layout)
@@ -386,8 +373,6 @@ namespace GUIFramework.GUI.Controls
                 case XmlListLayout.CoverFlow:
                     ListLayoutType = XmlListLayout.CoverFlow;
                     CurrentLayout = SkinXml.CoverFlowItemStyle;
-                    break;
-                default:
                     break;
             }
         
@@ -443,8 +428,8 @@ namespace GUIFramework.GUI.Controls
         {
             if (_selectedZoomX != null && _selectedZoomY != null)
             {
-                _selectedZoomX.To = Math.Max(1.0, ((double)x / 100.0));
-                _selectedZoomY.To = Math.Max(1.0, ((double)y / 100.0));
+                _selectedZoomX.To = Math.Max(1.0, (x / 100.0));
+                _selectedZoomY.To = Math.Max(1.0, (y / 100.0));
             }
         }
 
@@ -457,7 +442,9 @@ namespace GUIFramework.GUI.Controls
             var element = listbox.InputHitTest(new Point((listbox.ActualWidth / 2.0), (listbox.ActualHeight / 2.0))) as Border;
             if (element != null)
             {
-                return (element.Child as ContentPresenter).Content as APIListItem;
+                var contentPresenter = element.Child as ContentPresenter;
+                if (contentPresenter != null)
+                    return contentPresenter.Content as APIListItem;
             }
             return null;
         }
@@ -489,7 +476,10 @@ namespace GUIFramework.GUI.Controls
                     _selectedContainer = currentContainer;
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         /// <summary>
@@ -499,12 +489,12 @@ namespace GUIFramework.GUI.Controls
         /// <param name="e"></param>
         private void OnListItem_PreviewMouseDown(object sender, RoutedEventArgs e)
         {
-            if (isMouseDown == true && isMouseDoubleClick == false)
+            if (IsMouseButtonDown && IsMouseDoubleClick == false)
             {
                 // This may be one of the following cases:
                 // 1) mouse single click
                 // 2) mouse drag from one item to next
-                mayBeOutOfSync = true;
+                MayBeOutOfSync = true;
             }
             
         }
@@ -516,12 +506,16 @@ namespace GUIFramework.GUI.Controls
         /// <param name="e"></param>
         private void OnListItem_PreviewMouseUp(object sender, RoutedEventArgs e)
         {
-            if (isScrolling == false && isMouseDoubleClick == false)
+            if (IsScrolling == false && IsMouseDoubleClick == false)
             {
-                var item = (sender as ListBoxItem).Content as APIListItem;
-                if (item != null)
+                var listBoxItem = sender as ListBoxItem;
+                if (listBoxItem != null)
                 {
-                    ListRepository.Instance.FocusListControlItem(this, item);
+                    var item = listBoxItem.Content as APIListItem;
+                    if (item != null)
+                    {
+                        ListRepository.Instance.FocusListControlItem(this, item);
+                    }
                 }
             }
         }

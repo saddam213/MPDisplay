@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -9,29 +9,13 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         public EditorDefinition this[string propertyName]
         {
             get
-            {
-                foreach (var item in Items)
-                {
-                    if (item.PropertiesDefinitions.Where(x => x.Name == propertyName).Any())
-                        return item;
-                }
-
-                return null;
-            }
+            { return Items.FirstOrDefault(item => item.PropertiesDefinitions.Any(x => x.Name == propertyName)); }
         }
 
         public EditorDefinition this[Type targetType]
         {
             get
-            {
-                foreach (var item in Items)
-                {
-                    if (item.TargetType == targetType)
-                        return item;
-                }
-
-                return null;
-            }
+            { return Items.FirstOrDefault(item => item.TargetType == targetType); }
         }
     }
 }

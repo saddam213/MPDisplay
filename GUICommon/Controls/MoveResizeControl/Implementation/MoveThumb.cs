@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 
@@ -49,12 +44,12 @@ namespace MPDisplay.Common.Controls
 
         public MoveThumb()
         {
-            DragDelta += new DragDeltaEventHandler(this.MoveThumb_DragDelta);
+            DragDelta += MoveThumb_DragDelta;
         }
 
         private void MoveThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Control designerItem = this.DataContext as Control;
+            Control designerItem = DataContext as Control;
 
             if (designerItem != null)
             {

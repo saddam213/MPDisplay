@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 
@@ -32,20 +30,20 @@ namespace MPDisplay.Common.Controls
     {
         #region Vars
 
-        private bool _rendering = false;
+        private bool _rendering;
         private EQData[] _fftData = new EQData[100];
 
-        const int _maxRangeValue = 255;
-        private Pen _borderPen = null;
-        private Pen _falloffPen = null;
-        private int _ledCount = 0;
+        const int MaxRangeValue = 255;
+        private Pen _borderPen;
+        private Pen _falloffPen;
+        private int _ledCount;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="GUIEqualizerSurface"/> class.
+        /// Initializes a new instance of the GUIEqualizerSurface class.
         /// </summary>
         public EqualizerCanvas()
         {
@@ -65,13 +63,13 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty BandCountProperty = DependencyProperty.Register("BandCount", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(30));
         public static readonly DependencyProperty BandSpacingProperty = DependencyProperty.Register("BandSpacing", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(2));
         public static readonly DependencyProperty EQChannelProperty = DependencyProperty.Register("EQChannel", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(0));
-        public static readonly DependencyProperty BandBorderSizeProperty = DependencyProperty.Register("BandBorderSize", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(1, (d, e) => (d as EqualizerCanvas).SetBorderPen()));
+        public static readonly DependencyProperty BandBorderSizeProperty = DependencyProperty.Register("BandBorderSize", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(1, (d, e) => ((EqualizerCanvas) d).SetBorderPen()));
         public static readonly DependencyProperty BandCornerRadiusProperty = DependencyProperty.Register("BandCornerRadius", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(2));
-        public static readonly DependencyProperty BandBorderColorProperty = DependencyProperty.Register("BandBorderColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Silver, (d, e) => (d as EqualizerCanvas).SetBorderPen()));
-        public static readonly DependencyProperty FallOffColorProperty = DependencyProperty.Register("FallOffColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Gray, (d, e) => (d as EqualizerCanvas).SetFalloffPen()));
+        public static readonly DependencyProperty BandBorderColorProperty = DependencyProperty.Register("BandBorderColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Silver, (d, e) => ((EqualizerCanvas) d).SetBorderPen()));
+        public static readonly DependencyProperty FallOffColorProperty = DependencyProperty.Register("FallOffColor", typeof(Brush), typeof(EqualizerCanvas), new PropertyMetadata(Brushes.Gray, (d, e) => ((EqualizerCanvas) d).SetFalloffPen()));
         public static readonly DependencyProperty FalloffSpeedProperty = DependencyProperty.Register("FalloffSpeed", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(5));
-        public static readonly DependencyProperty FallOffHeightProperty = DependencyProperty.Register("FallOffHeight", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(4, (d, e) => (d as EqualizerCanvas).SetFalloffPen()));
-        public static readonly DependencyProperty ShowDummyDataProperty = DependencyProperty.Register("ShowDummyData", typeof(bool), typeof(EqualizerCanvas), new PropertyMetadata(false, (d, e) => (d as EqualizerCanvas).SetDummyData()));
+        public static readonly DependencyProperty FallOffHeightProperty = DependencyProperty.Register("FallOffHeight", typeof(int), typeof(EqualizerCanvas), new PropertyMetadata(4, (d, e) => ((EqualizerCanvas) d).SetFalloffPen()));
+        public static readonly DependencyProperty ShowDummyDataProperty = DependencyProperty.Register("ShowDummyData", typeof(bool), typeof(EqualizerCanvas), new PropertyMetadata(false, (d, e) => ((EqualizerCanvas) d).SetDummyData()));
 
         #endregion
 
@@ -208,8 +206,6 @@ namespace MPDisplay.Common.Controls
                 case EQStyle.DoubleCircle:
                     EQStyle = EQStyle.SingleBar;
                     break;
-                default:
-                    break;
             }
         }
 
@@ -228,20 +224,20 @@ namespace MPDisplay.Common.Controls
                     {
                         for (int i = 0; i < BandCount; i++)            // array conatains interleaved values for 2 channels
                         {
-                            if (i < this._fftData.Length && i < arrayValue.Length/2)
+                            if (i < _fftData.Length && i < arrayValue.Length/2)
                             {
-                                EQData pm = this._fftData[i];
-                                pm.Value = (int)arrayValue[2*i+EQChannel]; // select data according to channel of this canvas
+                                EQData pm = _fftData[i];
+                                pm.Value = arrayValue[2*i+EQChannel]; // select data according to channel of this canvas
                                 if (pm.Falloff < pm.Value)
                                 {
                                     pm.Falloff = pm.Value;
                                     pm.Speed = FalloffSpeed;
                                 }
 
-                                int nDecValue = _maxRangeValue / _ledCount;
+                                int nDecValue = MaxRangeValue / _ledCount;
                                 if (pm.Value > 0)
                                 {
-                                    pm.Value -= (_ledCount > 1 ? nDecValue : (_maxRangeValue * 10) / 100);
+                                    pm.Value -= (_ledCount > 1 ? nDecValue : (MaxRangeValue * 10) / 100);
                                     if (pm.Value < 0)
                                     {
                                         pm.Value = 0;
@@ -259,7 +255,7 @@ namespace MPDisplay.Common.Controls
                                         pm.Falloff = 0;
                                     }
                                 }
-                                this._fftData[i] = pm;
+                                _fftData[i] = pm;
                             }
                         }
                     }
@@ -269,7 +265,7 @@ namespace MPDisplay.Common.Controls
             }
         }
 
-        protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             base.OnMouseDown(e);
             SwitchStyle();
@@ -283,7 +279,7 @@ namespace MPDisplay.Common.Controls
         /// Draws the content of a <see cref="T:System.Windows.Media.DrawingContext"/> object during the render pass of a <see cref="T:System.Windows.Controls.Panel"/> element.
         /// </summary>
         /// <param name="dc">The <see cref="T:System.Windows.Media.DrawingContext"/> object to draw.</param>
-        protected override void OnRender(System.Windows.Media.DrawingContext dc)
+        protected override void OnRender(DrawingContext dc)
         {
             base.OnRender(dc);
             try
@@ -314,13 +310,11 @@ namespace MPDisplay.Common.Controls
                     case EQStyle.DoubleBar:
                         DrawBar(dc, true);
                         break;
-                    default:
-                        break;
                 }
             }
             catch (Exception)
             {
-              
+                // ignored
             }
         }
 
@@ -335,7 +329,7 @@ namespace MPDisplay.Common.Controls
             double ledWidth = ActualWidth / BandCount;
             double ledHeight = ledWidth / 2;
             double eqHeight = isDouble ? (ActualHeight / 2) - (ledHeight / 2) : (ActualHeight - ledHeight);
-            double maxRange = isDouble ? _maxRangeValue / 2 : _maxRangeValue;
+            double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
             double bandMinLimit = (eqHeight / maxRange) * minRange;
@@ -358,9 +352,9 @@ namespace MPDisplay.Common.Controls
                 }
 
                 // Draw led's
-                for (int led_Y = 0; led_Y < _ledCount; led_Y++)
+                for (int ledY = 0; ledY < _ledCount; ledY++)
                 {
-                    double locationY = (ledHeight * led_Y);
+                    double locationY = (ledHeight * ledY);
                     if (vertValue > locationY)
                     {
                         var color = GetRangeColor(locationY, bandMinLimit, bandMedLimit);
@@ -398,7 +392,7 @@ namespace MPDisplay.Common.Controls
             int ledWidth = (int)(ActualWidth / BandCount);
             int ledHeight = ledWidth;
             double eqHeight = isDouble ? (ActualHeight / 2) - (ledHeight / 2) : (ActualHeight - ledHeight);
-            double maxRange = isDouble ? _maxRangeValue / 2 : _maxRangeValue;
+            double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
             double bandMinLimit = (eqHeight / maxRange) * minRange;
@@ -413,7 +407,6 @@ namespace MPDisplay.Common.Controls
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
                 double vertValue = (eqHeight / maxRange) * dataValue;
                 double falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
-                double offset = isDouble ? (ledHeight / 2) : ledHeight;
 
 
                 DrawArc(dc, FallOffColor, SweepDirection.Clockwise, bandX, falloffValue + (ledHeight / 2), ledWidth, BandSpacing);
@@ -423,9 +416,9 @@ namespace MPDisplay.Common.Controls
                 }
 
                 // Draw led's
-                for (int led_Y = 0; led_Y < _ledCount; led_Y++)
+                for (int ledY = 0; ledY < _ledCount; ledY++)
                 {
-                    double locationY = (ledHeight * led_Y);
+                    double locationY = (ledHeight * ledY);
                     if (vertValue > locationY)
                     {
 
@@ -450,7 +443,7 @@ namespace MPDisplay.Common.Controls
         private void DrawBar(DrawingContext dc, bool isDouble)
         {
             double eqHeight = isDouble ? (ActualHeight / 2) : ActualHeight;
-            double maxRange = isDouble ? _maxRangeValue / 2 : _maxRangeValue;
+            double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
 
@@ -700,8 +693,10 @@ namespace MPDisplay.Common.Controls
             {
                 if (_dummyDataTimer == null)
                 {
-                    _dummyDataTimer = new DispatcherTimer(DispatcherPriority.Background);
-                    _dummyDataTimer.Interval = TimeSpan.FromMilliseconds(60);
+                    _dummyDataTimer = new DispatcherTimer(DispatcherPriority.Background)
+                    {
+                        Interval = TimeSpan.FromMilliseconds(60)
+                    };
                     _dummyDataTimer.Tick += (s, e) => ShowDummyEQData();
                     _dummyDataTimer.Start();
                 }

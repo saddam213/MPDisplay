@@ -3,26 +3,15 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Windows;
-using MPDisplay.Common.Controls;
 using Common.Helpers;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Controls.Surface3D;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
@@ -233,11 +222,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_Reset_Click(object sender, RoutedEventArgs e)
         {
-            animatedControl.BeginAnimation(ContentControl.OpacityProperty, null);
+            animatedControl.BeginAnimation(OpacityProperty, null);
             animatedControl.BeginAnimation(Canvas.LeftProperty, null);
             animatedControl.BeginAnimation(Canvas.TopProperty, null);
-            animatedControl.BeginAnimation(ContentControl.WidthProperty, null);
-            animatedControl.BeginAnimation(ContentControl.HeightProperty, null);
+            animatedControl.BeginAnimation(WidthProperty, null);
+            animatedControl.BeginAnimation(HeightProperty, null);
             animatedControl.BeginAnimation(Surface3D.RotationXProperty, null);
             animatedControl.BeginAnimation(Surface3D.RotationYProperty, null);
             animatedControl.BeginAnimation(Surface3D.RotationXProperty, null);
@@ -260,11 +249,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 {
                     Add(storyboard,element, CreateDoubleAnimation(animation.StartX, animation.EndX, animation), new PropertyPath(Canvas.LeftProperty));
                     Add(storyboard, element, CreateDoubleAnimation(animation.StartY, animation.EndY, animation), new PropertyPath(Canvas.TopProperty));
-                    Add(storyboard, element, CreateIntAnimation(animation.StartZ, animation.EndZ, animation), new PropertyPath(Canvas.ZIndexProperty));
+                    Add(storyboard, element, CreateIntAnimation(animation.StartZ, animation.EndZ, animation), new PropertyPath(Panel.ZIndexProperty));
                 }
                 foreach (var animation in animations.OfType<XmlFadeAnimation>())
                 {
-                    Add(storyboard, element, CreateDoubleAnimation(GetOpacity(animation.From), GetOpacity(animation.To), animation), new PropertyPath(FrameworkElement.OpacityProperty));
+                    Add(storyboard, element, CreateDoubleAnimation(GetOpacity(animation.From), GetOpacity(animation.To), animation), new PropertyPath(OpacityProperty));
                 }
                 foreach (var animation in animations.OfType<XmlZoomAnimation>())
                 {
@@ -299,7 +288,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             var doubleanimation = new DoubleAnimationUsingKeyFrames();
             doubleanimation.AutoReverse = xmlAnimation.Reverse;
             doubleanimation.IsAdditive = false;
-            Storyboard.SetDesiredFrameRate(doubleanimation, 30);
+            Timeline.SetDesiredFrameRate(doubleanimation, 30);
             doubleanimation.IsCumulative = false;
             doubleanimation.BeginTime = new TimeSpan(0, 0, 0, 0, xmlAnimation.Delay);
 
@@ -331,7 +320,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             var intanimation = new Int32AnimationUsingKeyFrames();
             intanimation.AutoReverse = xmlAnimation.Reverse;
             intanimation.IsAdditive = false;
-            Storyboard.SetDesiredFrameRate(intanimation, 30);
+            Timeline.SetDesiredFrameRate(intanimation, 30);
             intanimation.IsCumulative = false;
             intanimation.BeginTime = new TimeSpan(0, 0, 0, 0, xmlAnimation.Delay);
 

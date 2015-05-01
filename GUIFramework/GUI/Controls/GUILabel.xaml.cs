@@ -1,13 +1,13 @@
-﻿using GUIFramework.Managers;
-using GUISkinFramework.Controls;
+﻿using GUIFramework.Repositories;
+using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUILabel.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlLabel))]  
-    public partial class GUILabel : GUIControl
+    public partial class GUILabel
     {
         #region Fields
 

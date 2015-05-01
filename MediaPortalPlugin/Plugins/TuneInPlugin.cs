@@ -1,17 +1,8 @@
-﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+﻿using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Net;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class TuneInPlugin : PluginHelper
     {

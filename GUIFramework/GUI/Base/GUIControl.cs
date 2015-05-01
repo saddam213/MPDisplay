@@ -1,14 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using GUIFramework.GUI.Controls;
+using System.Windows;
+using System.Windows.Input;
+using Common.Log;
 using GUIFramework.Managers;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Property;
-using MPDisplay.Common.Controls;
-using Common.Logging;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Controls.Surface3D;
 
 namespace GUIFramework.GUI
 {
@@ -23,13 +21,13 @@ namespace GUIFramework.GUI
         protected Log Log = LoggingManager.GetLog(typeof(GUIControl));
         private XmlControl _baseXml;
         private bool _isWindowOpenVisible = true;
-        private bool _isControlVisible = false;
-        private bool _isVisibleToggled = false;
-        private bool _isControlfocused = false;
+        private bool _isControlVisible;
+        private bool _isVisibleToggled;
+        private bool _isControlfocused;
         private GUIVisibleCondition _visibleCondition;
         private AnimationCollection _animations;
         private List<int> _focusedControlIds;
-        private bool _isDataRegistered = false;
+        private bool _isDataRegistered;
         private DateTime _lastUserInteraction = DateTime.MinValue;
      
         #endregion
@@ -41,7 +39,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIControl()
         {
-            Visibility = System.Windows.Visibility.Collapsed;
+            Visibility = Visibility.Collapsed;
             DataContext = this;
             ClipToBounds = true;
         }
@@ -232,8 +230,6 @@ namespace GUIFramework.GUI
                 case XmlAnimationCondition.VisibleTrue:
                     NotifyPropertyChanged("IsControlVisible");
                     break;
-                default:
-                    break;
             }
         }
 
@@ -258,8 +254,6 @@ namespace GUIFramework.GUI
                     break;
                 case XmlAnimationCondition.WindowOpen:
                     SetWindowOpenVisibility();
-                    break;
-                default:
                     break;
             }
         }
@@ -363,7 +357,7 @@ namespace GUIFramework.GUI
         /// <param name="action">The action.</param>
         public void ToggleControlVisibility(XmlAction action)
         {
-            if (action != null && action.GetParam1As<int>(-1) == Id)
+            if (action != null && action.GetParam1As(-1) == Id)
             {
                 _isVisibleToggled = !_isVisibleToggled;
                 SetControlVisibility(!_isControlVisible);
@@ -377,14 +371,9 @@ namespace GUIFramework.GUI
         {
             if (!_isVisibleToggled)
             {
-                if (_visibleCondition.HasCondition)
-                {
-                    SetControlVisibility(_visibleCondition.ShouldBeVisible());
-                }
-                else
-                {
-                    SetControlVisibility(_isWindowOpenVisible);
-                }
+                SetControlVisibility(_visibleCondition.HasCondition
+                    ? _visibleCondition.ShouldBeVisible()
+                    : _isWindowOpenVisible);
             }
         }
 
@@ -491,7 +480,7 @@ namespace GUIFramework.GUI
             Animations.StartAnimation(XmlAnimationCondition.TouchDown);
         }
 
-        protected override void OnPreviewMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnPreviewMouseDown(MouseButtonEventArgs e)
         {
             _lastUserInteraction = DateTime.Now;
             if (!(this is GUIList || this is GUIGuide))
@@ -501,7 +490,7 @@ namespace GUIFramework.GUI
             base.OnPreviewMouseDown(e);
         }
 
-        protected override void OnPreviewMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnPreviewMouseUp(MouseButtonEventArgs e)
         {
             if (!(this is GUIList || this is GUIGuide))
             {

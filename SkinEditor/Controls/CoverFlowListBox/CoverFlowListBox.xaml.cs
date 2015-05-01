@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using MPDisplay.Common.Utils;
-using MPDisplay.Common;
 using System.Windows.Media.Animation;
-using System.Threading;
-using GUISkinFramework.Controls;
+using System.Windows.Threading;
+using GUISkinFramework.Skin;
+using MPDisplay.Common;
 using MPDisplay.Common.ExtensionMethods;
 
 namespace SkinEditor.Controls
@@ -361,7 +352,9 @@ namespace SkinEditor.Controls
             var element = listbox.InputHitTest(new Point((listbox.ActualWidth / 2.0), (listbox.ActualHeight / 2.0))) as Border;
             if (element != null)
             {
-                return (element.Child as ContentPresenter).Content as CoverFlowListBoxItem;
+                var contentPresenter = element.Child as ContentPresenter;
+                if (contentPresenter != null)
+                    return contentPresenter.Content as CoverFlowListBoxItem;
             }
             return null;
         }
@@ -450,7 +443,7 @@ namespace SkinEditor.Controls
 
     public class CoverFlowGreaterThanSelectedIndexConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
@@ -458,11 +451,14 @@ namespace SkinEditor.Controls
                 var itemIndex = int.Parse(values[1].ToString());
                 return itemIndex > selectedIndex;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
             return false;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -1,11 +1,12 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using GUISkinFramework.ExtensionMethods;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
@@ -80,7 +81,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <returns>
         /// A <see cref="T:System.Windows.Controls.ValidationResult" /> object.
         /// </returns>
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             var fourPointString = value as string;
             if (!string.IsNullOrEmpty(fourPointString))

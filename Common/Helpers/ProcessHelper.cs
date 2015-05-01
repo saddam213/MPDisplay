@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Windows;
 using System.Windows.Interop;
-using Common.Logging;
+using Common.Log;
 
 namespace Common.Helpers
 {
     public class ProcessHelper
     {
-        private static Log Log = LoggingManager.GetLog(typeof(ProcessHelper));
+        private static Log.Log _log = LoggingManager.GetLog(typeof(ProcessHelper));
 
         // Sets the window to be foreground 
         [DllImport("User32")]
@@ -61,7 +58,7 @@ namespace Common.Helpers
             }
             catch(Exception ex)
             {
-                Log.Exception("[StartApplication] - An execption occured starting application, Filename: {0}, args: {1}", ex, filename, args);
+                _log.Exception("[StartApplication] - An execption occured starting application, Filename: {0}, args: {1}", ex, filename, args);
             }
         }
 
@@ -70,6 +67,7 @@ namespace Common.Helpers
             try
             {
                 var processes = Process.GetProcessesByName(name);
+
                 if (processes != null)
                 {
                     foreach (var process in processes)
@@ -92,7 +90,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[KillApplication] - An execption occured starting application, Name: {0}, IsKill: {1}", ex, name, kill);
+                _log.Exception("[KillApplication] - An execption occured starting application, Name: {0}, IsKill: {1}", ex, name, kill);
             }
         }
 

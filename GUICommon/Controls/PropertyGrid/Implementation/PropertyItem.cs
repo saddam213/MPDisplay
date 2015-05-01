@@ -7,8 +7,6 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Markup.Primitives;
-using MPDisplay.Common.Controls.PropertyGrid.Commands;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -282,7 +280,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(object), typeof(PropertyItem), new UIPropertyMetadata(null, OnValueChanged));
         public object Value
         {
-            get { return (object)GetValue(ValueProperty); }
+            get { return GetValue(ValueProperty); }
             set { SetValue(ValueProperty, value); }
         }
 
@@ -290,7 +288,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             PropertyItem propertyItem = o as PropertyItem;
             if (propertyItem != null)
-                propertyItem.OnValueChanged((object)e.OldValue, (object)e.NewValue);
+                propertyItem.OnValueChanged(e.OldValue, e.NewValue);
         }
 
         protected virtual void OnValueChanged(object oldValue, object newValue)
@@ -423,10 +421,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private void ResolvePropertyOrder()
         {
             var attrs = PropertyDescriptor.Attributes.OfType<PropertyOrderAttribute>();
-            if (attrs.Any())
-                PropertyOrder = attrs.First().Order;
-            else
-                PropertyOrder = 0;
+            var propertyOrderAttributes = attrs as IList<PropertyOrderAttribute> ?? attrs.ToList();
+            PropertyOrder = propertyOrderAttributes.Any() ? propertyOrderAttributes.First().Order : 0;
         }
 
         private void SetPropertyDescriptorProperties()

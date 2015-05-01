@@ -1,8 +1,7 @@
-﻿using System;
-using System.Collections;
-using System.Windows.Media;
-using System.Windows.Documents;
+﻿using System.Collections;
 using System.Windows;
+using System.Windows.Documents;
+using System.Windows.Media;
 
 namespace MPDisplay.Common.Controls.Core
 {
@@ -18,9 +17,9 @@ namespace MPDisplay.Common.Controls.Core
     {
         #region Fields
 
-        TElement _child = null;
-        double _offsetLeft = 0;
-        double _offsetTop = 0;
+        TElement _child;
+        double _offsetLeft;
+        double _offsetTop;
 
         #endregion // Fields
 
@@ -49,21 +48,21 @@ namespace MPDisplay.Common.Controls.Core
             get { return _child; }
             set
             {
-                if (value == _child)
+                if (Equals(value, _child))
                     return;
 
                 if (_child != null)
                 {
-                    base.RemoveLogicalChild(_child);
-                    base.RemoveVisualChild(_child);
+                    RemoveLogicalChild(_child);
+                    RemoveVisualChild(_child);
                 }
 
                 _child = value;
 
                 if (_child != null)
                 {
-                    base.AddLogicalChild(_child);
-                    base.AddVisualChild(_child);
+                    AddLogicalChild(_child);
+                    AddVisualChild(_child);
                 }
             }
         }
@@ -113,7 +112,7 @@ namespace MPDisplay.Common.Controls.Core
         {
             _offsetLeft = left;
             _offsetTop = top;
-            this.UpdateLocation();
+            UpdateLocation();
         }
 
         #endregion // SetOffsets
@@ -205,9 +204,9 @@ namespace MPDisplay.Common.Controls.Core
 
         void UpdateLocation()
         {
-            AdornerLayer adornerLayer = base.Parent as AdornerLayer;
+            AdornerLayer adornerLayer = Parent as AdornerLayer;
             if (adornerLayer != null)
-                adornerLayer.Update(base.AdornedElement);
+                adornerLayer.Update(AdornedElement);
         }
 
         #endregion // Private Helpers

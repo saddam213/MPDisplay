@@ -7,7 +7,7 @@ namespace MPDisplay.Common.Controls
     public class VisualTargetPresentationSource : PresentationSource
     {
         private VisualTarget _visualTarget;
-        private bool _isDisposed = false;
+        private bool _isDisposed;
 
         public VisualTargetPresentationSource(HostVisual hostVisual)
         {

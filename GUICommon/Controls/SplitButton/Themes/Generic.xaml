@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes"
                     xmlns:local="clr-namespace:MPDisplay.Common.Controls"
-                    xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters">
+                    xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters"
+                    xmlns:implementation="clr-namespace:MPDisplay.Common.Controls">
 
     <coreConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
     
@@ -36,7 +36,7 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:SplitButton}">
                     <Grid x:Name="MainGrid" SnapsToDevicePixels="True">
-                        <chrome:ButtonChrome x:Name="ControlChrome" RenderEnabled="{TemplateBinding IsEnabled}" CornerRadius="2.75">
+                        <implementation:ButtonChrome x:Name="ControlChrome" RenderEnabled="{TemplateBinding IsEnabled}" CornerRadius="2.75">
                             <Grid>
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*" />
@@ -49,14 +49,14 @@
                                         </ControlTemplate>
                                     </Button.Template>
                                     <Grid>
-                                        <chrome:ButtonChrome x:Name="ActionButtonChrome"
+                                        <implementation:ButtonChrome x:Name="ActionButtonChrome"
                                                          CornerRadius="2.75, 0, 0, 2.75"                                                         
                                                          RenderNormal="False"
                                                          RenderEnabled="{TemplateBinding IsEnabled}"
 											             RenderMouseOver="{Binding IsMouseOver, ElementName=PART_ActionButton}"
 											             RenderPressed="{Binding IsPressed, ElementName=PART_ActionButton}" >
                                             <ContentPresenter Name="ActionButtonContent" Margin="{TemplateBinding Padding}" Content="{TemplateBinding Content}" ContentTemplate="{TemplateBinding ContentTemplate}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" RecognizesAccessKey="true" />
-                                        </chrome:ButtonChrome>
+                                        </implementation:ButtonChrome>
                                     </Grid>
                                 </Button>
                                 <ToggleButton x:Name="PART_ToggleButton" Grid.Column="1" IsTabStop="False"
@@ -68,7 +68,7 @@
                                         </ControlTemplate>
                                     </ToggleButton.Template>
                                     <Grid>
-                                        <chrome:ButtonChrome x:Name="ToggleButtonChrome"                                                         
+                                        <implementation:ButtonChrome x:Name="ToggleButtonChrome"                                                         
                                                          CornerRadius="0, 2.75, 2.75, 0"
                                                          RenderNormal="False"
                                                          RenderChecked="{TemplateBinding IsOpen}"
@@ -78,11 +78,11 @@
                                             <Grid x:Name="arrowGlyph" IsHitTestVisible="False" Margin="4,3,4,3">
                                                 <Path Width="7" Height="4" Data="M 0,1 C0,1 0,0 0,0 0,0 3,0 3,0 3,0 3,1 3,1 3,1 4,1 4,1 4,1 4,0 4,0 4,0 7,0 7,0 7,0 7,1 7,1 7,1 6,1 6,1 6,1 6,2 6,2 6,2 5,2 5,2 5,2 5,3 5,3 5,3 4,3 4,3 4,3 4,4 4,4 4,4 3,4 3,4 3,4 3,3 3,3 3,3 2,3 2,3 2,3 2,2 2,2 2,2 1,2 1,2 1,2 1,1 1,1 1,1 0,1 0,1 z" Fill="#FF000000"/>
                                             </Grid>
-                                        </chrome:ButtonChrome>
+                                        </implementation:ButtonChrome>
                                     </Grid>
                                 </ToggleButton>
                             </Grid>
-                        </chrome:ButtonChrome>
+                        </implementation:ButtonChrome>
 
                         <Popup x:Name="PART_Popup" 
                                HorizontalOffset="1"

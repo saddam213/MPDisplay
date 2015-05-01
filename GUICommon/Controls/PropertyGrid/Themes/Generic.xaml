@@ -3,9 +3,9 @@
                     xmlns:extToolkit="clr-namespace:MPDisplay.Common.Controls"
                     xmlns:local="clr-namespace:MPDisplay.Common.Controls.PropertyGrid"
                     xmlns:converters="clr-namespace:MPDisplay.Common.BindingConverters"
-                    xmlns:pgConverters="clr-namespace:MPDisplay.Common.Controls.PropertyGrid.Converters"
-                    xmlns:utilities="clr-namespace:MPDisplay.Common.Controls.Core.Utilities"
-                    xmlns:commands="clr-namespace:MPDisplay.Common.Controls.PropertyGrid.Commands">
+                    xmlns:pgConverters="clr-namespace:MPDisplay.Common.Controls.PropertyGrid"
+                    xmlns:utilities="clr-namespace:MPDisplay.Common.Controls.Core"
+                    xmlns:commands="clr-namespace:MPDisplay.Common.Controls.PropertyGrid">
 
     <!-- =============================================================================== -->
     <!-- PropertyGrid                                                                    -->

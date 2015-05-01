@@ -2,24 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
 using System.IO;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Xml.Serialization;
 using Common.Helpers;
-using Common.Logging;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Language;
-using GUISkinFramework.Property;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
-using GUISkinFramework.Windows;
+using Common.Log;
 using Common.Settings;
 
-namespace GUISkinFramework
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     public class XmlSkinInfo : INotifyPropertyChanged
@@ -265,7 +255,7 @@ namespace GUISkinFramework
             }
         }
 
-        private Log Log = LoggingManager.GetLog(typeof(XmlSkinInfo));
+        private Log _log = LoggingManager.GetLog(typeof(XmlSkinInfo));
         private ObservableCollection<XmlImageFile> _images = new ObservableCollection<XmlImageFile>();
 
         private Dictionary<string, XmlStyleCollection> _styles = new Dictionary<string, XmlStyleCollection>();
@@ -279,7 +269,7 @@ namespace GUISkinFramework
 
         public void LoadXmlSkin()
         {
-            Log.Message(LogLevel.Info, "Loading skin: {0} ....", _skinName);
+            _log.Message(LogLevel.Info, "Loading skin: {0} ....", _skinName);
             if (Directory.Exists(SkinFolderPath))
             {
                 LoadImages();
@@ -288,7 +278,7 @@ namespace GUISkinFramework
                 LoadStyles();
                 LoadWindows();
             }
-            Log.Message(LogLevel.Info, "Loading skin: {0} complete.", _skinName);
+            _log.Message(LogLevel.Info, "Loading skin: {0} complete.", _skinName);
         }
 
         [XmlIgnore]
@@ -431,8 +421,8 @@ namespace GUISkinFramework
             {
                 SkinName = skinName,
                 SkinFolderPath = Path.Combine(directory,skinName),
-                SkinWidth = this.SkinWidth,
-                SkinHeight = this.SkinHeight
+                SkinWidth = SkinWidth,
+                SkinHeight = SkinHeight
             };
             newSkinInfo.CreateSkin();
             newSkinInfo._windows = _windows;
@@ -599,8 +589,11 @@ namespace GUISkinFramework
                             {
                                 newStyle = new XmlBrush();
                             }
-                            newStyle.StyleId = style.StyleId;
-                            property.SetValue(obj, newStyle);
+                            if (newStyle != null)
+                            {
+                                newStyle.StyleId = style.StyleId;
+                                property.SetValue(obj, newStyle);
+                            }
                         }
                         CleanStyles(style);
                     }
@@ -616,28 +609,32 @@ namespace GUISkinFramework
         {
             // Load Images
             _images.Clear();
-            Log.Message(LogLevel.Info, "Loading skin images...");
+            _log.Message(LogLevel.Info, "Loading skin images...");
             if (Directory.Exists(SkinImageFolder))
             {
-                Log.Message(LogLevel.Info, "Image directory found, Directory: {0}", SkinImageFolder);
+                _log.Message(LogLevel.Info, "Image directory found, Directory: {0}", SkinImageFolder);
                 foreach (var imageFile in Directory.GetFiles(SkinImageFolder, "*.*", SearchOption.AllDirectories))
                 {
-                    string subfolder = Path.GetDirectoryName(imageFile).Replace(SkinImageFolder.Trim('\\'), "");
-                    string xmlname = imageFile.Replace(SkinImageFolder.Trim('\\'), "");
-                    string displayName = Path.GetFileNameWithoutExtension(imageFile);
-                    Images.Add(new XmlImageFile
+                    var directoryName = Path.GetDirectoryName(imageFile);
+                    if (directoryName != null)
                     {
-                        DisplayName = displayName,
-                        XmlName = xmlname,
-                        SubFolder = subfolder == string.Empty ? "Images" : subfolder.TrimStart('\\'),
-                        FileName = imageFile
-                    });
-                    Log.Message(LogLevel.Verbose, "Skin image added, Name: {0}, File: {1}", xmlname, imageFile);
+                        string subfolder = directoryName.Replace(SkinImageFolder.Trim('\\'), "");
+                        string xmlname = imageFile.Replace(SkinImageFolder.Trim('\\'), "");
+                        string displayName = Path.GetFileNameWithoutExtension(imageFile);
+                        Images.Add(new XmlImageFile
+                        {
+                            DisplayName = displayName,
+                            XmlName = xmlname,
+                            SubFolder = subfolder == string.Empty ? "Images" : subfolder.TrimStart('\\'),
+                            FileName = imageFile
+                        });
+                        _log.Message(LogLevel.Verbose, "Skin image added, Name: {0}, File: {1}", xmlname, imageFile);
+                    }
                 }
-                Log.Message(LogLevel.Info, "Loading skin images complete, Image count: {0}", Images.Count);
+                _log.Message(LogLevel.Info, "Loading skin images complete, Image count: {0}", Images.Count);
                 return;
             }
-            Log.Message(LogLevel.Warn, "Image directory not found, Directory missing: {0}", SkinImageFolder);
+            _log.Message(LogLevel.Warn, "Image directory not found, Directory missing: {0}", SkinImageFolder);
         }
 
         public void ReloadImages()
@@ -676,11 +673,11 @@ namespace GUISkinFramework
 
         private void LoadProperties()
         {
-            Log.Message(LogLevel.Info, "Loading skin properties...");
+            _log.Message(LogLevel.Info, "Loading skin properties...");
             string propertyXmlFile = Path.Combine(SkinFolderPath, "PropertyInfo.xml");
             if (File.Exists(propertyXmlFile))
             {
-                Log.Message(LogLevel.Info, "PropertyInfo file found: {0}", propertyXmlFile);
+                _log.Message(LogLevel.Info, "PropertyInfo file found: {0}", propertyXmlFile);
                 var info = SerializationHelper.Deserialize<XmlPropertyInfo>(propertyXmlFile);
                 if (info != null)
                 {
@@ -709,19 +706,19 @@ namespace GUISkinFramework
                         }
                     }
 
-                    Log.Message(LogLevel.Info, "Loaded PropertyInfo file.");
+                    _log.Message(LogLevel.Info, "Loaded PropertyInfo file.");
                     return;
                 }
                 _propertyInfo = new XmlPropertyInfo();
-                Log.Message(LogLevel.Warn, "Failed to load PropertyInfo file.");
+                _log.Message(LogLevel.Warn, "Failed to load PropertyInfo file.");
                 return;
             }
-            Log.Message(LogLevel.Warn, "PropertyInfo file not found: {0}", propertyXmlFile);
+            _log.Message(LogLevel.Warn, "PropertyInfo file not found: {0}", propertyXmlFile);
         }
 
         private void SaveProperties()
         {
-            Log.Message(LogLevel.Info, "Saving skin PropertyInfo...");
+            _log.Message(LogLevel.Info, "Saving skin PropertyInfo...");
             string propertyXmlFile = Path.Combine(SkinFolderPath, "PropertyInfo.xml");
             var info = new XmlPropertyInfo();
             var internals = _propertyInfo.AllProperties.Where(x => x.IsInternal).Select(x => x.SkinTag).ToList();
@@ -735,10 +732,10 @@ namespace GUISkinFramework
 
             if (!SerializationHelper.Serialize<XmlPropertyInfo>(info, propertyXmlFile))
             {
-                Log.Message(LogLevel.Warn, "Failed to save skin PropertyInfo.");
+                _log.Message(LogLevel.Warn, "Failed to save skin PropertyInfo.");
                 return;
             }
-            Log.Message(LogLevel.Info, "Saving skin PropertyInfo complete.");
+            _log.Message(LogLevel.Info, "Saving skin PropertyInfo complete.");
         }
 
         #endregion
@@ -797,32 +794,32 @@ namespace GUISkinFramework
         {
             // Load Language
             string languageFile = Path.Combine(SkinFolderPath, "Language.xml");
-            Log.Message(LogLevel.Info, "Loading skin language file...{0}", languageFile);
+            _log.Message(LogLevel.Info, "Loading skin language file...{0}", languageFile);
             if (File.Exists(languageFile))
             {
                 _language = SerializationHelper.Deserialize<XmlLanguage>(languageFile);
                 if (_language == null)
                 {
-                    Log.Message(LogLevel.Warn, "Failed to load language file, File: {0}", languageFile);
+                    _log.Message(LogLevel.Warn, "Failed to load language file, File: {0}", languageFile);
                     return;
                 }
-                Log.Message(LogLevel.Info, "Loading skin languages complete. Current language: {0}", CurrentLanguage);
+                _log.Message(LogLevel.Info, "Loading skin languages complete. Current language: {0}", CurrentLanguage);
             }
             else
             {
-                Log.Message(LogLevel.Warn, "Language file not found, File missing: {0}", languageFile);
+                _log.Message(LogLevel.Warn, "Language file not found, File missing: {0}", languageFile);
             }
         }
 
         private void SaveLanguage()
         {
-            Log.Message(LogLevel.Info, "Saving skin language...");
+            _log.Message(LogLevel.Info, "Saving skin language...");
             string languageFile = Path.Combine(SkinFolderPath, "Language.xml");
             if (!SerializationHelper.Serialize<XmlLanguage>(_language, languageFile))
             {
-                Log.Message(LogLevel.Error, "Failed to save language file, File: {0}", languageFile);
+                _log.Message(LogLevel.Error, "Failed to save language file, File: {0}", languageFile);
             }
-            Log.Message(LogLevel.Info, "Saving skin language complete.");
+            _log.Message(LogLevel.Info, "Saving skin language complete.");
         }
 
         #endregion

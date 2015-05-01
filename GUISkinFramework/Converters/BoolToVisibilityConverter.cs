@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
 
 namespace GUISkinFramework.Converters
@@ -11,24 +9,24 @@ namespace GUISkinFramework.Converters
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             bool visible = (bool)value;
             if (parameter is string && parameter.ToString() == "!")
             {
-                return visible ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+                return visible ? Visibility.Collapsed : Visibility.Visible;
             }
-            return visible ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+            return visible ? Visibility.Visible : Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            System.Windows.Visibility visible = (System.Windows.Visibility)value;
+            Visibility visible = (Visibility)value;
             if (parameter is string && parameter.ToString() == "!")
             {
-                return !(visible == System.Windows.Visibility.Visible);
+                return !(visible == Visibility.Visible);
             }
-            return visible == System.Windows.Visibility.Visible;
+            return visible == Visibility.Visible;
         }
 
         #endregion

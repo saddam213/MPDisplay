@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -13,12 +12,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
     {
         internal static T GetAttribute<T>(PropertyDescriptor property) where T : Attribute
         {
-            foreach (Attribute att in property.Attributes)
-            {
-                var tAtt = att as T;
-                if (tAtt != null) return tAtt;
-            }
-            return null;
+            return property.Attributes.OfType<T>().FirstOrDefault();
         }
 
         internal static PropertyItemCollection GetAlphabetizedProperties(List<PropertyItem> propertyItems)
@@ -46,11 +40,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             TypeConverter tc = TypeDescriptor.GetConverter(instance);
             if (tc == null || !tc.GetPropertiesSupported())
             {
-
-                if (instance is ICustomTypeDescriptor)
-                    descriptors = ((ICustomTypeDescriptor)instance).GetProperties();
-                else
-                    descriptors = TypeDescriptor.GetProperties(instance.GetType());
+                var descriptor = instance as ICustomTypeDescriptor;
+                descriptors = descriptor != null ? descriptor.GetProperties() : TypeDescriptor.GetProperties(instance.GetType());
             }
             else
             {
@@ -80,7 +71,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             };
             propertyItem.SetBinding(PropertyItem.ValueProperty, binding);
 
-            propertyItem.Editor = PropertyGridUtilities.GetTypeEditor(propertyItem, grid.EditorDefinitions);
+            propertyItem.Editor = GetTypeEditor(propertyItem, grid.EditorDefinitions);
 
             return propertyItem;
         }
@@ -88,15 +79,13 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         internal static FrameworkElement GetTypeEditor(PropertyItem propertyItem, EditorDefinitionCollection editorDefinitions)
         {
             //first check for an attribute editor
-            FrameworkElement editor = PropertyGridUtilities.GetAttibuteEditor(propertyItem);
-
             //now look for a custom editor based on editor definitions
-            if (editor == null)
-                editor = PropertyGridUtilities.GetCustomEditor(propertyItem, editorDefinitions);
 
             //guess we have to use the default editor
-            if (editor == null)
-                editor = PropertyGridUtilities.CreateDefaultEditor(propertyItem);
+            FrameworkElement editor = (GetAttibuteEditor(propertyItem) ??
+                                       GetCustomEditor(propertyItem, editorDefinitions)) ??
+                                      CreateDefaultEditor(propertyItem);
+
 
             return editor;
         }
@@ -113,9 +102,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             if (editorAttribute != null)
             {
                 Type type = Type.GetType(editorAttribute.EditorTypeName);
-                var instance = Activator.CreateInstance(type);
-                if (instance is ITypeEditor)
-                    editor = (instance as ITypeEditor).ResolveEditor(propertyItem);
+                if (type != null)
+                {
+                    var instance = Activator.CreateInstance(type);
+                    if (instance is ITypeEditor)
+                        editor = (instance as ITypeEditor).ResolveEditor(propertyItem);
+                }
             }
 
             return editor;
@@ -129,18 +121,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             if (customTypeEditors.Count > 0)
             {
                 //first check if the custom editor is type based
-                EditorDefinition customEditor = customTypeEditors[propertyItem.PropertyType];
-                if (customEditor == null)
-                {
-                    //must be property based
-                    customEditor = customTypeEditors[propertyItem.Name];
-                }
+                EditorDefinition customEditor = customTypeEditors[propertyItem.PropertyType] ??
+                                                customTypeEditors[propertyItem.Name];
 
-                if (customEditor != null)
-                {
-                    if (customEditor.EditorTemplate != null)
-                        editor = customEditor.EditorTemplate.LoadContent() as FrameworkElement;
-                }
+                if (customEditor == null) return null;
+                if (customEditor.EditorTemplate != null)
+                    editor = customEditor.EditorTemplate.LoadContent() as FrameworkElement;
             }
 
             return editor;
@@ -148,7 +134,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         internal static FrameworkElement CreateDefaultEditor(PropertyItem propertyItem)
         {
-            ITypeEditor editor = null;
+            ITypeEditor editor;
 
             if (propertyItem.IsReadOnly)
                 editor = new TextBlockEditor();
@@ -171,10 +157,11 @@ namespace MPDisplay.Common.Controls.PropertyGrid
                 if (propertyItem.PropertyType.GetInterface("IList") != null)
                 {
                     var t = propertyItem.PropertyType.GetGenericArguments()[0];
-                    if (!t.IsPrimitive && !t.Equals(typeof(String)))
-                        editor = new MPDisplay.Common.Controls.PropertyGrid.Editors.CollectionEditor();
+                    if (!t.IsPrimitive && !(t == typeof(String)))
+                        editor = new CollectionEditor();
+                        //editor = new MPDisplay.Common.Controls.PropertyGrid.PrimitiveTypeCollectionEditor();
                     else
-                        editor = new MPDisplay.Common.Controls.PropertyGrid.Editors.PrimitiveTypeCollectionEditor();
+                        editor = new PrimitiveTypeCollectionEditor();
                 }
                 else
                     editor = new TextBlockEditor();

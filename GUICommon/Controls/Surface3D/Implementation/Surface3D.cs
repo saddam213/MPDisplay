@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 
-namespace MPDisplay.Common.Controls
+namespace MPDisplay.Common.Controls.Surface3D
 {
     public class Surface3D : ContentControl, INotifyPropertyChanged
     {
@@ -511,19 +508,19 @@ namespace MPDisplay.Common.Controls
 
         
 
-        protected override void OnMouseDown(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnMouseDown(MouseButtonEventArgs e)
         {
             IsMouseDown = true;
             base.OnMouseDown(e);
         }
 
-        protected override void OnMouseUp(System.Windows.Input.MouseButtonEventArgs e)
+        protected override void OnMouseUp(MouseButtonEventArgs e)
         {
             IsMouseDown = false;
             base.OnMouseUp(e);
         }
 
-        protected override void OnMouseLeave(System.Windows.Input.MouseEventArgs e)
+        protected override void OnMouseLeave(MouseEventArgs e)
         {
             IsMouseDown = false;
             base.OnMouseLeave(e);

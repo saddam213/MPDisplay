@@ -1,13 +1,13 @@
 ﻿using System.Collections.ObjectModel;
-using GUISkinFramework.Controls;
+using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIGroup.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlGroup))]  
-    public partial class GUIGroup : GUIControl, IControlHost
+    public partial class GUIGroup : IControlHost
     {
         #region Fields
 

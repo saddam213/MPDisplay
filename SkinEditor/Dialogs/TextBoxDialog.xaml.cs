@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace SkinEditor.Dialogs
 {
     /// <summary>
     /// Interaction logic for TextBoxDialog.xaml
     /// </summary>
-    public partial class TextBoxDialog : Window, INotifyPropertyChanged
+    public partial class TextBoxDialog : INotifyPropertyChanged
     {
         private string _valueTitle;
         private string _value;
@@ -32,7 +20,7 @@ namespace SkinEditor.Dialogs
         public TextBoxDialog()
         {
             Owner = Application.Current.MainWindow;
-            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
         }
 

@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
+using System.ComponentModel;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "ImageStyle")]
@@ -27,6 +17,8 @@ namespace GUISkinFramework.Controls
         private XmlBrush _backgroundBrush;
         private string _borderCornerRadius = "0,0,0,0";
         private string _borderThickness = "0,0,0,0";
+        private VerticalAlignment _imageVerticalAlignment = VerticalAlignment.Center;
+        private HorizontalAlignment _imageHorizontalAlignment = HorizontalAlignment.Center;
 
         [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
@@ -68,6 +60,23 @@ namespace GUISkinFramework.Controls
             set { _borderBrush = value; NotifyPropertyChanged("BorderBrush"); }
         }
 
+        [PropertyOrder(70)]
+        [EditorCategory("Alignment", 10)]
+        [DefaultValue(HorizontalAlignment.Center)]
+        public HorizontalAlignment ImageHorizontalAlignment
+        {
+            get { return _imageHorizontalAlignment; }
+            set { _imageHorizontalAlignment = value; NotifyPropertyChanged("ImageHorizontalAlignment"); }
+        }
+
+        [PropertyOrder(71)]
+        [EditorCategory("Alignment", 10)]
+        [DefaultValue(VerticalAlignment.Center)]
+        public VerticalAlignment ImageVerticalAlignment
+        {
+            get { return _imageVerticalAlignment; }
+            set { _imageVerticalAlignment = value; NotifyPropertyChanged("ImageVerticalAlignment"); }
+        }
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);

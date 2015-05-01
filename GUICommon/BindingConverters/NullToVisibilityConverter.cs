@@ -1,6 +1,7 @@
 using System;
+using System.Globalization;
+using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
 
 namespace MPDisplay.Common.BindingConverters
 {
@@ -9,12 +10,12 @@ namespace MPDisplay.Common.BindingConverters
         #region IValueConverter Members
 
      
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value == null ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            return value == null ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -27,12 +28,12 @@ namespace MPDisplay.Common.BindingConverters
         #region IValueConverter Members
 
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? System.Windows.Visibility.Collapsed : System.Windows.Visibility.Visible;
+            return value != null ? Visibility.Collapsed : Visibility.Visible;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

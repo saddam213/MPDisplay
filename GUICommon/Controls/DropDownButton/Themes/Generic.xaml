@@ -1,8 +1,8 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes"
                     xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters"
-                    xmlns:local="clr-namespace:MPDisplay.Common.Controls" >
+                    xmlns:local="clr-namespace:MPDisplay.Common.Controls"
+                    xmlns:implementation="clr-namespace:MPDisplay.Common.Controls">
 
     <coreConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
 
@@ -41,7 +41,7 @@
                                 </ControlTemplate>
                             </ToggleButton.Template>
                             <Grid>
-                                <chrome:ButtonChrome x:Name="ToggleButtonChrome"
+                                <implementation:ButtonChrome x:Name="ToggleButtonChrome"
                                                      CornerRadius="2.75"
                                                     RenderChecked="{TemplateBinding IsOpen}"
                                                     RenderEnabled="{TemplateBinding IsEnabled}"
@@ -57,7 +57,7 @@
                                             <Path Width="7" Height="4" Data="M 0,1 C0,1 0,0 0,0 0,0 3,0 3,0 3,0 3,1 3,1 3,1 4,1 4,1 4,1 4,0 4,0 4,0 7,0 7,0 7,0 7,1 7,1 7,1 6,1 6,1 6,1 6,2 6,2 6,2 5,2 5,2 5,2 5,3 5,3 5,3 4,3 4,3 4,3 4,4 4,4 4,4 3,4 3,4 3,4 3,3 3,3 3,3 2,3 2,3 2,3 2,2 2,2 2,2 1,2 1,2 1,2 1,1 1,1 1,1 0,1 0,1 z" Fill="#FF000000"/>
                                         </Grid>
                                     </Grid>
-                                </chrome:ButtonChrome>
+                                </implementation:ButtonChrome>
                             </Grid>
                         </ToggleButton>
 

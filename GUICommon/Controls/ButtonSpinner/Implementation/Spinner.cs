@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MPDisplay.Common.Controls
 {
@@ -40,11 +40,6 @@ namespace MPDisplay.Common.Controls
         /// Occurs when spinning is initiated by the end-user.
         /// </summary>
         public event EventHandler<SpinEventArgs> Spin;
-
-        /// <summary>
-        /// Initializes a new instance of the Spinner class.
-        /// </summary>
-        protected Spinner() { }
 
         /// <summary>
         /// Raises the OnSpin event when spinning is initiated by the end-user.

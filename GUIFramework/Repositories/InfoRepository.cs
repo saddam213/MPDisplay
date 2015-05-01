@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GUISkinFramework;
-using MessageFramework.DataObjects;
-using MPDisplay.Common;
+using Common.MessengerService;
 using Common.Settings;
-using Common;
+using GUIFramework.Managers;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public class InfoRepository : IRepository
     {
@@ -19,24 +19,17 @@ namespace GUIFramework.Managers
         private static InfoRepository _instance;
         public static InfoRepository Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new InfoRepository();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new InfoRepository()); }
         }
 
         public static void RegisterMessage<T>(InfoMessageType message, Action<T> callback)
         {
-            Instance.InfoService.Register<T>(message, callback);
+            Instance.InfoService.Register(message, callback);
         }
 
-        public static void RegisterMessage<T, U>(InfoMessageType message, Action<T, U> callback)
+        public static void RegisterMessage<T, TU>(InfoMessageType message, Action<T, TU> callback)
         {
-            Instance.InfoService.Register<T, U>(message, callback);
+            Instance.InfoService.Register(message, callback);
         }
 
         public static void DeregisterMessage(InfoMessageType message, object owner)
@@ -46,7 +39,7 @@ namespace GUIFramework.Managers
 
         public static void NotifyListeners<T>(InfoMessageType message, T value)
         {
-            Instance.NotifiyValueChanged<T>(message, value);
+            Instance.NotifiyValueChanged(message, value);
         }
 
         #endregion
@@ -59,8 +52,8 @@ namespace GUIFramework.Managers
         private APIPlaybackType _playbackType = APIPlaybackType.None;
         private APIPlaybackState _playbackState = APIPlaybackState.None;
         // private int _mediaPortalPlayerId = -1;
-        private bool _isTvRecording = false;
-        private bool _isFullscreenVideo = false;
+        private bool _isTvRecording;
+        private bool _isFullscreenVideo;
         private int _mediaPortalWindowId = -1;
         private int _mediaPortalDialogId = -1;
         private int _previousWindowId = -1;
@@ -129,7 +122,7 @@ namespace GUIFramework.Managers
                     if (!_currentEnabledPluginMap.SequenceEqual(value))
                     {
                         _currentEnabledPluginMap = value;
-                        NotifiyValueChanged<List<string>>(InfoMessageType.EnabledPluginMap, value);
+                        NotifiyValueChanged(InfoMessageType.EnabledPluginMap, value);
                         GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                     }
                 }
@@ -147,7 +140,7 @@ namespace GUIFramework.Managers
                 if (_playerType != value)
                 {
                     _playerType = value;
-                    NotifiyValueChanged<APIPlaybackType>(InfoMessageType.PlayerType, value);
+                    NotifiyValueChanged(InfoMessageType.PlayerType, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
                 }
             }
@@ -161,7 +154,7 @@ namespace GUIFramework.Managers
                 if (_playbackType != value)
                 {
                     _playbackType = value;
-                    NotifiyValueChanged<APIPlaybackType>(InfoMessageType.PlaybackType, value);
+                    NotifiyValueChanged(InfoMessageType.PlaybackType, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
                 }
             }
@@ -175,7 +168,7 @@ namespace GUIFramework.Managers
                 if (_playbackState != value)
                 {
                     _playbackState = value;
-                    NotifiyValueChanged<APIPlaybackState>(InfoMessageType.PlaybackState, value);
+                    NotifiyValueChanged(InfoMessageType.PlaybackState, value);
                 }
             }
         }
@@ -194,7 +187,7 @@ namespace GUIFramework.Managers
                 if (_isTvRecording != value)
                 {
                     _isTvRecording = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsTvRecording, value);
+                    NotifiyValueChanged(InfoMessageType.IsTvRecording, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
@@ -214,7 +207,7 @@ namespace GUIFramework.Managers
                 if (_isFullscreenVideo != value)
                 {
                     _isFullscreenVideo = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsFullscreenMedia, value);
+                    NotifiyValueChanged(InfoMessageType.IsFullscreenMedia, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
@@ -228,7 +221,7 @@ namespace GUIFramework.Managers
                 if (_isFullscreenMusic != value)
                 {
                     _isFullscreenMusic = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsFullscreenMedia, value);
+                    NotifiyValueChanged(InfoMessageType.IsFullscreenMedia, value);
                 }
             }
         }
@@ -244,7 +237,7 @@ namespace GUIFramework.Managers
                 if (_mediaPortalWindowId != value) 
                 {
                     _mediaPortalWindowId = value;
-                    NotifiyValueChanged<int>(InfoMessageType.WindowId, value);
+                    NotifiyValueChanged(InfoMessageType.WindowId, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
                 }
             }
@@ -261,7 +254,7 @@ namespace GUIFramework.Managers
                 if (_mediaPortalDialogId != value)
                 {
                     _mediaPortalDialogId = value;
-                    NotifiyValueChanged<int>(InfoMessageType.DialogId, value);
+                    NotifiyValueChanged(InfoMessageType.DialogId, value);
 
                 }
             }
@@ -278,7 +271,7 @@ namespace GUIFramework.Managers
                 if (_previousWindowId != value)
                 {
                     _previousWindowId = value;
-                    NotifiyValueChanged<int>(InfoMessageType.PreviousWindowId, value);
+                    NotifiyValueChanged(InfoMessageType.PreviousWindowId, value);
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
                 }
             }
@@ -295,7 +288,7 @@ namespace GUIFramework.Managers
                 if (_focusedWindowControlId != value)
                 {
                     _focusedWindowControlId = value;
-                    NotifiyValueChanged<int>(InfoMessageType.FocusedWindowControlId, value);
+                    NotifiyValueChanged(InfoMessageType.FocusedWindowControlId, value);
                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
@@ -313,7 +306,7 @@ namespace GUIFramework.Managers
                 if (_focusedProgramId != value)
                 {
                     _focusedProgramId = value;
-                    if( _focusedProgramId > 0 && _focusedChannelId > 0 ) NotifiyValueChanged<int, int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
+                    if( _focusedProgramId > 0 && _focusedChannelId > 0 ) NotifiyValueChanged(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
                  }
             }
         }
@@ -328,7 +321,7 @@ namespace GUIFramework.Managers
                 if (_focusedChannelId != value)
                 {
                     _focusedChannelId = value;
-                    if (_focusedProgramId > 0 && _focusedChannelId > 0) NotifiyValueChanged<int, int>(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
+                    if (_focusedProgramId > 0 && _focusedChannelId > 0) NotifiyValueChanged(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
                 }
             }
         }
@@ -345,7 +338,7 @@ namespace GUIFramework.Managers
                 if (_focusedDialogControlId != value)
                 {
                     _focusedDialogControlId = value;
-                    NotifiyValueChanged<int>(InfoMessageType.FocusedDialogControlId, value);
+                    NotifiyValueChanged(InfoMessageType.FocusedDialogControlId, value);
                 }
             }
         }
@@ -359,7 +352,7 @@ namespace GUIFramework.Managers
                 if (_isMPDisplayConnected != value)
                 {
                     _isMPDisplayConnected = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsMPDisplayConnected, value);
+                    NotifiyValueChanged(InfoMessageType.IsMPDisplayConnected, value);
                 }
             }
         }
@@ -372,7 +365,7 @@ namespace GUIFramework.Managers
                 if (_isMediaPortalConnected != value)
                 {
                     _isMediaPortalConnected = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsMediaPortalConnected, value);
+                    NotifiyValueChanged(InfoMessageType.IsMediaPortalConnected, value);
                 }
             }
         }
@@ -385,7 +378,7 @@ namespace GUIFramework.Managers
                 if (_isTVServerConnected != value)
                 {
                     _isTVServerConnected = value;
-                    NotifiyValueChanged<bool>(InfoMessageType.IsTVServerConnected, value);
+                    NotifiyValueChanged(InfoMessageType.IsTVServerConnected, value);
                 }
             }
         }
@@ -409,7 +402,7 @@ namespace GUIFramework.Managers
             InfoService.NotifyListeners(type, value);
         }
 
-        public void NotifiyValueChanged<T, U>(InfoMessageType type, T value1, U value2)
+        public void NotifiyValueChanged<T, TU>(InfoMessageType type, T value1, TU value2)
         {
             InfoService.NotifyListeners(type, value1, value2);
         }

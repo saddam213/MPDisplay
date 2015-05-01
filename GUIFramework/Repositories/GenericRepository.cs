@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GUIFramework.GUI;
-using GUIFramework.GUI.Controls;
-using GUISkinFramework;
-using MessageFramework.DataObjects;
-using MPDisplay.Common;
+using Common.MessengerService;
 using Common.Settings;
-using Common;
+using GUIFramework.GUI;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
+using MessageFramework.Messages;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public class GenericDataRepository : IRepository
     {
@@ -21,20 +18,13 @@ namespace GUIFramework.Managers
         private static GenericDataRepository _instance;
         public static GenericDataRepository Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new GenericDataRepository();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new GenericDataRepository()); }
         }
 
 
         public static void RegisterEQData(Action<byte[]> callback)
         {
-            Instance.DataService.Register<byte[]>(GenericDataMessageType.EQData, callback);
+            Instance.DataService.Register(GenericDataMessageType.EQData, callback);
         }
 
         public static void DegisterEQData(object owner)
@@ -55,7 +45,7 @@ namespace GUIFramework.Managers
 
         public static void RegisterMessage<T>(GenericDataMessageType message, Action<T> callback)
         {
-            Instance.DataService.Register<T>(message, callback);
+            Instance.DataService.Register(message, callback);
         }
 
         public static void DeregisterMessage(GenericDataMessageType message, object owner)
@@ -107,8 +97,6 @@ namespace GUIFramework.Managers
                     case APIDataMessageType.MPActionId:
                         DataService.NotifyListeners(GenericDataMessageType.MPActionId, message.IntValue);
                         break;
-                    default:
-                        break;
                 }
             }
         }
@@ -120,9 +108,10 @@ namespace GUIFramework.Managers
             if (controlHost != null)
             {
                 var eqs = controlHost.Controls.GetControls().OfType<GUIEqualizer>();
-                if (eqs != null && eqs.Any())
+                var guiEqualizers = eqs as IList<GUIEqualizer> ?? eqs.ToList();
+                if (guiEqualizers.Any())
                 {
-                    return eqs.Max(e => e.EQDataLength);
+                    return guiEqualizers.Max(e => e.EQDataLength);
                 }
             }
             return -1;

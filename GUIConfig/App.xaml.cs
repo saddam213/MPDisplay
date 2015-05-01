@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
-using System.Linq;
-using System.Windows;
-using Common.Logging;
+﻿using System.Windows;
+using Common.Log;
 using Common.Settings;
 
 namespace GUIConfig
@@ -12,7 +7,7 @@ namespace GUIConfig
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         protected override void OnStartup(StartupEventArgs e)
         {

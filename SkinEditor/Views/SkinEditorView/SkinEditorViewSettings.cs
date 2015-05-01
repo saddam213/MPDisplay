@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 using Common.Helpers;
-using GUISkinFramework;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Skin;
+using SkinEditor.Themes;
 
 namespace SkinEditor.Views
 {
     public class SkinEditorViewSettings : EditorViewModelSettings
     {
-        private bool _showGrid = false;
+        private bool _showGrid;
         private int _gridSize = 10;
         private string _gridColor = "Black";
-        private bool _snapToGrid = false;
+        private bool _snapToGrid;
         private string _resizeSizeInfoColor = "Red";
         private string _resizeHiglightColor = "#FF0074FF";
         private bool _dragMoveResize = true;

@@ -1,18 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Common.Logging;
+﻿using Common.Log;
 using Common.Settings;
 
 namespace GUIConfig.ViewModels
@@ -20,7 +6,7 @@ namespace GUIConfig.ViewModels
     /// <summary>
     /// Interaction logic for BasicSettingsView.xaml
     /// </summary>
-    public partial class PluginSettingsView : ViewModelBase
+    public partial class PluginSettingsView
     {
         #region Fields
 
@@ -63,22 +49,6 @@ namespace GUIConfig.ViewModels
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Called when model tab opens.
-        /// </summary>
-        public override void OnModelOpen()
-        {
-            base.OnModelOpen();
-        }
-
-        /// <summary>
-        /// Called when model tab closes.
-        /// </summary>
-        public override void OnModelClose()
-        {
-            base.OnModelClose();
-        }
 
         /// <summary>
         /// Saves the changes.

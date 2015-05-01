@@ -1,15 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Threading;
+using System.Windows.Forms;
+using Common.Helpers;
+using Common.Log;
+using Common.Settings;
 using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
-
-using System.IO;
-
-using Common.Settings;
-using Common.Logging;
-using Common.Helpers;
+using Action = MediaPortal.GUI.Library.Action;
+using Timer = System.Threading.Timer;
 
 namespace SkinHelper
 {
@@ -94,22 +95,22 @@ namespace SkinHelper
                     Directory.CreateDirectory(logdir);
                 }
 
-                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Action", LogLevel.Debug), "Action");
-                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Property", LogLevel.Debug), "Property");
-                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "ListItem", LogLevel.Debug), "ListItem");
-                Common.Logging.LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Dialog", LogLevel.Debug), "Dialog");
-                LoggingManager.AddLog(new Common.Logging.FileLogger(logdir, "Window", LogLevel.Debug), "Window");
+                LoggingManager.AddLog(new FileLogger(logdir, "Action", LogLevel.Debug), "Action");
+                LoggingManager.AddLog(new FileLogger(logdir, "Property", LogLevel.Debug), "Property");
+                LoggingManager.AddLog(new FileLogger(logdir, "ListItem", LogLevel.Debug), "ListItem");
+                LoggingManager.AddLog(new FileLogger(logdir, "Dialog", LogLevel.Debug), "Dialog");
+                LoggingManager.AddLog(new FileLogger(logdir, "Window", LogLevel.Debug), "Window");
             }
             else
             {
-                System.Windows.Forms.MessageBox.Show("Could Not Locate MPDisplay Data Path '" + RegistrySettings.ProgramDataPath + "'" + Environment.NewLine + "If Problem Persists Please Reinstall MPDisplay++", "Install Error", System.Windows.Forms.MessageBoxButtons.OK);
+                MessageBox.Show("Could Not Locate MPDisplay Data Path '" + RegistrySettings.ProgramDataPath + "'" + Environment.NewLine + "If Problem Persists Please Reinstall MPDisplay++", "Install Error", MessageBoxButtons.OK);
                 Stop();
                 return;
             }
             GUIPropertyManager.OnPropertyChanged += new GUIPropertyManager.OnPropertyChangedHandler(GUIPropertyManager_OnPropertyChanged);
             GUIWindowManager.OnActivateWindow += new GUIWindowManager.WindowActivationHandler(GUIWindowManager_OnActivateWindow);
             GUIWindowManager.OnNewAction += new OnActionHandler(GUIWindowManager_OnNewAction);
-            _dialogTimer = new System.Threading.Timer(new System.Threading.TimerCallback(ProcessDialogThread), null, 1000, 250);
+            _dialogTimer = new Timer(new TimerCallback(ProcessDialogThread), null, 1000, 250);
         }
 
         #endregion
@@ -125,7 +126,7 @@ namespace SkinHelper
         //private Common.Logging.Log WindowLog;
 
 
-        void GUIWindowManager_OnNewAction(MediaPortal.GUI.Library.Action action)
+        void GUIWindowManager_OnNewAction(Action action)
         {
             lock (_syncObject)
             {
@@ -289,7 +290,7 @@ namespace SkinHelper
         private bool _isDialogVisible;
         private GUIWindow _currentDialog;
         private int _currentDialogId = -1;
-        private System.Threading.Timer _dialogTimer;
+        private Timer _dialogTimer;
 
         /// <summary>
         /// Processes the dialog thread.

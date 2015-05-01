@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Windows;
 using System.Linq;
 using Common.Settings;
 
-namespace Common.Logging
+namespace Common.Log
 {
     /// <summary>
     /// Logging manager class for easy handling of logs across classes

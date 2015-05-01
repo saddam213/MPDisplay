@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Xml.Serialization;
-using GUISkinFramework;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Styles;
-using SkinEditor.Views;
-using Common.Settings;
 using Common.Helpers;
+using Common.Settings;
+using SkinEditor.Views;
 
 namespace SkinEditor
 {

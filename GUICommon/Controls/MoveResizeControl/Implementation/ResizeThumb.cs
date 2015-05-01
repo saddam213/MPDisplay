@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Documents;
-using System.Windows.Media;
 
 namespace MPDisplay.Common.Controls
 {
@@ -49,12 +43,12 @@ namespace MPDisplay.Common.Controls
 
         public ResizeThumb()
         {
-            DragDelta += new DragDeltaEventHandler(this.ResizeThumb_DragDelta);
+            DragDelta += ResizeThumb_DragDelta;
         }
 
         private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Control designerItem = this.DataContext as Control;
+            Control designerItem = DataContext as Control;
 
             if (designerItem != null)
             {
@@ -73,8 +67,6 @@ namespace MPDisplay.Common.Controls
                         designerItem.Height = ResizeMoveCalculateSnap(designerItem.Height);
                         Canvas.SetTop(designerItem, Canvas.GetTop(designerItem) + deltaVertical);
                         break;
-                    default:
-                        break;
                 }
 
                 switch (HorizontalAlignment)
@@ -90,8 +82,6 @@ namespace MPDisplay.Common.Controls
                         deltaHorizontal = Math.Min(-e.HorizontalChange, designerItem.ActualWidth - designerItem.MinWidth);
                         designerItem.Width -= deltaHorizontal;
                         designerItem.Width = ResizeMoveCalculateSnap(designerItem.Width);
-                        break;
-                    default:
                         break;
                 }
             }

@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
-namespace Common
+namespace Common.MessengerService
 {
     /// <summary>
     /// This class is an implementation detail of the MessageToActionsMap class.
@@ -15,8 +13,8 @@ namespace Common
 
         internal readonly Type[] ParameterTypes;
         readonly Type _delegateType;
-        internal readonly MethodInfo _method;
-        internal readonly WeakReference _targetRef;
+        internal readonly MethodInfo Method;
+        internal readonly WeakReference TargetRef;
 
         #endregion
 
@@ -24,20 +22,13 @@ namespace Common
 
         internal WeakAction(object target, MethodInfo method, params Type[] parameterTypes)
         {
-            if (target == null)
-            {
-                _targetRef = null;
-            }
-            else
-            {
-                _targetRef = new WeakReference(target);
-            }
+            TargetRef = target == null ? null : new WeakReference(target);
 
-            _method = method;
+            Method = method;
 
-            this.ParameterTypes = parameterTypes;
+            ParameterTypes = parameterTypes;
 
-            if (parameterTypes == null || parameterTypes.Count() == 0)
+            if (parameterTypes == null || !parameterTypes.Any())
             {
                 _delegateType = typeof(Action);
             }
@@ -78,20 +69,21 @@ namespace Common
         internal Delegate CreateAction()
         {
             // Rehydrate into a real Action object, so that the method can be invoked.
-            if (_targetRef == null)
+            if (TargetRef == null)
             {
-                return Delegate.CreateDelegate(_delegateType, _method);
+                return Delegate.CreateDelegate(_delegateType, Method);
             }
             else
             {
                 try
                 {
-                    object target = _targetRef.Target;
+                    object target = TargetRef.Target;
                     if (target != null)
-                        return Delegate.CreateDelegate(_delegateType, target, _method);
+                        return Delegate.CreateDelegate(_delegateType, target, Method);
                 }
                 catch
                 {
+                    // ignored
                 }
             }
 

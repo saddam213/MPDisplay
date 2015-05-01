@@ -1,42 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using GUISkinFramework;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Windows;
-using MPDisplay.Common.Controls;
-using MPDisplay.Common.Controls.PropertyGrid;
-using SkinEditor;
-using SkinEditor.Dialogs;
-using MPDisplay.Common;
-using MPDisplay.Common.Utils;
 using Common.Helpers;
-using SkinEditor.ConnectionHelpers;
+using GUISkinFramework;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Controls.PropertyGrid;
+using MPDisplay.Common.Utils;
+using SkinEditor.Dialogs;
+using SkinEditor.Helpers;
+using SkinEditor.Themes;
 
 namespace SkinEditor.Views
 {
     /// <summary>
     /// Interaction logic for SkinEditorView.xaml
     /// </summary>
-    public partial class SkinEditorView : EditorViewModel
+    public partial class SkinEditorView
     {
         #region Variables
 
@@ -52,9 +36,9 @@ namespace SkinEditor.Views
         /// <summary>
         /// Initializes a new instance of the <see cref="SkinEditorView"/> class.
         /// </summary>
-        public SkinEditorView(ConnectionHelper _connectionHelper)           
+        public SkinEditorView(ConnectionHelper connectionHelper)           
         {
-            ConnectionHelper = _connectionHelper;
+            ConnectionHelper = connectionHelper;
 
             ConnectCommand = new RelayCommand(async () => await ConnectionHelper.InitializeServerConnection(), () => !ConnectionHelper.IsConnected);
             DisconnectCommand = new RelayCommand(async () => await ConnectionHelper.Disconnect(), () => ConnectionHelper.IsConnected);
@@ -133,7 +117,7 @@ namespace SkinEditor.Views
         /// </summary>
         public IEnumerable<IXmlControlHost> AllWindows
         {
-            get { return Windows.Cast<IXmlControlHost>().Concat(Dialogs.Cast<IXmlControlHost>()); }
+            get { return Windows.Concat(Dialogs.Cast<IXmlControlHost>()); }
         }
         
         /// <summary>
@@ -243,8 +227,8 @@ namespace SkinEditor.Views
 
         public override void Initialize()
         {
-            ConnectionHelper.settings = ConnectionSettings;
-            ConnectionHelper.baseclass = this;
+            ConnectionHelper.Settings = ConnectionSettings;
+            ConnectionHelper.Baseclass = this;
             ConnectionHelper.StartSecondTimer();
 
             NotifyPropertyChanged("Styles");
@@ -263,11 +247,6 @@ namespace SkinEditor.Views
             SkinInfo.SetStyle(_selectedStyle);
         }
 
-        public override void OnModelClose()
-        {
-            base.OnModelClose();
-        }
-
         #endregion
 
         #region TreeView
@@ -282,37 +261,41 @@ namespace SkinEditor.Views
             if (e.NewValue != e.OldValue)
             {
                 SelectedTreeItem = e.NewValue;
-                if (e.NewValue is XmlWindow)
+                var value = e.NewValue as XmlWindow;
+                if (value != null)
                 {
                     CurrentXmlControl = null;
                     CurrentXmlDialog = null;
-                    CurrentXmlWindow = e.NewValue as XmlWindow;
+                    CurrentXmlWindow = value;
                 }
-                else if (e.NewValue is XmlDialog)
+                else
                 {
-                    CurrentXmlControl = null;
-                    CurrentXmlWindow = null;
-                    CurrentXmlDialog = e.NewValue as XmlDialog;
-                }
-                else if (e.NewValue is XmlControl)
-                {
-                    CurrentXmlControl = null;
-                    var control = e.NewValue as XmlControl;
-                    if (control != null)
+                    var dialog = e.NewValue as XmlDialog;
+                    if (dialog != null)
                     {
-                        var parent = GetControlParent(control);
-                        if (parent is XmlWindow && (CurrentXmlWindow == null || (parent as XmlWindow).Id != CurrentXmlWindow.Id))
-                        {
-                            CurrentXmlDialog = null;
-                            CurrentXmlWindow = parent as XmlWindow;
-                        }
-                        if (parent is XmlDialog && (CurrentXmlDialog == null || (parent as XmlDialog).Id != CurrentXmlDialog.Id))
-                        {
-                            CurrentXmlWindow = null;
-                            CurrentXmlDialog = parent as XmlDialog;
-                        }
+                        CurrentXmlControl = null;
+                        CurrentXmlWindow = null;
+                        CurrentXmlDialog = dialog;
                     }
-                    CurrentXmlControl = control;
+                    else if (e.NewValue is XmlControl)
+                    {
+                        CurrentXmlControl = null;
+                        var control = (XmlControl) e.NewValue;
+                        {
+                            var parent = GetControlParent(control);
+                            if (parent is XmlWindow && (CurrentXmlWindow == null || (parent as XmlWindow).Id != CurrentXmlWindow.Id))
+                            {
+                                CurrentXmlDialog = null;
+                                CurrentXmlWindow = parent as XmlWindow;
+                            }
+                            if (parent is XmlDialog && (CurrentXmlDialog == null || (parent as XmlDialog).Id != CurrentXmlDialog.Id))
+                            {
+                                CurrentXmlWindow = null;
+                                CurrentXmlDialog = parent as XmlDialog;
+                            }
+                        }
+                        CurrentXmlControl = control;
+                    }
                 }
             }
         }
@@ -378,8 +361,9 @@ namespace SkinEditor.Views
         /// <summary>
         /// Creates the control.
         /// </summary>
-        /// <typeparam name="T">type of control</typeparam>
+        /// <param name="controlType"></param>
         /// <param name="id">The id.</param>
+        /// <param name="windowId">The window Id</param>
         /// <returns></returns>
         private XmlControl CreateControl(Type controlType, int id, int windowId)
         {
@@ -580,26 +564,35 @@ namespace SkinEditor.Views
         /// <summary>
         /// Adds a control.
         /// </summary>
-        /// <typeparam name="T">type of control</typeparam>
+        /// <param name="controlType">type of control</param>
         private void AddControl(Type controlType)
         {
-            if (SelectedTreeItem is XmlWindow)
+            var xmlWindow = SelectedTreeItem as XmlWindow;
+            if (xmlWindow != null)
             {
-                var window = SelectedTreeItem as XmlWindow;
+                var window = xmlWindow;
                 int id = window.Controls.Any() ? window.Controls.GetControls().Max(c => c.Id) + 1 : 1;
                 window.Controls.Add(CreateControl(controlType, id, window.Id));
             }
-            else if (SelectedTreeItem is XmlDialog)
+            else
             {
-                var dialog = SelectedTreeItem as XmlDialog;
-                int id = dialog.Controls.Any() ? dialog.Controls.GetControls().Max(c => c.Id) + 1 : 1;
-                dialog.Controls.Add(CreateControl(controlType, id, dialog.Id));
-            }
-            else if (SelectedTreeItem is XmlGroup)
-            {
-                var group = SelectedTreeItem as XmlGroup;
-                int newId = GetControlParent(CurrentXmlControl).Controls.GetControls().Max(c => c.Id) + 1;
-                group.Controls.Add(CreateControl(controlType, newId, group.WindowId));
+                var xmlDialog = SelectedTreeItem as XmlDialog;
+                if (xmlDialog != null)
+                {
+                    var dialog = xmlDialog;
+                    int id = dialog.Controls.Any() ? dialog.Controls.GetControls().Max(c => c.Id) + 1 : 1;
+                    dialog.Controls.Add(CreateControl(controlType, id, dialog.Id));
+                }
+                else
+                {
+                    var xmlGroup = SelectedTreeItem as XmlGroup;
+                    if (xmlGroup != null)
+                    {
+                        var group = xmlGroup;
+                        int newId = GetControlParent(CurrentXmlControl).Controls.GetControls().Max(c => c.Id) + 1;
+                        @group.Controls.Add(CreateControl(controlType, newId, @group.WindowId));
+                    }
+                }
             }
             HasPendingChanges = true;
         }
@@ -621,9 +614,10 @@ namespace SkinEditor.Views
         /// <param name="isCut">if set to <c>true</c> [is cut].</param>
         private void CopyControl(bool isCut)
         {
-            if (SelectedTreeItem is XmlControl)
+            var data = SelectedTreeItem as XmlControl;
+            if (data != null)
             {
-                SkinClipboard.SetData(SelectedTreeItem as XmlControl, !isCut);
+                SkinClipboard.SetData(data, !isCut);
             }
         }
 
@@ -659,7 +653,7 @@ namespace SkinEditor.Views
                 var newParent = SelectedTreeItem as IXmlControlHost;
                 if (newParent is XmlGroup)
                 {
-                    var parentWindow = CurrentXmlWindow as IXmlControlHost ?? CurrentXmlDialog as IXmlControlHost;
+                    var parentWindow = CurrentXmlWindow ?? CurrentXmlDialog as IXmlControlHost;
                     if (parentWindow != null)
                     {
                         newId = parentWindow.Controls.Any() ? parentWindow.Controls.GetControls().Max(c => c.Id) + 1 : 1;
@@ -667,7 +661,7 @@ namespace SkinEditor.Views
                 }
                 else
                 {
-                    newId = newParent.Controls.Any() ? newParent.Controls.GetControls().Max(c => c.Id) + 1 : 1;
+                    newId = newParent != null && newParent.Controls.Any() ? newParent.Controls.GetControls().Max(c => c.Id) + 1 : 1;
                 }
 
 
@@ -683,7 +677,7 @@ namespace SkinEditor.Views
                         item.WindowId = control.WindowId;
                     }
                 }
-                newParent.Controls.Add(control);
+                if (newParent != null) newParent.Controls.Add(control);
 
                 SkinClipboard.ClearData();
                 HasPendingChanges = true;
@@ -709,23 +703,32 @@ namespace SkinEditor.Views
         {
             if (SelectedTreeItem != null)
             {
-                if (SelectedTreeItem is XmlWindow)
+                var item = SelectedTreeItem as XmlWindow;
+                if (item != null)
                 {
-                    SkinInfo.Windows.Remove(SelectedTreeItem as XmlWindow);
+                    SkinInfo.Windows.Remove(item);
                     NotifyPropertyChanged("AllWindows");
                 }
-                else if (SelectedTreeItem is XmlDialog)
+                else
                 {
-                    SkinInfo.Dialogs.Remove(SelectedTreeItem as XmlDialog);
-                    NotifyPropertyChanged("AllWindows");
-                }
-                else if (SelectedTreeItem is XmlControl)
-                {
-                    var control = SelectedTreeItem as XmlControl;
-                    var parent = GetControlParent(control);
-                    if (parent != null)
+                    var dialog = SelectedTreeItem as XmlDialog;
+                    if (dialog != null)
                     {
-                        parent.Controls.Remove(control);
+                        SkinInfo.Dialogs.Remove(dialog);
+                        NotifyPropertyChanged("AllWindows");
+                    }
+                    else
+                    {
+                        var xmlControl = SelectedTreeItem as XmlControl;
+                        if (xmlControl != null)
+                        {
+                            var control = xmlControl;
+                            var parent = GetControlParent(control);
+                            if (parent != null)
+                            {
+                                parent.Controls.Remove(control);
+                            }
+                        }
                     }
                 }
                 HasPendingChanges = true;
@@ -749,9 +752,10 @@ namespace SkinEditor.Views
         /// <param name="up">if set to <c>true</c> [up].</param>
         private void MoveControl(bool up)
         {
-            if (SelectedTreeItem is XmlControl)
+            var xmlControl = SelectedTreeItem as XmlControl;
+            if (xmlControl != null)
             {
-                var control = SelectedTreeItem as XmlControl;
+                var control = xmlControl;
                 var parent = GetControlParent(control);
                 if (parent != null)
                 {
@@ -772,9 +776,10 @@ namespace SkinEditor.Views
         {
             if (SelectedTreeItem != null)
             {
-                if (SelectedTreeItem is XmlControl)
+                var xmlControl = SelectedTreeItem as XmlControl;
+                if (xmlControl != null)
                 {
-                    var control = SelectedTreeItem as XmlControl;
+                    var control = xmlControl;
                     return getControlsVisible(control, true);
                 }
             }
@@ -786,9 +791,10 @@ namespace SkinEditor.Views
         /// </summary>
         private void HideControl()
         {
-            if (SelectedTreeItem is XmlControl)
+            var xmlControl = SelectedTreeItem as XmlControl;
+            if (xmlControl != null)
             {
-                var control = SelectedTreeItem as XmlControl;
+                var control = xmlControl;
                 setControlsVisible(control, false);
             }
         }
@@ -803,9 +809,10 @@ namespace SkinEditor.Views
         {
             if (SelectedTreeItem != null)
             {
-                if (SelectedTreeItem is XmlControl)
+                var xmlControl = SelectedTreeItem as XmlControl;
+                if (xmlControl != null)
                 {
-                    var control = SelectedTreeItem as XmlControl;
+                    var control = xmlControl;
                     return getControlsVisible(control, false);
                 }
             }
@@ -817,11 +824,12 @@ namespace SkinEditor.Views
         /// </summary>
         private void UnhideControl()
         {
-            if (SelectedTreeItem is XmlControl)
+            var xmlControl = SelectedTreeItem as XmlControl;
+            if (xmlControl != null)
             {
-                var control = SelectedTreeItem as XmlControl;
+                var control = xmlControl;
                 setControlsVisible(control, true);
-                setParentControlsVisible(control, true);
+                SetParentControlsVisible(control, true);
             }
         }
 
@@ -842,18 +850,15 @@ namespace SkinEditor.Views
         }
 
         // set recursivly the DesignerVisibility property of all parents of control
-        private void setParentControlsVisible(XmlControl control, bool value)
+        private void SetParentControlsVisible(XmlControl control, bool value)
         {
             if (control != null)
             {
                 var control2 = GetControlParent(control);
-                if (control2 != null)
+                if (control2 is XmlGroup)
                 {
-                    if (control2 is XmlGroup)
-                    {
-                        (control2 as XmlGroup).DesignerVisible = value;
-                        setParentControlsVisible((control2 as XmlGroup), value);
-                    }
+                    (control2 as XmlGroup).DesignerVisible = value;
+                    SetParentControlsVisible((control2 as XmlGroup), value);
                 }
             }
         }
@@ -865,12 +870,10 @@ namespace SkinEditor.Views
             bool result = false;
             if (control != null)
             {
-                if (control is XmlGroup)
+                var host = control as XmlGroup;
+                if (host != null)
                 {
-                    foreach (var control2 in (control as IXmlControlHost).Controls)
-                    {
-                        result |= getControlsVisible(control2, value);
-                    }
+                    result = ((IXmlControlHost) control).Controls.Aggregate(false, (current, control2) => current | getControlsVisible(control2, value));
                 }
                 else
                 {
@@ -891,7 +894,6 @@ namespace SkinEditor.Views
             if (source is Grid || (source is TextBlock && source.Tag != null && source.Tag.ToString() == "Group"))
             {
                 e.Handled = true;
-                return;
             }
         }
 
@@ -973,7 +975,7 @@ namespace SkinEditor.Views
     public static class SkinClipboard
     {
         private static XmlControl _clipboardControl;
-        private static bool _isCopy = false;
+        private static bool _isCopy;
 
         /// <summary>
         /// Gets a value indicating whether the clipboard has data.

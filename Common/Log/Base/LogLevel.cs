@@ -1,9 +1,9 @@
-namespace Common.Logging
+namespace Common.Log
 {
     /// <summary>
     /// Message type
     /// </summary>
-    public enum LogLevel : int
+    public enum LogLevel
     {
         Verbose = 0,
         /// <summary>

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace GUIConfig.Settings
@@ -18,7 +15,7 @@ namespace GUIConfig.Settings
         /// <returns>
         /// A <see cref="T:System.Windows.Controls.ValidationResult" /> object.
         /// </returns>
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             //I know it's called IP Address internally but it really should be hostname.
             var hostName = value as string;

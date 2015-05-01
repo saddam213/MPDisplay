@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
 
@@ -12,11 +10,7 @@ namespace MediaPortalPlugin
     {
         public static IEnumerable<GUIControl> GetControls(this GUIWindow window)
         {
-            if (window != null)
-            {
-                return window.Children.GetControls();
-            }
-            return null;
+            return window != null ? window.Children.GetControls() : null;
         }
 
         public static IEnumerable<T> GetControls<T>(this GUIWindow window)
@@ -94,8 +88,6 @@ namespace MediaPortalPlugin
                 case APIPlaybackType.OnlineVideos:
                 case APIPlaybackType.MyAnime:
                     return true;
-                default:
-                    break;
             }
             return false;
         }

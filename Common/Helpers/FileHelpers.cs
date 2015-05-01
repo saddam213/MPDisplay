@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Common.Logging;
+using Common.Log;
+using System.Net;
 
 namespace Common.Helpers
 {
     public static class FileHelpers
     {
-        private static Log Log = LoggingManager.GetLog(typeof(FileHelpers));
+        private static Log.Log _log = LoggingManager.GetLog(typeof(FileHelpers));
 
         /// <summary>
         /// Reads the bytes from file.
@@ -19,26 +18,73 @@ namespace Common.Helpers
         /// <returns></returns>
         public static byte[] ReadBytesFromFile(string filename)
         {
-            if (!string.IsNullOrEmpty(filename) && File.Exists(filename))
+            if (!string.IsNullOrEmpty(filename))
             {
 
                 try
                 {
-                    using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
-                    {
-                        byte[] fileData = new byte[fs.Length];
-                        fs.Read(fileData, 0, System.Convert.ToInt32(fs.Length));
-                        return fileData;
-                    }
-                }
+				    // get image from url
+				    if (IsURL(filename) && ExistsURL(filename))
+				    {
+					    using (WebClient webClient = new WebClient())
+					    {
+						    byte[] fileData = webClient.DownloadData(filename);
+						    return fileData;
+					    }
+				    }									
+				    else if (File.Exists(filename))
+					{
+						using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+						{
+							byte[] fileData = new byte[fs.Length];
+							fs.Read(fileData, 0, Convert.ToInt32(fs.Length));
+							return fileData;
+						}
+					}
+                 }
                 catch(Exception ex)
                 {
-                    Log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File: {0}", ex, filename);
+                    _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File: {0}", ex, filename);
                 }
             }
             return null;
         }
 
+        /// <summary>
+		/// Checks if file points to an URL location
+		/// </summary>
+		/// <param name="file">The file.</param>
+		public static bool IsURL(String file)
+		{
+				return file.StartsWith("http");
+		}
+
+		/// <summary>
+		/// Checks if URL exists on server
+		/// </summary>
+		/// <param name="file">The file.</param>
+		public static bool ExistsURL(String file)
+		{
+			Uri urlCheck = new Uri(file);
+			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlCheck);					
+			request.Timeout = 1000;
+			HttpWebResponse response = null;
+					
+			try
+			{
+				response = (HttpWebResponse)request.GetResponse();
+				return response.StatusCode == HttpStatusCode.OK;
+			}
+			catch (Exception)
+			{
+				return false; 
+			}
+			finally 
+			{
+			    if (response != null) response.Dispose();
+			}
+		}
+ 
         /// <summary>
         /// Tries to delete a file.
         /// </summary>
@@ -51,7 +97,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[TryDelete] - An exception occured deleting file, File: {0}", ex, file);
+                _log.Exception("[TryDelete] - An exception occured deleting file, File: {0}", ex, file);
             }
         }
 
@@ -86,7 +132,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[CopyFile] - An exception occured copying file, Source: {0}, Destination: {1}", ex, source, destination);
+                _log.Exception("[CopyFile] - An exception occured copying file, Source: {0}, Destination: {1}", ex, source, destination);
             }
         }
 
@@ -98,9 +144,7 @@ namespace Common.Helpers
         /// <returns></returns>
         public static string OpenFileDialog(string initial, string filter)
         {
-            var dialog = new OpenFileDialog();
-            dialog.Filter = filter;
-            dialog.InitialDirectory = initial;
+            var dialog = new OpenFileDialog {Filter = filter, InitialDirectory = initial};
             if (dialog.ShowDialog() == DialogResult.OK)
             {
                 return dialog.FileName;

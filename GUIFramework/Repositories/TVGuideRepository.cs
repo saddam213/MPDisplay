@@ -1,22 +1,19 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
-using GUIFramework.GUI;
-using GUIFramework.GUI.Controls;
-using GUISkinFramework;
-using MessageFramework.DataObjects;
-using MPDisplay.Common;
+using Common.Log;
+using Common.MessengerService;
 using Common.Settings;
-using Common;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public class TVGuideRepository : IRepository
     {
@@ -25,16 +22,13 @@ namespace GUIFramework.Managers
         private static TVGuideRepository _instance;
         public static TVGuideRepository Instance
       {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new TVGuideRepository();
-                }
-                return _instance;
-            }
-        }
+            get { return _instance ?? (_instance = new TVGuideRepository()); }
+      }
 
+        private TVGuideRepository()
+        {
+            _log = LoggingManager.GetLog(typeof(TVGuideRepository));
+        }
 
         public static void RegisterMessage(TVGuideMessageType messageType, Action callback)
         {
@@ -63,10 +57,11 @@ namespace GUIFramework.Managers
         public XmlSkinInfo SkinInfo { get; set; }
         private MessengerService<TVGuideMessageType> _tvGuideService = new MessengerService<TVGuideMessageType>();
 
-        private const int _updateInterval = 5;          // update every x seconds
-        private const int _updateCounterInit = 12;      // update complete guide only every y * x seconds
+        private const int UpdateInterval = 5;          // update every x seconds
+        private const int UpdateCounterInit = 12;      // update complete guide only every y * x seconds
 
         private APIGuideAction _currentGuideAction;     // current EPG action, if any
+        private Log _log;
 
         public void Initialize(GUISettings settings, XmlSkinInfo skininfo)
         {
@@ -74,8 +69,8 @@ namespace GUIFramework.Managers
             SkinInfo = skininfo;
             if (_updateTimer == null)
             {
-                _updateCounter = _updateCounterInit;
-                _updateTimer = new Timer((o) => UpdateGuideData(), null, TimeSpan.FromSeconds(_updateInterval), TimeSpan.FromSeconds(_updateInterval));
+                _updateCounter = UpdateCounterInit;
+                _updateTimer = new Timer(o => UpdateGuideData(), null, TimeSpan.FromSeconds(UpdateInterval), TimeSpan.FromSeconds(UpdateInterval));
             }
         }
 
@@ -83,18 +78,16 @@ namespace GUIFramework.Managers
         public DateTime FilterProgramEnd { get; set; }
 
         // Set the filter for the 'visible' programs
-        public void FilterPrograms(DateTime _start, DateTime _end)
+        public void FilterPrograms(DateTime start, DateTime end)
         {
-            FilterProgramStart = _start;
-            FilterProgramEnd = _end;
+            FilterProgramStart = start;
+            FilterProgramEnd = end;
 
             // update properties (filtered programs) of the programs, if any
-            if (_guideData != null && _guideData.Any())
+            if (_guideData == null || !_guideData.Any()) return;
+            foreach (var channel in _guideData )
             {
-                foreach (var _channel in _guideData )
-                {
-                    _channel.FilteredPrograms = null;   // this will notify the listeners
-                }
+                channel.FilteredPrograms = null;   // this will notify the listeners
             }
         }
 
@@ -173,8 +166,6 @@ namespace GUIFramework.Managers
                     case APITVGuideMessageType.TvGuideGroup:
                         ProcessGuideGroup(message.GuideGroup);
                         break;
-                    default:
-                        break;
                 }
             }
         }
@@ -220,16 +211,16 @@ namespace GUIFramework.Managers
                     {
                         _data.Clear();
                         _currentBatchId = message.BatchId;
-                        Console.WriteLine(string.Format("Receiving TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
+                        _log.Message(LogLevel.Verbose, string.Format("Receiving TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
                     }
 
                     if (message.BatchId == _currentBatchId)
                     {
                         _data.Add(message.BatchNumber, message.Channel);
-                        Console.WriteLine(string.Format("BatchId: {0}, BatchNumber: {1}, ReceivedCount: {2}", message.BatchId, message.BatchNumber, _data.Count));
+                        _log.Message(LogLevel.Verbose, string.Format("BatchId: {0}, BatchNumber: {1}, ReceivedCount: {2}", message.BatchId, message.BatchNumber, _data.Count));
                         if (_data.Count == message.BatchCount)
                         {
-                            Console.WriteLine(string.Format("Received TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
+                            _log.Message(LogLevel.Verbose, string.Format("Received TvGuide data batch, BatchId: {0}, Count: {1}", message.BatchId, message.BatchCount));
 
                             var data = _data.Values.Select(x => new TvGuideChannel
                             {
@@ -252,8 +243,9 @@ namespace GUIFramework.Managers
                             }).ToArray();
 
                             var allPrograms = data.SelectMany(c => c.Programs);
-                            _guideDataStart = allPrograms.Min(p => p.StartTime);
-                            _guideDataEnd = allPrograms.Max(p => p.EndTime);
+                            var tvGuidePrograms = allPrograms as IList<TvGuideProgram> ?? allPrograms.ToList();
+                            _guideDataStart = tvGuidePrograms.Min(p => p.StartTime);
+                            _guideDataEnd = tvGuidePrograms.Max(p => p.EndTime);
 
                             Application.Current.Dispatcher.Invoke(() =>
                             {
@@ -269,9 +261,9 @@ namespace GUIFramework.Managers
                     }
                 }
             }
-            catch 
+            catch
             {
-
+                // ignored
             }
         }
 
@@ -288,7 +280,7 @@ namespace GUIFramework.Managers
                     _updateCounter--;                               // upadte entire guide only at defined intervals
                     if (_updateCounter <= 0)
                     {
-                        _updateCounter = _updateCounterInit;
+                        _updateCounter = UpdateCounterInit;
                         SetProgramState();
                     }
                 });
@@ -415,8 +407,11 @@ namespace GUIFramework.Managers
             {
                 return Programs.Where(p => p.EndTime >= TVGuideRepository.Instance.FilterProgramStart && p.StartTime <= TVGuideRepository.Instance.FilterProgramEnd).ToList();
             }
-            set { NotifyPropertyChanged("FilteredPrograms"); }
-
+            // ReSharper disable once ValueParameterNotUsed
+            set
+            {
+                NotifyPropertyChanged("FilteredPrograms");
+            }
         }
 
         public bool IsSelected
@@ -504,7 +499,7 @@ namespace GUIFramework.Managers
 
         public bool IsProgramCurrent(DateTime? date = null)
         {
-            var baseline = date == null ? DateTime.Now : date.Value;
+            var baseline = date ?? DateTime.Now;
             return baseline > StartTime && baseline < EndTime;
         }
 

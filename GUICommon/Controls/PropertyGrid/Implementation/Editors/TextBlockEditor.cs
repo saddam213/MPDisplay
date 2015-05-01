@@ -1,7 +1,7 @@
-﻿using System;
+﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class TextBlockEditor : TypeEditor<TextBlock>
     {
@@ -12,7 +12,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         protected override void SetControlProperties()
         {
-            Editor.Margin = new System.Windows.Thickness(5, 0, 0, 0);
+            Editor.Margin = new Thickness(5, 0, 0, 0);
         }
     }
 }

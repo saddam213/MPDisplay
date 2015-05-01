@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
-namespace Common.Settings.SettingsObjects
+namespace Common.Settings
 {
     [XmlType("TvSeriesPluginSettings")]
     public  class TvSeriesPluginSettings : SupportedPluginSettings

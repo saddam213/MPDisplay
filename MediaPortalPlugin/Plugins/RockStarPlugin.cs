@@ -1,16 +1,11 @@
-﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+﻿using System.Collections;
+using System.Linq;
+using Common.Helpers;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class RockStarPlugin : PluginHelper
     {
@@ -29,13 +24,7 @@ namespace MediaPortalPlugin.PluginHelpers
                     var players = ReflectionHelper.GetFieldValue<IDictionary>(playerManager, "players", null);
                     if (players != null)
                     {
-                        foreach (var item in players.Values)
-                        {
-                            if (ReflectionHelper.GetPropertyValue<string>(item, "CurrentFile", string.Empty) == filename)
-                            {
-                                return true;
-                            }
-                        }
+                        return players.Values.Cast<object>().Any(item => ReflectionHelper.GetPropertyValue(item, "CurrentFile", string.Empty) == filename);
                     }
                 }
             }

@@ -6,22 +6,21 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Threading;
+using Common.Helpers;
 using GUIFramework.Managers;
-using GUISkinFramework.Controls;
-using GUISkinFramework.ExtensionMethods;
-using GUISkinFramework.Common;
-using MessageFramework.DataObjects;
-using MPDisplay.Common.Utils;
+using GUIFramework.Repositories;
+using GUISkinFramework.Skin;
+using MessageFramework.Messages;
+using MPDisplay.Common;
 using MPDisplay.Common.ExtensionMethods;
-using Common;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIGuide.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlGuide))]
-    public partial class GUIGuide : GUIControl
+    public partial class GUIGuide
     {
         #region Fields
 
@@ -33,15 +32,16 @@ namespace GUIFramework.GUI.Controls
         private List<TvGuideProgram> _timeline = new List<TvGuideProgram>();
         private TvGuideChannel _selectedChannel;
         private TvGuideProgram _selectedProgram;
-        private double _timelineLength = 0;
-        private double _timelinePosition = 0;
+        private double _timelineLength;
+        private double _timelinePosition;
         private string _timelineInfo;
         private double _timelineCenterPosition;
         private string _currentGuideGroup;
         private DateTime _lastProgramClick;
-        private const int _doubleClickDelay = 500;
+        private const int DoubleClickDelay = 500;
         private DateTime _lastMediaportalAction;
-        private double _viewportHorizontalPosition = 0.0;
+        private double _viewportHorizontalPosition;
+        private const double Tolerance = 0.001;
 
         #endregion
 
@@ -50,7 +50,7 @@ namespace GUIFramework.GUI.Controls
         /// <summary>
         /// Initializes a new instance of the <see cref="GUIGuide"/> class.
         /// </summary>
-        public GUIGuide() : base()
+        public GUIGuide()
         {
             InitializeComponent();
             _channelScrollViewer = channelListBox.GetDescendantByType<ScrollViewer>();
@@ -64,8 +64,7 @@ namespace GUIFramework.GUI.Controls
             MouseTouchDevice.RegisterEvents(programListBox.GetDescendantByType<VirtualizingStackPanel>());
             MouseTouchDevice.RegisterEvents(timelineListBox.GetDescendantByType<Canvas>());
 
-            _updateTimer = new DispatcherTimer();
-            _updateTimer.Interval = TimeSpan.FromSeconds(5);
+            _updateTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(5)};
             _updateTimer.Tick += (s, e) => UpdateTimeline();
             _updateTimer.Stop();
 
@@ -209,13 +208,13 @@ namespace GUIFramework.GUI.Controls
                 }
                 if (SelectedChannel == null)
                 {
-                    SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
+                    SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(channel => channel.Id == _selectedProgram.ChannelId);
                 }
                 if (_selectedProgram != null && _selectedChannel != null)
                 {
-                    if (_selectedProgram.ChannelId != SelectedChannel.Id)
+                    if (SelectedChannel != null && _selectedProgram.ChannelId != SelectedChannel.Id)
                     {
-                        SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(c => c.Id == _selectedProgram.ChannelId);
+                        SelectedChannel = TVGuideRepository.Instance.GuideData.FirstOrDefault(channel => channel.Id == _selectedProgram.ChannelId);
                     }
                     else
                     {
@@ -302,7 +301,7 @@ namespace GUIFramework.GUI.Controls
                         _lastMediaportalAction = DateTime.Now;
                         SelectedProgram = program;
                         TimelinePosition = (TimelineLength - ((TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                        programListBox.Dispatcher.BeginInvoke(new Action(delegate()
+                        programListBox.Dispatcher.BeginInvoke(new Action(delegate
                         {
                               programListBox.ScrollIntoView(channel);
                              _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
@@ -318,15 +317,15 @@ namespace GUIFramework.GUI.Controls
         ///</summary>
         private void UpdateProgramFilter()
         {
-            if (_programScrollViewer.HorizontalOffset > 0.0 && _viewportHorizontalPosition != _programScrollViewer.HorizontalOffset)
+            if (_programScrollViewer.HorizontalOffset > 0.0 && Math.Abs(_viewportHorizontalPosition - _programScrollViewer.HorizontalOffset) > Tolerance)
             {
                 if (_programScrollViewer.HorizontalOffset > (_viewportHorizontalPosition + (2 * _programScrollViewer.ViewportWidth)) ||
                     _programScrollViewer.HorizontalOffset < (_viewportHorizontalPosition - _programScrollViewer.ViewportWidth))
                 {
                     _viewportHorizontalPosition = _programScrollViewer.HorizontalOffset;
-                    DateTime _start = TimelineStart.AddMinutes((_viewportHorizontalPosition - (2 * _programScrollViewer.ViewportWidth)) / TimelineMultiplier);
-                    DateTime _end = TimelineStart.AddMinutes((_viewportHorizontalPosition + (3 *_programScrollViewer.ViewportWidth)) / TimelineMultiplier);
-                    TVGuideRepository.Instance.FilterPrograms(_start, _end);
+                    DateTime start = TimelineStart.AddMinutes((_viewportHorizontalPosition - (2 * _programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+                    DateTime end = TimelineStart.AddMinutes((_viewportHorizontalPosition + (3 *_programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+                    TVGuideRepository.Instance.FilterPrograms(start, end);
                 }
             }
         }
@@ -397,29 +396,29 @@ namespace GUIFramework.GUI.Controls
             int voffset = (int)e.VerticalOffset;
             int hoffset = (int)e.HorizontalOffset;
 
-            if (sender != timelineListBox)
+            if (!Equals(sender, timelineListBox))
             {
-                if (sender == channelListBox && (int)_programScrollViewer.VerticalOffset != voffset)
+                if (Equals(sender, channelListBox) && (int)_programScrollViewer.VerticalOffset != voffset)
                 {
                     _programScrollViewer.ScrollToVerticalOffset(voffset);
                 }
 
-                if (sender == programListBox && (int)_channelScrollViewer.VerticalOffset != voffset)
+                if (Equals(sender, programListBox) && (int)_channelScrollViewer.VerticalOffset != voffset)
                 {
                     _channelScrollViewer.ScrollToVerticalOffset(voffset);
                 }
             }
 
-            if (sender != channelListBox)
+            if (!Equals(sender, channelListBox))
             {
-                if (sender == timelineListBox && (int)_programScrollViewer.HorizontalOffset != hoffset)
+                if (Equals(sender, timelineListBox) && (int)_programScrollViewer.HorizontalOffset != hoffset)
                 {
                     _programScrollViewer.ScrollToHorizontalOffset(hoffset);
                     markerScrollviewer.ScrollToHorizontalOffset(hoffset);
                     TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
                  }
 
-                if (sender == programListBox && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
+                if (Equals(sender, programListBox) && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
                 {
                     _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
                     markerScrollviewer.ScrollToHorizontalOffset(hoffset);
@@ -436,51 +435,55 @@ namespace GUIFramework.GUI.Controls
         /// <param name="e">The <see cref="MouseButtonEventArgs"/> instance containing the event data.</param>
         private void OnProgramItemSelected(object sender, MouseButtonEventArgs e)
         {
-            TvGuideProgram pg;
-            APIGuideAction action;
+            var border = sender as Border;
+            if (border == null) return;
 
-            if (sender is Border)
-            {
-                pg = (sender as Border).Tag as TvGuideProgram;
+            var pg = border.Tag as TvGuideProgram;
         
-                // double-click selects the program for scheduling or cancel of the schedule
-                if (pg == SelectedProgram && DateTime.Now < _lastProgramClick.AddMilliseconds(_doubleClickDelay))
+            // double-click selects the program for scheduling or cancel of the schedule
+            if (pg == SelectedProgram && DateTime.Now < _lastProgramClick.AddMilliseconds(DoubleClickDelay))
+            {
+                if (pg != null)
                 {
-                    action = new APIGuideAction();
-                    action.ChannelId = pg.ChannelId;
-                    action.ProgramId = pg.Id;
-                    action.Title = pg.Title;
-                    action.StartTime = pg.StartTime;
-                    action.EndTime = pg.EndTime;
-                    action.Cancel = pg.IsScheduled;
+                    var action = new APIGuideAction
+                    {
+                        ChannelId = pg.ChannelId,
+                        ProgramId = pg.Id,
+                        Title = pg.Title,
+                        StartTime = pg.StartTime,
+                        EndTime = pg.EndTime,
+                        Cancel = pg.IsScheduled
+                    };
 
                     TVGuideRepository.Instance.CurrentGuideAction = action;
+                }
 
-                    if (pg.IsScheduled)                             // program has already been scheduled, so cancel now
-                    {
-                        if (!openConfirmationDialog((BaseXml as XmlGuide).CancelDialogId))
-                        {
-                            TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
-                            pg.IsScheduled = false;
-                            pg.IsRecording = false;
-                        }
-                    }
-                    else
-                    {
-                         if (!openConfirmationDialog((BaseXml as XmlGuide).CreateDialogId))
-                         {
-                             TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
-                             pg.IsScheduled = true;
-                         }
-                    }
-                    NotifyPropertyChanged("SelectedChannel");
-                 }
-                else if (pg != SelectedProgram ) 
+                if (pg != null && pg.IsScheduled)                             // program has already been scheduled, so cancel now
                 {
-                    SelectedProgram = pg;
-                 }
-                _lastProgramClick = DateTime.Now;
-             }
+                    var xmlGuide = BaseXml as XmlGuide;
+                    if (xmlGuide != null && !openConfirmationDialog(xmlGuide.CancelDialogId))
+                    {
+                        TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
+                        pg.IsScheduled = false;
+                        pg.IsRecording = false;
+                    }
+                }
+                else
+                {
+                    var xmlGuide = BaseXml as XmlGuide;
+                    if (xmlGuide != null && !openConfirmationDialog(xmlGuide.CreateDialogId))
+                    {
+                        TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
+                        if (pg != null) pg.IsScheduled = true;
+                    }
+                }
+                NotifyPropertyChanged("SelectedChannel");
+            }
+            else if (!Equals(pg, SelectedProgram) ) 
+            {
+                SelectedProgram = pg;
+            }
+            _lastProgramClick = DateTime.Now;
         }
 
         // open the confirmation dialog, if any is configured
@@ -489,10 +492,12 @@ namespace GUIFramework.GUI.Controls
         {
                 if (dialogId > 0)
                 {
-                    XmlAction openaction = new XmlAction();
-                    openaction.ActionType = XmlActionType.OpenDialog;
-                    openaction.Param1 = dialogId.ToString();
-                    GUIActionManager.ActionService.NotifyListeners(XmlActionType.OpenDialog, new object[] { openaction } );
+                    XmlAction openaction = new XmlAction
+                    {
+                        ActionType = XmlActionType.OpenDialog,
+                        Param1 = dialogId.ToString()
+                    };
+                    GUIActionManager.ActionService.NotifyListeners(XmlActionType.OpenDialog, openaction);
                     return true;
                 }
                 return false;

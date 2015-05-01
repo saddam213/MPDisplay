@@ -1,19 +1,16 @@
-﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+﻿using System.Collections.Generic;
+using Common.Helpers;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class PluginHelper
     {
         private GUIWindow _window;
         private SupportedPluginSettings _settings;
-
+ 
         public PluginHelper(GUIWindow pluginWindow, SupportedPluginSettings settings)
         {
             _window = pluginWindow;
@@ -84,19 +81,17 @@ namespace MediaPortalPlugin.PluginHelpers
                 switch (layout)
                 {
                     case APIListLayout.Vertical:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb1Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.VerticalListItemThumb1Path, string.Empty);
                         break;
                     case APIListLayout.VerticalIcon:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalIconListItemThumb1Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.VerticalIconListItemThumb1Path, string.Empty);
                         break;
 
                     case APIListLayout.Horizontal:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb1Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.HorizontalListItemThumb1Path, string.Empty);
                         break;
                     case APIListLayout.CoverFlow:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumb1Path, string.Empty);
-                        break;
-                    default:
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.CoverflowListItemThumb1Path, string.Empty);
                         break;
                 }
 
@@ -131,18 +126,16 @@ namespace MediaPortalPlugin.PluginHelpers
                 switch (layout)
                 {
                     case APIListLayout.Vertical:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb2Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.VerticalListItemThumb2Path, string.Empty);
                         break;
                     case APIListLayout.VerticalIcon: 
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalIconListItemThumb2Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.VerticalIconListItemThumb2Path, string.Empty);
                         break;
                     case APIListLayout.Horizontal:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb2Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.HorizontalListItemThumb2Path, string.Empty);
                         break;
                     case APIListLayout.CoverFlow:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumb2Path, string.Empty);
-                        break;
-                    default:
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.CoverflowListItemThumb2Path, string.Empty);
                         break;
                 }
             }
@@ -157,18 +150,16 @@ namespace MediaPortalPlugin.PluginHelpers
                 switch (layout)
                 {
                     case APIListLayout.Vertical:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalListItemThumb3Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.VerticalListItemThumb3Path, string.Empty);
                         break;
                     case APIListLayout.VerticalIcon:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.VerticalIconListItemThumb3Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.VerticalIconListItemThumb3Path, string.Empty);
                         break;
                     case APIListLayout.Horizontal:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.HorizontalListItemThumb3Path, string.Empty);
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.HorizontalListItemThumb3Path, string.Empty);
                         break;
                     case APIListLayout.CoverFlow:
-                        filename = ReflectionHelper.GetPropertyPath<string>(item, Settings.CoverflowListItemThumb3Path, string.Empty);
-                        break;
-                    default:
+                        filename = ReflectionHelper.GetPropertyPath(item, Settings.CoverflowListItemThumb3Path, string.Empty);
                         break;
                 }
             }
@@ -194,13 +185,11 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.CoverFlow:
                         propertyPath = _settings.CoverflowListItemLabel1Path;
                         break;
-                    default:
-                        break;
                 }
 
                 if (!string.IsNullOrEmpty(propertyPath) && !propertyPath.Equals("Label"))
                 {
-                    return ReflectionHelper.GetPropertyPath<string>(item, propertyPath, string.Empty);
+                    return ReflectionHelper.GetPropertyPath(item, propertyPath, string.Empty);
                 }
 
                 return item.Label;
@@ -227,13 +216,11 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.CoverFlow:
                         propertyPath = _settings.CoverflowListItemLabel2Path;
                         break;
-                    default:
-                        break;
                 }
 
                 if (!string.IsNullOrEmpty(propertyPath) && !propertyPath.Equals("Label2"))
                 {
-                    return ReflectionHelper.GetPropertyPath<string>(item, propertyPath, string.Empty);
+                    return ReflectionHelper.GetPropertyPath(item, propertyPath, string.Empty);
                 }
 
                 return item.Label2;
@@ -260,13 +247,11 @@ namespace MediaPortalPlugin.PluginHelpers
                     case APIListLayout.CoverFlow:
                         propertyPath = _settings.CoverflowListItemLabel3Path;
                         break;
-                    default:
-                        break;
                 }
 
                 if (!string.IsNullOrEmpty(propertyPath) && !propertyPath.Equals("Label3"))
                 {
-                    return ReflectionHelper.GetPropertyPath<string>(item, propertyPath, string.Empty);
+                    return ReflectionHelper.GetPropertyPath(item, propertyPath, string.Empty);
                 }
 
                 return item.Label3;

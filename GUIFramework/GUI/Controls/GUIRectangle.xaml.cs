@@ -1,12 +1,12 @@
-﻿using GUISkinFramework.Controls;
+﻿using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIButton.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlRectangle))]
-    public partial class GUIRectangle : GUIControl
+    public partial class GUIRectangle
     {
         #region Constructor
 

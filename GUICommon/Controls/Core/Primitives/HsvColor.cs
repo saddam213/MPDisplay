@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MPDisplay.Common.Controls.Primitives
+﻿namespace MPDisplay.Common.Controls.Core
 {
     internal struct HsvColor
     {

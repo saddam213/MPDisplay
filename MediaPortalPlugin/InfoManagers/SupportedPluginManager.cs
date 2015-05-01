@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using MediaPortal.GUI.Library;
-using System.Collections;
-using Common.Helpers;
-using System.Reflection;
-using Common.Settings.SettingsObjects;
-using MediaPortalPlugin.PluginHelpers;
 using Common.Settings;
+using MediaPortal.GUI.Library;
+using MediaPortalPlugin.Plugins;
 using MessageFramework.DataObjects;
+using Action = System.Action;
 
-namespace MediaPortalPlugin
+namespace MediaPortalPlugin.InfoManagers
 {
     public static class SupportedPluginManager
     {
@@ -48,7 +43,7 @@ namespace MediaPortalPlugin
 
             _supportedPlugins.Add(SupportedPlugin.MovingPictures, new MovingPicturesPlugin(GetPluginWindow(SupportedPlugin.MovingPictures), GetPluginSettings(SupportedPlugin.MovingPictures)));
             _supportedPlugins.Add(SupportedPlugin.MyFilms, new MyFilmsPlugin(GetPluginWindow(SupportedPlugin.MyFilms), GetPluginSettings(SupportedPlugin.MyFilms)));
-            _supportedPlugins.Add(SupportedPlugin.MPTVSeries, new MPTvSeriesPlugin(GetPluginWindow(SupportedPlugin.MPTVSeries), GetPluginSettings(SupportedPlugin.MPTVSeries)));
+            _supportedPlugins.Add(SupportedPlugin.MPTVSeries, new MpTvSeriesPlugin(GetPluginWindow(SupportedPlugin.MPTVSeries), GetPluginSettings(SupportedPlugin.MPTVSeries)));
             _supportedPlugins.Add(SupportedPlugin.mvCentral, new MvCentralPlugin(GetPluginWindow(SupportedPlugin.mvCentral), GetPluginSettings(SupportedPlugin.mvCentral)));
             _supportedPlugins.Add(SupportedPlugin.OnlineVideos, new OnlineVideosPlugin(GetPluginWindow(SupportedPlugin.OnlineVideos), GetPluginSettings(SupportedPlugin.OnlineVideos)));
             _supportedPlugins.Add(SupportedPlugin.MyAnime, new MyAnimePlugin(GetPluginWindow(SupportedPlugin.MyAnime), GetPluginSettings(SupportedPlugin.MyAnime)));
@@ -105,13 +100,16 @@ namespace MediaPortalPlugin
             return playtype;
         }
 
-        public static void GUISafeInvoke(System.Action action)
+        public static void GuiSafeInvoke(Action action)
         {
             try
             {
                 GUIGraphicsContext.form.Invoke(action);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
      

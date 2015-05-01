@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -18,7 +19,7 @@ namespace MPDisplay.Common.BindingConverters
         /// <returns>
         /// A converted SolidColorBrush. If the method returns null, the valid null value is used.
         /// </returns>
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value != null)
             {
@@ -31,9 +32,15 @@ namespace MPDisplay.Common.BindingConverters
                     var getcolor = Colors.Transparent;
                     try
                     {
-                        getcolor = (Color)ColorConverter.ConvertFromString(value.ToString());
+                        var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                        if (convertFromString != null)
+                            // ReSharper disable once PossibleInvalidCastException
+                            getcolor = (Color)convertFromString;
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                     return getcolor;
                 }
             }
@@ -53,7 +60,7 @@ namespace MPDisplay.Common.BindingConverters
         /// <returns>
         /// A converted value. If the method returns null, the valid null value is used.
         /// </returns>
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value != null)
             {
@@ -62,14 +69,19 @@ namespace MPDisplay.Common.BindingConverters
                     var getcolor = Colors.Transparent;
                     try
                     {
-                        getcolor = (Color)ColorConverter.ConvertFromString(value.ToString());
+                        var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                        if (convertFromString != null)
+                            getcolor = (Color)convertFromString;
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                     return getcolor;
                 }
                 if (value is Color)
                 {
-                    value.ToString();
+                    return value;
                 }
             }
 

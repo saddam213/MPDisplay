@@ -1,19 +1,14 @@
-﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+﻿using System;
+using Common.Helpers;
+using Common.Settings;
 using MediaPortal.GUI.Library;
-using MediaPortalPlugin.InfoManagers;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
-    public class MPTvSeriesPlugin : PluginHelper
+    public class MpTvSeriesPlugin : PluginHelper
     {
-        public MPTvSeriesPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
+        public MpTvSeriesPlugin(GUIWindow pluginindow, SupportedPluginSettings settings)
             : base(pluginindow, settings)
         {
         }
@@ -61,22 +56,20 @@ namespace MediaPortalPlugin.PluginHelpers
                 switch (layout)
                 {
                     case APIListLayout.Vertical:
-                        filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewVerticalListItemThumbPath, string.Empty)
-                                            : ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeriesViewVerticalListItemThumbPath, string.Empty);
+                        filename = isSeason ? ReflectionHelper.GetPropertyPath(item, CustomSettings.SeasonViewVerticalListItemThumbPath, string.Empty)
+                                            : ReflectionHelper.GetPropertyPath(item, CustomSettings.SeriesViewVerticalListItemThumbPath, string.Empty);
                         break;
                     case APIListLayout.VerticalIcon:
-                        filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewVerticalIconListItemThumbPath, string.Empty)
-                                            : ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeriesViewVerticalIconListItemThumbPath, string.Empty);
+                        filename = isSeason ? ReflectionHelper.GetPropertyPath(item, CustomSettings.SeasonViewVerticalIconListItemThumbPath, string.Empty)
+                                            : ReflectionHelper.GetPropertyPath(item, CustomSettings.SeriesViewVerticalIconListItemThumbPath, string.Empty);
                         break;
                     case APIListLayout.Horizontal:
-                        filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewHorizontalListItemThumbPath, string.Empty)
-                                            : ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeriesViewHorizontalListItemThumbPath, string.Empty);
+                        filename = isSeason ? ReflectionHelper.GetPropertyPath(item, CustomSettings.SeasonViewHorizontalListItemThumbPath, string.Empty)
+                                            : ReflectionHelper.GetPropertyPath(item, CustomSettings.SeriesViewHorizontalListItemThumbPath, string.Empty);
                         break;
                     case APIListLayout.CoverFlow:
-                        filename = isSeason ? ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeasonViewCoverflowListItemThumbPath, string.Empty)
-                                            : ReflectionHelper.GetPropertyPath<string>(item, CustomSettings.SeriesViewCoverflowListItemThumbPath, string.Empty);
-                        break;
-                    default:
+                        filename = isSeason ? ReflectionHelper.GetPropertyPath(item, CustomSettings.SeasonViewCoverflowListItemThumbPath, string.Empty)
+                                            : ReflectionHelper.GetPropertyPath(item, CustomSettings.SeriesViewCoverflowListItemThumbPath, string.Empty);
                         break;
                 }
             }

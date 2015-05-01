@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Threading;
 using System.Windows;
 using System.Windows.Media;
@@ -11,8 +12,8 @@ namespace MPDisplay.Common.Controls
     public class BackgroundVisualHost : FrameworkElement
     {
         #region Private Fields
-        private ThreadedVisualHelper _threadedHelper = null;
-        private HostVisual _hostVisual = null; 
+        private ThreadedVisualHelper _threadedHelper;
+        private HostVisual _hostVisual; 
         #endregion
 
         #region IsContentShowingProperty
@@ -97,7 +98,7 @@ namespace MPDisplay.Common.Controls
             throw new IndexOutOfRangeException("index");
         }
 
-        protected override System.Collections.IEnumerator LogicalChildren
+        protected override IEnumerator LogicalChildren
         {
             get 
             {
@@ -139,7 +140,7 @@ namespace MPDisplay.Common.Controls
 
         private class ThreadedVisualHelper
         {
-            private readonly HostVisual _hostVisual = null;
+            private readonly HostVisual _hostVisual;
             private readonly AutoResetEvent _sync = 
                 new AutoResetEvent(false);
             private readonly CreateContentFunction _createContent;

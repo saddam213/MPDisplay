@@ -1,37 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Windows;
-using GUISkinFramework;
-using System.Windows.Threading;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
-using GUISkinFramework.Dialogs;
 using Common.Helpers;
+using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
    
 
     /// <summary>
     /// Interaction logic for BackgroundEditorDialog.xaml
     /// </summary>
-    public partial class BrushEditorDialog : Window, INotifyPropertyChanged
+    public partial class BrushEditorDialog : INotifyPropertyChanged
     {
       
         public XmlSkinInfo SkinInfo
@@ -51,6 +30,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// Initializes a new instance of the <see cref="BrushEditorDialog"/> class.
         /// </summary>
         /// <param name="brush">The brush.</param>
+        /// <param name="skinInfo">SkinInfo XML</param>
         public BrushEditorDialog(XmlBrush brush, XmlSkinInfo skinInfo)
         {
             InitializeComponent();

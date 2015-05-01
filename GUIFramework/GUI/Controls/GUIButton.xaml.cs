@@ -1,14 +1,15 @@
 ﻿using System.Windows.Media.Imaging;
 using GUIFramework.Managers;
-using GUISkinFramework.Controls;
+using GUIFramework.Repositories;
+using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIButton.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlButton))]
-    public partial class GUIButton : GUIControl
+    public partial class GUIButton
     {
         #region Fields
 

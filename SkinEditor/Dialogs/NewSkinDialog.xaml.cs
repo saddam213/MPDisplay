@@ -1,28 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework;
-using SkinEditor.ConnectionHelpers;
 using System.IO;
-using Common.Settings;
+using System.Windows;
+using GUISkinFramework.Skin;
+using SkinEditor.Helpers;
 
 namespace SkinEditor.Dialogs
 {
     /// <summary>
     /// Interaction logic for NewSkinDialog.xaml
     /// </summary>
-    public partial class NewSkinDialog : Window, INotifyPropertyChanged
+    public partial class NewSkinDialog : INotifyPropertyChanged
     {
         private string _skinName = "";
         private string _skinFolder = "";
@@ -32,7 +20,7 @@ namespace SkinEditor.Dialogs
 
         public NewSkinDialog(string lastDirectory)
         {
-            Owner = App.Current.MainWindow;
+            Owner = Application.Current.MainWindow;
             InitializeComponent();
             SkinFolder = lastDirectory;
         }
@@ -79,7 +67,7 @@ namespace SkinEditor.Dialogs
   
         private void Button_OK_Click(object sender, RoutedEventArgs e)
         {
-            string newPath = System.IO.Path.Combine(SkinFolder, SkinName);
+            string newPath = Path.Combine(SkinFolder, SkinName);
             if (FileSystemHelper.DirecoryExists(newPath))
             {
                 MessageBox.Show(string.Format("Directory {0} already exists{1}please choose another directory", newPath, Environment.NewLine), "Error");
@@ -96,10 +84,10 @@ namespace SkinEditor.Dialogs
 
             NewSkinInfo = new XmlSkinInfo
             {
-                SkinName = this.SkinName,
+                SkinName = SkinName,
                 SkinFolderPath = newPath,
-                SkinWidth = this.SkinWidth,
-                SkinHeight = this.SkinHeight
+                SkinWidth = SkinWidth,
+                SkinHeight = SkinHeight
             };
 
             if (IsNewSkin)

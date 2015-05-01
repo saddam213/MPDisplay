@@ -1,9 +1,9 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
-using System.ComponentModel;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace MPDisplay.Common.Controls
 {
@@ -26,8 +26,8 @@ namespace MPDisplay.Common.Controls
 
         #region Properties
 
-        private System.Windows.Controls.Primitives.ButtonBase _button;
-        protected System.Windows.Controls.Primitives.ButtonBase Button
+        private ButtonBase _button;
+        protected ButtonBase Button
         {
             get { return _button; }
             set
@@ -47,7 +47,7 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty DropDownContentProperty = DependencyProperty.Register("DropDownContent", typeof(object), typeof(DropDownButton), new UIPropertyMetadata(null, OnDropDownContentChanged));
         public object DropDownContent
         {
-            get { return (object)GetValue(DropDownContentProperty); }
+            get { return GetValue(DropDownContentProperty); }
             set { SetValue(DropDownContentProperty, value); }
         }
 
@@ -55,7 +55,7 @@ namespace MPDisplay.Common.Controls
         {
             DropDownButton dropDownButton = o as DropDownButton;
             if (dropDownButton != null)
-                dropDownButton.OnDropDownContentChanged((object)e.OldValue, (object)e.NewValue);
+                dropDownButton.OnDropDownContentChanged(e.OldValue, e.NewValue);
         }
 
         protected virtual void OnDropDownContentChanged(object oldValue, object newValue)
@@ -83,10 +83,7 @@ namespace MPDisplay.Common.Controls
 
         protected virtual void OnIsOpenChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
-                RaiseRoutedEvent(DropDownButton.OpenedEvent);
-            else
-                RaiseRoutedEvent(DropDownButton.ClosedEvent);
+            RaiseRoutedEvent(newValue ? OpenedEvent : ClosedEvent);
         }
 
         #endregion //IsOpen
@@ -168,11 +165,7 @@ namespace MPDisplay.Common.Controls
                 RoutedCommand command = Command as RoutedCommand;
 
                 // If a RoutedCommand.
-                if (command != null)
-                    IsEnabled = command.CanExecute(CommandParameter, CommandTarget) ? true : false;
-                // If a not RoutedCommand.
-                else
-                    IsEnabled = Command.CanExecute(CommandParameter) ? true : false;
+                IsEnabled = command != null ? command.CanExecute(CommandParameter, CommandTarget) : Command.CanExecute(CommandParameter);
             }
         }
 
@@ -188,7 +181,7 @@ namespace MPDisplay.Common.Controls
 
         protected virtual void OnClick()
         {
-            RaiseRoutedEvent(DropDownButton.ClickEvent);
+            RaiseRoutedEvent(ClickEvent);
             RaiseCommand();
         }
 
@@ -211,7 +204,7 @@ namespace MPDisplay.Common.Controls
                 RoutedCommand routedCommand = Command as RoutedCommand;
 
                 if (routedCommand == null)
-                    ((ICommand)Command).Execute(CommandParameter);
+                    Command.Execute(CommandParameter);
                 else
                     routedCommand.Execute(CommandParameter, CommandTarget);
             }
@@ -235,10 +228,10 @@ namespace MPDisplay.Common.Controls
         /// <param name="newCommand">The new command.</param>
         private void HookUpCommand(ICommand oldCommand, ICommand newCommand)
         {
-            EventHandler handler = new EventHandler(CanExecuteChanged);
-            canExecuteChangedHandler = handler;
+            EventHandler handler = CanExecuteChanged;
+            _canExecuteChangedHandler = handler;
             if (newCommand != null)
-                newCommand.CanExecuteChanged += canExecuteChangedHandler;
+                newCommand.CanExecuteChanged += _canExecuteChangedHandler;
         }
 
         #endregion //Methods
@@ -246,11 +239,11 @@ namespace MPDisplay.Common.Controls
         #region ICommandSource Members
 
         // Keeps a copy of the CanExecuteChnaged handler so it doesn't get garbage collected.
-        private EventHandler canExecuteChangedHandler;
+        private EventHandler _canExecuteChangedHandler;
 
         #region Command
 
-        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(DropDownButton), new PropertyMetadata((ICommand)null, OnCommandChanged));
+        public static readonly DependencyProperty CommandProperty = DependencyProperty.Register("Command", typeof(ICommand), typeof(DropDownButton), new PropertyMetadata(null, OnCommandChanged));
         [TypeConverter(typeof(CommandConverter))]
         public ICommand Command
         {

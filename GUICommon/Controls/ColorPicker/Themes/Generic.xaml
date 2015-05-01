@@ -2,7 +2,7 @@
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MPDisplay.Common.Controls"
                     xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters"
-                    xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes">
+                    xmlns:implementation="clr-namespace:MPDisplay.Common.Controls">
 
     <SolidColorBrush x:Key="ButtonHover" Color="#C2E0FF"/>
     <SolidColorBrush x:Key="ButtonHoverBorder" Color="#3399FF"/>
@@ -116,17 +116,17 @@
                                                   VerticalAlignment="{TemplateBinding VerticalContentAlignment}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"/>
                             </Border>
 
-                            <chrome:ButtonChrome x:Name="ToggleButtonChrome" Grid.Column="1"
+                            <implementation:ButtonChrome x:Name="ToggleButtonChrome" Grid.Column="1"
                                              CornerRadius="0,2.75,2.75,0"
                                             RenderChecked="{Binding IsOpen, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ColorPicker}}"
                                             RenderEnabled="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=local:ColorPicker}}"
 											RenderMouseOver="{TemplateBinding IsMouseOver}"
 											RenderPressed="{TemplateBinding IsPressed}" >
 
-                                <Grid x:Name="arrowGlyph" IsHitTestVisible="False" Grid.Column="1" Margin="5">
+                                <Grid x:Name="arrowGlyph" IsHitTestVisible="False" Margin="5">
                                     <Path Width="7" Height="4" Data="M 0,1 C0,1 0,0 0,0 0,0 3,0 3,0 3,0 3,1 3,1 3,1 4,1 4,1 4,1 4,0 4,0 4,0 7,0 7,0 7,0 7,1 7,1 7,1 6,1 6,1 6,1 6,2 6,2 6,2 5,2 5,2 5,2 5,3 5,3 5,3 4,3 4,3 4,3 4,4 4,4 4,4 3,4 3,4 3,4 3,3 3,3 3,3 2,3 2,3 2,3 2,2 2,2 2,2 1,2 1,2 1,2 1,1 1,1 1,1 0,1 0,1 z" Fill="#FF000000"/>
                                 </Grid>
-                            </chrome:ButtonChrome>
+                            </implementation:ButtonChrome>
                         </Grid>
 
                     </Grid>

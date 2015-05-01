@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Windows;
 using Common.Helpers;
 
-namespace GUISkinFramework.Styles
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "StyleCollection")]

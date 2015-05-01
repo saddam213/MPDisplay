@@ -3,23 +3,16 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
+using Common.Settings;
 using GUISkinFramework.Skin;
 using SkinEditor.Controls;
-using Common.Settings;
 
 namespace SkinEditor.BindingConverters
 {
     public class DummyListItemsConverter : IMultiValueConverter
     {
-        private List<string> _allowedsExtensions = new List<string>(new string[] { ".BMP", ".JPG", ".GIF", ".PNG" });
+        private List<string> _allowedsExtensions = new List<string>(new[] { ".BMP", ".JPG", ".GIF", ".PNG" });
 
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {
@@ -36,8 +29,6 @@ namespace SkinEditor.BindingConverters
                     case XmlListLayout.VerticalIcon:
                         vertical = true;
                         break;
-                    case XmlListLayout.Horizontal:
-                    case XmlListLayout.CoverFlow:
                     default:
                         vertical = false;
                         break;
@@ -62,14 +53,14 @@ namespace SkinEditor.BindingConverters
                          if (Directory.Exists(dummyItemPath))
                          {
                              int index = 0;
-                             string filename;
 
                              foreach (var file in Directory.GetFiles(dummyItemPath))
                              {
-                                 if (_allowedsExtensions.Contains(System.IO.Path.GetExtension(file).ToUpper()))
+                                 var extension = Path.GetExtension(file);
+                                 if (extension != null && _allowedsExtensions.Contains(extension.ToUpper()))
                                  {
-                                     filename = Path.GetFileNameWithoutExtension(file);
-                                     if ((vertical && filename.StartsWith("_")) || (!vertical && !filename.StartsWith("_")))
+                                     var filename = Path.GetFileNameWithoutExtension(file);
+                                     if (filename != null && ((vertical && filename.StartsWith("_")) || (!vertical && !filename.StartsWith("_"))))
                                      {
                                          if (filename.StartsWith("_")) filename = filename.Remove(0, 1);
                                          items.Add(new CoverFlowListBoxItem
@@ -124,8 +115,6 @@ namespace SkinEditor.BindingConverters
                                  Label = item
                              });
                          }
-                         break;
-                     default:
                          break;
                  }
 

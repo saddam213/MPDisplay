@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using GUISkinFramework;
+using GUISkinFramework.ExtensionMethods;
 
 namespace SkinEditor.BindingConverters
 {
@@ -39,7 +36,10 @@ namespace SkinEditor.BindingConverters
                     var actualWidth = (width - (margin.Left + margin.Right));
                     return Math.Min(actualWidth, Math.Max(0.0, (actualWidth / 100.0) * percentage));
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
             return 0.0;
         }

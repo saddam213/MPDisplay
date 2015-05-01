@@ -1,50 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using MessageFramework.DataObjects;
-using Common.Logging;
+using System.Reflection;
+using System.Threading;
+using Common.Helpers;
+using Common.Log;
 using Common.Settings;
 using MediaPortal.GUI.Library;
-using Common.Helpers;
-using System.Threading;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
+using Action = MediaPortal.GUI.Library.Action;
+using Log = Common.Log.Log;
 
 namespace MediaPortalPlugin.InfoManagers
 {
-    public class DialogManager
+    public class DialogManager 
     {
         #region Singleton Implementation
 
-        private static DialogManager instance;
+        private static DialogManager _instance;
 
         private DialogManager()
         {
-            Log = Common.Logging.LoggingManager.GetLog(typeof(DialogManager));
+            _log = LoggingManager.GetLog(typeof(DialogManager));
         }
 
         public static DialogManager Instance
         {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new DialogManager();
-                }
-                return instance;
-            }
+            get { return _instance ?? (_instance = new DialogManager()); }
         }
 
         #endregion
 
         #region Vars
 
-        private Common.Logging.Log Log = LoggingManager.GetLog(typeof(DialogManager));
-        private PluginSettings _settings;
-        private bool _isWorking = false;
+        private Log _log;
+        private bool _isWorking;
         private bool _isDialogVisible;
         private GUIWindow _currentDialog;
         private int _currentDialogId = -1;
-        private System.Threading.Timer _dialogTimer;
+        private Timer _dialogTimer;
         private enum DialogType { None, Button, List, Notifiy }
         private DialogType _currentDialogType = DialogType.None;
         private List<GUIListControl> _listControls;
@@ -58,8 +53,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void Initialize(PluginSettings settings)
         {
-            _settings = settings;
-            _dialogTimer = new System.Threading.Timer((o) => ProcessDialogThread(), null, 1000, 150);
+            _dialogTimer = new Timer(o => ProcessDialogThread(), null, 1000, 150);
+            _log = LoggingManager.GetLog(typeof(DialogManager));
         }
 
         public void Shutdown()
@@ -96,14 +91,14 @@ namespace MediaPortalPlugin.InfoManagers
                                     currentList.SelectedListItemIndex = action.ListAction.ItemIndex;
                                     if (action.ListAction.ActionType == APIListActionType.SelectedItem)
                                     {
-                                        GUIGraphicsContext.OnAction(new MediaPortal.GUI.Library.Action((MediaPortal.GUI.Library.Action.ActionType)7, 0f, 0f));
+                                        GUIGraphicsContext.OnAction(new Action((Action.ActionType)7, 0f, 0f));
                                     }
                                 }
                             }
                         }
                         else if (_currentDialogType == DialogType.Button)
                         {
-                            var buttons = _currentDialog.GetControls<GUIButtonControl>();
+                            var buttons = _currentDialog.GetControls<GUIButtonControl>().ToList();
                             if (buttons.Any())
                             {
                                 var currentFocus = buttons.FirstOrDefault(c => c.Focus);
@@ -126,14 +121,13 @@ namespace MediaPortalPlugin.InfoManagers
             }
             catch (Exception ex)
             {
-                Log.Exception("[OnActionMessageReceived] - An exception occured processing dialog thread", ex);
+                _log.Exception("[OnActionMessageReceived] - An exception occured processing dialog thread", ex);
             }
         }
 
         /// <summary>
         /// Processes the dialog thread.
         /// </summary>
-        /// <param name="state">The state.</param>
         private void ProcessDialogThread()
         {
             try
@@ -170,7 +164,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
             catch (Exception ex)
             {
-                Log.Exception("[DialogManager]-[ProcessDialogThread] - An exception occured processing dialog thread",  ex);
+                _log.Exception("[DialogManager]-[ProcessDialogThread] - An exception occured processing dialog thread",  ex);
             }
         }
 
@@ -189,7 +183,7 @@ namespace MediaPortalPlugin.InfoManagers
                         var currentList = _listControls.FirstOrDefault(f => f.Focus);
                         if (currentList != null)
                         {
-                            SendList(ListManager.Instance.GetAPIListItems(currentList, APIListLayout.Vertical));
+                            SendList(ListManager.Instance.GetApiListItems(currentList, APIListLayout.Vertical));
                         }
                     }
                     else if (_currentDialogType == DialogType.Button)
@@ -206,18 +200,32 @@ namespace MediaPortalPlugin.InfoManagers
 
                     foreach (var control in _currentDialog.GetControls())
                     {
-                        var label = ReflectionHelper.GetPropertyValue<string>(control, "Label", null);
-                        if (!string.IsNullOrEmpty(label))
+                        if (!_buttonControls.Contains(control))
                         {
-                            string tag = string.Format("#Dialog.Label{0}", control.GetID);
-                            PropertyManager.Instance.SendLabelProperty(tag, label);
+                            var label = ReflectionHelper.GetPropertyValue<string>(control, "Label", null);
+                            if (!string.IsNullOrEmpty(label))
+                            {
+                                string tag = string.Format("#Dialog.Label{0}", control.GetID);
+                                PropertyManager.Instance.SendLabelProperty(tag, label);
+                                SendEditorData(APISkinEditorDataType.Property, tag, label);
+                            }
+                        }
+                        if (control is GUIImage)
+                        {
+                            var imagepath = ReflectionHelper.GetPropertyValue<string>(control, "FileName", null);
+                            if (!string.IsNullOrEmpty(imagepath))
+                            {
+                                string tag = string.Format("#Dialog.Image{0}", control.GetID);
+                                PropertyManager.Instance.SendImageProperty(tag, imagepath);
+                                SendEditorData(APISkinEditorDataType.Property, tag, imagepath);
+                            }
                         }
                     }
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[DialogOpen] - An exception occured processing dialog open", ex);
+                _log.Exception("[DialogOpen] - An exception occured processing dialog open", ex);
             }
         }
 
@@ -238,7 +246,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
             catch (Exception ex)
             {
-                Log.Exception("[DialogClose] - An exception occured processing dialog close", ex);
+                _log.Exception("[DialogClose] - An exception occured processing dialog close", ex);
             }
         }
 
@@ -257,11 +265,13 @@ namespace MediaPortalPlugin.InfoManagers
                         if (currentList != null && currentList.SelectedListItem != null)
                         {
                            SendSelectedItem(currentList.SelectedListItem.Label, currentList.SelectedListItemIndex);
+                           SendSkinEditorData(currentList.SelectedListItem);
+
                         }
-                        if (currentList.ListItems.Count != _lastListCount)
+                        if (currentList != null && currentList.ListItems.Count != _lastListCount)
                         {
                             _lastListCount = currentList.ListItems.Count;
-                            SendList(ListManager.Instance.GetAPIListItems(currentList, APIListLayout.Vertical));
+                            SendList(ListManager.Instance.GetApiListItems(currentList, APIListLayout.Vertical));
                         }
                     }
                     else if (_currentDialogType == DialogType.Button)
@@ -270,6 +280,12 @@ namespace MediaPortalPlugin.InfoManagers
                         if (focusCtrl != null)
                         {
                             SendSelectedItem(focusCtrl.Label, focusCtrl.GetID);
+                            var item = new APIListItem
+                            {
+                                Label = focusCtrl.Label,
+                                Index = focusCtrl.GetID
+                            };
+                            SendSkinEditorData(item);
                         }
                     }
                     SendDialogFocusMessage();
@@ -277,7 +293,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
             catch (Exception ex)
             {
-                Log.Exception("[DialogUpdate] - An exception occured processing dialog update", ex);
+                _log.Exception("[DialogUpdate] - An exception occured processing dialog update", ex);
             }
         }
 
@@ -297,8 +313,6 @@ namespace MediaPortalPlugin.InfoManagers
                 }
             });
         }
-
-
 
         private void SendSelectedItem(string text, int index)
         {
@@ -380,7 +394,6 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-
         private void SendEditorData(APISkinEditorDataType type, int value)
         {
             if (MessageService.Instance.IsSkinEditorConnected)
@@ -390,6 +403,62 @@ namespace MediaPortalPlugin.InfoManagers
                     DataType = type,
                     IntValue = value
                 });
+            }
+        }
+
+        private void SendEditorData(APISkinEditorDataType type, string tag, string tagValue)
+        {
+            if (MessageService.Instance.IsSkinEditorConnected)
+            {
+                MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                {
+                    DataType = type,
+                    PropertyData = new[] { tag, tagValue }
+                });
+            }
+        }
+
+        private void SendSkinEditorData(GUIListItem item)
+        {
+            if (item != null && MessageService.Instance.IsSkinEditorConnected)
+            {
+                try
+                {
+                    var data = item.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(string)).Select(property => new[] {property.Name,
+                        (string) property.GetValue(item, null)}).ToList();
+
+                    MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                    {
+                        DataType = APISkinEditorDataType.ListItem,
+                        ListItemData = data
+                    });
+                }
+                catch
+                {
+                    // ignored
+                }
+            }
+        }
+
+        private void SendSkinEditorData(APIListItem item)
+        {
+            if (item != null && MessageService.Instance.IsSkinEditorConnected)
+            {
+                try
+                {
+                    var data = item.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(p => p.PropertyType == typeof(string)).Select(property => new[] {property.Name,
+                        (string) property.GetValue(item, null)}).ToList();
+
+                    MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                    {
+                        DataType = APISkinEditorDataType.ListItem,
+                        ListItemData = data
+                    });
+                }
+                catch
+                {
+                    // ignored
+                }
             }
         }
     }

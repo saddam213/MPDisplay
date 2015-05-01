@@ -1,28 +1,12 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
+using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
@@ -76,59 +60,63 @@ namespace GUISkinFramework.Editor.PropertyEditors
       
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var animatedElement = (_propertyItem.PropertyGrid.DataContext as AnimationEditorDialog).AnimatedElement as XmlControl;
-           
-            if (animatedElement != null)
+            var animationEditorDialog = _propertyItem.PropertyGrid.DataContext as AnimationEditorDialog;
+            if (animationEditorDialog != null)
             {
-                if (_propertyItem.Instance is XmlSlideAnimation)
+                var animatedElement = animationEditorDialog.AnimatedElement as XmlControl;
+           
+                if (animatedElement != null)
                 {
-                    var animation = _propertyItem.Instance is XmlSlideAnimation;
-                    if (_propertyItem.Name.Equals("StartX") || _propertyItem.Name.Equals("EndX"))
+                    if (_propertyItem.Instance is XmlSlideAnimation)
                     {
-                        Value = animatedElement.PosX;
+                        var animation = _propertyItem.Instance is XmlSlideAnimation;
+                        if (_propertyItem.Name.Equals("StartX") || _propertyItem.Name.Equals("EndX"))
+                        {
+                            Value = animatedElement.PosX;
+                        }
+
+                        if (_propertyItem.Name.Equals("StartY") || _propertyItem.Name.Equals("EndY"))
+                        {
+                            Value = animatedElement.PosY;
+                        }
+
+                        if (_propertyItem.Name.Equals("StartZ") || _propertyItem.Name.Equals("EndZ"))
+                        {
+                            Value = animatedElement.PosZ;
+                        }
                     }
 
-                    if (_propertyItem.Name.Equals("StartY") || _propertyItem.Name.Equals("EndY"))
+                    if (_propertyItem.Instance is XmlRotateAnimation)
                     {
-                        Value = animatedElement.PosY;
-                    }
+                        if (_propertyItem.Name.Equals("Pos3DXFrom") || _propertyItem.Name.Equals("Pos3DXTo"))
+                        {
+                            Value = animatedElement.Pos3DX;
+                        }
 
-                    if (_propertyItem.Name.Equals("StartZ") || _propertyItem.Name.Equals("EndZ"))
-                    {
-                        Value = animatedElement.PosZ;
-                    }
-                }
+                        if (_propertyItem.Name.Equals("Pos3DYFrom") || _propertyItem.Name.Equals("Pos3DYTo"))
+                        {
+                            Value = animatedElement.Pos3DY;
+                        }
 
-                if (_propertyItem.Instance is XmlRotateAnimation)
-                {
-                    if (_propertyItem.Name.Equals("Pos3DXFrom") || _propertyItem.Name.Equals("Pos3DXTo"))
-                    {
-                        Value = animatedElement.Pos3DX;
-                    }
+                        if (_propertyItem.Name.Equals("Pos3DZFrom") || _propertyItem.Name.Equals("Pos3DZTo"))
+                        {
+                            Value = animatedElement.Pos3DZ;
+                        }
 
-                    if (_propertyItem.Name.Equals("Pos3DYFrom") || _propertyItem.Name.Equals("Pos3DYTo"))
-                    {
-                        Value = animatedElement.Pos3DY;
-                    }
+                        if (_propertyItem.Name.Equals("Pos3DCenterXFrom") || _propertyItem.Name.Equals("Pos3DCenterXTo"))
+                        {
+                            Value = animatedElement.Center3DX;
+                        }
 
-                    if (_propertyItem.Name.Equals("Pos3DZFrom") || _propertyItem.Name.Equals("Pos3DZTo"))
-                    {
-                        Value = animatedElement.Pos3DZ;
-                    }
+                        if (_propertyItem.Name.Equals("Pos3DCenterYFrom") || _propertyItem.Name.Equals("Pos3DCenterYTo"))
+                        {
+                            Value = animatedElement.Center3DY;
+                        }
 
-                    if (_propertyItem.Name.Equals("Pos3DCenterXFrom") || _propertyItem.Name.Equals("Pos3DCenterXTo"))
-                    {
-                        Value = animatedElement.Center3DX;
-                    }
-
-                    if (_propertyItem.Name.Equals("Pos3DCenterYFrom") || _propertyItem.Name.Equals("Pos3DCenterYTo"))
-                    {
-                        Value = animatedElement.Center3DY;
-                    }
-
-                    if (_propertyItem.Name.Equals("Pos3DCenterZFrom") || _propertyItem.Name.Equals("Pos3DCenterZTo"))
-                    {
-                        Value = animatedElement.Center3DZ;
+                        if (_propertyItem.Name.Equals("Pos3DCenterZFrom") || _propertyItem.Name.Equals("Pos3DCenterZTo"))
+                        {
+                            Value = animatedElement.Center3DZ;
+                        }
                     }
                 }
             }
@@ -172,18 +160,18 @@ namespace GUISkinFramework.Editor.PropertyEditors
       
         public PropertyRangeAttribute(int min, int max)
         {
-            this._min = min;
-            this._max = max;
+            _min = min;
+            _max = max;
         }
 
         public int Min
         {
-            get { return this._min; }
+            get { return _min; }
         }
 
         public int Max
         {
-            get { return this._max; }
+            get { return _max; }
         }
     }
 }

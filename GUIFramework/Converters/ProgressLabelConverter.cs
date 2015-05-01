@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Data;
-using GUISkinFramework;
 using System.Windows;
+using System.Windows.Data;
+using GUISkinFramework.ExtensionMethods;
 
 namespace GUIFramework.Converters
 {
@@ -33,7 +30,10 @@ namespace GUIFramework.Converters
                     if (margin.Left < 0.0) margin.Left = 0.0;
                     if (margin.Left > (width - labelwidth)) margin.Left = width - labelwidth;
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
             }
             return margin;
         }

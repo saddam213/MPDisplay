@@ -1,28 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using GUISkinFramework.Editor.PropertyEditors.PropertyEditor;
-using GUISkinFramework.PropertyEditors;
 using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editors.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for GradientBrushEditor.xaml
@@ -81,18 +63,18 @@ namespace GUISkinFramework.Editors.PropertyEditors
 
         private void UpdateDisplayBrush()
         {
-            if (_isChangingImage == false && !string.IsNullOrEmpty(this.ImageName))
+            if (_isChangingImage == false && !string.IsNullOrEmpty(ImageName))
             {
                 if (OnImageBrushChanged != null)
                 {
                     if (ImageBrush != null)
                     {
-                        ImageBrush.ImageName = this.ImageName;
-                        ImageBrush.ImageStretch = this.ImageStretch;
+                        ImageBrush.ImageName = ImageName;
+                        ImageBrush.ImageStretch = ImageStretch;
                         OnImageBrushChanged(new XmlImageBrush
                         {
-                            ImageName = this.ImageName,
-                            ImageStretch = this.ImageStretch
+                            ImageName = ImageName,
+                            ImageStretch = ImageStretch
                         });
                     }
                 }

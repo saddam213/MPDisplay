@@ -1,8 +1,8 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        x:Class="GUISkinFramework.Editor.PropertyEditors.VisibleConditionEditorDialog"
-        xmlns:wpfControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+        x:Class="GUISkinFramework.Editors.VisibleConditionEditorDialog"
+    xmlns:autoCompleteTextbox="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
         Title="VisibleConditionEditorDialog" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" x:Name="UI" Height="146" MaxWidth="500" SizeToContent="Height" >
     <Grid DataContext="{Binding ElementName=UI}">
         <Grid.RowDefinitions>
@@ -13,9 +13,9 @@
         <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="Button_Cancel_Click" Grid.Row="1"/>
 		<StackPanel>
         <TextBlock HorizontalAlignment="Left" Margin="10,19,0,0" TextWrapping="Wrap" Text="Visible Condition" VerticalAlignment="Top"/>
-		<wpfControls:AutoCompleteTextbox Margin="10,0,10,0" Height="Auto" Text="{Binding CurrentCondition, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  AutoCompletionList="{Binding AutoCompleteList}"  x:Name="textBox1" Threshold="1" VerticalAlignment="Top">
-            <wpfControls:AutoCompleteTextbox.Style>
-                <Style TargetType="{x:Type wpfControls:AutoCompleteTextbox}">
+		<autoCompleteTextbox:AutoCompleteTextbox Margin="10,0,10,0" Height="Auto" Text="{Binding CurrentCondition, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"  AutoCompletionList="{Binding AutoCompleteList}"  x:Name="textBox1" Threshold="1" VerticalAlignment="Top">
+            <autoCompleteTextbox:AutoCompleteTextbox.Style>
+                <Style TargetType="{x:Type autoCompleteTextbox:AutoCompleteTextbox}">
                     <Setter Property="Foreground" Value="Black" />
                     <Style.Triggers>
                         <DataTrigger Binding="{Binding IsConditionValid}" Value="False">
@@ -23,8 +23,8 @@
                         </DataTrigger>
                     </Style.Triggers>
                 </Style>
-            </wpfControls:AutoCompleteTextbox.Style>
-        </wpfControls:AutoCompleteTextbox>
+            </autoCompleteTextbox:AutoCompleteTextbox.Style>
+        </autoCompleteTextbox:AutoCompleteTextbox>
 			<TextBlock Margin="10,3,0,0" Text="{Binding ErrorToolTip}" Foreground="Red" />
 		</StackPanel>
     </Grid>

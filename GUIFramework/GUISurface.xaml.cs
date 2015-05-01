@@ -6,33 +6,23 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUIFramework.GUI;
-using GUIFramework.GUI.Controls;
-using GUIFramework.GUI.Windows;
-using GUIFramework.Managers;
-using GUISkinFramework;
-using GUISkinFramework.Common;
-using GUISkinFramework.Windows;
-using MessageFramework.DataObjects;
 using System.Windows.Threading;
-using GUISkinFramework.Editor.PropertyEditors;
-using Microsoft.Win32;
 using Common.Helpers;
-using Common.Logging;
+using Common.Log;
 using Common.Settings;
+using GUIFramework.GUI;
+using GUIFramework.Managers;
+using GUIFramework.Repositories;
+using GUIFramework.Utils;
+using GUISkinFramework.Editors;
+using GUISkinFramework.Skin;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
+using Microsoft.Win32;
 
 namespace GUIFramework
 {
@@ -40,26 +30,25 @@ namespace GUIFramework
     /// Interaction logic for GUISurface.xaml
     /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
-    public partial class GUISurface : UserControl, IMessageCallback, INotifyPropertyChanged 
+    public partial class GUISurface : IMessageCallback, INotifyPropertyChanged 
     {
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(GUISurface));
+        private Log _log = LoggingManager.GetLog(typeof(GUISurface));
         private APIConnection _connection;
-        private EndpointAddress serverEndpoint;
-        private NetTcpBinding serverBinding;
-        private bool _isDisconnecting = false;
+        private EndpointAddress _serverEndpoint;
+        private NetTcpBinding _serverBinding;
+        private bool _isDisconnecting;
         private static MessageClient _messageBroker;
         private XmlSkinInfo _currentSkin;
         private GUISettings _settings;
-        private ObservableCollection<IControlHost> _surfaceElements = new ObservableCollection<IControlHost>();
+        private ObservableCollection<IControlHost> _surfaceElements;
         private GUIWindow _currentWindow;
         private GUIMPDialog _currentMediaPortalDialog;
-        private List<GUIMPDDialog> _currentMPDisplayDialogs = new List<GUIMPDDialog>();
         private bool _currentWindowIsLocked;
         private Stack<int> _previousWindows = new Stack<int>();
         private DispatcherTimer _secondTimer;
-        private bool _processWindow = false;
+        private bool _processWindow;
         private int _currentMPDWindowId = -1;
         private DateTime _lastUserInteraction = DateTime.MinValue;
         private DateTime _lastKeepAlive = DateTime.MinValue;
@@ -73,6 +62,8 @@ namespace GUIFramework
         /// </summary>
         public GUISurface()
         {
+            _surfaceElements = new ObservableCollection<IControlHost>();
+            _processWindow = false;
             InitializeComponent(); 
             StartSecondTimer();
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
@@ -177,7 +168,7 @@ namespace GUIFramework
                 if (skinInfo != null)
                 {
                     Settings = settings;
-                    skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(settings.SkinInfoXml);
+                    skinInfo.SkinFolderPath = Path.GetDirectoryName(settings.SkinInfoXml);
                     await LoadSkin(skinInfo);
                 }
             }
@@ -222,44 +213,46 @@ namespace GUIFramework
                 });
 
 
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions...");
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions...");
                 await SetSplashScreenText("Loading VisibleConditions...");
                 DateTime conditionStart = DateTime.Now;
                 GUIVisibilityManager.CreateVisibleConditions(CurrentSkin.Windows.Cast<IXmlControlHost>().Concat(CurrentSkin.Dialogs));
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions, LoadTime: {0}ms", (DateTime.Now - conditionStart).TotalMilliseconds);
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions, LoadTime: {0}ms", (DateTime.Now - conditionStart).TotalMilliseconds);
 
 
 
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows...");
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows...");
                 await SetSplashScreenText("Loading Windows...");
                 DateTime windowsStart = DateTime.Now;
                 foreach (var window in CurrentSkin.Windows.OrderByDescending(x => x.IsDefault))
                 {
                     await SetSplashScreenText("Loading Window...({0})", window.Name);
+                    var window1 = window;
                     await Dispatcher.InvokeAsync(() =>
                     {
                         DateTime start = DateTime.Now;
-                        SurfaceElements.Add(GUIElementFactory.CreateWindow(window));
-                        Log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
+                        SurfaceElements.Add(GUIElementFactory.CreateWindow(window1));
+                        _log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window1.Name, (DateTime.Now - start).TotalMilliseconds);
                     }, DispatcherPriority.Background);
                 }
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows Complete, LoadTime: {0}ms", (DateTime.Now - windowsStart).TotalMilliseconds);
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows Complete, LoadTime: {0}ms", (DateTime.Now - windowsStart).TotalMilliseconds);
 
 
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs...");
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs...");
                 await SetSplashScreenText("Loading Dialogs...");
                 DateTime dialogsStart = DateTime.Now;
                 foreach (var dialog in CurrentSkin.Dialogs)
                 {
                     await SetSplashScreenText("Loading Dialog...({0})", dialog.Name);
+                    var dialog1 = dialog;
                     await Dispatcher.InvokeAsync(() =>
                     {
                         DateTime start = DateTime.Now;
-                        SurfaceElements.Add(GUIElementFactory.CreateDialog(dialog));
-                        Log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog.Name, (DateTime.Now - start).TotalMilliseconds);
+                        SurfaceElements.Add(GUIElementFactory.CreateDialog(dialog1));
+                        _log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog1.Name, (DateTime.Now - start).TotalMilliseconds);
                     });
                 }
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs Complete, LoadTime: {0}ms", (DateTime.Now - dialogsStart).TotalMilliseconds);
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs Complete, LoadTime: {0}ms", (DateTime.Now - dialogsStart).TotalMilliseconds);
 
 
                 await SetSplashScreenText("Connecting to service...");
@@ -303,8 +296,8 @@ namespace GUIFramework
         private void RegisterCallbacks()
         {
             GUIActionManager.RegisterAction(XmlActionType.CloseWindow, action => CloseWindow());
-            GUIActionManager.RegisterAction(XmlActionType.OpenWindow, action => OpenWindow(action.GetParam1As<int>(-1)));
-            GUIActionManager.RegisterAction(XmlActionType.OpenDialog, async action => await OpenMPDisplayDialog(action.GetParam1As<int>(-1)));
+            GUIActionManager.RegisterAction(XmlActionType.OpenWindow, action => OpenWindow(action.GetParam1As(-1)));
+            GUIActionManager.RegisterAction(XmlActionType.OpenDialog, async action => await OpenMPDisplayDialog(action.GetParam1As(-1)));
             GUIActionManager.RegisterAction(XmlActionType.PreviousWindow, action => OpenPreviousWindow());
             GUIActionManager.RegisterAction(XmlActionType.Connect, async action => await Reconnect());
             GUIActionManager.RegisterAction(XmlActionType.LockWindow, action => LockWindow());
@@ -359,14 +352,14 @@ namespace GUIFramework
         /// </summary>
         private void SetRepositories()
         {
-            Log.Message(LogLevel.Info, "[LoadSkin] - Setting repositories..");
+            _log.Message(LogLevel.Info, "[LoadSkin] - Setting repositories..");
             GUIImageManager.Initialize(CurrentSkin);
             InfoRepository.Instance.Initialize(Settings, CurrentSkin);
             PropertyRepository.Instance.Initialize(Settings, CurrentSkin);
             ListRepository.Instance.Initialize(Settings, CurrentSkin);
             GenericDataRepository.Instance.Initialize(Settings, CurrentSkin);
             TVGuideRepository.Instance.Initialize(Settings, CurrentSkin);
-            Log.Message(LogLevel.Info, "[LoadSkin] - Repositories set");
+            _log.Message(LogLevel.Info, "[LoadSkin] - Repositories set");
         }
 
         /// <summary>
@@ -374,7 +367,7 @@ namespace GUIFramework
         /// </summary>
         private void ClearRepositories(bool isExit)
         {
-            Log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
+            _log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
             if (isExit)
             {
                 TVGuideRepository.Instance.ResetRepository();
@@ -391,7 +384,7 @@ namespace GUIFramework
                 PropertyRepository.Instance.ClearRepository();
                 GenericDataRepository.Instance.ClearRepository();
             }
-            Log.Message(LogLevel.Info, "[CloseDown] - Repositories cleared");
+            _log.Message(LogLevel.Info, "[CloseDown] - Repositories cleared");
         }
       
         #endregion
@@ -654,6 +647,7 @@ namespace GUIFramework
         /// </summary>
         /// <param name="dialog">The dialog.</param>
         /// <returns></returns>
+        // ReSharper disable once UnusedMember.Local
         private Task RegisterDialogData(GUIDialog dialog)
         {
             return SendMediaPortalMessage(new APIMediaPortalMessage
@@ -675,6 +669,7 @@ namespace GUIFramework
         /// <summary>
         /// Changes the skin style.
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private void ChangeSkinStyle()
         {
             if (CurrentSkin != null)
@@ -686,7 +681,7 @@ namespace GUIFramework
         /// <summary>
         /// Exits the mp display.
         /// </summary>
-        private void ExitMPDisplay()
+        private static void ExitMPDisplay()
         {
             Application.Current.MainWindow.Close();
         }
@@ -731,8 +726,7 @@ namespace GUIFramework
         {
             if (_secondTimer == null)
             {
-                _secondTimer = new DispatcherTimer(DispatcherPriority.Background);
-                _secondTimer.Interval = TimeSpan.FromSeconds(1);
+                _secondTimer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(1)};
                 _secondTimer.Tick += SecondTimer_Tick;
                 _secondTimer.Start();
             }
@@ -768,10 +762,10 @@ namespace GUIFramework
         public async Task InitializeServerConnection(ConnectionSettings settings)
         {
            // _settings = settings;
-            serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port));
-            Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", serverEndpoint);
+            _serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port));
+            _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", _serverEndpoint);
  
-            serverBinding = ConnectHelper.getServerBinding();
+            _serverBinding = ConnectHelper.GetServerBinding();
 
             InstanceContext site = new InstanceContext(this);
             if (_messageBroker != null)
@@ -779,8 +773,8 @@ namespace GUIFramework
                 _messageBroker.InnerChannel.Faulted -= Channel_Faulted;
                 _messageBroker = null;
             }
-            _messageBroker = new MessageClient(site, serverBinding, serverEndpoint);
-            _messageBroker.InnerChannel.Faulted += new EventHandler(Channel_Faulted);
+            _messageBroker = new MessageClient(site, _serverBinding, _serverEndpoint);
+            _messageBroker.InnerChannel.Faulted += Channel_Faulted;
 
             _connection = new APIConnection(settings.ConnectionName);
             await ConnectToService();
@@ -788,7 +782,7 @@ namespace GUIFramework
 
         private void Channel_Faulted(object sender, EventArgs e)
         {
-            Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
+            _log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
             Disconnect();
         }
 
@@ -799,11 +793,11 @@ namespace GUIFramework
                 try
                 {
                 
-                    Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
+                    _log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
                     var result = await _messageBroker.ConnectAsync(_connection);
                     if (result != null && result.Any())
                     {
-                        Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
+                        _log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                         InfoRepository.Instance.IsMPDisplayConnected = true;
                         InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionName.Equals("MediaPortalPlugin"));
                         InfoRepository.Instance.IsTVServerConnected = result.Any(x => x.ConnectionName.Equals("TVServerPlugin"));
@@ -812,7 +806,7 @@ namespace GUIFramework
                 }
                 catch (Exception ex)
                 {
-                    Log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", ex.Message);
+                    _log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", ex.Message);
                 }
             }
         }
@@ -823,7 +817,7 @@ namespace GUIFramework
         {
             if (!_isDisconnecting)
             {
-                Log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
+                _log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
                 await Disconnect();
                 await InitializeServerConnection(_settings.ConnectionSettings);
             }
@@ -838,10 +832,13 @@ namespace GUIFramework
             {
                 try
                 {
-                    Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
+                    _log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
                     return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
                 }
-                catch { }
+                catch (Exception ex)
+                {
+                    _log.Exception("[Disconnect] - ", ex);
+                }
             }
             return Task.FromResult<object>(null);
         }
@@ -857,13 +854,13 @@ namespace GUIFramework
 
                 if (connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
-                    Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
+                    _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
                     InfoRepository.Instance.IsMediaPortalConnected = true;
                 }
 
                 if (connection.ConnectionName.Equals("TVServerPlugin"))
                 {
-                    Log.Message(LogLevel.Info, "[Session] - TVServerPlugin connected to network.");
+                    _log.Message(LogLevel.Info, "[Session] - TVServerPlugin connected to network.");
                     InfoRepository.Instance.IsTVServerConnected = true;
                 }
             }
@@ -880,14 +877,14 @@ namespace GUIFramework
 
                 if (connection.ConnectionName.Equals("MediaPortalPlugin"))
                 {
-                    Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
+                    _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
                     ClearRepositories(false);
                     InfoRepository.Instance.IsMediaPortalConnected = false;
                 }
 
                 if (connection.ConnectionName.Equals("TVServerPlugin"))
                 {
-                    Log.Message(LogLevel.Info, "[Session] - TVServerPlugin disconnected from network.");
+                    _log.Message(LogLevel.Info, "[Session] - TVServerPlugin disconnected from network.");
                     InfoRepository.Instance.IsTVServerConnected = false;
                 }
             }
@@ -899,8 +896,8 @@ namespace GUIFramework
             {
                 if (action.ActionType == XmlActionType.MediaPortalAction)
                 {
-                    MediaPortalActions mpAction = MediaPortalActions.ACTION_INVALID;
-                    if (Enum.TryParse<MediaPortalActions>(action.GetParam1As<string>("ACTION_INVALID"), out mpAction))
+                    MediaPortalActions mpAction;
+                    if (Enum.TryParse(action.GetParam1As("ACTION_INVALID"), out mpAction))
                     {
                         return SendMediaPortalMessage(new APIMediaPortalMessage
                         {
@@ -929,7 +926,7 @@ namespace GUIFramework
                             ActionType = APIActionMessageType.MediaPortalWindow,
                             MediaPortalAction = new APIMediaPortalAction
                             {
-                                ActionId = action.GetParam1As<int>(-1)
+                                ActionId = action.GetParam1As(-1)
                             }
                         }
                     });
@@ -938,7 +935,7 @@ namespace GUIFramework
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendMediaPortalAction] - ", ex);
+                _log.Exception("[SendMediaPortalAction] - ", ex);
             }
             return Task.FromResult<object>(null);
         }
@@ -952,9 +949,9 @@ namespace GUIFramework
                    return _messageBroker.SendMediaPortalMessageAsync(message);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                _log.Exception("[SendMediaPortalMessage] - ", ex);               
             }
             return Task.FromResult<object>(null);
         }
@@ -1017,7 +1014,7 @@ namespace GUIFramework
 
                 if (DateTime.Now > _lastKeepAlive.AddSeconds(30))
                 {
-                    Log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
+                    _log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
                     await SendKeepAliveMessage();
                 }
             }
@@ -1032,9 +1029,9 @@ namespace GUIFramework
                     return _messageBroker.SendDataMessageAsync(new APIDataMessage { DataType = APIDataMessageType.KeepAlive });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _log.Exception("[SendKeepAliveMessage] - ", ex);
             }
             return Task.FromResult<object>(null);
         }

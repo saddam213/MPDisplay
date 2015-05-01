@@ -1,27 +1,10 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 using GUISkinFramework.Skin;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
@@ -80,7 +63,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         {
             var _this = d as ImageComboEditor;
             var xmlImage = e.NewValue as XmlImageFile;
-            if (xmlImage != null && !xmlImage.DisplayName.Equals(_this.Value))
+            if (_this != null && (xmlImage != null && !xmlImage.DisplayName.Equals(_this.Value)))
             {
                 _this.Value = xmlImage.DisplayName;
                 _this._Item.Value = _this.Value;

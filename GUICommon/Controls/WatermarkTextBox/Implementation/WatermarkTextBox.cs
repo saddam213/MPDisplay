@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
@@ -25,7 +24,7 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register("Watermark", typeof(object), typeof(WatermarkTextBox), new UIPropertyMetadata(null));
         public object Watermark
         {
-            get { return (object)GetValue(WatermarkProperty); }
+            get { return GetValue(WatermarkProperty); }
             set { SetValue(WatermarkProperty, value); }
         }
 

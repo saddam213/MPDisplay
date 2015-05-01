@@ -1,28 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Editor.PropertyEditors.PropertyEditor;
-using GUISkinFramework.Language;
-using GUISkinFramework.Property;
-using GUISkinFramework.PropertyEditors;
 using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
@@ -308,7 +291,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_PropertyEdit_Click(object sender, RoutedEventArgs e)
         {
-            var editor = new PropertyEditor.PropertyEditor(SkinInfo);
+            var editor = new PropertyEditor(SkinInfo);
             if (SelectedPropertyEntry != null)
             {
                 editor.SelectedProperty = SelectedPropertyEntry;

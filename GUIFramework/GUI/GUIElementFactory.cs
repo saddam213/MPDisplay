@@ -2,15 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Windows;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -88,6 +80,7 @@ namespace GUIFramework.GUI
         /// Creates a GUIControl.
         /// </summary>
         /// <typeparam name="T">the type of control</typeparam>
+        /// <param name="windowId"></param>
         /// <param name="skinXml">The skin XML.</param>
         /// <returns></returns>
         public static GUIControl CreateControl<T>(int windowId, T skinXml) where T : XmlControl

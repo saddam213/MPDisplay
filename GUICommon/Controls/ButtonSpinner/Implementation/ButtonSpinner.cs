@@ -1,8 +1,7 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
+using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using System.Windows.Markup;
-using System.Windows.Controls.Primitives;
 
 namespace MPDisplay.Common.Controls
 {
@@ -38,7 +37,7 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty ContentProperty = DependencyProperty.Register("Content", typeof(object), typeof(ButtonSpinner), new PropertyMetadata(null, OnContentPropertyChanged));
         public object Content
         {
-            get { return GetValue(ContentProperty) as object; }
+            get { return GetValue(ContentProperty); }
             set { SetValue(ContentProperty, value); }
         }
 
@@ -50,7 +49,7 @@ namespace MPDisplay.Common.Controls
         private static void OnContentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             ButtonSpinner source = d as ButtonSpinner;
-            source.OnContentChanged(e.OldValue, e.NewValue);
+            if (source != null) source.OnContentChanged(e.OldValue, e.NewValue);
         }
 
         #endregion //Content
@@ -196,11 +195,9 @@ namespace MPDisplay.Common.Controls
         /// <param name="e">Event args.</param>
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
-            if (AllowSpin)
-            {
-                SpinDirection direction = sender == IncreaseButton ? SpinDirection.Increase : SpinDirection.Decrease;
-                OnSpin(new SpinEventArgs(direction));
-            }
+            if (!AllowSpin) return;
+            SpinDirection direction = Equals(sender, IncreaseButton) ? SpinDirection.Increase : SpinDirection.Decrease;
+            OnSpin(new SpinEventArgs(direction));
         }
 
         #endregion //Event Handlers

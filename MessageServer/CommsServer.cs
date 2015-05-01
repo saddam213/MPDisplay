@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
-using System.Runtime.Remoting.Messaging;
+using System.Linq;
 using System.ServiceModel;
 using System.Threading.Tasks;
+using Common.Log;
 using MessageFramework.DataObjects;
-using Common.Logging;
-using System.Linq;
+using MessageFramework.Messages;
 
 namespace MessageServer
 {
@@ -52,21 +52,21 @@ namespace MessageServer
         /// <summary>
         /// Receives the MP property message.
         /// </summary>
-        /// <param name="property">The property.</param>
+        /// <param name="message">The message.</param>
         [OperationContract(IsOneWay = true)]
         Task ReceiveAPIPropertyMessage(APIPropertyMessage message);
 
         /// <summary>
         /// Receives the MPGUI list message.
         /// </summary>
-        /// <param name="property">The property.</param>
+        /// <param name="message">The message.</param>
         [OperationContract(IsOneWay = true)]
         Task ReceiveAPIListMessage(APIListMessage message);
 
         /// <summary>
         /// Receives the MP multi message.
         /// </summary>
-        /// <param name="property">The property.</param>
+        /// <param name="message">The message.</param>
         [OperationContract(IsOneWay = true)]
         Task ReceiveAPIInfoMessage(APIInfoMessage message);
 
@@ -96,14 +96,14 @@ namespace MessageServer
         /// <summary>
         /// Users the connected.
         /// </summary>
-        /// <param name="user">The user.</param>
+        /// <param name="connection">The connection.</param>
         [OperationContract(IsOneWay = true)]
         Task SessionConnected(APIConnection connection);
 
         /// <summary>
         /// Users the disconneted.
         /// </summary>
-        /// <param name="user">The user.</param>
+        /// <param name="connection">The connection.</param>
         [OperationContract(IsOneWay = true)]
         Task SessionDisconnected(APIConnection connection);
 
@@ -148,7 +148,7 @@ namespace MessageServer
 
     public static class ConnectionManager
     {
-        private static Log Log = LoggingManager.GetLog(typeof(ConnectionManager));
+        private static Log _log = LoggingManager.GetLog(typeof(ConnectionManager));
         private static Dictionary<APIConnection, Action<MessageEventArgs>> _activeConnections = new Dictionary<APIConnection, Action<MessageEventArgs>>();
         public static Dictionary<APIConnection, Action<MessageEventArgs>> ActiveConnections
         {
@@ -161,7 +161,7 @@ namespace MessageServer
             RemoveConnection(connection);
             if (connection != null && callback != null)
             {
-                Log.Message(LogLevel.Info, "Adding new connection, Connection: {0}", connection.ConnectionName);
+                _log.Message(LogLevel.Info, "Adding new connection, Connection: {0}", connection.ConnectionName);
                 lock (_syncObj)
                 {
                     ActiveConnections.Add(connection, callback);
@@ -177,7 +177,7 @@ namespace MessageServer
                 var existing = ActiveConnections.Keys.FirstOrDefault(x => x.ConnectionName == connection.ConnectionName);
                 if (existing != null)
                 {
-                    Log.Message(LogLevel.Info, "Removing existing connection, Connection: {0}", connection.ConnectionName);
+                    _log.Message(LogLevel.Info, "Removing existing connection, Connection: {0}", connection.ConnectionName);
                     lock (_syncObj)
                     {
                         ActiveConnections.Remove(existing);
@@ -219,8 +219,8 @@ namespace MessageServer
         #region Vars
 
     
-        private Log Log = LoggingManager.GetLog(typeof(MessageService));
-        private IMessageCallback _messageCallback = null;
+        private Log _log = LoggingManager.GetLog(typeof(MessageService));
+        private IMessageCallback _messageCallback;
         private APIConnection _apiConnection;
        
 
@@ -239,7 +239,7 @@ namespace MessageServer
             {
                 if (connection != null)
                 {
-                    Log.Message(LogLevel.Info, "[Connect] - New connection request received, ConnectionName: {0}", connection.ConnectionName);
+                    _log.Message(LogLevel.Info, "[Connect] - New connection request received, ConnectionName: {0}", connection.ConnectionName);
                     ConnectionManager.RemoveConnection(connection);
 
                     _apiConnection = connection;
@@ -248,17 +248,17 @@ namespace MessageServer
              
                     await BroadcastMessage(new MessageEventArgs(MessageType.SessionConnected, _apiConnection));
                  
-                    Log.Message(LogLevel.Info, "[Connect] - Successfully established connection, ConnectionName: {0}", connection.ConnectionName);
+                    _log.Message(LogLevel.Info, "[Connect] - Successfully established connection, ConnectionName: {0}", connection.ConnectionName);
                     return ConnectionManager.GetConnections();
                 }
                 else
                 {
-                    Log.Message(LogLevel.Error, "[Connect] - Failed to create new connection.");
+                    _log.Message(LogLevel.Error, "[Connect] - Failed to create new connection.");
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[Connect] - An exception occured while connecting.", ex);
+                _log.Exception("[Connect] - An exception occured while connecting.", ex);
             }
             return new List<APIConnection>();
         }
@@ -272,19 +272,19 @@ namespace MessageServer
                 return;
             try
             {
-                Log.Message(LogLevel.Info, "[Disconnect] - Disconnection request received, ConnectionName: {0}", _apiConnection.ConnectionName);
+                _log.Message(LogLevel.Info, "[Disconnect] - Disconnection request received, ConnectionName: {0}", _apiConnection.ConnectionName);
 
                 ConnectionManager.RemoveConnection(_apiConnection);
 
                 await BroadcastMessage(new MessageEventArgs(MessageType.SessionDisconnected, _apiConnection));
 
-                Log.Message(LogLevel.Info, "[Disconnect] - Successfully removed connection instance, ConnectionName: {0}", _apiConnection.ConnectionName);
+                _log.Message(LogLevel.Info, "[Disconnect] - Successfully removed connection instance, ConnectionName: {0}", _apiConnection.ConnectionName);
                 _apiConnection = null;
                 _messageCallback = null;
             }
             catch (Exception ex)
             {
-                Log.Exception("[Disconnect] - An exception occured while disconnecting.", ex);
+                _log.Exception("[Disconnect] - An exception occured while disconnecting.", ex);
             }
         }
 
@@ -306,21 +306,21 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendPropertyMessage] - An exception occured sending message.", ex);
+                _log.Exception("[SendPropertyMessage] - An exception occured sending message.", ex);
             }
         }
 
         /// <summary>
         /// Sends the MPGUI list.
         /// </summary>
-        /// <param name="listdata">The listdata.</param>
+        /// <param name="listMessage">The list message.</param>
         public async Task SendListMessage(APIListMessage listMessage)
         {
             try
             {
                 if (_apiConnection != null && listMessage != null)
                 {
-                    Log.Message(LogLevel.Debug, "[SendListMessage] - Sending List message to MPDisplay, Sender: {0}, MessageType: {1}"
+                    _log.Message(LogLevel.Debug, "[SendListMessage] - Sending List message to MPDisplay, Sender: {0}, MessageType: {1}"
                         , _apiConnection.ConnectionName, listMessage.MessageType);
 
                     await BroadcastMessage(new MessageEventArgs(MessageType.ReceiveAPIListMessage, _apiConnection, listMessage));
@@ -328,28 +328,28 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendListMessage] - An exception occured sending message.", ex);
+                _log.Exception("[SendListMessage] - An exception occured sending message.", ex);
             }
         }
 
         /// <summary>
         /// Sends the MP multi message.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="infoMessage">The info message.</param>
         public async Task SendInfoMessage(APIInfoMessage infoMessage)
         {
             try
             {
                 if (_apiConnection != null && infoMessage != null)
                 {
-                    Log.Message(LogLevel.Debug, "[SendInfoMessage] - Sending Info message to MPDisplay, Sender: {0}, InfoType: {1}"
+                    _log.Message(LogLevel.Debug, "[SendInfoMessage] - Sending Info message to MPDisplay, Sender: {0}, InfoType: {1}"
                         , _apiConnection.ConnectionName, infoMessage.MessageType);
                     await BroadcastMessage(new MessageEventArgs(MessageType.ReceiveAPIInfoMessage, _apiConnection, infoMessage));
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendInfoMessage] - An exception occured sending message.", ex);
+                _log.Exception("[SendInfoMessage] - An exception occured sending message.", ex);
             }
         }
 
@@ -362,13 +362,13 @@ namespace MessageServer
                     var message = new MessageEventArgs(MessageType.ReceiveAPIDataMessage, _apiConnection, dataMessage);
                     if (dataMessage.DataType == APIDataMessageType.KeepAlive)
                     {
-                        Log.Message(LogLevel.Debug, "[KeepAlive] - KeepAlive received., Sender: {0}", _apiConnection.ConnectionName);
+                        _log.Message(LogLevel.Debug, "[KeepAlive] - KeepAlive received., Sender: {0}", _apiConnection.ConnectionName);
                         CallbackEventHandler(message);
                         return;
                     }
                     if (dataMessage.DataType != APIDataMessageType.EQData)
                     {
-                        Log.Message(LogLevel.Debug, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}"
+                        _log.Message(LogLevel.Debug, "[SendDataMessage] - Sending message to MPDisplay, Sender: {0}, DataType: {1}"
                             , _apiConnection.ConnectionName, dataMessage.DataType);
                     }
                     await BroadcastMessage(message);
@@ -376,48 +376,48 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendDataMessage] - An Exception Occured Processing Message", ex);
+                _log.Exception("[SendDataMessage] - An Exception Occured Processing Message", ex);
             }
         }
 
         /// <summary>
         /// Sends to MediaPortal.
         /// </summary>
-        /// <param name="msg">The MSG.</param>
+        /// <param name="mediaPortalMessage">The MediaPortal message.</param>
         public async Task SendMediaPortalMessage(APIMediaPortalMessage mediaPortalMessage)
         {
             try
             {
                 if (_apiConnection != null && mediaPortalMessage != null)
                 {
-                    Log.Message(LogLevel.Debug, "[SendMediaPortalMessage] - Sending message to MediaPortal plugin, Sender: {0}, MessageType: {1}"
+                    _log.Message(LogLevel.Debug, "[SendMediaPortalMessage] - Sending message to MediaPortal plugin, Sender: {0}, MessageType: {1}"
                         , _apiConnection.ConnectionName, mediaPortalMessage.MessageType);
                     await BroadcastMessage("MediaPortalPlugin", new MessageEventArgs(MessageType.ReceiveMediaPortalMessage, _apiConnection, mediaPortalMessage));
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendMediaPortalMessage] - An exception occured sending message.", ex);
+                _log.Exception("[SendMediaPortalMessage] - An exception occured sending message.", ex);
             }
         }
 
         /// <summary>
         /// Sends to MediaPortal.
         /// </summary>
-        /// <param name="msg">The MSG.</param>
+        /// <param name="tvServerMessage">The TVServer message.</param>
         public async Task SendTVServerMessage(APITVServerMessage tvServerMessage)
         {
             try
             {
                 if (_apiConnection != null && tvServerMessage != null)
                 {
-                    Log.Message(LogLevel.Debug, "[SendTVServerMessage] - Sending message to TVServer plugin, Sender: {0}", _apiConnection.ConnectionName);
+                    _log.Message(LogLevel.Debug, "[SendTVServerMessage] - Sending message to TVServer plugin, Sender: {0}", _apiConnection.ConnectionName);
                     await BroadcastMessage("TVServerPlugin", new MessageEventArgs(MessageType.ReceiveTVServerMessage, _apiConnection, tvServerMessage));
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendTVServerMessage] - An exception occured sending message.", ex);
+                _log.Exception("[SendTVServerMessage] - An exception occured sending message.", ex);
             }
         }
 
@@ -430,8 +430,7 @@ namespace MessageServer
         /// <summary>
         /// Callbacks the event handler.
         /// </summary>
-        /// <param name="sender">The sender.</param>
-        /// <param name="e">The <see cref="MPDisplayServer.MessageEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The instance containing the event data.</param>
         private void CallbackEventHandler(MessageEventArgs e)
         {
             try
@@ -464,19 +463,17 @@ namespace MessageServer
                         case MessageType.SessionDisconnected:
                             _messageCallback.SessionDisconnected(e.Connection);
                             break;
-                        default:
-                            break;
                     }
                 }
                 return;
             }
             catch (ObjectDisposedException ex)
             {
-                Log.Exception("[CallbackHandler] - Unable to send message to destination, Destination does not exist", ex);
+                _log.Exception("[CallbackHandler] - Unable to send message to destination, Destination does not exist", ex);
             }
             catch (Exception ex)
             {
-                Log.Exception("[CallbackHandler] - An exception occured while invoking callback.{0}", ex);
+                _log.Exception("[CallbackHandler] - An exception occured while invoking callback.{0}", ex);
             }
             Disconnect().RunSynchronously();
         }
@@ -484,7 +481,7 @@ namespace MessageServer
         /// <summary>
         /// Broadcasts the message.
         /// </summary>
-        /// <param name="e">The <see cref="MPDisplayServer.MessageEventArgs"/> instance containing the event data.</param>
+        /// <param name="e">The instance containing the event data.</param>
         private async Task BroadcastMessage(MessageEventArgs e)
         {
             try
@@ -493,7 +490,7 @@ namespace MessageServer
             }
             catch (Exception ex)
             {
-                Log.Exception("[BroadcastMessage] - An exception occured broardcasting message", ex);
+                _log.Exception("[BroadcastMessage] - An exception occured broardcasting message", ex);
             }
         }
 
@@ -508,12 +505,12 @@ namespace MessageServer
                 }
                 else
                 {
-                    Log.Message(LogLevel.Warn, "[BroadcastMessage] - Message cannot be sent because the connection '{0}' does not exist or cannot be found.", connectionName);
+                    _log.Message(LogLevel.Warn, "[BroadcastMessage] - Message cannot be sent because the connection '{0}' does not exist or cannot be found.", connectionName);
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[BroadcastMessage] - An exception occured broardcasting message to " + connectionName, ex);
+                _log.Exception("[BroadcastMessage] - An exception occured broardcasting message to " + connectionName, ex);
             }
         }
 

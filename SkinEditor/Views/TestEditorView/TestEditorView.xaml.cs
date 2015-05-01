@@ -1,29 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using GUISkinFramework;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common;
-using SkinEditor.Dialogs;
-using GUISkinFramework.Windows;
-using GUIFramework.Managers;
+﻿using System.Windows;
 using Common.Helpers;
 using Common.Settings;
 
@@ -32,7 +7,7 @@ namespace SkinEditor.Views
     /// <summary>
     /// Interaction logic for StyleEditorView.xaml
     /// </summary>
-    public partial class TestEditorView : EditorViewModel
+    public partial class TestEditorView
     {
       
         public TestEditorView()
@@ -46,11 +21,6 @@ namespace SkinEditor.Views
             get { return "Test Area"; }
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-         
-        }
         public TestEditorViewSettings Settings 
         {
             get { return EditorSettings as TestEditorViewSettings; }
@@ -62,7 +32,7 @@ namespace SkinEditor.Views
             skin.SkinFolderPath = SkinInfo.SkinFolderPath;
             skin.LoadXmlSkin();
 
-          await  surface.LoadSkin(skin, new GUISettings
+          await  Surface.LoadSkin(skin, new GUISettings
             {
                 ConnectionSettings = new ConnectionSettings
                 {
@@ -97,9 +67,7 @@ namespace SkinEditor.Views
             get { return _selectedProperty; }
             set { _selectedProperty = value; NotifyPropertyChanged("SelectedProperty"); }
         }
-        
-
-      
+ 
 
         private void Button_Click_SendWindowId(object sender, RoutedEventArgs e)
         {

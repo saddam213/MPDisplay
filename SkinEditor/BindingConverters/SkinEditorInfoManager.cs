@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GUISkinFramework;
+﻿using System.Linq;
+using GUISkinFramework.Skin;
 
-namespace SkinEditor
+namespace SkinEditor.BindingConverters
 {
     public static class SkinEditorInfoManager
     {

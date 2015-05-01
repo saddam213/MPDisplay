@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
-using GUIFramework.Managers;
-using GUISkinFramework.Animations;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -44,7 +41,8 @@ namespace GUIFramework.GUI
                 {
                     if (condition != XmlAnimationCondition.None && !_animations.ContainsKey(condition))
                     {
-                        _animations.Add(condition, GUIAnimationFactory.CreateAnimation(condition, _element, animations.Where(a => a.Condition == condition).OrderBy(x => x.Delay)));
+                        var xmlAnimations = animations as IList<XmlAnimation> ?? animations.ToList();
+                        _animations.Add(condition, GUIAnimationFactory.CreateAnimation(condition, _element, xmlAnimations.Where(a => a.Condition == condition).OrderBy(x => x.Delay)));
                     }
                 }
             }
@@ -133,8 +131,6 @@ namespace GUIFramework.GUI
                     return XmlAnimationCondition.PropertyChanged;
                 case XmlAnimationCondition.PropertyChanged:
                     return XmlAnimationCondition.PropertyChanging;
-                default:
-                    break;
             }
             return condition;
         } 

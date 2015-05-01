@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 
@@ -38,7 +33,7 @@ namespace MPDisplay.Common.Controls
             Clip = _clipRect;
             if (sizeInfo != null)
             {
-                base.OnRenderSizeChanged(sizeInfo);
+                base.OnRenderSizeChanged(sizeInfo);        
             }
         }
 

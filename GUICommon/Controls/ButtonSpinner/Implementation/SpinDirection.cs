@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace MPDisplay.Common.Controls
+﻿namespace MPDisplay.Common.Controls
 {
     /// <summary>
     /// Represents spin directions that could be initiated by the end-user.

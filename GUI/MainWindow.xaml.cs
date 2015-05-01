@@ -2,25 +2,29 @@
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
+using System.Windows.Threading;
 using Common.Helpers;
-using Common.Logging;
+using Common.Log;
 using Common.Settings;
+using Application = System.Windows.Application;
+using MessageBox = System.Windows.MessageBox;
 
 namespace GUI
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : INotifyPropertyChanged
     {
+        const double Tolerance = 0.0001;
+
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(MainWindow));
+        private Log _log = LoggingManager.GetLog(typeof(MainWindow));
         private GUISettings _settings; 
 
         #endregion
@@ -32,8 +36,8 @@ namespace GUI
         /// </summary>
         public MainWindow()
         {
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
             InitializeComponent();
             DataContext = this;
             LoadSettings();
@@ -61,19 +65,19 @@ namespace GUI
         /// </summary>
         private async void LoadSettings()
         {
-            Log.Message(LogLevel.Info, "[LoadSettings] - Loading UI settings");
+            _log.Message(LogLevel.Info, "[LoadSettings] - Loading UI settings");
             var settings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (settings == null)
             {
-                Log.Message(LogLevel.Warn, "[LoadSettings] - MPDisplay.xml not found!, creating file..");
+                _log.Message(LogLevel.Warn, "[LoadSettings] - MPDisplay.xml not found!, creating file..");
                 settings = new MPDisplaySettings();
-                SettingsManager.Save<MPDisplaySettings>(settings, RegistrySettings.MPDisplaySettingsFile);
+                SettingsManager.Save(settings, RegistrySettings.MPDisplaySettingsFile);
             }
-            Log.Message(LogLevel.Info, "[LoadSettings] - MPDisplay.xml sucessfully loaded.");
+            _log.Message(LogLevel.Info, "[LoadSettings] - MPDisplay.xml sucessfully loaded.");
             settings.GUISettings.SkinInfoXml = string.Format("{0}{1}\\SkinInfo.xml", RegistrySettings.MPDisplaySkinFolder, settings.GUISettings.SkinName);
             if (!File.Exists(settings.GUISettings.SkinInfoXml))
             {
-                Log.Message(LogLevel.Error, "[LoadSettings] - Failed to locate the selected skins info file '{0}'", settings.GUISettings.SkinInfoXml);
+                _log.Message(LogLevel.Error, "[LoadSettings] - Failed to locate the selected skins info file '{0}'", settings.GUISettings.SkinInfoXml);
                 Close();
             }
             Settings = settings.GUISettings;
@@ -81,11 +85,11 @@ namespace GUI
 
             if (!_settings.DesktopMode)
             {
-                this.WindowStyle = WindowStyle.None;
-                this.ResizeMode = System.Windows.ResizeMode.NoResize;
+                WindowStyle = WindowStyle.None;
+                ResizeMode = ResizeMode.NoResize;
             }
 
-            await surface.LoadSkin(Settings);
+            await Surface.LoadSkin(Settings);
         }
 
         #endregion
@@ -103,27 +107,31 @@ namespace GUI
             var screen = GetDisplayByDeviceName(_settings.Display);
             double left = _settings.CustomResolution ? screen.Bounds.X + _settings.ScreenOffSetX : screen.Bounds.X;
             double top = _settings.CustomResolution ? screen.Bounds.Y + _settings.ScreenOffSetY : screen.Bounds.Y;
-            double width = _settings.CustomResolution ? (double)_settings.ScreenWidth : screen.Bounds.Width;
-            double height = _settings.CustomResolution ? (double)_settings.ScreenHeight : screen.Bounds.Height;
+            double width = _settings.CustomResolution ? _settings.ScreenWidth : screen.Bounds.Width;
+            double height = _settings.CustomResolution ? _settings.ScreenHeight : screen.Bounds.Height;
 
             PresentationSource source = PresentationSource.FromVisual(this);
             if (source != null)
             {
-                double dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-                double dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
-                if (dpiX != 96.0 || dpiY != 96.0)
+                if (source.CompositionTarget != null)
                 {
-                    width = width * 96.0 / dpiX;
-                    height = height * 96.0 / dpiY;
-                    left = left * 96.0 / dpiX;
-                    top = top * 96.0 / dpiY;
+                    double dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                    double dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+                    // ReSharper disable once CompareOfFloatsByEqualityOperator
+                    if (Math.Abs(dpiX - 96.0) > Tolerance || Math.Abs(dpiY - 96.0) > Tolerance)
+                    {
+                        width = width * 96.0 / dpiX;
+                        height = height * 96.0 / dpiY;
+                        left = left * 96.0 / dpiX;
+                        top = top * 96.0 / dpiY;
+                    }
                 }
             }
-            this.Left = left;
-            this.Top = top;
-            this.Width = width;
-            this.Height = height;
-            Log.Message(LogLevel.Info, "[Load_Window] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
+            Left = left;
+            Top = top;
+            Width = width;
+            Height = height;
+            _log.Message(LogLevel.Info, "[Load_Window] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
 
         }  
 
@@ -133,8 +141,8 @@ namespace GUI
         /// <param name="e">A <see cref="T:System.ComponentModel.CancelEventArgs" /> that contains the event data.</param>
         protected override void OnClosing(CancelEventArgs e)
         {
-            Log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
-            surface.CloseDown();
+            _log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
+            Surface.CloseDown();
             base.OnClosing(e);
         }
 
@@ -144,7 +152,7 @@ namespace GUI
         /// <param name="e">An <see cref="T:System.EventArgs" /> that contains the event data.</param>
         protected override void OnClosed(EventArgs e)
         {
-            Log.Message(LogLevel.Info, "[OnClosing] - Close complete.");
+            _log.Message(LogLevel.Info, "[OnClosing] - Close complete.");
             LoggingManager.Destroy();
             base.OnClosed(e);
         }
@@ -166,15 +174,15 @@ namespace GUI
         /// </summary>
         /// <param name="sender">The source of the event.</param>
         /// <param name="e">The <see cref="System.Windows.Threading.DispatcherUnhandledExceptionEventArgs"/> instance containing the event data.</param>
-        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             if (e.Exception != null && e.Exception.StackTrace.Contains("System.Windows.Controls.VirtualizingStackPanel.get_ItemCount()"))
             {
-                Log.Message(LogLevel.Warn, "An Error occured in Microsoft VirtualizingStackPanel");
+                _log.Message(LogLevel.Warn, "An Error occured in Microsoft VirtualizingStackPanel");
                 e.Handled = true;
                 return;
             }
-            Log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
+            _log.Exception("[UnhandledException] - An unknown exception occured", e.Exception);
         }
 
         /// <summary>
@@ -184,25 +192,27 @@ namespace GUI
         /// <param name="e">The <see cref="UnhandledExceptionEventArgs"/> instance containing the event data.</param>
         private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
-            Log.Message(LogLevel.Error, "[UnhandledException] - An unknown exception occured{0}{1}", Environment.NewLine, e);
+            _log.Message(LogLevel.Error, "[UnhandledException] - An unknown exception occured{0}{1}", Environment.NewLine, e);
         } 
 
         #endregion
 
         #region Helpers
 
-        private System.Windows.Forms.Screen GetDisplayByDeviceName(string name)
+        private static Screen GetDisplayByDeviceName(string name)
         {
-            return System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.DeviceName.Equals(name))
-                ?? System.Windows.Forms.Screen.AllScreens.FirstOrDefault(d => d.Primary);
+            return Screen.AllScreens.FirstOrDefault(d => d.DeviceName.Equals(name))
+                ?? Screen.AllScreens.FirstOrDefault(d => d.Primary);
         }
 
+/*
         private void SetThreadPriority(string priority)
         {
             ThreadPriority option = ThreadPriority.Normal;
             Enum.TryParse<ThreadPriority>(priority, out option);
             Thread.CurrentThread.Priority = option;
         }
+*/
 
         #endregion
 
@@ -225,25 +235,25 @@ namespace GUI
         /// <summary>
         /// Restarts the mp display.
         /// </summary>
-        private async void RestartMPDisplay()
+        private async void RestartMpDisplay()
         {
             await Task.Delay(2000);
             try
             {
-                surface.CloseDown();
+                Surface.CloseDown();
             }
             catch (Exception ex)
             {
-                Log.Exception("[CloseDown] - Error occured closing down GUISurface", ex);
+                _log.Exception("[CloseDown] - Error occured closing down GUISurface", ex);
             }
 
-            surface = null;
+            Surface = null;
             if (_settings.RestartOnError)
             {
-                Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError is enabled, Waiting for user input...");
+                _log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError is enabled, Waiting for user input...");
                 if (MessageBox.Show("An exception occured, Would you like to restart?", "Error", MessageBoxButton.YesNo, MessageBoxImage.Warning) == MessageBoxResult.Yes)
                 {
-                    Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError requested, Attempting to restart MPDisplay...");
+                    _log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError requested, Attempting to restart MPDisplay...");
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     GC.Collect();
@@ -251,7 +261,7 @@ namespace GUI
                     return;
                 }
 
-                Log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError declined, Shutting down MPDisplay.");
+                _log.Message(LogLevel.Info, "[RestartMPDisplay] - RestartOnError declined, Shutting down MPDisplay.");
             }
             Close();
         }

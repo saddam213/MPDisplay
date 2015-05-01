@@ -1,36 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using GUISkinFramework;
-using GUISkinFramework.ExtensionMethods;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common;
-using SkinEditor.Dialogs;
-using MPDisplay.Common.Controls;
-using Common.Helpers;
-using MPDisplay.Common.ExtensionMethods;
-using GUIFramework;
-using MessageFramework.DataObjects;
+﻿using System.Collections.ObjectModel;
 using System.ServiceModel;
+using System.Windows.Input;
 using MPDisplay.Common.Utils;
-using SkinEditor.ConnectionHelpers;
+using SkinEditor.Helpers;
+using SkinEditor.Themes;
 
 namespace SkinEditor.Views
 {
@@ -38,12 +11,12 @@ namespace SkinEditor.Views
     /// Interaction logic for StyleEditorView.xaml
     /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
-    public partial class InfoEditorView : EditorViewModel
+    public partial class InfoEditorView
     {
 
-        public InfoEditorView(ConnectionHelper _connectionHelper)
+        public InfoEditorView(ConnectionHelper connectionHelper)
         {
-            ConnectionHelper = _connectionHelper;
+            ConnectionHelper = connectionHelper;
 
             ConnectCommand = new RelayCommand(async () => await ConnectionHelper.InitializeServerConnection(), () => !ConnectionHelper.IsConnected);
             DisconnectCommand = new RelayCommand(async () => await ConnectionHelper.Disconnect(), () => ConnectionHelper.IsConnected);
@@ -62,8 +35,8 @@ namespace SkinEditor.Views
 
         public override void Initialize()
         {
-            ConnectionHelper.settings = ConnectionSettings;
-            ConnectionHelper.baseclass = this;
+            ConnectionHelper.Settings = ConnectionSettings;
+            ConnectionHelper.Baseclass = this;
 
             ConnectionHelper.StartSecondTimer();
         }

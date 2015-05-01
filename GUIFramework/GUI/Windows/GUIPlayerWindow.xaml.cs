@@ -1,12 +1,12 @@
-﻿using GUISkinFramework.Windows;
+﻿using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Windows
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIPlayerWindow.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlPlayerWindow))]
-    public partial class GUIPlayerWindow : GUIWindow
+    public partial class GUIPlayerWindow
     {
         #region Constructor
 

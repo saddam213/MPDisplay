@@ -4,12 +4,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace GUIConfig.ViewModels
+namespace GUIConfig.Settings
 {
     /// <summary>
     /// Slimline version class for XmlSkinInfo
@@ -259,7 +257,7 @@ namespace GUIConfig.ViewModels
             get
             { 
                 string filename = string.Format("{0}\\Preview_{1}.png",SkinImageFolder, CurrentStyle);
-                if (System.IO.File.Exists(filename))
+                if (File.Exists(filename))
                 {
                     return filename;
                 }
@@ -276,7 +274,7 @@ namespace GUIConfig.ViewModels
             {
                 if (Directory.Exists(SkinStyleFolder))
                 {
-                    return Directory.GetFiles(SkinStyleFolder, "*.xml").Select(x => System.IO.Path.GetFileNameWithoutExtension(x));
+                    return Directory.GetFiles(SkinStyleFolder, "*.xml").Select(x => Path.GetFileNameWithoutExtension(x));
                 }
                 return null;
             }

@@ -1,14 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml.Serialization;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Windows;
+﻿using System.Collections.ObjectModel;
 
-namespace GUISkinFramework
+namespace GUISkinFramework.Skin
 {
     public interface IXmlControlHost
     {

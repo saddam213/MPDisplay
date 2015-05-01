@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Windows.Controls;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
-    public abstract class ComboBoxEditor : TypeEditor<System.Windows.Controls.ComboBox>
+    public abstract class ComboBoxEditor : TypeEditor<ComboBox>
     {
         protected override void SetValueDependencyProperty()
         {
-            ValueProperty = System.Windows.Controls.ComboBox.SelectedItemProperty;
+            ValueProperty = ComboBox.SelectedItemProperty;
         }
 
         protected override void ResolveValueBinding(PropertyItem propertyItem)

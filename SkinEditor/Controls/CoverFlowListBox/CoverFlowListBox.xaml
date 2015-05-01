@@ -5,8 +5,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" 
 			 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+             xmlns:controlsS3D="clr-namespace:MPDisplay.Common.Controls.Surface3D;assembly=MPDisplay.UICommon"
+
 			 xmlns:local="clr-namespace:SkinEditor.Controls"
-	
+
              d:DesignHeight="300" d:DesignWidth="300" Name="UI" >
 	<UserControl.Resources>
 		<local:CoverFlowGreaterThanSelectedIndexConverter  x:Key="GreaterThanSelectedIndexConverter" />
@@ -81,15 +83,15 @@
 
 			<ListBox.ItemTemplate>
 				<DataTemplate DataType="{x:Type local:CoverFlowListBoxItem}">
-					<controls:Surface3D  x:Name="surface3d" IsHitTestVisible="False" UseLayoutRounding="True"
+					<controlsS3D:Surface3D  x:Name="surface3d" IsHitTestVisible="False" UseLayoutRounding="True"
 					Width="{Binding CurrentLayout.Width, ElementName=UI,Mode=OneWay}" 
 					Height="{Binding CurrentLayout.Height, ElementName=UI,Mode=OneWay}"
 					Margin="{Binding CurrentLayout.ItemMargin, Converter={StaticResource ThicknessConverter},Mode=OneWay, ElementName=UI}"  >
-						<controls:Surface3D.LayoutTransform>
+						<controlsS3D:Surface3D.LayoutTransform>
 							<ScaleTransform  ScaleX="1"  ScaleY="1" />
-						</controls:Surface3D.LayoutTransform>
-						<controls:Surface3D.Style>
-							<Style TargetType="{x:Type controls:Surface3D}">
+						</controlsS3D:Surface3D.LayoutTransform>
+						<controlsS3D:Surface3D.Style>
+							<Style TargetType="{x:Type controlsS3D:Surface3D}">
 								<Style.Triggers>
 							
 
@@ -223,7 +225,7 @@
 
 								</Style.Triggers>
 							</Style>
-						</controls:Surface3D.Style>
+						</controlsS3D:Surface3D.Style>
 
 						<!-- Item Template //////////////////////////////////////////////////////////////////////////////////////////////////-->
 						<Border x:Name="focus" 
@@ -329,7 +331,7 @@
 							</Grid>
 						
 						</Border>
-					</controls:Surface3D>
+					</controlsS3D:Surface3D>
 				</DataTemplate>
 			</ListBox.ItemTemplate>
 		</ListBox>

@@ -1,21 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
-using MPDisplay.Common;
+using Common.Helpers;
 using GUIFramework.GUI;
-using GUIFramework.GUI.Windows;
-using GUISkinFramework.Property;
 using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
-using Common.Helpers;
-using Common;
+using MessageFramework.Messages;
 
-namespace GUIFramework
+namespace GUIFramework.Utils
 {
    
 
@@ -59,20 +53,18 @@ namespace GUIFramework
 
         public static T GetOrDefault<T>(this IEnumerable<T> windows, int id) where T : GUIWindow
         {
-            return windows.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible() && w.Id == id)
-                ?? windows.FirstOrDefault(w => w.IsDefault);
+            var enumerable = windows as IList<T> ?? windows.ToList();
+            return enumerable.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible() && w.Id == id)
+                ?? enumerable.FirstOrDefault(w => w.IsDefault);
         }
 
         public static T GetOrDefault<T>(this IEnumerable<T> windows) where T : GUIWindow
         {
-            return windows.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible())
-                ?? windows.FirstOrDefault(w => w.IsDefault);
+            var enumerable = windows as IList<T> ?? windows.ToList();
+            return enumerable.FirstOrDefault(w => w.VisibleCondition.ShouldBeVisible())
+                ?? enumerable.FirstOrDefault(w => w.IsDefault);
         }
 
-   
-
-
-     
 
         public static APIListType ToAPIType(this XmlListType listType)
         {
@@ -84,8 +76,6 @@ namespace GUIFramework
                     return APIListType.GroupMenu;
                 case XmlListType.MediaPortalMenuControl:
                     return APIListType.Menu;
-                default:
-                    break;
             }
             return APIListType.None;
         }
@@ -100,8 +90,6 @@ namespace GUIFramework
                     return APIPropertyType.Number;
                 case XmlPropertyType.Image:
                     return APIPropertyType.Image;
-                default:
-                    break;
             }
             return APIPropertyType.Label;
         }
@@ -149,14 +137,7 @@ namespace GUIFramework
             {
                 return false;
             }
-            for (int i = 0; i < first.Count; i++)
-            {
-                if (first[i].Label != second[i].Label)
-                {
-                    return false;
-                }
-            }
-            return true;
+            return !first.Where((t, i) => t.Label != second[i].Label).Any();
         }
 
         public static bool IsEqual(this APIImage first, APIImage second)
@@ -197,8 +178,6 @@ namespace GUIFramework
                 case APIPlaybackType.OnlineVideos:
                 case APIPlaybackType.MyAnime:
                     return true;
-                default:
-                    break;
             }
             return false;
         }

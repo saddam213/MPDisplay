@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "ListItemStyle")]
@@ -25,8 +18,8 @@ namespace GUISkinFramework.Controls
 
         private int _height;
         private int _width;
-        private System.Windows.VerticalAlignment _verticalAlignment;
-        private System.Windows.HorizontalAlignment _horizontalAlignment;
+        private VerticalAlignment _verticalAlignment;
+        private HorizontalAlignment _horizontalAlignment;
         private string _itemMargin;
         private int _selectedZoomX = 100;
         private int _selectedZoomY = 100;
@@ -51,14 +44,14 @@ namespace GUISkinFramework.Controls
         private bool _enableLabel3;
         private bool _enableImage2;
         private string _Image2Margin = "0,0,0,0";
-        private System.Windows.HorizontalAlignment _Image2HorizontalAlignment;
-        private System.Windows.VerticalAlignment _Image2VerticalAlignment;
+        private HorizontalAlignment _Image2HorizontalAlignment;
+        private VerticalAlignment _Image2VerticalAlignment;
         private Stretch _Image2Stretch;
         private int _Image2CornerRadius;
         private bool _enableImage3;
         private string _Image3Margin = "0,0,0,0";
-        private System.Windows.HorizontalAlignment _Image3HorizontalAlignment;
-        private System.Windows.VerticalAlignment _Image3VerticalAlignment;
+        private HorizontalAlignment _Image3HorizontalAlignment;
+        private VerticalAlignment _Image3VerticalAlignment;
         private Stretch _Image3Stretch;
         private int _Image3CornerRadius;
         private XmlBrush _defaultImage;

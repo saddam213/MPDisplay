@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -18,12 +19,9 @@ namespace MPDisplay.Common.BindingConverters
         /// <returns>
         /// A converted SolidColorBrush. If the method returns null, the valid null value is used.
         /// </returns>
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
-                return new SolidColorBrush((Color)value);
-
-            return value;
+            return value != null ? new SolidColorBrush((Color)value) : null;
         }
 
 
@@ -38,12 +36,9 @@ namespace MPDisplay.Common.BindingConverters
         /// <returns>
         /// A converted value. If the method returns null, the valid null value is used.
         /// </returns>
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
-				return ((SolidColorBrush)value).Color;
-
-            return value;
+            return value != null ? (object) ((SolidColorBrush) value).Color : null;
         }
 
         #endregion

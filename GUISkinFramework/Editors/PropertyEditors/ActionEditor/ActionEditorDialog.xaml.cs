@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using MPDisplay.Common.Utils;
 using GUISkinFramework.ExtensionMethods;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Utils;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
     /// </summary>
-    public partial class ActionEditorDialog : Window, INotifyPropertyChanged
+    public partial class ActionEditorDialog : INotifyPropertyChanged
     {
         private object _instance;
         private XmlAction _selectedAction;
@@ -103,9 +96,9 @@ namespace GUISkinFramework.Editor.PropertyEditors
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isCombo = false;
+            bool isCombo;
             if (value is XmlActionType && bool.TryParse(parameter.ToString(), out isCombo))
             {
               
@@ -119,18 +112,16 @@ namespace GUISkinFramework.Editor.PropertyEditors
                     case XmlActionType.OpenDialog:
                     case XmlActionType.RunProgram:
                     case XmlActionType.KillProgram:
-                        return !isCombo ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
+                        return !isCombo ? Visibility.Visible : Visibility.Collapsed;
                     case XmlActionType.MediaPortalAction:
-                        return isCombo ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                    default:
-                        break;
+                        return isCombo ? Visibility.Visible : Visibility.Collapsed;
                 }
 
             }
-            return System.Windows.Visibility.Collapsed;
+            return Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -142,20 +133,23 @@ namespace GUISkinFramework.Editor.PropertyEditors
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is XmlActionType)
             {
-              var attribute = (XmlActionTypeDetailsAttribute)typeof(XmlActionType)
-                    .GetMember(value.ToString()).FirstOrDefault()
-                    .GetCustomAttributes(typeof(XmlActionTypeDetailsAttribute), false).FirstOrDefault();
-              return attribute == null ? value.ToString() : attribute.ParamName;
-
+                var firstOrDefault = typeof(XmlActionType)
+                    .GetMember(value.ToString()).FirstOrDefault();
+                if (firstOrDefault != null)
+                {
+                    var attribute = (XmlActionTypeDetailsAttribute)firstOrDefault
+                        .GetCustomAttributes(typeof(XmlActionTypeDetailsAttribute), false).FirstOrDefault();
+                    return attribute == null ? value.ToString() : attribute.ParamName;
+                }
             }
             return string.Empty;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace MPDisplay.Common.Controls.Primitives
+namespace MPDisplay.Common.Controls.Core
 {
     public class Selector : ItemsControl //should probably make this control an ICommandSource
     {
@@ -25,8 +25,8 @@ namespace MPDisplay.Common.Controls.Primitives
         public Selector()
         {
             SelectedItems = new ObservableCollection<object>();
-            AddHandler(Selector.SelectedEvent, new RoutedEventHandler(Selector_ItemSelected));
-            AddHandler(Selector.UnSelectedEvent, new RoutedEventHandler(Selector_ItemUnselected));
+            AddHandler(SelectedEvent, new RoutedEventHandler(Selector_ItemSelected));
+            AddHandler(UnSelectedEvent, new RoutedEventHandler(Selector_ItemUnselected));
         }
 
         #endregion //Constructors
@@ -223,7 +223,7 @@ namespace MPDisplay.Common.Controls.Primitives
             if (_surpressSelectionChanged)
                 return;
 
-            RaiseEvent(new SelectedItemChangedEventArgs(Selector.SelectedItemChangedEvent, this, item, isSelected));
+            RaiseEvent(new SelectedItemChangedEventArgs(SelectedItemChangedEvent, this, item, isSelected));
 
             if (Command != null)
                 Command.Execute(item);

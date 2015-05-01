@@ -1,41 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Common.Helpers;
-using GUIConfig.Settings.Language;
+using Common.Log;
+using Common.Settings;
 using GUIConfig.Dialogs;
 using GUIConfig.ViewModels;
-using Common.Logging;
-using Common.Settings;
+using GUIConfig.Settings;
 
 namespace GUIConfig
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : INotifyPropertyChanged
     {
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(MainWindow));
+        private Log _log = LoggingManager.GetLog(typeof(MainWindow));
         private ObservableCollection<ViewModelBase> _views = new ObservableCollection<ViewModelBase>();
         private MPDisplaySettings _mpdisplaySettings;
         private AddImageSettings _addImageSettings;
-        private bool _hasChanges = false;
+        private bool _hasChanges;
 
         #endregion
 
@@ -56,22 +44,22 @@ namespace GUIConfig
             LanguageHelper.SetLanguage(RegistrySettings.ConfigLanguage);
             InitializeComponent();
 
-            Log.Message(LogLevel.Info, "Loading settings...");
+            _log.Message(LogLevel.Info, "Loading settings...");
             MPDisplaySettings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (MPDisplaySettings == null)
             {
-                Log.Message(LogLevel.Warn, "MPDisplay.xml not found!, creating new settings file.");
+                _log.Message(LogLevel.Warn, "MPDisplay.xml not found!, creating new settings file.");
                 MPDisplaySettings = new MPDisplaySettings();
             }
-            Log.Message(LogLevel.Info, "MPDisplay.xml sucessfully loaded.");
+            _log.Message(LogLevel.Info, "MPDisplay.xml sucessfully loaded.");
 
-            AddImageSettings = SettingsManager.Load<AddImageSettings>(System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            AddImageSettings = SettingsManager.Load<AddImageSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
             if (AddImageSettings == null)
             {
-                Log.Message(LogLevel.Warn, "AddImageSettings.xml not found!, creating new settings file.");
+                _log.Message(LogLevel.Warn, "AddImageSettings.xml not found!, creating new settings file.");
                 AddImageSettings = new AddImageSettings();
             }
-            Log.Message(LogLevel.Info, "AddIMageSettings.xml sucessfully loaded.");
+            _log.Message(LogLevel.Info, "AddIMageSettings.xml sucessfully loaded.");
 
             LoadViews();
         }
@@ -116,24 +104,24 @@ namespace GUIConfig
         /// </summary>
         private void LoadViews()
         {
-            Log.Message(LogLevel.Info, "Loading views for InstallType: {0}", RegistrySettings.InstallType);
+            _log.Message(LogLevel.Info, "Loading views for InstallType: {0}", RegistrySettings.InstallType);
             if (RegistrySettings.InstallType != MPDisplayInstallType.GUI)
             {
-                Log.Message(LogLevel.Info, "Adding Plugin section.");
+                _log.Message(LogLevel.Info, "Adding Plugin section.");
                 Views.Add(new PluginSettingsView { DataObject = MPDisplaySettings.PluginSettings });
                 MPDisplaySettings.PluginSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
                 MPDisplaySettings.PluginSettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
 
-                Log.Message(LogLevel.Info, "Adding AddImage section.");
+                _log.Message(LogLevel.Info, "Adding AddImage section.");
                 Views.Add(new AddImageSettingsView { DataObject = AddImageSettings });
                 AddImageSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
             }
 
             if (RegistrySettings.InstallType != MPDisplayInstallType.Plugin)
             {
-                Log.Message(LogLevel.Info, "Adding MPDisplay section.");
+                _log.Message(LogLevel.Info, "Adding MPDisplay section.");
                 Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
-                Log.Message(LogLevel.Info, "Adding Skin section.");
+                _log.Message(LogLevel.Info, "Adding Skin section.");
                 Views.Add(new SkinSettingsView { DataObject = MPDisplaySettings.GUISettings });
                 MPDisplaySettings.GUISettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
                 MPDisplaySettings.GUISettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
@@ -178,7 +166,7 @@ namespace GUIConfig
                 view.SaveChanges();
             }
             SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
-            SettingsManager.Save<AddImageSettings>(AddImageSettings, System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            SettingsManager.Save<AddImageSettings>(AddImageSettings, Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
             _hasChanges = false;
         }
 

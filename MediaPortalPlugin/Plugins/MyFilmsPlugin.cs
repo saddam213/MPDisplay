@@ -1,13 +1,9 @@
 ﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class MyFilmsPlugin : PluginHelper
     {
@@ -23,7 +19,7 @@ namespace MediaPortalPlugin.PluginHelpers
                 var currentMovie = ReflectionHelper.GetStaticField(PluginWindow, "currentMovie", null);
                 if (currentMovie != null)
                 {
-                    if (ReflectionHelper.GetPropertyValue<string>(currentMovie, "File", string.Empty) == filename)
+                    if (ReflectionHelper.GetPropertyValue(currentMovie, "File", string.Empty) == filename)
                     {
                         return true;
                     }

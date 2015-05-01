@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using MPDisplay.Common.Controls.Core.Utilities;
+using MPDisplay.Common.Controls.Core;
 
 namespace MPDisplay.Common.Controls
 {
@@ -28,7 +28,7 @@ namespace MPDisplay.Common.Controls
 
         #region Dependency Properties
 
-        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color), typeof(ColorSpectrumSlider), new PropertyMetadata(System.Windows.Media.Colors.Transparent));
+        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color), typeof(ColorSpectrumSlider), new PropertyMetadata(Colors.Transparent));
         public Color SelectedColor
         {
             get { return (Color)GetValue(SelectedColorProperty); }

@@ -1,38 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
-using GUISkinFramework;
-using GUISkinFramework.ExtensionMethods;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common;
-using SkinEditor.Dialogs;
-using MPDisplay.Common.Controls;
 using Common.Helpers;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Controls;
+using MPDisplay.Common.Controls.PropertyGrid;
 using MPDisplay.Common.ExtensionMethods;
+using SkinEditor.Dialogs;
 
 namespace SkinEditor.Views
 {
     /// <summary>
     /// Interaction logic for StyleEditorView.xaml
     /// </summary>
-    public partial class StyleEditorView : EditorViewModel
+    public partial class StyleEditorView
     {
         private string _selectedStyle = "Default";
      
@@ -488,8 +476,9 @@ namespace SkinEditor.Views
                                 {
                                     if (image != null && image.Descendants<Border>().Any())
                                     {
-
-                                        (image.Ancestors<Border>().First() as Border).Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
+                                        var border = image.Ancestors<Border>().First() as Border;
+                                        if (border != null)
+                                            border.Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
                                         count++;
                                     }
                                 }
@@ -765,9 +754,20 @@ namespace SkinEditor.Views
         /// <returns></returns>
         private MenuItem CreateContextMenuItem(string header, string icon, Action handler)
         {
-            var menuItem = new MenuItem();
-            menuItem.Header = header;
-            menuItem.Icon = new Image { Margin = new Thickness(2), Stretch = System.Windows.Media.Stretch.Uniform, Width = 16, Height = 16, Source = new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", icon), UriKind.RelativeOrAbsolute)) };
+            var menuItem = new MenuItem
+            {
+                Header = header,
+                Icon =
+                    new Image
+                    {
+                        Margin = new Thickness(2),
+                        Stretch = Stretch.Uniform,
+                        Width = 16,
+                        Height = 16,
+                        Source =
+                            new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", icon), UriKind.RelativeOrAbsolute))
+                    }
+            };
             if (handler != null)
             {
                 menuItem.Click += (s, e) => handler();

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
-namespace Common.Settings.SettingsObjects
+namespace Common.Settings
 {
     [XmlType("GenericPluginSettings")]
     public class SupportedPluginSettings

@@ -1,24 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Language;
-using GUISkinFramework.Property;
 using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for PropertyEditor.xaml
@@ -75,10 +63,12 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
             var newEntry = new XmlLanguageEntry { SkinTag = "New....", Values = new ObservableCollection<XmlLanguageValue>() };
             if (SkinInfo.Language.LanguageEntries.Any())
             {
-                foreach (var item in SkinInfo.Language.LanguageEntries.FirstOrDefault().Values)
-                {
-                    newEntry.Values.Add(new XmlLanguageValue { Language = item.Language });
-                }
+                var xmlLanguageEntry = SkinInfo.Language.LanguageEntries.FirstOrDefault();
+                if (xmlLanguageEntry != null)
+                    foreach (var item in xmlLanguageEntry.Values)
+                    {
+                        newEntry.Values.Add(new XmlLanguageValue { Language = item.Language });
+                    }
             }
 
 
@@ -95,7 +85,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
 
     public class LanguageTagValidationRule : ValidationRule
     {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
 
             var tag = value as string;

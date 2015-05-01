@@ -48,10 +48,10 @@ namespace MPDisplay.Common.Controls
 
         protected override decimal? ConvertTextToValue(string text)
         {
-            decimal? result = null;
+            decimal? result;
 
             if (String.IsNullOrEmpty(text))
-                return result;
+                return null;
 
             try
             {

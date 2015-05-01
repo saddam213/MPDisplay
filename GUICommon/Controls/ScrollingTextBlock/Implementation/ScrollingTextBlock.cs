@@ -1,21 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 
 namespace MPDisplay.Common.Controls
 {
     public class ScrollingTextBlock : Control
     {
-        private bool _isReady = false;
+        private bool _isReady;
         private TextBlock _mainTextBlock;
         private TextBlock _measureLabel;
 
@@ -24,19 +17,15 @@ namespace MPDisplay.Common.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(ScrollingTextBlock), new FrameworkPropertyMetadata(typeof(ScrollingTextBlock)));
         }
 
-        public ScrollingTextBlock()
-        {
-        }
-
-        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(string.Empty, (d, e) => (d as ScrollingTextBlock).Reset()));
-        public static readonly DependencyProperty IsScrollingEnabledProperty = DependencyProperty.Register("IsScrollingEnabled", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(false, (d, e) => (d as ScrollingTextBlock).Reset()));
-        public static readonly DependencyProperty IsVerticalProperty = DependencyProperty.Register("IsVertical", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(false, (d, e) => (d as ScrollingTextBlock).Reset()));
-        public static readonly DependencyProperty ScrollDelayProperty = DependencyProperty.Register("ScrollDelay", typeof(int), typeof(ScrollingTextBlock), new PropertyMetadata(3, (d, e) => (d as ScrollingTextBlock).Reset()));
-        public static readonly DependencyProperty ScrollSpeedProperty = DependencyProperty.Register("ScrollSpeed", typeof(int), typeof(ScrollingTextBlock), new PropertyMetadata(5, (d, e) => (d as ScrollingTextBlock).Reset()));
+        public static readonly DependencyProperty TextProperty = DependencyProperty.Register("Text", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(string.Empty, (d, e) => ((ScrollingTextBlock) d).Reset()));
+        public static readonly DependencyProperty IsScrollingEnabledProperty = DependencyProperty.Register("IsScrollingEnabled", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(false, (d, e) => ((ScrollingTextBlock) d).Reset()));
+        public static readonly DependencyProperty IsVerticalProperty = DependencyProperty.Register("IsVertical", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(false, (d, e) => ((ScrollingTextBlock) d).Reset()));
+        public static readonly DependencyProperty ScrollDelayProperty = DependencyProperty.Register("ScrollDelay", typeof(int), typeof(ScrollingTextBlock), new PropertyMetadata(3, (d, e) => ((ScrollingTextBlock) d).Reset()));
+        public static readonly DependencyProperty ScrollSpeedProperty = DependencyProperty.Register("ScrollSpeed", typeof(int), typeof(ScrollingTextBlock), new PropertyMetadata(5, (d, e) => ((ScrollingTextBlock) d).Reset()));
         public static readonly DependencyProperty IsScrollingProperty = DependencyProperty.Register("IsScrolling", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(false));
-        public static readonly DependencyProperty IsWrapEnabledProperty = DependencyProperty.Register("IsWrapEnabled", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(true, (d, e) => (d as ScrollingTextBlock).Reset()));
-        public static readonly DependencyProperty ScrollSeperatorProperty = DependencyProperty.Register("ScrollSeperator", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(string.Empty, (d, e) => (d as ScrollingTextBlock).Reset()));
-        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register("TextAlignment", typeof(TextAlignment), typeof(ScrollingTextBlock), new PropertyMetadata(TextAlignment.Left, (d, e) => (d as ScrollingTextBlock).Reset()));
+        public static readonly DependencyProperty IsWrapEnabledProperty = DependencyProperty.Register("IsWrapEnabled", typeof(bool), typeof(ScrollingTextBlock), new PropertyMetadata(true, (d, e) => ((ScrollingTextBlock) d).Reset()));
+        public static readonly DependencyProperty ScrollSeperatorProperty = DependencyProperty.Register("ScrollSeperator", typeof(string), typeof(ScrollingTextBlock), new PropertyMetadata(string.Empty, (d, e) => ((ScrollingTextBlock) d).Reset()));
+        public static readonly DependencyProperty TextAlignmentProperty = DependencyProperty.Register("TextAlignment", typeof(TextAlignment), typeof(ScrollingTextBlock), new PropertyMetadata(TextAlignment.Left, (d, e) => ((ScrollingTextBlock) d).Reset()));
 
         public string Text
         {
@@ -96,7 +85,7 @@ namespace MPDisplay.Common.Controls
         {
             _mainTextBlock = GetTemplateChild("PART_mainTextBlock") as TextBlock;
             _measureLabel = GetTemplateChild("PART_measureTextBlock") as TextBlock;
-            this.SizeChanged += (s, e) => { Reset(); };
+            SizeChanged += (s, e) => { Reset(); };
             _isReady = true;
             Reset();
         }
@@ -122,11 +111,14 @@ namespace MPDisplay.Common.Controls
                             _mainTextBlock.TextAlignment = TextAlignment.Left;
                             _mainTextBlock.Text = GetScrollingText();
                             var textLength = GetScrollingLength();
-                            var animation = new DoubleAnimation(0.0, -textLength, new Duration(TimeSpan.FromSeconds((textLength / 5))));
-                            animation.SpeedRatio = ScrollSpeed;
-                            animation.BeginTime = TimeSpan.FromSeconds(ScrollDelay);
-                            animation.FillBehavior = FillBehavior.Stop;
-                            animation.RepeatBehavior = RepeatBehavior.Forever;
+                            var animation = new DoubleAnimation(0.0, -textLength,
+                                new Duration(TimeSpan.FromSeconds((textLength/5))))
+                            {
+                                SpeedRatio = ScrollSpeed,
+                                BeginTime = TimeSpan.FromSeconds(ScrollDelay),
+                                FillBehavior = FillBehavior.Stop,
+                                RepeatBehavior = RepeatBehavior.Forever
+                            };
                             if (!IsWrapEnabled)
                             {
                                 animation.RepeatBehavior = new RepeatBehavior(1);
@@ -147,11 +139,14 @@ namespace MPDisplay.Common.Controls
                             _mainTextBlock.TextAlignment = TextAlignment;
                             _mainTextBlock.Text = GetScrollingText();
                             var textLength = GetScrollingLength();
-                            var animation = new DoubleAnimation(0.0, -textLength, new Duration(TimeSpan.FromSeconds((textLength / 5))));
-                            animation.SpeedRatio = ScrollSpeed;
-                            animation.BeginTime = TimeSpan.FromSeconds(ScrollDelay);
-                            animation.FillBehavior = FillBehavior.Stop;
-                            animation.RepeatBehavior = RepeatBehavior.Forever;
+                            var animation = new DoubleAnimation(0.0, -textLength,
+                                new Duration(TimeSpan.FromSeconds((textLength/5))))
+                            {
+                                SpeedRatio = ScrollSpeed,
+                                BeginTime = TimeSpan.FromSeconds(ScrollDelay),
+                                FillBehavior = FillBehavior.Stop,
+                                RepeatBehavior = RepeatBehavior.Forever
+                            };
                             if (!IsWrapEnabled)
                             {
                                 animation.RepeatBehavior = new RepeatBehavior(1);
@@ -232,7 +227,10 @@ namespace MPDisplay.Common.Controls
                 Dispatcher.Invoke((Action)delegate { value = _measureLabel.ActualWidth; }, DispatcherPriority.Background);
                 return value;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
             return 0.0;
         }
 
@@ -245,7 +243,10 @@ namespace MPDisplay.Common.Controls
                 Dispatcher.Invoke((Action)delegate { value = _measureLabel.ActualHeight; }, DispatcherPriority.Background);
                 return value;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
             return 0.0;
         }
     }

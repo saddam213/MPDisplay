@@ -1,36 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common;
-using SkinEditor.Dialogs;
-using MPDisplay.Common.Controls;
-using Common.Helpers;
-using MPDisplay.Common.ExtensionMethods;
-using GUIFramework;
-using MessageFramework.DataObjects;
 using System.ServiceModel;
-using GUISkinFramework.Editor.PropertyEditors.PropertyEditor;
-using GUISkinFramework.PropertyEditors;
-using GUISkinFramework.Property;
+using System.Threading.Tasks;
+using System.Windows.Controls;
+using System.Windows.Threading;
+using Common.Helpers;
+using GUIFramework;
+using GUISkinFramework.Editors;
+using GUISkinFramework.Skin;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
+using SkinEditor.Themes;
 using SkinEditor.Views;
 
-
-namespace SkinEditor.ConnectionHelpers
+namespace SkinEditor.Helpers
 {
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
     public class ConnectionHelper : UserControl, IMessageCallback 
@@ -39,8 +24,8 @@ namespace SkinEditor.ConnectionHelpers
         private MessageClient _messageBroker;
         private DateTime _lastKeepAlive = DateTime.MinValue;
         private APIConnection _connection;
-        private EndpointAddress serverEndpoint;
-        private NetTcpBinding serverBinding;
+        private EndpointAddress _serverEndpoint;
+        private NetTcpBinding _serverBinding;
         private DispatcherTimer _secondTimer;
 
         private bool _isConnected;
@@ -55,15 +40,20 @@ namespace SkinEditor.ConnectionHelpers
 
         private InfoEditorViewSettings _settings;
 
-        private EditorViewModel _baseclass = null;
+        private EditorViewModel _baseclass;
 
-        public EditorViewModel baseclass
+        public ConnectionHelper()
+        {
+            _baseclass = null;
+        }
+
+        public EditorViewModel Baseclass
         {
             set { _baseclass = value; }
             get { return _baseclass; }
         }
 
-        public InfoEditorViewSettings settings
+        public InfoEditorViewSettings Settings
         {
             set { _settings = value; }
         }
@@ -127,17 +117,17 @@ namespace SkinEditor.ConnectionHelpers
         }
     
          // call notifyer of all registered baseclasses uning this instance
-        private void NotifyPropertyChangedAll(string _property)
+        private void NotifyPropertyChangedAll(string property)
         {
-                if ( _baseclass != null ) _baseclass.NotifyPropertyChanged(_property);
+                if ( _baseclass != null ) _baseclass.NotifyPropertyChanged(property);
          }
 
         public async Task InitializeServerConnection()
         {
 
-            serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", _settings.IpAddress, _settings.Port));
+            _serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", _settings.IpAddress, _settings.Port));
             // Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", serverEndpoint);
-            serverBinding = ConnectHelper.getServerBinding();
+            _serverBinding = ConnectHelper.GetServerBinding();
 
             InstanceContext site = new InstanceContext(this);
             if (_messageBroker != null)
@@ -145,8 +135,8 @@ namespace SkinEditor.ConnectionHelpers
                 _messageBroker.InnerChannel.Faulted -= Channel_Faulted;
                 _messageBroker = null;
             }
-            _messageBroker = new MessageClient(site, serverBinding, serverEndpoint);
-            _messageBroker.InnerChannel.Faulted += new EventHandler(Channel_Faulted);
+            _messageBroker = new MessageClient(site, _serverBinding, _serverEndpoint);
+            _messageBroker.InnerChannel.Faulted += Channel_Faulted;
 
             _connection = new APIConnection("SkinEditor");
 
@@ -202,7 +192,10 @@ namespace SkinEditor.ConnectionHelpers
                     //  Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
                     return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
                 }
-                catch { }
+                catch
+                {
+                   // ignored
+                }
             }
             return Task.FromResult<object>(null);
         }
@@ -321,7 +314,7 @@ namespace SkinEditor.ConnectionHelpers
             }
             catch (Exception)
             {
-
+                // ignored
             }
             return Task.FromResult<object>(null);
         }
@@ -339,7 +332,7 @@ namespace SkinEditor.ConnectionHelpers
                     return;
                 }
 
-                if (message.DataType == APIDataMessageType.SkinEditorInfo)
+                if (message != null && message.DataType == APIDataMessageType.SkinEditorInfo)
                 {
                     var skineditorData = message.SkinEditorData;
                     if (skineditorData.DataType == APISkinEditorDataType.Property)
@@ -405,11 +398,10 @@ namespace SkinEditor.ConnectionHelpers
                     propEditor.SelectedProperty = newProp;
                 }
                 new EditorDialog(propEditor, false).ShowDialog();
-                PropertyTagCache = null;
 
                 foreach (var property in PropertyData)
                 {
-                    property.IsDefined = PropertyTagCache.Contains(property.Tag);
+                    if (PropertyTagCache != null) property.IsDefined = PropertyTagCache.Contains(property.Tag);
                 }
             }
         }

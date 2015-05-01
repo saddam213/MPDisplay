@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
 
-namespace Common.Logging
+namespace Common.Log
 {
     public class WindowLogger : Logger
     {
@@ -35,13 +32,16 @@ namespace Common.Logging
         {
             try
             {
-                _logBox.Dispatcher.Invoke((Action)delegate
-                  {
-                      _logBox.AppendText(message + Environment.NewLine);
-                      _scrollViewer.ScrollToBottom();
-                  }, DispatcherPriority.Background);
+                _logBox.Dispatcher.Invoke(delegate
+                {
+                    _logBox.AppendText(message + Environment.NewLine);
+                    _scrollViewer.ScrollToBottom();
+                }, DispatcherPriority.Background);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         public override void Dispose()
@@ -49,7 +49,7 @@ namespace Common.Logging
             _logBox.Clear();
             _logBox = null;
             _scrollViewer = null;
-            _logWindow.Dispatcher.Invoke((Action)delegate { _logWindow.Close(); });
+            _logWindow.Dispatcher.Invoke(delegate { _logWindow.Close(); });
             _logWindow = null;
            
             base.Dispose();

@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using Common.Helpers;
 using Common.Settings;
 
-namespace GUIConfig.Settings.Language
+namespace GUIConfig.Settings
 {
     public class LanguageHelper
     {

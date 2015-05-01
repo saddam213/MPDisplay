@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class EditorCategoryAttribute : CategoryAttribute
     {
-        private int order;
+        private int _order;
 
         public int Order
         {
-            get { return order; }
-            set { order = value; }
+            get { return _order; }
+            set { _order = value; }
         }
 
         public EditorCategoryAttribute(string category, int order) : base(category)

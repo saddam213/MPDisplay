@@ -1,9 +1,9 @@
 ﻿using System;
-using System.Windows.Controls;
-using System.Windows;
 using System.Globalization;
+using System.Windows;
+using System.Windows.Controls;
 
-namespace MPDisplay.Common.Controls.Primitives
+namespace MPDisplay.Common.Controls.Core
 {
     public abstract class InputBase : Control
     {

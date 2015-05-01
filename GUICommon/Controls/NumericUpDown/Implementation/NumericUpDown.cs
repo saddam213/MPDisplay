@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Input;
-using MPDisplay.Common.Controls.Primitives;
 using System.Globalization;
+using System.Windows;
+using MPDisplay.Common.Controls.Core;
 
 namespace MPDisplay.Common.Controls
 {

@@ -1,5 +1,4 @@
-﻿using System;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Configuration.Install;
 using System.ServiceProcess;
 
@@ -27,8 +26,8 @@ namespace MessageServer
             //# This must be identical to the WindowsService.ServiceBase name
             //# set in the constructor of WindowsService.cs
             serviceInstaller.ServiceName = "MPDisplayServer";
-            this.Installers.Add(serviceProcessInstaller);
-            this.Installers.Add(serviceInstaller);
+            Installers.Add(serviceProcessInstaller);
+            Installers.Add(serviceInstaller);
         }
     }
 }

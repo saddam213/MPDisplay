@@ -1,14 +1,15 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Converters
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class ValueSourceToToolTipConverter : IValueConverter
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             BaseValueSource bvs = (BaseValueSource)value;
             string toolTip = "Advanced Properties";
@@ -32,7 +33,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Converters
             return toolTip;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

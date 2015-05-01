@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Collections;
-using System.Reflection;
 
 namespace MPDisplay.Common.Controls
 {
@@ -122,11 +122,6 @@ namespace MPDisplay.Common.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PrimitiveTypeCollectionEditor), new FrameworkPropertyMetadata(typeof(PrimitiveTypeCollectionEditor)));
         }
 
-        public PrimitiveTypeCollectionEditor()
-        {
-
-        }
-
         #endregion //Constructors
 
         #region Methods
@@ -144,7 +139,7 @@ namespace MPDisplay.Common.Controls
             foreach (var item in items)
             {
                 list.Add(item);
-            };
+            }
 
             // if something went wrong during conversion we want to reload the text to show only valid entries
             if (_conversionFailed)

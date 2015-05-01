@@ -1,7 +1,8 @@
 using System;
+using System.Reflection;
 using System.Windows;
 
-namespace MPDisplay.Common.Controls.Themes
+namespace MPDisplay.Common.Controls.Core
 {
     public sealed class StaticResourceKey : ResourceKey
     {
@@ -17,7 +18,7 @@ namespace MPDisplay.Common.Controls.Themes
             _key = key;
         }
 
-        public override System.Reflection.Assembly Assembly
+        public override Assembly Assembly
         {
             get { return _type.Assembly; }
         }

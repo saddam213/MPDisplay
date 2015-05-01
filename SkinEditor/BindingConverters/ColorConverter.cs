@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -18,14 +14,21 @@ namespace SkinEditor.BindingConverters
             {
                 try
                 {
-                    var color = (Color)ColorConverter.ConvertFromString(value.ToString());
-                    if (targetType == typeof(Brush))
+                    var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                    if (convertFromString != null)
                     {
-                        return new SolidColorBrush(color);
+                        var color = (Color)convertFromString;
+                        if (targetType == typeof(Brush))
+                        {
+                            return new SolidColorBrush(color);
+                        }
+                        return color;
                     }
-                    return color;
                 }
-                catch { }
+                catch
+                {
+                    // ignored
+                }
 
                 if (targetType == typeof(Brush))
                 {

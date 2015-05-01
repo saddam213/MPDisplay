@@ -1,12 +1,12 @@
-﻿using GUISkinFramework.Dialogs;
+﻿using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIMPDDialog.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlMPDDialog))]
-    public partial class GUIMPDDialog : GUIDialog
+    public partial class GUIMPDDialog
     {
         #region Constructor
 

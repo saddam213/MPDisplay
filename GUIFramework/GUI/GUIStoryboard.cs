@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Media.Animation;
-using GUISkinFramework.Animations;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -20,7 +16,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIStoryboard()
         {
-            this.Completed += (s, e) =>
+            Completed += (s, e) =>
             {
                 if (OnAnimationComplete != null)
                 {

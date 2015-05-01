@@ -1,21 +1,17 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Common;
+using Common.MessengerService;
 using Common.Settings;
 using GUIFramework.GUI;
-using GUIFramework.GUI.Controls;
-using GUISkinFramework;
-using GUISkinFramework.Controls;
+using GUIFramework.Utils;
 using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
-using MPDisplay.Common;
+using MessageFramework.Messages;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public class ListRepository : IRepository
     {
@@ -25,20 +21,13 @@ namespace GUIFramework.Managers
         private static ListRepository _instance;
         public static ListRepository Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new ListRepository();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new ListRepository()); }
         }
 
 
         public static void RegisterMessage<T>(ListServiceMessage message, Action<T> callback)
         {
-            Instance._listService.Register<T>(message, callback);
+            Instance._listService.Register(message, callback);
         }
 
         public static void DeregisterMessage(ListServiceMessage message,object owner)
@@ -71,11 +60,6 @@ namespace GUIFramework.Managers
             return Instance.GetSelectedListItem(xmlListType);
         }
 
-        //public static void NotifyListeners<T>(InfoMessageType message, T value)
-        //{
-        //    Instance.NotifiyValueChanged<T>(message, value);
-        //}
-
         #endregion
 
         private MessengerService<ListServiceMessage> _listService = new MessengerService<ListServiceMessage>();
@@ -85,7 +69,6 @@ namespace GUIFramework.Managers
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
-
 
         public void Initialize(GUISettings settings, XmlSkinInfo skininfo)
         {
@@ -120,10 +103,6 @@ namespace GUIFramework.Managers
                         case APIListType.List:
 
                             ProcessBatch(message.List);
-
-                            //AddList(XmlListType.MediaPortalListControl, message.List.ListItems);
-                            //_mediaPortalListLayout = message.List.ListLayout;
-                            //NotifyListLayoutChanged();
                             break;
                         case APIListType.Menu:
                             AddList(XmlListType.MediaPortalMenuControl, message.List.ListItems);
@@ -133,8 +112,6 @@ namespace GUIFramework.Managers
                             break;
                         case APIListType.DialogList:
                             AddList(XmlListType.MediaPortalDialogList, message.List.ListItems);
-                            break;
-                        default:
                             break;
                     }
                 }
@@ -156,8 +133,6 @@ namespace GUIFramework.Managers
                             case APIListType.DialogList:
                                 AddListSelection(XmlListType.MediaPortalDialogList, message.Action);
                                 break;
-                            default:
-                                break;
                         }
                     }
                     else if (message.Action.ActionType == APIListActionType.Layout)
@@ -169,10 +144,10 @@ namespace GUIFramework.Managers
             }
         }
 
-
         private SortedDictionary<int, List<APIListItem>> _data = new SortedDictionary<int, List<APIListItem>>();
         private int _currentBatchId = -1;
         private object _syncObject = new object();
+
         private void ProcessBatch(APIList message)
         {
             try
@@ -196,7 +171,6 @@ namespace GUIFramework.Managers
                     if (message.BatchId == _currentBatchId)
                     {
                         _data.Add(message.BatchNumber, message.ListItems);
-                        Console.WriteLine(string.Format("BatchId: {0}, BatchNumber: {1}, Count: {2}", message.BatchId, message.BatchNumber, _data.Count));
                         if (_data.Count == message.BatchCount)
                         {
                             AddList(XmlListType.MediaPortalListControl, _data.Values.SelectMany(k => k).ToList());
@@ -206,9 +180,9 @@ namespace GUIFramework.Managers
                     }
                 }
             }
-            catch 
+            catch
             {
-
+                // ignored
             }
         }
 
@@ -242,18 +216,12 @@ namespace GUIFramework.Managers
 
         public Task<List<APIListItem>> GetListItems(XmlListType listType)
         {
-            return Task.Factory.StartNew<List<APIListItem>>(() =>
-            {
-                return _listRepository.GetValue(listType);
-            });
+            return Task.Factory.StartNew(() => _listRepository.GetValue(listType));
         }
 
         public Task<APIListAction> GetSelectedListItem(XmlListType listType)
         {
-            return Task.Factory.StartNew<APIListAction>(() =>
-            {
-                return _listSelectionRepository.GetValue(listType);
-            });
+            return Task.Factory.StartNew(() => _listSelectionRepository.GetValue(listType));
         }
 
         public XmlListLayout GetMediaPortalListLayout(XmlListType listType)
@@ -270,8 +238,6 @@ namespace GUIFramework.Managers
                         return XmlListLayout.Horizontal;
                     case APIListLayout.CoverFlow:
                         return XmlListLayout.CoverFlow;
-                    default:
-                        break;
                 }
             }
             return XmlListLayout.Vertical;
@@ -310,8 +276,6 @@ namespace GUIFramework.Managers
                     _listService.Register(ListServiceMessage.LanguageItems, listcontrol.OnListItemsReceived);
                     _listService.Register(ListServiceMessage.LanguageItemSelect, listcontrol.OnSelectedItemReceived);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -348,8 +312,6 @@ namespace GUIFramework.Managers
                     _listService.Deregister(ListServiceMessage.LanguageItems, control);
                     _listService.Deregister(ListServiceMessage.LanguageItemSelect, control);
                     break;
-                default:
-                    break;
             }
         }
 
@@ -372,18 +334,13 @@ namespace GUIFramework.Managers
                     case XmlListType.MediaPortalDialogList:
                         SendListAction(APIListActionType.FocusedItem, APIListType.DialogList, item);
                         break;
-                    default:
-                        break;
                 }
 
-                if (item != null)
-                {
-                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", item.Label);
-                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", item.Label2);
-                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", item.Label3);
-                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", item.Index.ToString());
-                    PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image.ToImageBytes());
-                }
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", item.Label);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", item.Label2);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", item.Label3);
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", item.Index.ToString());
+                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image.ToImageBytes());
             }
         }
 
@@ -414,8 +371,6 @@ namespace GUIFramework.Managers
                         break;
                     case XmlListType.MPDisplayLanguages:
                         SkinInfo.SetLanguage(item.Label);
-                        break;
-                    default:
                         break;
                 }
             }
@@ -466,8 +421,6 @@ namespace GUIFramework.Managers
                     case XmlListType.MPDisplayLanguages:
                         _listService.NotifyListeners(ListServiceMessage.LanguageItems);
                         break;
-                    default:
-                        break;
                 }
             });
         }
@@ -500,8 +453,6 @@ namespace GUIFramework.Managers
                         break;
                     case XmlListType.MPDisplayLanguages:
                         _listService.NotifyListeners(ListServiceMessage.LanguageItemSelect);
-                        break;
-                    default:
                         break;
                 }
 

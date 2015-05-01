@@ -1,12 +1,10 @@
 ﻿<Window
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:wpfControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-        xmlns:PropertyEditor="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
-        xmlns:xmlCommon="clr-namespace:GUISkinFramework.Common"
-        x:Class="GUISkinFramework.Editor.PropertyEditors.ImageEditorDialog"
+    x:Class="GUISkinFramework.Editors.ImageEditorDialog"
 		xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-        Title="LabelEditorDialog" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" x:Name="UI" Height="378.667" Width="662" >
+		xmlns:imageEditor="clr-namespace:GUISkinFramework.Editors"
+		Title="LabelEditorDialog" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" x:Name="UI" Height="378.667" Width="662" >
 	<Window.Resources>
 		<CollectionViewSource x:Key="properties" Source="{Binding SkinInfo.Properties, ElementName=UI}">
 			<CollectionViewSource.GroupDescriptions>
@@ -38,7 +36,7 @@
                             <ColumnDefinition Width="22"/>
                             <ColumnDefinition Width="22"/>
                         </Grid.ColumnDefinitions>
-						<PropertyEditor:ImagePickerCombo SkinInfo="{Binding SkinInfo}" SelectedImage="{Binding SelectedImage}" />
+						<imageEditor:ImagePickerCombo SkinInfo="{Binding SkinInfo}" SelectedImage="{Binding SelectedImage}" />
                         <Button Click="Button_ImageAdd_Click" Grid.Column="1" >
                             <Button.Style>
                                 <Style TargetType="{x:Type Button}">

@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using GUIFramework.Managers;
 
 namespace GUIFramework.GUI
@@ -15,8 +10,8 @@ namespace GUIFramework.GUI
     {
         #region Fields
 
-        private Func<bool> _condition = null;
-        private string _xmlString = string.Empty;
+        private Func<bool> _condition;
+        private string _xmlString;
 
         #endregion
 
@@ -29,6 +24,7 @@ namespace GUIFramework.GUI
         public GUIVisibleCondition(GUIControl control)
         {
             _xmlString = control.BaseXml.VisibleCondition;
+            _condition = null;
             _condition = GUIVisibilityManager.GetVisibleCondition(control.ParentId, control.Id);
         }
 
@@ -39,6 +35,7 @@ namespace GUIFramework.GUI
         public GUIVisibleCondition(GUIWindow window)
         {
             _xmlString = window.BaseXml.VisibleCondition;
+            _condition = null;
             _condition = GUIVisibilityManager.GetVisibleCondition(window.Id);
         }
 
@@ -49,6 +46,7 @@ namespace GUIFramework.GUI
         public GUIVisibleCondition(GUIDialog dialog)
         {
             _xmlString = dialog.BaseXml.VisibleCondition;
+            _condition = null;
             _condition = GUIVisibilityManager.GetVisibleCondition(dialog.Id);
         }
 

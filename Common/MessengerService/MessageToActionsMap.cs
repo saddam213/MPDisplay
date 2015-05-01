@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
 
-namespace Common
+namespace Common.MessengerService
 {
     /// <summary>
     /// This class is an implementation detail of the Messenger class.
@@ -56,7 +54,7 @@ namespace Common
                 if (!_map.ContainsKey(message))
                     return;
 
-                _map[message].RemoveAll(wa => wa._targetRef.Target == owner);
+                _map[message].RemoveAll(wa => wa.TargetRef != null && wa.TargetRef.Target == owner);
                 if (_map[message].Count == 0)
                 {
                     _map.Remove(message);

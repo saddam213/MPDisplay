@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
-using GUISkinFramework.Controls;
+using System.Linq;
+using GUISkinFramework.Skin;
 
 namespace GUISkinFramework
 {

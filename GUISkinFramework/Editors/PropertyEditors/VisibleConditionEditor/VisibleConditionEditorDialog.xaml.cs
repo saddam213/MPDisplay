@@ -1,28 +1,17 @@
 ﻿using System;
 using System.CodeDom.Compiler;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Reflection;
+using System.IO;
 using System.Linq;
-using System.Text;
+using System.Reflection;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Windows;
+using GUISkinFramework.Skin;
 using Microsoft.CSharp;
 using MPDisplay.Common.Controls;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
@@ -257,11 +246,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
         {
             // First, get the path for this executing assembly.
             Assembly a = Assembly.GetExecutingAssembly();
-            string path = System.IO.Path.GetDirectoryName(a.Location);
+            string path = Path.GetDirectoryName(a.Location);
 
             // if the file exists in this Path - prepend the path
-            string fullReference = System.IO.Path.Combine(path, relativeReference);
-            if (System.IO.File.Exists(fullReference))
+            string fullReference = Path.Combine(path, relativeReference);
+            if (File.Exists(fullReference))
                 return fullReference;
             else
             {
