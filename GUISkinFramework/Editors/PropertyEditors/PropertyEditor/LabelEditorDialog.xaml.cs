@@ -3,30 +3,28 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using GUISkinFramework.Skin;
-using MPDisplay.Common.Controls;
 
 namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
     /// </summary>
-    public partial class LabelEditorDialog : Window, INotifyPropertyChanged
+    public partial class LabelEditorDialog : INotifyPropertyChanged
     {
         private object _instance;
         private string _currentLabel = string.Empty;
-        private ObservableCollection<AutoCompleteEntry> _autoCompleteList = new ObservableCollection<AutoCompleteEntry>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisibleConditionEditorDialog"/> class.
         /// </summary>
         /// <param name="instance">The instance.</param>
+        /// <param name="skinInfo">The skin XML</param>
         public LabelEditorDialog(object instance, XmlSkinInfo skinInfo)
         {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
             Instance = instance;
             SkinInfo = skinInfo;
-          //  LanguageEntries = CollectionViewSource.GetDefaultView(skinInfo.Language.LanguageEntries);
         }
 
         private void SetLabel(string label)
@@ -165,7 +163,7 @@ namespace GUISkinFramework.Editors
                         continue;
                     }
 
-                    else if (item.StartsWith("#"))
+                    if (item.StartsWith("#"))
                     {
                         var prop = SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item);
                         if (prop != null)
@@ -248,7 +246,7 @@ namespace GUISkinFramework.Editors
         {
             if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= (LabelItems.Count - 1))
             {
-                int index = SelectedLabelItemIndex;
+                var index = SelectedLabelItemIndex;
                 if (LabelItems.ElementAtOrDefault(index) == "+")
                 {
                     return;

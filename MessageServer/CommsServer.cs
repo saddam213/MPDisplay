@@ -159,30 +159,26 @@ namespace MessageServer
         public static void AddConnection(APIConnection connection, Action<MessageEventArgs> callback)
         {
             RemoveConnection(connection);
-            if (connection != null && callback != null)
+            if (connection == null || callback == null) return;
+
+            _log.Message(LogLevel.Info, "Adding new connection, Connection: {0}", connection.ConnectionName);
+            lock (_syncObj)
             {
-                _log.Message(LogLevel.Info, "Adding new connection, Connection: {0}", connection.ConnectionName);
-                lock (_syncObj)
-                {
-                    ActiveConnections.Add(connection, callback);
-                }
+                ActiveConnections.Add(connection, callback);
             }
         }
 
         public static void RemoveConnection(APIConnection connection)
         {
+            if (connection == null) return;
 
-            if (connection != null)
+            var existing = ActiveConnections.Keys.FirstOrDefault(x => x.ConnectionName == connection.ConnectionName);
+            if (existing == null) return;
+
+            _log.Message(LogLevel.Info, "Removing existing connection, Connection: {0}", connection.ConnectionName);
+            lock (_syncObj)
             {
-                var existing = ActiveConnections.Keys.FirstOrDefault(x => x.ConnectionName == connection.ConnectionName);
-                if (existing != null)
-                {
-                    _log.Message(LogLevel.Info, "Removing existing connection, Connection: {0}", connection.ConnectionName);
-                    lock (_syncObj)
-                    {
-                        ActiveConnections.Remove(existing);
-                    }
-                }
+                ActiveConnections.Remove(existing);
             }
         }
 
@@ -193,13 +189,7 @@ namespace MessageServer
 
         public static IEnumerable<Action<MessageEventArgs>> GetAllCallbacksExcept(APIConnection exception)
         {
-            foreach (var connection in _activeConnections)
-            {
-                if (exception == null || connection.Key.ConnectionName != exception.ConnectionName)
-                {
-                    yield return connection.Value;
-                }
-            }
+            return from connection in _activeConnections where exception == null || connection.Key.ConnectionName != exception.ConnectionName select connection.Value;
         }
 
         public static Task ToTask(this Action<MessageEventArgs> callback, MessageEventArgs message)
@@ -218,7 +208,7 @@ namespace MessageServer
     {
         #region Vars
 
-    
+   
         private Log _log = LoggingManager.GetLog(typeof(MessageService));
         private IMessageCallback _messageCallback;
         private APIConnection _apiConnection;
@@ -251,10 +241,7 @@ namespace MessageServer
                     _log.Message(LogLevel.Info, "[Connect] - Successfully established connection, ConnectionName: {0}", connection.ConnectionName);
                     return ConnectionManager.GetConnections();
                 }
-                else
-                {
-                    _log.Message(LogLevel.Error, "[Connect] - Failed to create new connection.");
-                }
+                _log.Message(LogLevel.Error, "[Connect] - Failed to create new connection.");
             }
             catch (Exception ex)
             {
@@ -435,35 +422,34 @@ namespace MessageServer
         {
             try
             {
-                if (_messageCallback != null)
+                if (_messageCallback == null) return;
+
+                switch (e.MessageType)
                 {
-                    switch (e.MessageType)
-                    {
-                        case MessageType.ReceiveAPIPropertyMessage:
-                            _messageCallback.ReceiveAPIPropertyMessage(e.Data as APIPropertyMessage);
-                            break;
-                        case MessageType.ReceiveAPIListMessage:
-                            _messageCallback.ReceiveAPIListMessage(e.Data as APIListMessage);
-                            break;
-                        case MessageType.ReceiveAPIInfoMessage:
-                            _messageCallback.ReceiveAPIInfoMessage(e.Data as APIInfoMessage);
-                            break;
-                        case MessageType.ReceiveAPIDataMessage:
-                            _messageCallback.ReceiveAPIDataMessage(e.Data as APIDataMessage);
-                            break;
-                        case MessageType.ReceiveMediaPortalMessage:
-                            _messageCallback.ReceiveMediaPortalMessage(e.Data as APIMediaPortalMessage);
-                            break;
-                        case MessageType.ReceiveTVServerMessage:
-                            _messageCallback.ReceiveTVServerMessage(e.Data as APITVServerMessage);
-                            break;
-                        case MessageType.SessionConnected:
-                            _messageCallback.SessionConnected(e.Connection);
-                            break;
-                        case MessageType.SessionDisconnected:
-                            _messageCallback.SessionDisconnected(e.Connection);
-                            break;
-                    }
+                    case MessageType.ReceiveAPIPropertyMessage:
+                        _messageCallback.ReceiveAPIPropertyMessage(e.Data as APIPropertyMessage);
+                        break;
+                    case MessageType.ReceiveAPIListMessage:
+                        _messageCallback.ReceiveAPIListMessage(e.Data as APIListMessage);
+                        break;
+                    case MessageType.ReceiveAPIInfoMessage:
+                        _messageCallback.ReceiveAPIInfoMessage(e.Data as APIInfoMessage);
+                        break;
+                    case MessageType.ReceiveAPIDataMessage:
+                        _messageCallback.ReceiveAPIDataMessage(e.Data as APIDataMessage);
+                        break;
+                    case MessageType.ReceiveMediaPortalMessage:
+                        _messageCallback.ReceiveMediaPortalMessage(e.Data as APIMediaPortalMessage);
+                        break;
+                    case MessageType.ReceiveTVServerMessage:
+                        _messageCallback.ReceiveTVServerMessage(e.Data as APITVServerMessage);
+                        break;
+                    case MessageType.SessionConnected:
+                        _messageCallback.SessionConnected(e.Connection);
+                        break;
+                    case MessageType.SessionDisconnected:
+                        _messageCallback.SessionDisconnected(e.Connection);
+                        break;
                 }
                 return;
             }

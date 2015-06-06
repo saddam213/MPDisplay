@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Windows;
-using System.Windows.Controls;
 using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
 
@@ -9,10 +8,10 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class VisibleConditionEditor : UserControl, ITypeEditor
+    public partial class VisibleConditionEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public VisibleConditionEditor()
         {
@@ -54,12 +53,14 @@ namespace GUISkinFramework.Editors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var editor = new VisibleConditionEditorDialog(_Item.Instance, _Item.PropertyGrid.Tag as XmlSkinInfo);
-            editor.CurrentCondition = _Item.Value.ToString();
+            var editor = new VisibleConditionEditorDialog(_item.Instance, _item.PropertyGrid.Tag as XmlSkinInfo)
+            {
+                CurrentCondition = _item.Value.ToString()
+            };
             if (editor.ShowDialog() == true)
             {
                 Value = editor.CurrentCondition;
-                _Item.Value = editor.CurrentCondition;
+                _item.Value = editor.CurrentCondition;
             }
             VisibleConditionInfo = GetText();
             VisibleConditionToolTip = GetToolTipText();
@@ -67,7 +68,7 @@ namespace GUISkinFramework.Editors
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
+            _item = propertyItem;
             VisibleConditionInfo = GetText();
             VisibleConditionToolTip = GetToolTipText();
             return this;
@@ -75,18 +76,18 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_Item != null && _Item.Value is string)
+            if (_item != null && _item.Value is string)
             {
-                return !string.IsNullOrEmpty(_Item.Value.ToString()) ? "(Visible Condition)" : "(Empty)";
+                return !string.IsNullOrEmpty(_item.Value.ToString()) ? "(Visible Condition)" : "(Empty)";
             }
             return "(Empty)";
         }
 
         private string GetToolTipText()
         {
-            if (_Item != null && _Item.Value is string && !string.IsNullOrEmpty(_Item.Value.ToString()))
+            if (_item != null && _item.Value is string && !string.IsNullOrEmpty(_item.Value.ToString()))
             {
-                return string.Format("Visible Condition(s):{0}{1}",Environment.NewLine, _Item.Value.ToString());
+                return string.Format("Visible Condition(s):{0}{1}",Environment.NewLine, _item.Value);
             }
             return "(Empty)";
         }

@@ -53,7 +53,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnDropDownContentChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            DropDownButton dropDownButton = o as DropDownButton;
+            var dropDownButton = o as DropDownButton;
             if (dropDownButton != null)
                 dropDownButton.OnDropDownContentChanged(e.OldValue, e.NewValue);
         }
@@ -76,7 +76,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnIsOpenChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            DropDownButton dropDownButton = o as DropDownButton;
+            var dropDownButton = o as DropDownButton;
             if (dropDownButton != null)
                 dropDownButton.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -160,13 +160,12 @@ namespace MPDisplay.Common.Controls
 
         private void CanExecuteChanged()
         {
-            if (Command != null)
-            {
-                RoutedCommand command = Command as RoutedCommand;
+            if (Command == null) return;
 
-                // If a RoutedCommand.
-                IsEnabled = command != null ? command.CanExecute(CommandParameter, CommandTarget) : Command.CanExecute(CommandParameter);
-            }
+            var command = Command as RoutedCommand;
+
+            // If a RoutedCommand.
+            IsEnabled = command != null ? command.CanExecute(CommandParameter, CommandTarget) : Command.CanExecute(CommandParameter);
         }
 
         /// <summary>
@@ -190,7 +189,7 @@ namespace MPDisplay.Common.Controls
         /// </summary>
         private void RaiseRoutedEvent(RoutedEvent routedEvent)
         {
-            RoutedEventArgs args = new RoutedEventArgs(routedEvent, this);
+            var args = new RoutedEventArgs(routedEvent, this);
             RaiseEvent(args);
         }
 
@@ -199,23 +198,21 @@ namespace MPDisplay.Common.Controls
         /// </summary>
         private void RaiseCommand()
         {
-            if (Command != null)
-            {
-                RoutedCommand routedCommand = Command as RoutedCommand;
+            if (Command == null) return;
 
-                if (routedCommand == null)
-                    Command.Execute(CommandParameter);
-                else
-                    routedCommand.Execute(CommandParameter, CommandTarget);
-            }
+            var routedCommand = Command as RoutedCommand;
+
+            if (routedCommand == null)
+                Command.Execute(CommandParameter);
+            else
+                routedCommand.Execute(CommandParameter, CommandTarget);
         }
 
         /// <summary>
         /// Unhooks a command from the Command property.
         /// </summary>
         /// <param name="oldCommand">The old command.</param>
-        /// <param name="newCommand">The new command.</param>
-        private void UnhookCommand(ICommand oldCommand, ICommand newCommand)
+        private void UnhookCommand(ICommand oldCommand)
         {
             EventHandler handler = CanExecuteChanged;
             oldCommand.CanExecuteChanged -= handler;
@@ -224,9 +221,8 @@ namespace MPDisplay.Common.Controls
         /// <summary>
         /// Hooks up a command to the CanExecuteChnaged event handler.
         /// </summary>
-        /// <param name="oldCommand">The old command.</param>
         /// <param name="newCommand">The new command.</param>
-        private void HookUpCommand(ICommand oldCommand, ICommand newCommand)
+        private void HookUpCommand(ICommand newCommand)
         {
             EventHandler handler = CanExecuteChanged;
             _canExecuteChangedHandler = handler;
@@ -253,7 +249,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            DropDownButton dropDownButton = d as DropDownButton;
+            var dropDownButton = d as DropDownButton;
             if (dropDownButton != null)
                 dropDownButton.OnCommandChanged((ICommand)e.OldValue, (ICommand)e.NewValue);
         }
@@ -262,9 +258,9 @@ namespace MPDisplay.Common.Controls
         {
             // If old command is not null, then we need to remove the handlers.
             if (oldValue != null)
-                UnhookCommand(oldValue, newValue);
+                UnhookCommand(oldValue);
 
-            HookUpCommand(oldValue, newValue);
+            HookUpCommand(newValue);
 
             CanExecuteChanged(); //may need to call this when changing the command parameter or target.
         }

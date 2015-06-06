@@ -1,4 +1,7 @@
-﻿<base:GUIControl x:Class="GUIFramework.GUI.GUIGroup"
+﻿<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<!-- ReSharper disable Xaml.RedundantAttachedProperty -->
+<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
+<base:GUIControl x:Class="GUIFramework.GUI.GUIGroup"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

@@ -114,7 +114,7 @@ namespace GUIFramework.GUI
         {
             base.UpdateInfoData();
 
-            string text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText, null);
+            var text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText, null);
             Label = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelText, null);
             var img = await PropertyRepository.GetProperty<byte[]>(SkinXml.Image, null)
                  ?? await PropertyRepository.GetProperty<byte[]>(SkinXml.DefaultImage, null);

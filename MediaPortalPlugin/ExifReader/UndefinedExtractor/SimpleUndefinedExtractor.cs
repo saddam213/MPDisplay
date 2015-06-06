@@ -20,7 +20,7 @@ namespace MediaPortalPlugin.ExifReader.UndefinedExtractor
         /// <returns>The Exif Value</returns>
         public IExifValue GetExifValue(byte[] value, int length)
         {
-            string bytesString = String.Join(" ", value.Select(b => b.ToString("X2")));
+            var bytesString = String.Join(" ", value.Select(b => b.ToString("X2")));
             return new ExifValue<string>(new[] { bytesString });
         }
     }

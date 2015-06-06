@@ -40,8 +40,8 @@ namespace GUISkinFramework.Skin
         private VerticalAlignment _labelFixedVerticalAlignment = VerticalAlignment.Center;
         private XmlBrush _labelMovingFontBrush;
         private XmlBrush _labelFixedFontBrush;
-        private bool _enableLabelMoving = false;
-        private bool _enableLabelFixed = false;
+        private bool _enableLabelMoving;
+        private bool _enableLabelFixed;
 
         [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
@@ -321,12 +321,12 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            GlossBrush = style.GetStyle<XmlBrush>(GlossBrush);
-            ShadeBrush = style.GetStyle<XmlBrush>(ShadeBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
-            LabelMovingFontBrush = style.GetStyle<XmlBrush>(LabelMovingFontBrush);
-            LabelFixedFontBrush = style.GetStyle<XmlBrush>(LabelFixedFontBrush);
+            GlossBrush = style.GetStyle(GlossBrush);
+            ShadeBrush = style.GetStyle(ShadeBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
+            LabelMovingFontBrush = style.GetStyle(LabelMovingFontBrush);
+            LabelFixedFontBrush = style.GetStyle(LabelFixedFontBrush);
         }
     }
 

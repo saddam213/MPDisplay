@@ -9,7 +9,7 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for StyleSaveDialog.xaml
     /// </summary>
-    public partial class StyleSaveDialog : Window, INotifyPropertyChanged 
+    public partial class StyleSaveDialog : INotifyPropertyChanged 
     {
         private string _styleId;
         private XmlStyle _style;
@@ -45,7 +45,7 @@ namespace GUISkinFramework.Editors
         
         private void Button_Save_Click(object sender, RoutedEventArgs e)
         {
-            var brushStyle = NewStyle.CreateCopy() as XmlStyle;
+            var brushStyle = NewStyle.CreateCopy();
             if (brushStyle != null)
             {
                 brushStyle.StyleId = StyleId;

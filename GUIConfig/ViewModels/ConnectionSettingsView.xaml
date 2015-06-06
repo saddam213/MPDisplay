@@ -10,6 +10,7 @@
 		<Style TargetType="UserControl">
 			<Setter Property="MinHeight" Value="260" />
 			<Style.Triggers>
+			    <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
 				<DataTrigger Binding="{Binding CanEditConnectionName}" Value="True">
 					<Setter Property="MinHeight" Value="180" />
 				</DataTrigger>

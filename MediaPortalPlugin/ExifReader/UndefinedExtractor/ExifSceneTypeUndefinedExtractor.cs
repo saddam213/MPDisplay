@@ -19,7 +19,7 @@ namespace MediaPortalPlugin.ExifReader.UndefinedExtractor
         /// <returns>The Exif Value</returns>
         public IExifValue GetExifValue(byte[] value, int length)
         {
-            string sceneType = value.FirstOrDefault() == 1 ? "A directly photographed image" : "Reserved";
+            var sceneType = value.FirstOrDefault() == 1 ? "A directly photographed image" : "Reserved";
             return new ExifValue<string>(new[] { sceneType });
         }
     }

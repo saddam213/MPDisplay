@@ -11,11 +11,11 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for PropertyEditor.xaml
     /// </summary>
-    public partial class PropertyEditor : UserControl, INotifyPropertyChanged
+    public partial class PropertyEditor : INotifyPropertyChanged
     {
  
         private XmlProperty _selectedProperty;
-        private int _mediaPortalTagSelectedIndex = 0;
+        private int _mediaPortalTagSelectedIndex;
         private FilterOptions _currentFilter;
 
         public PropertyEditor(XmlSkinInfo skinInfo)
@@ -117,12 +117,10 @@ namespace GUISkinFramework.Editors
 
         private void Button_MediaPortalTagRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedProperty != null)
+            if (SelectedProperty == null) return;
+            if (MediaPortalTagSelectedIndex >= 0 && (SelectedProperty.MediaPortalTags.Count - 1) >= MediaPortalTagSelectedIndex)
             {
-                if (MediaPortalTagSelectedIndex >= 0 && (SelectedProperty.MediaPortalTags.Count - 1) >= MediaPortalTagSelectedIndex)
-                {
-                    SelectedProperty.MediaPortalTags.RemoveAt(MediaPortalTagSelectedIndex);
-                }
+                SelectedProperty.MediaPortalTags.RemoveAt(MediaPortalTagSelectedIndex);
             }
         }
 
@@ -134,18 +132,18 @@ namespace GUISkinFramework.Editors
        // Filter the property list
         private bool FilterPropertyList(object item)
         {
-            bool value = true;
+            var value = true;
 
-            XmlProperty property = item as XmlProperty;
+            var property = item as XmlProperty;
 
             switch (CurrentFilter)
             {
                 case FilterOptions.ShowMP:
-                    if (property.IsInternal) value = false;
+                    if (property != null && property.IsInternal) value = false;
                     break;
 
                 case FilterOptions.ShowMPD:
-                     if (!property.IsInternal) value = false;
+                     if (property != null && !property.IsInternal) value = false;
                    break;
             }
             return value;
@@ -166,12 +164,7 @@ namespace GUISkinFramework.Editors
                 return new ValidationResult(false, "The property tag may not be empty.");
             }
 
-            if (!tag.StartsWith("#"))
-            {
-                return new ValidationResult(false, "The property tag must start with '#'");
-            }
-           
-            return new ValidationResult(true, null);
+            return !tag.StartsWith("#") ? new ValidationResult(false, "The property tag must start with '#'") : new ValidationResult(true, null);
         }
     }
 

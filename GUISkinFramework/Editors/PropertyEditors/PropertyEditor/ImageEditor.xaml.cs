@@ -74,15 +74,13 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_item != null && _item.Value is string)
-            {
-                string val = _item.Value.ToString();
-                return string.IsNullOrEmpty(val) ? "(Empty)"
-                    : val.Contains("+") ? "(Custom)"
+            if (_item == null || !(_item.Value is string)) return "(Empty)";
+
+            var val = _item.Value.ToString();
+            return string.IsNullOrEmpty(val) ? "(Empty)"
+                : val.Contains("+") ? "(Custom)"
                     : val.StartsWith("#") ? "(Property)"
-                    : "(Image)";
-            }
-            return "(Empty)";
+                        : "(Image)";
         }
 
         private string GetToolTipText()

@@ -14,18 +14,10 @@ namespace MediaPortalPlugin.Plugins
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                var currentMovie = ReflectionHelper.GetStaticField(PluginWindow, "currentMovie", null);
-                if (currentMovie != null)
-                {
-                    if (ReflectionHelper.GetPropertyValue(currentMovie, "File", string.Empty) == filename)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            var currentMovie = ReflectionHelper.GetStaticField(PluginWindow, "currentMovie", null);
+            if (currentMovie == null) return false;
+            return ReflectionHelper.GetPropertyValue(currentMovie, "File", string.Empty) == filename;
         }
 
         public override APIPlaybackType PlayType

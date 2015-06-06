@@ -2,14 +2,9 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:propGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
-           
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:SkinEditor.BindingConverters"
-             xmlns:local="clr-namespace:SkinEditor.Views"
-                           xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
-			 xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
-			 xmlns:baseViews="clr-namespace:SkinEditor.Themes"
+             xmlns:baseViews="clr-namespace:SkinEditor.Themes"
 			 xmlns:xmlWindows="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
 			 xmlns:xmlDialogs="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
 			 xmlns:xmlControls="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
@@ -31,11 +26,11 @@
         <converters:TypeToImageConverter x:Key="TypeToImageConverter"/>
         <converters:TypeToFontWeightConverter x:Key="TypeToFontWeightConverter" />
 
-        <Style x:Name="txt" TargetType="TextBlock">
+        <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="Black" />
         </Style>
 
-        <Style x:Name="exp" TargetType="Expander">
+        <Style TargetType="Expander">
             <Setter Property="Foreground" Value="Black" />
         </Style>
 
@@ -62,7 +57,7 @@
             </Style.Triggers>
         </Style>
 
-        <CollectionViewSource x:Key="allWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
+        <CollectionViewSource x:Key="AllWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="DisplayType" />
             </CollectionViewSource.GroupDescriptions>
@@ -104,7 +99,7 @@
                     </Button>
                 </Grid>
 
-                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource allWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.Row="1"  >
+                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource AllWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged">
 
                     <TreeView.Resources>
                         <!--SelectedItem with focus-->
@@ -334,7 +329,7 @@
                 </TreeView>
 
             </DockPanel>
-            <GridSplitter Width="5" ResizeBehavior="BasedOnAlignment" />
+            <GridSplitter Grid.Column="0" Width="5" ResizeBehavior="BasedOnAlignment" />
             <DockPanel  Margin="0,0,5,0" Grid.Column="1" MinWidth="40">
                 <TextBlock Text="{Binding SelectedTreeItem.DisplayName}" DockPanel.Dock="Top" />
                 <implementation1:PropertyGrid Tag="{Binding SkinInfo, Mode=OneWay}" 
@@ -346,7 +341,7 @@
 
         </Grid>
 
-        <GridSplitter Margin="0,11,0,0" Width="5" ResizeBehavior="BasedOnAlignment" />
+        <GridSplitter Grid.Column="0" Margin="0,11,0,0" Width="5" ResizeBehavior="BasedOnAlignment" />
 
         <Grid Grid.Column="1" Margin="0,0,0,0"  >
             <Grid.RowDefinitions>
@@ -357,7 +352,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" >
 
 
-                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
+                <Border BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
                     <Expander x:Name="skinOptExpander" Header="Skin Options" >
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid  Background="#FFE5E5E5" Height="132"  >
@@ -379,9 +374,9 @@
                 </Border>
 
 
-                <Border Margin="1,0,0,0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                <Border Margin="1,0,0,0" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
 
-                    <Expander x:Name="designOptExpander" Header="Designer Options"  Grid.Column="1" >
+                    <Expander x:Name="designOptExpander" Header="Designer Options">
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid Background="#FFE5E5E5" Height="132"  >
                                 <Grid.ColumnDefinitions>
@@ -390,7 +385,7 @@
                                 </Grid.ColumnDefinitions>
 
                                 <CheckBox Content="Show Grid" IsChecked="{Binding Settings.ShowGrid}" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" />
-                                <StackPanel Margin="15,31,5,0"  IsEnabled="{Binding Settings.ShowGrid}">
+                                <StackPanel Grid.Column="0" Margin="15,31,5,0"  IsEnabled="{Binding Settings.ShowGrid}">
                                     <TextBlock Text="Grid Size"  />
                                     <implementation2:IntegerUpDown Value="{Binding Settings.GridSize}"  />
                                     <TextBlock Margin="0,3,0,0" Text="Grid Color" />
@@ -414,7 +409,7 @@
                 </Border>
 
 
-                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
+                <Border BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
                     <Expander  Header="Connection" >
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid>
@@ -450,8 +445,9 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Button Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="97"/>
-                                <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="112,10,0,0" VerticalAlignment="Top" Width="97" Grid.ColumnSpan="2"/>
+                                <Button Grid.Row="0" Grid.Column="0" Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="97"/>
+                                <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="112,10,0,0" VerticalAlignment="Top" Width="97"
+                                        Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" />
 
                                 <StackPanel Margin="10,2,41,0"   Grid.Column="0" Grid.Row="1">
                                     <TextBlock Text="SkinEditor" Height="18" Foreground="Black" />

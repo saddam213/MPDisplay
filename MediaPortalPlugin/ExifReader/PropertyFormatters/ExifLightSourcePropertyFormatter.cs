@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of light source names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _lightSourceNameMap = new Dictionary<ushort, string>()
+        private Dictionary<ushort, string> _lightSourceNameMap = new Dictionary<ushort, string>
         {
             { 0, "Unknown" },
             { 1, "Daylight" },
@@ -36,7 +36,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
             { 22, "D75" },
             { 23, "D50" },
             { 24, "ISO studio tungsten" },
-            { 255, "Other light source" },
+            { 255, "Other light source" }
         };
 
         /// <summary>

@@ -25,26 +25,22 @@ namespace Common.Helpers
         [DllImport("user32.dll")]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
-        private const int SW_SHOW = 5;
-        private const int SW_MINIMIZE = 6;
         private const int SW_RESTORE = 9;
         private const int GWL_EXSTYLE = -20;
         private const int WS_EX_NOACTIVATE = 0x08000000;
 
         public static void ActivateApplication(string appName)
         {
-            Process[] procList = Process.GetProcessesByName(appName);
-            if (procList.Length > 0)
-            {
-                ShowWindow(procList[0].MainWindowHandle, SW_RESTORE);
-                SetForegroundWindow(procList[0].MainWindowHandle);
-            }
+            var procList = Process.GetProcessesByName(appName);
+            if (procList.Length <= 0) return;
+            ShowWindow(procList[0].MainWindowHandle, SW_RESTORE);
+            SetForegroundWindow(procList[0].MainWindowHandle);
         }
 
         public static void SetWindowNoActivate(Window window)
         {
             //Set the window style to noactivate.
-            WindowInteropHelper helper = new WindowInteropHelper(window);
+            var helper = new WindowInteropHelper(window);
             SetWindowLong(helper.Handle, GWL_EXSTYLE,
             GetWindowLong(helper.Handle, GWL_EXSTYLE) | WS_EX_NOACTIVATE);
         }
@@ -67,25 +63,21 @@ namespace Common.Helpers
             try
             {
                 var processes = Process.GetProcessesByName(name);
-
-                if (processes != null)
+                foreach (var process in processes)
                 {
-                    foreach (var process in processes)
+                    if (!string.IsNullOrEmpty(process.MainWindowTitle))
                     {
-                        if (!string.IsNullOrEmpty(process.MainWindowTitle))
-                        {
-                            process.CloseMainWindow();
-                        }
-                        else
-                        {
-                            process.Close();
-                        }
+                        process.CloseMainWindow();
                     }
+                    else
+                    {
+                        process.Close();
+                    }
+                }
 
-                    if (!kill)
-                    {
-                        KillApplication(name, true);
-                    }
+                if (!kill)
+                {
+                    KillApplication(name, true);
                 }
             }
             catch (Exception ex)

@@ -10,17 +10,15 @@ namespace GUISkinFramework.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string)
+            if (!(value is string)) return null;
+            if (targetType == typeof(FontWeight))
             {
-                if (targetType == typeof(FontWeight))
-                {
-                    return (FontWeight)(new FontWeightConverter().ConvertFromString(value.ToString()) ?? FontWeights.Normal);
-                }
+                return (FontWeight)(new FontWeightConverter().ConvertFromString(value.ToString()) ?? FontWeights.Normal);
+            }
 
-                if (targetType == typeof(FontFamily))
-                {
-                    return (FontFamily)new FontFamilyConverter().ConvertFromString(value.ToString());
-                }
+            if (targetType == typeof(FontFamily))
+            {
+                return (FontFamily)new FontFamilyConverter().ConvertFromString(value.ToString());
             }
             return null;
         }

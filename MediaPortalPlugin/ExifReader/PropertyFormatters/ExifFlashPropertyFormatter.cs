@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of flash mode names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _flashDescriptionMap = new Dictionary<ushort, string>()
+        private Dictionary<ushort, string> _flashDescriptionMap = new Dictionary<ushort, string>
         {
             { 0x00, "Flash did not fire" },
             { 0x01, "Flash fired" },

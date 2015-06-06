@@ -43,7 +43,7 @@ namespace GUIConfig.ViewModels
         {
             InitializeComponent();
 
-            _startmodeStatus = getServiceStartupType();
+            _startmodeStatus = GetServiceStartupType();
             StartModeStatus = LanguageHelper.GetLanguageValue(_startmodeStatus);
 
             TestButtonCommand = new RelayCommand(TestButtonExecute, CanTestButtonExecute);
@@ -171,7 +171,7 @@ namespace GUIConfig.ViewModels
         /// </summary>
         public async void ServerButtonExecute()
         {
-            bool isRunning = ServiceHelper.IsServiceRunning("MPDisplayServer");
+            var isRunning = ServiceHelper.IsServiceRunning("MPDisplayServer");
             TestStatus = string.Empty;
             await Task.Factory.StartNew(() =>
             {
@@ -222,14 +222,11 @@ namespace GUIConfig.ViewModels
                          mode = "Automatic";
                          break;
                  }
-                 if (mode.Length > 0)
-                 {
-                     setServiceStartupType(mode);
+                if (mode.Length <= 0) return;
+                SetServiceStartupType(mode);
 
-                     _startmodeStatus = getServiceStartupType();
-
-                 }
-             });
+                _startmodeStatus = GetServiceStartupType();
+            });
 
             StartModeStatus = LanguageHelper.GetLanguageValue(_startmodeStatus);
             CommandManager.InvalidateRequerySuggested();
@@ -277,30 +274,24 @@ namespace GUIConfig.ViewModels
 
         #region WMI Management
 
-        private  string  getServiceStartupType()
+        private static string  GetServiceStartupType()
         {
             //construct the management path
             const string path = "Win32_Service.Name='" + Servicename + "'";
             //construct the management object
-            if( ServiceHelper.CheckIfServiceExists(Servicename) )
-            {
-                ManagementObject managementObj = new ManagementObject(path);
-               return managementObj["StartMode"].ToString();
-            }
-            else
-            {
-                 return "Not installed";
-             }
+            if (!ServiceHelper.CheckIfServiceExists(Servicename)) return "Not installed";
+            var managementObj = new ManagementObject(path);
+            return managementObj["StartMode"].ToString();
         }
 
-        private void setServiceStartupType(string mode )
+        private static void SetServiceStartupType(string mode )
         {
                 //construct the management path
                 const string path = "Win32_Service.Name='" + Servicename + "'";
                 //construct the management object
-                ManagementObject managementObj = new ManagementObject(path);
+                var managementObj = new ManagementObject(path);
                 //we will use the invokeMethod method of the ManagementObject class
-                object[] parameters = new object[1];
+                var parameters = new object[1];
                 parameters[0] = mode;
                 managementObj.InvokeMethod("ChangeStartMode", parameters);
        }

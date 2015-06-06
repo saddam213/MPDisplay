@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Media;
 using GUISkinFramework.Skin;
 
@@ -10,7 +9,7 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for GradientBrushEditor.xaml
     /// </summary>
-    public partial class GradientBrushEditor : UserControl, INotifyPropertyChanged
+    public partial class GradientBrushEditor : INotifyPropertyChanged
     {
         public GradientBrushEditor()
         {
@@ -22,11 +21,7 @@ namespace GUISkinFramework.Editors
 
       
         private XmlGradientStop _selectedGradientStop;
-       
-
-
-
-
+ 
 public XmlGradientBrush GradientBrush
 {
     get { return (XmlGradientBrush)GetValue(GradientBrushProperty); }
@@ -35,21 +30,19 @@ public XmlGradientBrush GradientBrush
          
 // Using a DependencyProperty as the backing store for GradientBrush.  This enables animation, styling, binding, etc...
 public static readonly DependencyProperty GradientBrushProperty = 
-    DependencyProperty.Register("GradientBrush", typeof(XmlGradientBrush), typeof(GradientBrushEditor), new PropertyMetadata(new XmlGradientBrush(), new PropertyChangedCallback(OnBrushChanged)));
+    DependencyProperty.Register("GradientBrush", typeof(XmlGradientBrush), typeof(GradientBrushEditor), new PropertyMetadata(new XmlGradientBrush(), OnBrushChanged));
 
         private static void OnBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var _value = e.NewValue as XmlGradientBrush;
+            var value = e.NewValue as XmlGradientBrush;
             var _this = d as GradientBrushEditor;
-            if (_this != null) _this.SetBackgroundValues(_value);
+            if (_this != null) _this.SetBackgroundValues(value);
         }
 
         private void SetBackgroundValues(XmlGradientBrush value)
         {
             if (value != null)
             {
-                //NotifyPropertyChanged("GradientStartPoint");
-                //NotifyPropertyChanged("GradientEndPoint");
                 NotifyPropertyChanged("SelectedGradientAngle");
             }
         }
@@ -60,121 +53,12 @@ public static readonly DependencyProperty GradientBrushProperty =
             set { _selectedGradientStop = value; NotifyPropertyChanged("SelectedGradientStop"); }
         }
 
-       // private XmlGradientAngle _gradientBrushAngle;
-
         public XmlGradientAngle GradientBrushAngle
         {
             get { return GradientBrush.Angle; }
             set { GradientBrush.Angle = value; NotifyPropertyChanged("GradientBrushAngle"); UpdateDisplayBrush(); }
         }
         
-
-        //public GradientAngle SelectedGradientAngle
-        //{
-        //    get
-        //    {
-        //        if (GradientBrush.StartPoint.ToPoint() == new Point(0, 0.5) && GradientBrush.EndPoint.ToPoint() == new Point(1, 0.5))
-        //        {
-        //            return GradientAngle.Horizontal;
-        //        }
-        //        else if (GradientBrush.StartPoint.ToPoint() == new Point(0.5, 0) && GradientBrush.EndPoint.ToPoint() == new Point(0.5, 1))
-        //        {
-        //            return GradientAngle.Vertical;
-        //        }
-        //        return GradientAngle.Custom;
-        //    }
-        //    set
-        //    {
-        //        switch (value)
-        //        {
-        //            case GradientAngle.Vertical:
-        //                GradientBrush.StartPoint = new Point(0.5, 0).ToXmlString();
-        //                GradientBrush.EndPoint = new Point(0.5, 1).ToXmlString();
-        //                break;
-        //            case GradientAngle.Horizontal:
-        //                GradientBrush.StartPoint = new Point(0, 0.5).ToXmlString();
-        //                GradientBrush.EndPoint = new Point(1, 0.5).ToXmlString();
-        //                break;
-        //            case GradientAngle.Custom:
-        //                GradientBrush.StartPoint = new Point().ToXmlString();
-        //                GradientBrush.EndPoint = new Point().ToXmlString();
-        //                break;
-        //            default:
-        //                break;
-        //        }
-        //        NotifyPropertyChanged("SelectedGradientAngle");
-        //        NotifyPropertyChanged("GradientStartPoint");
-        //        NotifyPropertyChanged("GradientEndPoint");
-        //        UpdateDisplayBrush();
-        //    }
-        //}
-
-
-        //public Point GradientStartPoint
-        //{
-        //    get { return GradientBrush.StartPoint.ToPoint(); }
-        //    set
-        //    {
-        //        GradientBrush.StartPoint =  value.ToXmlString();
-        //        NotifyPropertyChanged("GradientStartPoint");
-        //    }
-        //}
-
-        //public Point GradientEndPoint
-        //{
-        //    get { return GradientBrush.EndPoint.ToPoint(); }
-        //    set
-        //    {
-        //        GradientBrush.EndPoint = value.ToXmlString();
-        //        NotifyPropertyChanged("GradientEndPoint");
-        //    }
-        //}
-
-        //private Point GetStartPoint()
-        //{
-        //    switch (SelectedGradientAngle)
-        //    {
-        //        case GradientAngle.Vertical:
-        //            return new Point(0.5, 0);
-        //        case GradientAngle.Horizontal:
-        //            return new Point(0, 0.5);
-        //        case GradientAngle.Custom:
-        //            return GradientStartPoint;
-        //        default:
-        //            break;
-        //    }
-        //    return new Point();
-        //}
-
-        //private Point GetEndPoint()
-        //{
-        //    switch (SelectedGradientAngle)
-        //    {
-        //        case GradientAngle.Vertical:
-        //            return new Point(0.5, 1);
-        //        case GradientAngle.Horizontal:
-        //            return new Point(1, 0.5);
-        //        case GradientAngle.Custom:
-        //            return GradientEndPoint;
-        //        default:
-        //            break;
-        //    }
-        //    return new Point();
-        //}
-
-        //private GradientAngle GetGradientAngle(string points)
-        //{
-
-        //    if (points == "0,0.51,0.5")
-        //    {
-        //        return GradientAngle.Horizontal;
-        //    }
-        //    else if (points == "0.5,00.5,1")
-        //    {
-        //        return GradientAngle.Vertical;
-        //    }
-        //    return GradientAngle.Custom;
-        //}
 
         private void GradientStopAdd_Click(object sender, RoutedEventArgs e)
         {

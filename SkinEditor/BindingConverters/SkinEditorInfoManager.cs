@@ -18,16 +18,13 @@ namespace SkinEditor.BindingConverters
 
         public static string GetLanguageValue(string skinTag)
         {
-            if (_skinInfo != null && _skinInfo.Language != null)
-            {
-                var entry = _skinInfo.Language.LanguageEntries.FirstOrDefault(x => x.SkinTag == skinTag);
-                if (entry != null)
-                {
-                    var value = entry.Values.FirstOrDefault(x => x.Language == _skinInfo.CurrentLanguage) ?? entry.Values.FirstOrDefault();
-                    return value == null ? skinTag : value.Value;
-                }
-            }
-            return skinTag;
+            if (_skinInfo == null || _skinInfo.Language == null) return skinTag;
+
+            var entry = _skinInfo.Language.LanguageEntries.FirstOrDefault(x => x.SkinTag == skinTag);
+            if (entry == null) return skinTag;
+
+            var value = entry.Values.FirstOrDefault(x => x.Language == _skinInfo.CurrentLanguage) ?? entry.Values.FirstOrDefault();
+            return value == null ? skinTag : value.Value;
         }
     }
 }

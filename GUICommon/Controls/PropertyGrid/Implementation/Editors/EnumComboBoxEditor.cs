@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Reflection;
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -15,17 +14,17 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static object[] GetValues(Type enumType)
         {
-            List<object> values = new List<object>();            
+            var values = new List<object>();            
 
             var fields = enumType.GetFields().Where(x => x.IsLiteral);
-            foreach (FieldInfo field in fields)
+            foreach (var field in fields)
             {
                 // Get array of BrowsableAttribute attributes
-                object[] attrs = field.GetCustomAttributes(typeof(BrowsableAttribute), false);
+                var attrs = field.GetCustomAttributes(typeof(BrowsableAttribute), false);
                 if (attrs.Length == 1)
                 {
                     // If attribute exists and its value is false continue to the next field...
-                    BrowsableAttribute brAttr = (BrowsableAttribute)attrs[0];
+                    var brAttr = (BrowsableAttribute)attrs[0];
                     if (brAttr.Browsable == false) continue;
                 }
 

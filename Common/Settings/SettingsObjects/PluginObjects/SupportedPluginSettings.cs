@@ -248,6 +248,7 @@ namespace Common.Settings
 
     public enum SupportedPlugin
     {
+        // ReSharper disable InconsistentNaming
         None = -1,
         MyFilms = 7986,
         MovingPictures = 96742,
@@ -260,6 +261,6 @@ namespace Common.Settings
         //PandoraMusicBox,
         //RadioTime,
         //Streamradio
-        TuneIn = 25650,
+        TuneIn = 25650
     }
 }

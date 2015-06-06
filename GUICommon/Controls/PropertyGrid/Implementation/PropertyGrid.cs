@@ -76,7 +76,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnFilterChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            var propertyGrid = o as PropertyGrid;
             if (propertyGrid != null)
                 propertyGrid.OnFilterChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -111,7 +111,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnIsCategorizedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            var propertyGrid = o as PropertyGrid;
             if (propertyGrid != null)
                 propertyGrid.OnIsCategorizedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -167,7 +167,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnSelectedObjectChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyInspector = o as PropertyGrid;
+            var propertyInspector = o as PropertyGrid;
             if (propertyInspector != null)
                 propertyInspector.OnSelectedObjectChanged(e.OldValue, e.NewValue);
         }
@@ -198,7 +198,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnSelectedObjectTypeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            var propertyGrid = o as PropertyGrid;
             if (propertyGrid != null)
                 propertyGrid.OnSelectedObjectTypeChanged((Type)e.OldValue, (Type)e.NewValue);
         }
@@ -209,7 +209,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
                 SelectedObjectTypeName = string.Empty;
             else
             {
-                DisplayNameAttribute displayNameAttribute = newValue.GetCustomAttributes(false).OfType<DisplayNameAttribute>().FirstOrDefault();
+                var displayNameAttribute = newValue.GetCustomAttributes(false).OfType<DisplayNameAttribute>().FirstOrDefault();
                 SelectedObjectTypeName = displayNameAttribute == null ? newValue.Name : displayNameAttribute.DisplayName;
             }
         }
@@ -238,15 +238,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static object OnCoerceSelectedObjectName(DependencyObject o, object baseValue)
         {
-            if (String.IsNullOrEmpty((String)baseValue))
-                return "<no name>";
-
-            return baseValue;
+            return String.IsNullOrEmpty((String)baseValue) ? "<no name>" : baseValue;
         }
 
         private static void OnSelectedObjectNameChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            var propertyGrid = o as PropertyGrid;
             if (propertyGrid != null)
                 propertyGrid.SelectedObjectNameChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -269,7 +266,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnSelectedPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyGrid propertyGrid = o as PropertyGrid;
+            var propertyGrid = o as PropertyGrid;
             if (propertyGrid != null)
                 propertyGrid.OnSelectedPropertyChanged((PropertyItem)e.OldValue, (PropertyItem)e.NewValue);
         }
@@ -369,14 +366,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             //hitting enter on textbox will update value of underlying source
-            if (SelectedProperty != null && e.Key == Key.Enter && e.OriginalSource is TextBox)
-            {
-                if (!((TextBox) e.OriginalSource).AcceptsReturn)
-                {
-                    BindingExpression be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
-                    if (be != null) be.UpdateSource();
-                }
-            }
+            if (SelectedProperty == null || e.Key != Key.Enter || !(e.OriginalSource is TextBox)) return;
+
+            if (((TextBox) e.OriginalSource).AcceptsReturn) return;
+
+            var be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
+            if (be != null) be.UpdateSource();
         }
 
         #endregion //Base Class Overrides
@@ -431,31 +426,26 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
             try
             {
-                PropertyDescriptorCollection descriptors = PropertyGridUtilities.GetPropertyDescriptors(instance);
+                var descriptors = PropertyGridUtilities.GetPropertyDescriptors(instance);
 
                 if (!AutoGenerateProperties)
                 {
-                    List<PropertyDescriptor> specificProperties = new List<PropertyDescriptor>();
-                    foreach (PropertyDefinition pd in PropertyDefinitions)
+                    var specificProperties = new List<PropertyDescriptor>();
+                    foreach (var pd in PropertyDefinitions)
                     {
-                        foreach (PropertyDescriptor descriptor in descriptors)
+                        var pd1 = pd;
+                        foreach (var descriptor in descriptors.Cast<PropertyDescriptor>().Where(descriptor => descriptor.Name == pd1.Name))
                         {
-                            if (descriptor.Name == pd.Name)
-                            {
-                                specificProperties.Add(descriptor);
-                                break;
-                            }
+                            specificProperties.Add(descriptor);
+                            break;
                         }
                     }
 
                     descriptors = new PropertyDescriptorCollection(specificProperties.ToArray());
                 }
 
-                foreach (PropertyDescriptor descriptor in descriptors)
-                {
-                    if (descriptor.IsBrowsable)
-                        propertyItems.Add(PropertyGridUtilities.CreatePropertyItem(descriptor, instance, this, descriptor.Name));
-                }
+                propertyItems.AddRange(from PropertyDescriptor descriptor in descriptors where descriptor.IsBrowsable 
+                                       select PropertyGridUtilities.CreatePropertyItem(descriptor, instance, this, descriptor.Name));
             }
             catch (Exception ex)
             {
@@ -467,11 +457,9 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private void SetSelectedObjectNameBinding(object selectedObject)
         {
-            if (selectedObject is FrameworkElement)
-            {
-                var binding = new Binding("Name") {Source = selectedObject, Mode = BindingMode.OneWay};
-                BindingOperations.SetBinding(this, SelectedObjectNameProperty, binding);
-            }
+            if (!(selectedObject is FrameworkElement)) return;
+            var binding = new Binding("Name") {Source = selectedObject, Mode = BindingMode.OneWay};
+            BindingOperations.SetBinding(this, SelectedObjectNameProperty, binding);
         }
 
         private void SetDragThumbMargin(bool isCategorized)
@@ -499,8 +487,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             foreach (var item in Properties)
             {
                 var bindingExpressionBase = BindingOperations.GetBindingExpressionBase(item, PropertyItem.ValueProperty);
-                if (bindingExpressionBase != null)
-                    bindingExpressionBase.UpdateTarget();
+                if (bindingExpressionBase != null) bindingExpressionBase.UpdateTarget();
             }
         }
 

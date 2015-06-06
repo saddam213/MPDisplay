@@ -85,17 +85,16 @@ namespace GUISkinFramework.Editors
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnEditBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue != null)
+            if (e.NewValue == null) return;
+
+            var editor = (d as BrushTypeEditor);
+            var brush = (e.NewValue as XmlBrush).CreateCopy();
+            if (editor == null) return;
+            editor.SetBrushType(brush);
+            editor.Brush = brush;
+            if (brush != null)
             {
-                var editor = (d as BrushTypeEditor);
-                var brush = (e.NewValue as XmlBrush).CreateCopy();
-                if (editor == null) return;
-                editor.SetBrushType(brush);
-                editor.Brush = brush;
-                if (brush != null)
-                {
-                    editor.SelectedStyle = editor.SkinInfo.Style.BrushStyles.FirstOrDefault(s => s.StyleId == brush.StyleId);
-                }
+                editor.SelectedStyle = editor.SkinInfo.Style.BrushStyles.FirstOrDefault(s => s.StyleId == brush.StyleId);
             }
         }
 
@@ -144,7 +143,7 @@ namespace GUISkinFramework.Editors
         /// Sets the type of the brush.
         /// </summary>
         /// <param name="brush">The brush.</param>
-        private void SetBrushType(XmlBrush brush)
+        private void SetBrushType(XmlStyle brush)
         {
             BrushType brushType;
 
@@ -223,11 +222,10 @@ namespace GUISkinFramework.Editors
         /// <param name="brush">The brush.</param>
         private void XmlImageBrush_BrushChanged(XmlImageBrush brush)
         {
-            if (CurrentBrushType == BrushType.Image)
-            {
-                Brush = brush;
-                FireBrushChanged(brush);
-            }
+            if (CurrentBrushType != BrushType.Image) return;
+
+            Brush = brush;
+            FireBrushChanged(brush);
         }
 
         /// <summary>
@@ -236,11 +234,10 @@ namespace GUISkinFramework.Editors
         /// <param name="brush">The brush.</param>
         private void XmlGradientBrush_BrushChanged(XmlGradientBrush brush)
         {
-            if (CurrentBrushType == BrushType.Gradient)
-            {
-                Brush = brush;
-                FireBrushChanged(brush);
-            }
+            if (CurrentBrushType != BrushType.Gradient) return;
+
+            Brush = brush;
+            FireBrushChanged(brush);
         }
 
         /// <summary>
@@ -250,16 +247,14 @@ namespace GUISkinFramework.Editors
         /// <param name="e">The e.</param>
         private void XmlColorBrush_BrushChanged(object sender, RoutedPropertyChangedEventArgs<Color> e)
         {
-            if (CurrentBrushType == BrushType.Color)
+            if (CurrentBrushType != BrushType.Color) return;
+
+            Brush = new XmlColorBrush
             {
-               
-                Brush = new XmlColorBrush
-                    {
-                        Color = e.NewValue.ToString(),
-                        StyleId = SelectedStyle == null ? string.Empty : SelectedStyle.StyleId
-                    };
-                FireBrushChanged(Brush);
-            }
+                Color = e.NewValue.ToString(),
+                StyleId = SelectedStyle == null ? string.Empty : SelectedStyle.StyleId
+            };
+            FireBrushChanged(Brush);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

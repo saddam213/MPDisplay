@@ -28,9 +28,9 @@ namespace MPDisplay.Common.Controls
         /// <param name="e">Event arguments.</param>
         private static void OnValidSpinDirectionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            Spinner source = (Spinner)d;
-            ValidSpinDirections oldvalue = (ValidSpinDirections)e.OldValue;
-            ValidSpinDirections newvalue = (ValidSpinDirections)e.NewValue;
+            var source = (Spinner)d;
+            var oldvalue = (ValidSpinDirections)e.OldValue;
+            var newvalue = (ValidSpinDirections)e.NewValue;
             source.OnValidSpinDirectionChanged(oldvalue, newvalue);
         }
 
@@ -47,16 +47,15 @@ namespace MPDisplay.Common.Controls
         /// <param name="e">Spin event args.</param>
         protected virtual void OnSpin(SpinEventArgs e)
         {
-            ValidSpinDirections valid = e.Direction == SpinDirection.Increase ? ValidSpinDirections.Increase : ValidSpinDirections.Decrease;
+            var valid = e.Direction == SpinDirection.Increase ? ValidSpinDirections.Increase : ValidSpinDirections.Decrease;
 
             //Only raise the event if spin is allowed.
-            if ((ValidSpinDirection & valid) == valid)
+            if ((ValidSpinDirection & valid) != valid) return;
+
+            var handler = Spin;
+            if (handler != null)
             {
-                EventHandler<SpinEventArgs> handler = Spin;
-                if (handler != null)
-                {
-                    handler(this, e);
-                }
+                handler(this, e);
             }
         }
 

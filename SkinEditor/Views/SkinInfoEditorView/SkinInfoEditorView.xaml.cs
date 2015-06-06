@@ -33,11 +33,10 @@ namespace SkinEditor.Views
         public override void Initialize()
         {
             base.Initialize();
-            if (SkinInfo != null)
-            {
-                SkinInfo.PropertyChanged += SkinInfo_PropertyChanged;
-                SkinInfo.SkinOptions.CollectionChanged += SkinOptions_CollectionChanged;
-            }
+            if (SkinInfo == null) return;
+
+            SkinInfo.PropertyChanged += SkinInfo_PropertyChanged;
+            SkinInfo.SkinOptions.CollectionChanged += SkinOptions_CollectionChanged;
         }
 
         void SkinOptions_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
@@ -83,12 +82,7 @@ namespace SkinEditor.Views
                 return new ValidationResult(false, "SkinOption name cannot contain empty space");
             }
 
-            if (!Regex.IsMatch(filePath, @"^[a-zA-Z0-9\\_]+$"))
-            {
-                return new ValidationResult(false, "SkinOption name can only contain letters, numbers and underscore");
-            }
-
-            return new ValidationResult(true, null);
+            return !Regex.IsMatch(filePath, @"^[a-zA-Z0-9\\_]+$") ? new ValidationResult(false, "SkinOption name can only contain letters, numbers and underscore") : new ValidationResult(true, null);
         }
     }
 }

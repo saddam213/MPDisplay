@@ -56,8 +56,8 @@ namespace MPDisplay.Common.Controls
         static void OnBusyStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
    
-            LoadingAdorner bd = (LoadingAdorner)d;
-            Style nVal = (Style)e.NewValue;
+            var bd = (LoadingAdorner)d;
+            var nVal = (Style)e.NewValue;
             bd._busyHost.CreateContent = () => new Control { Style = nVal };
         }
         #endregion
@@ -161,13 +161,13 @@ namespace MPDisplay.Common.Controls
 
         private void SetBinding(DependencyObject obj, DependencyProperty source, DependencyProperty target)
         {
-            Binding b = new Binding {Source = this, Path = new PropertyPath(source)};
+            var b = new Binding {Source = this, Path = new PropertyPath(source)};
             BindingOperations.SetBinding(obj, target, b);
         }
 
         protected override Size MeasureOverride(Size constraint)
         {
-            Size ret = new Size(0, 0);
+            var ret = new Size(0, 0);
             if (Child != null)
             {
                 Child.Measure(constraint);
@@ -181,7 +181,7 @@ namespace MPDisplay.Common.Controls
 
         protected override Size ArrangeOverride(Size arrangeSize)
         {
-            Size ret = new Size(0, 0);
+            var ret = new Size(0, 0);
             if (Child != null)
             {
                 Child.Arrange(new Rect(arrangeSize));

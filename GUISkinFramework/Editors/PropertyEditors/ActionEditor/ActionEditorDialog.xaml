@@ -6,7 +6,6 @@
         xmlns:local="clr-namespace:GUISkinFramework.Editors"
         Title="Action Editor" MinHeight="201" MinWidth="586"  Height="201" Width="586" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" Name="UI">
     <Window.Resources>
-        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter"/>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="ActionTypes">
             <ObjectDataProvider.MethodParameters>
                 <x:Type TypeName="xmlCommon:XmlActionType" />
@@ -32,17 +31,17 @@
 
 
 		<TextBlock HorizontalAlignment="Left" Margin="6,5,0,0" TextWrapping="Wrap" Text="Actions" VerticalAlignment="Top" Height="16" Width="39"/>
-		<ListBox x:Name="list" ItemsSource="{Binding XmlActions}" SelectedItem="{Binding SelectedAction}" DisplayMemberPath="DisplayName" Margin="6,22,5,37"/>
-		<Button Margin="6,0,0,10" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="30"  Command="{Binding ItemAdd}" >
+		<ListBox Grid.Column="0" x:Name="list" ItemsSource="{Binding XmlActions}" SelectedItem="{Binding SelectedAction}" DisplayMemberPath="DisplayName" Margin="6,22,5,37"/>
+		<Button Grid.Column="0" Margin="6,0,0,10" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="30"  Command="{Binding ItemAdd}" >
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" />
 		</Button>
-		<Button Margin="41,0,0,10" HorizontalAlignment="Left" Width="30" Height="22" VerticalAlignment="Bottom"  Command="{Binding ItemRemove}" >
+		<Button Grid.Column="0" Margin="41,0,0,10" HorizontalAlignment="Left" Width="30" Height="22" VerticalAlignment="Bottom"  Command="{Binding ItemRemove}" >
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" Stretch="Uniform" />
 		</Button>
-		<Button Margin="0,0,40,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveUp}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
+		<Button Grid.Column="0" Margin="0,0,40,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveUp}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Up.png" Stretch="Uniform" />
 		</Button>
-		<Button Margin="0,0,5,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveDown}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
+		<Button Grid.Column="0" Margin="0,0,5,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveDown}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Down.png" Stretch="Uniform" />
 		</Button>
 
@@ -70,7 +69,7 @@
             </StackPanel.Style>
         </StackPanel>
 
-		<Button Content="OK" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Command="{Binding ResultOK}" Height="22" Grid.Column="1" />
+		<Button Content="OK" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Command="{Binding ResultOk}" Height="22" Grid.Column="1" />
 		<Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Command="{Binding ResultCancel}" Grid.Column="1" Height="22"/>
 	</Grid>
 </Window>

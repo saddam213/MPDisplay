@@ -46,7 +46,7 @@ namespace GUIConfig.ViewModels
         public Screen SelectedDisplay
         {
             get { return _selectedDisplay; }
-            set { _selectedDisplay = value; NotifyPropertyChanged("SelectedDisplay"); SetScreenSettings(DataObject as GUISettings); }
+            set { _selectedDisplay = value; NotifyPropertyChanged(); SetScreenSettings(DataObject as GUISettings); }
         }
 
         /// <summary>
@@ -79,23 +79,19 @@ namespace GUIConfig.ViewModels
         /// <param name="settings">The settings.</param>
         private void SetScreenSettings(GUISettings settings)
         {
-            if (settings != null)
+            if (settings == null) return;
+            if (!settings.CustomResolution)
             {
-                if (!settings.CustomResolution)
-                {
-                    if (SelectedDisplay != null)
-                    {
-                        settings.ScreenHeight = SelectedDisplay.Bounds.Height;
-                        settings.ScreenWidth = SelectedDisplay.Bounds.Width;
-                        settings.ScreenOffSetX = SelectedDisplay.Bounds.X;
-                        settings.ScreenOffSetY = SelectedDisplay.Bounds.Y;
-                    }
-                }
-                else
-                {
-                    settings.ScreenOffSetX = 0;
-                    settings.ScreenOffSetY = 0;
-                }
+                if (SelectedDisplay == null) return;
+                settings.ScreenHeight = SelectedDisplay.Bounds.Height;
+                settings.ScreenWidth = SelectedDisplay.Bounds.Width;
+                settings.ScreenOffSetX = SelectedDisplay.Bounds.X;
+                settings.ScreenOffSetY = SelectedDisplay.Bounds.Y;
+            }
+            else
+            {
+                settings.ScreenOffSetX = 0;
+                settings.ScreenOffSetY = 0;
             }
         }
 

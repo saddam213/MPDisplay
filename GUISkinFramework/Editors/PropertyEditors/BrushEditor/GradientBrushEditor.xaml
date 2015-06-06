@@ -51,7 +51,8 @@
         </StackPanel>
 
 
-        <ListView x:Name="gradientList"  ItemsSource="{Binding GradientBrush.GradientStops}" SelectedItem="{Binding SelectedGradientStop}"  Margin="0,43,0,0" Grid.ColumnSpan="2" >
+        <ListView x:Name="gradientList"  ItemsSource="{Binding GradientBrush.GradientStops}" SelectedItem="{Binding SelectedGradientStop}"  Margin="0,43,0,0"
+                  Grid.Row="0" Grid.ColumnSpan="2" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Color"  >

@@ -9,7 +9,7 @@
           MediaPortalDialogList,
         MPDisplaySkins,
         MPDisplayStyles,
-        MPDisplayLanguages,
+        MPDisplayLanguages
       
     }
 }

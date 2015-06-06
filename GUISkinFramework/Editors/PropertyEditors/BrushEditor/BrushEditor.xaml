@@ -1,4 +1,5 @@
-﻿<UserControl x:Class="GUISkinFramework.Editors.BrushEditor"
+﻿<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<UserControl x:Class="GUISkinFramework.Editors.BrushEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -36,7 +37,7 @@
                                             RenderEnabled="{Binding IsEnabled, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=UserControl}}"
 											RenderMouseOver="{TemplateBinding IsMouseOver}" >
 
-                                    <Grid x:Name="arrowGlyph" IsHitTestVisible="False" Grid.Column="1" Margin="5">
+                                    <Grid x:Name="arrowGlyph" IsHitTestVisible="False" Margin="5">
                                         <Path Width="7" Height="4" Data="M 0,1 C0,1 0,0 0,0 0,0 3,0 3,0 3,0 3,1 3,1 3,1 4,1 4,1 4,1 4,0 4,0 4,0 7,0 7,0 7,0 7,1 7,1 7,1 6,1 6,1 6,1 6,2 6,2 6,2 5,2 5,2 5,2 5,3 5,3 5,3 4,3 4,3 4,3 4,4 4,4 4,4 3,4 3,4 3,4 3,3 3,3 3,3 2,3 2,3 2,3 2,2 2,2 2,2 1,2 1,2 1,2 1,1 1,1 1,1 0,1 0,1 z" Fill="#FF000000"/>
                                     </Grid>
                                 </implementation:ButtonChrome>
@@ -56,6 +57,7 @@
             <ColumnDefinition Width="17"/>
         </Grid.ColumnDefinitions>
         <Border Grid.Column="0" BorderThickness="1" BorderBrush="Black" Margin="1">
+            <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
             <Border  Background="{Binding Value, Converter={StaticResource BrushConverter}}"/>
             <Border.Background>
                 <DrawingBrush Viewport="0,0,10,10" ViewportUnits="Absolute" TileMode="Tile">

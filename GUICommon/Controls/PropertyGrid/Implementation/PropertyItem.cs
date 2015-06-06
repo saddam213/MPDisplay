@@ -72,7 +72,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnEditorChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyItem propertyItem = o as PropertyItem;
+            var propertyItem = o as PropertyItem;
             if (propertyItem != null)
                 propertyItem.OnEditorChanged((FrameworkElement)e.OldValue, (FrameworkElement)e.NewValue);
         }
@@ -128,7 +128,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             get
             {
-                var markupProperty = _markupObject.Properties.Where(p => p.Name == PropertyDescriptor.Name).FirstOrDefault();
+                var markupProperty = _markupObject.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
                 if (markupProperty != null)
                     return markupProperty.Value is DynamicResourceExtension;
                 return false;
@@ -148,7 +148,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnIsExpandedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyItem propertyItem = o as PropertyItem;
+            var propertyItem = o as PropertyItem;
             if (propertyItem != null)
                 propertyItem.OnIsExpandedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -184,7 +184,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             //TODO: need to find a better way to determine if a StaticResource has been applied to any property not just a style
             get
             {
-                var markupProperty = _markupObject.Properties.Where(p => p.Name == PropertyDescriptor.Name).FirstOrDefault();
+                var markupProperty = _markupObject.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
                 if (markupProperty != null)
                     return markupProperty.Value is Style;
 
@@ -207,7 +207,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnIsSelectedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyItem propertyItem = o as PropertyItem;
+            var propertyItem = o as PropertyItem;
             if (propertyItem != null)
                 propertyItem.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -273,6 +273,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         #endregion //PropertyType
 
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public ICommand ResetValueCommand { get; private set; }
 
         #region Value
@@ -286,7 +287,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PropertyItem propertyItem = o as PropertyItem;
+            var propertyItem = o as PropertyItem;
             if (propertyItem != null)
                 propertyItem.OnValueChanged(e.OldValue, e.NewValue);
         }
@@ -367,12 +368,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private void CanExecuteResetValueCommand(object sender, CanExecuteRoutedEventArgs e)
         {
-            bool canExecute = false;
-
-            if (PropertyDescriptor.CanResetValue(Instance) && !PropertyDescriptor.IsReadOnly)
-            {
-                canExecute = true;
-            }
+            var canExecute = PropertyDescriptor.CanResetValue(Instance) && !PropertyDescriptor.IsReadOnly;
 
             e.CanExecute = canExecute;
         }
@@ -390,13 +386,9 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
             try
             {
-                PropertyDescriptorCollection descriptors = PropertyGridUtilities.GetPropertyDescriptors(Value);
+                var descriptors = PropertyGridUtilities.GetPropertyDescriptors(Value);
 
-                foreach (PropertyDescriptor descriptor in descriptors)
-                {
-                    if (descriptor.IsBrowsable)
-                        propertyItems.Add(PropertyGridUtilities.CreatePropertyItem(descriptor, Instance, PropertyGrid, String.Format("{0}.{1}", BindingPath, descriptor.Name), Level + 1));
-                }
+                propertyItems.AddRange(from PropertyDescriptor descriptor in descriptors where descriptor.IsBrowsable select PropertyGridUtilities.CreatePropertyItem(descriptor, Instance, PropertyGrid, String.Format("{0}.{1}", BindingPath, descriptor.Name), Level + 1));
             }
             catch (Exception)
             {
@@ -409,13 +401,10 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private void ResolveExpandableObject()
         {
             var attribute = PropertyGridUtilities.GetAttribute<ExpandableObjectAttribute>(PropertyDescriptor);
-            if (attribute != null)
-            {
-               
-                HasChildProperties = true;
-                IsReadOnly = true;
-                
-            }
+            if (attribute == null) return;
+
+            HasChildProperties = true;
+            IsReadOnly = true;
         }
 
         private void ResolvePropertyOrder()

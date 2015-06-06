@@ -110,13 +110,13 @@ namespace GUI
             double width = _settings.CustomResolution ? _settings.ScreenWidth : screen.Bounds.Width;
             double height = _settings.CustomResolution ? _settings.ScreenHeight : screen.Bounds.Height;
 
-            PresentationSource source = PresentationSource.FromVisual(this);
+            var source = PresentationSource.FromVisual(this);
             if (source != null)
             {
                 if (source.CompositionTarget != null)
                 {
-                    double dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-                    double dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+                    var dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                    var dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
                     // ReSharper disable once CompareOfFloatsByEqualityOperator
                     if (Math.Abs(dpiX - 96.0) > Tolerance || Math.Abs(dpiY - 96.0) > Tolerance)
                     {
@@ -227,14 +227,13 @@ namespace GUI
             }
         }
 
-
-
         #endregion
 
 
         /// <summary>
         /// Restarts the mp display.
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private async void RestartMpDisplay()
         {
             await Task.Delay(2000);

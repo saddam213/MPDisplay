@@ -19,7 +19,7 @@ namespace MediaPortalPlugin.ExifReader.UndefinedExtractor
         /// <returns>The Exif Value</returns>
         public IExifValue GetExifValue(byte[] value, int length)
         {
-            ASCIIEncoding encoding = new ASCIIEncoding();
+            var encoding = new ASCIIEncoding();
             return new ExifValue<string>(new[] { encoding.GetString(value) });
         }
     }

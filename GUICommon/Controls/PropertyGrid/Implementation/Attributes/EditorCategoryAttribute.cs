@@ -4,13 +4,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class EditorCategoryAttribute : CategoryAttribute
     {
-        private int _order;
-
-        public int Order
-        {
-            get { return _order; }
-            set { _order = value; }
-        }
+        public int Order { get; set; }
 
         public EditorCategoryAttribute(string category, int order) : base(category)
         {

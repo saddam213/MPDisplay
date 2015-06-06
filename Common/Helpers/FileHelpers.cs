@@ -18,34 +18,31 @@ namespace Common.Helpers
         /// <returns></returns>
         public static byte[] ReadBytesFromFile(string filename)
         {
-            if (!string.IsNullOrEmpty(filename))
+            if (string.IsNullOrEmpty(filename)) return null;
+            try
             {
-
-                try
+                // get image from url
+                if (IsURL(filename) && ExistsURL(filename))
                 {
-				    // get image from url
-				    if (IsURL(filename) && ExistsURL(filename))
-				    {
-					    using (WebClient webClient = new WebClient())
-					    {
-						    byte[] fileData = webClient.DownloadData(filename);
-						    return fileData;
-					    }
-				    }									
-				    else if (File.Exists(filename))
-					{
-						using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
-						{
-							byte[] fileData = new byte[fs.Length];
-							fs.Read(fileData, 0, Convert.ToInt32(fs.Length));
-							return fileData;
-						}
-					}
-                 }
-                catch(Exception ex)
-                {
-                    _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File: {0}", ex, filename);
+                    using (var webClient = new WebClient())
+                    {
+                        var fileData = webClient.DownloadData(filename);
+                        return fileData;
+                    }
                 }
+                if (File.Exists(filename))
+                {
+                    using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    {
+                        var fileData = new byte[fs.Length];
+                        fs.Read(fileData, 0, Convert.ToInt32(fs.Length));
+                        return fileData;
+                    }
+                }
+            }
+            catch(Exception ex)
+            {
+                _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File: {0}", ex, filename);
             }
             return null;
         }
@@ -65,8 +62,8 @@ namespace Common.Helpers
 		/// <param name="file">The file.</param>
 		public static bool ExistsURL(String file)
 		{
-			Uri urlCheck = new Uri(file);
-			HttpWebRequest request = (HttpWebRequest)WebRequest.Create(urlCheck);					
+			var urlCheck = new Uri(file);
+			var request = (HttpWebRequest)WebRequest.Create(urlCheck);					
 			request.Timeout = 1000;
 			HttpWebResponse response = null;
 					
@@ -107,12 +104,11 @@ namespace Common.Helpers
         /// <param name="files">The files.</param>
         public static void TryDelete(IEnumerable<string> files)
         {
-            if (files != null)
+            if (files == null) return;
+
+            foreach (var file in files)
             {
-                foreach (var file in files)
-                {
-                    TryDelete(file);
-                }
+                TryDelete(file);
             }
         }
 
@@ -145,11 +141,7 @@ namespace Common.Helpers
         public static string OpenFileDialog(string initial, string filter)
         {
             var dialog = new OpenFileDialog {Filter = filter, InitialDirectory = initial};
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.FileName;
-            }
-            return string.Empty;
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : string.Empty;
         }
     }
 }

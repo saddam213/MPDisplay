@@ -3,28 +3,23 @@
     public class AutoCompleteEntry
     {
         private string[] _keywordStrings;
-        private string _displayString;
 
         public string[] KeywordStrings
         {
-            get { return _keywordStrings ?? (_keywordStrings = new[] {_displayString}); }
+            get { return _keywordStrings ?? (_keywordStrings = new[] {DisplayName}); }
         }
 
-        public string DisplayName
-        {
-            get { return _displayString; }
-            set { _displayString = value; }
-        }
+        public string DisplayName { get; set; }
 
         public AutoCompleteEntry(string name, params string[] keywords)
         {
-            _displayString = name;
+            DisplayName = name;
             _keywordStrings = keywords;
         }
 
         public override string ToString()
         {
-            return _displayString;
+            return DisplayName;
         }
     }
 }

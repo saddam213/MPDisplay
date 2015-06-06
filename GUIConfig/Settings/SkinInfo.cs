@@ -256,7 +256,7 @@ namespace GUIConfig.Settings
         {
             get
             { 
-                string filename = string.Format("{0}\\Preview_{1}.png",SkinImageFolder, CurrentStyle);
+                var filename = string.Format("{0}\\Preview_{1}.png",SkinImageFolder, CurrentStyle);
                 if (File.Exists(filename))
                 {
                     return filename;
@@ -272,11 +272,7 @@ namespace GUIConfig.Settings
         {
             get
             {
-                if (Directory.Exists(SkinStyleFolder))
-                {
-                    return Directory.GetFiles(SkinStyleFolder, "*.xml").Select(x => Path.GetFileNameWithoutExtension(x));
-                }
-                return null;
+                return Directory.Exists(SkinStyleFolder) ? Directory.GetFiles(SkinStyleFolder, "*.xml").Select(Path.GetFileNameWithoutExtension) : null;
             }
         }
 
@@ -287,13 +283,14 @@ namespace GUIConfig.Settings
         {
             get
             {
-                if (File.Exists(SkinLanguagePath))
+                if (!File.Exists(SkinLanguagePath)) return null;
+                try
                 {
-                    try
-                    {
-                        return XElement.Load(SkinLanguagePath).Descendants("LanguageValue").Select(x => x.FirstAttribute.Value).Distinct();
-                    }
-                    catch  { }
+                    return XElement.Load(SkinLanguagePath).Descendants("LanguageValue").Select(x => x.FirstAttribute.Value).Distinct();
+                }
+                catch
+                {
+                    // ignored
                 }
                 return null;
             }
@@ -326,7 +323,7 @@ namespace GUIConfig.Settings
 
         private string _name = string.Empty;
         private bool _isEnabled;
-        private string _description = null;
+        private string _description = string.Empty;
         private string _previewImage = string.Empty;
         private bool _isPreviewImageEnabled;
         private string _group;

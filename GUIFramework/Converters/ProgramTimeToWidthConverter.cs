@@ -9,12 +9,12 @@ namespace GUIFramework.Converters
 {
     public class ProgramTimeToWidthConverter : IMultiValueConverter
     {
-        private double GetItemWidth(DateTime startTime, DateTime endTime, double multi)
+        private static double GetItemWidth(DateTime startTime, DateTime endTime, double multi)
         {
             return (endTime - startTime).TotalMinutes * multi;
         }
 
-        private double GetStartPoint(DateTime startTime, DateTime guideStart, double multi)
+        private static double GetStartPoint(DateTime startTime, DateTime guideStart, double multi)
         {
             return ((startTime - guideStart).TotalMinutes * multi);
         }
@@ -33,19 +33,13 @@ namespace GUIFramework.Converters
                     }
                 }
             }
-            if (parameter.ToString() == "ProgramPosition")
-            {
-                if (values != null && values.Count(d => d != DependencyProperty.UnsetValue) == 3)
-                {
-                    var guideProgram = values[0] as TvGuideProgram;
-                    if (guideProgram != null)
-                    {
-                        var program = guideProgram;
-                        return GetStartPoint(program.StartTime, (DateTime)values[1], (double)values[2]);
-                    }
-                }
-            }
-            return 0.0;
+            if (parameter.ToString() != "ProgramPosition") return 0.0;
+
+            if (values == null || values.Count(d => d != DependencyProperty.UnsetValue) != 3) return 0.0;
+            var guideProgram1 = values[0] as TvGuideProgram;
+            if (guideProgram1 == null) return 0.0;
+            var program1 = guideProgram1;
+            return GetStartPoint(program1.StartTime, (DateTime)values[1], (double)values[2]);
         }
 
         public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)

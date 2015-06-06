@@ -18,13 +18,10 @@ namespace SkinEditor.Dialogs
         /// Displays the window.
         /// </summary>
         /// <param name="window">The window.</param>
-        private void DisplayWindow(XmlWindow window)
+        // ReSharper disable once UnusedParameter.Local
+        private static void DisplayWindow(XmlWindow window)
         {
-            //var pre = GUIFactory.CreateWindow(window);
-            //if (pre != null)
-            //{
-            //    DisplaySurface.Child = pre;
-            //}
+ 
         }
     }
 }

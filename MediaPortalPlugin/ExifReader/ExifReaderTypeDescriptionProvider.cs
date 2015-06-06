@@ -33,7 +33,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Returns a custom type descriptor</returns>
         public override ICustomTypeDescriptor GetTypeDescriptor(Type objectType, object instance)
         {
-            ICustomTypeDescriptor defaultDescriptor = base.GetTypeDescriptor(objectType, instance);
+            var defaultDescriptor = base.GetTypeDescriptor(objectType, instance);
 
             return instance == null ? defaultDescriptor : new ExifReaderCustomTypeDescriptor(defaultDescriptor, instance);
         }

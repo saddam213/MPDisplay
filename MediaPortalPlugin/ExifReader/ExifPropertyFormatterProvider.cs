@@ -18,7 +18,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>An IExifPropertyFormatter</returns>
         internal static IExifPropertyFormatter GetExifPropertyFormatter(PropertyTagId tagId)
         {
-            ExifPropertyFormatterAttribute attribute = CachedAttributeExtractor<PropertyTagId, ExifPropertyFormatterAttribute>.Instance.GetAttributeForField(tagId.ToString());
+            var attribute = CachedAttributeExtractor<PropertyTagId, ExifPropertyFormatterAttribute>.Instance.GetAttributeForField(tagId.ToString());
 
             if (attribute != null)
             {

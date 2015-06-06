@@ -215,54 +215,51 @@ namespace MPDisplay.Common.Controls
         /// <param name="arrayValue">The array value.</param>
         public void SetEQData(byte[] arrayValue)
         {
-            if (!_rendering)
-            {
-                _rendering = true;
-                lock (_fftData)
-                {
-                    if (_ledCount > 0)
-                    {
-                        for (int i = 0; i < BandCount; i++)            // array conatains interleaved values for 2 channels
-                        {
-                            if (i < _fftData.Length && i < arrayValue.Length/2)
-                            {
-                                EQData pm = _fftData[i];
-                                pm.Value = arrayValue[2*i+EQChannel]; // select data according to channel of this canvas
-                                if (pm.Falloff < pm.Value)
-                                {
-                                    pm.Falloff = pm.Value;
-                                    pm.Speed = FalloffSpeed;
-                                }
+            if (_rendering) return;
 
-                                int nDecValue = MaxRangeValue / _ledCount;
-                                if (pm.Value > 0)
-                                {
-                                    pm.Value -= (_ledCount > 1 ? nDecValue : (MaxRangeValue * 10) / 100);
-                                    if (pm.Value < 0)
-                                    {
-                                        pm.Value = 0;
-                                    }
-                                }
-                                if (pm.Speed > 0)
-                                {
-                                    pm.Speed -= 1;
-                                }
-                                if (pm.Speed == 0 && pm.Falloff > 0)
-                                {
-                                    pm.Falloff -= (_ledCount > 1 ? nDecValue >> 1 : 5);
-                                    if (pm.Falloff < 0)
-                                    {
-                                        pm.Falloff = 0;
-                                    }
-                                }
-                                _fftData[i] = pm;
+            _rendering = true;
+            lock (_fftData)
+            {
+                if (_ledCount > 0)
+                {
+                    for (var i = 0; i < BandCount; i++)            // array conatains interleaved values for 2 channels
+                    {
+                        if (i >= _fftData.Length || i >= arrayValue.Length/2) continue;
+                        var pm = _fftData[i];
+                        pm.Value = arrayValue[2*i+EQChannel]; // select data according to channel of this canvas
+                        if (pm.Falloff < pm.Value)
+                        {
+                            pm.Falloff = pm.Value;
+                            pm.Speed = FalloffSpeed;
+                        }
+
+                        var nDecValue = MaxRangeValue / _ledCount;
+                        if (pm.Value > 0)
+                        {
+                            pm.Value -= (_ledCount > 1 ? nDecValue : (MaxRangeValue * 10) / 100);
+                            if (pm.Value < 0)
+                            {
+                                pm.Value = 0;
                             }
                         }
+                        if (pm.Speed > 0)
+                        {
+                            pm.Speed -= 1;
+                        }
+                        if (pm.Speed == 0 && pm.Falloff > 0)
+                        {
+                            pm.Falloff -= (_ledCount > 1 ? nDecValue >> 1 : 5);
+                            if (pm.Falloff < 0)
+                            {
+                                pm.Falloff = 0;
+                            }
+                        }
+                        _fftData[i] = pm;
                     }
                 }
-                InvalidateVisual();
-                _rendering = false;
             }
+            InvalidateVisual();
+            _rendering = false;
         }
 
         protected override void OnMouseDown(MouseButtonEventArgs e)
@@ -326,24 +323,24 @@ namespace MPDisplay.Common.Controls
         /// <param name="isRounded">if set to <c>true</c> [is rounded].</param>
         private void DrawRectangleLeds(DrawingContext dc, bool isDouble, bool isRounded)
         {
-            double ledWidth = ActualWidth / BandCount;
-            double ledHeight = ledWidth / 2;
-            double eqHeight = isDouble ? (ActualHeight / 2) - (ledHeight / 2) : (ActualHeight - ledHeight);
+            var ledWidth = ActualWidth / BandCount;
+            var ledHeight = ledWidth / 2;
+            var eqHeight = isDouble ? (ActualHeight / 2) - (ledHeight / 2) : (ActualHeight - ledHeight);
             double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
-            double bandMinLimit = (eqHeight / maxRange) * minRange;
-            double bandMedLimit = (eqHeight / maxRange) * medRange;
+            var bandMinLimit = (eqHeight / maxRange) * minRange;
+            var bandMedLimit = (eqHeight / maxRange) * medRange;
 
             _ledCount = (int)(ActualWidth / ledHeight);
 
-            for (int bandNumber = 0; bandNumber < BandCount; bandNumber++)
+            for (var bandNumber = 0; bandNumber < BandCount; bandNumber++)
             {
-                double bandX = bandNumber * ledWidth;
+                var bandX = bandNumber * ledWidth;
                 double dataValue = isDouble ? _fftData[bandNumber].Value / 2 : _fftData[bandNumber].Value;
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
-                double vertValue = (eqHeight / maxRange) * dataValue;
-                double falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
+                var vertValue = (eqHeight / maxRange) * dataValue;
+                var falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
 
                 DrawRectangle(dc, FallOffColor, null, bandX, falloffValue, ledWidth, FallOffHeight, BandSpacing, 0);
                 if (isDouble)
@@ -352,9 +349,9 @@ namespace MPDisplay.Common.Controls
                 }
 
                 // Draw led's
-                for (int ledY = 0; ledY < _ledCount; ledY++)
+                for (var ledY = 0; ledY < _ledCount; ledY++)
                 {
-                    double locationY = (ledHeight * ledY);
+                    var locationY = (ledHeight * ledY);
                     if (vertValue > locationY)
                     {
                         var color = GetRangeColor(locationY, bandMinLimit, bandMedLimit);
@@ -389,34 +386,34 @@ namespace MPDisplay.Common.Controls
         /// <param name="isDouble">if set to <c>true</c> [is double].</param>
         private void DrawCircleLeds(DrawingContext dc, bool isDouble)
         {
-            int ledWidth = (int)(ActualWidth / BandCount);
-            int ledHeight = ledWidth;
-            double eqHeight = isDouble ? (ActualHeight / 2) - (ledHeight / 2) : (ActualHeight - ledHeight);
+            var ledWidth = (int)(ActualWidth / BandCount);
+            var ledHeight = ledWidth;
+            var eqHeight = isDouble ? (ActualHeight / 2) - ((double)ledHeight / 2) : (ActualHeight - ledHeight);
             double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
-            double bandMinLimit = (eqHeight / maxRange) * minRange;
-            double bandMedLimit = (eqHeight / maxRange) * medRange;
+            var bandMinLimit = (eqHeight / maxRange) * minRange;
+            var bandMedLimit = (eqHeight / maxRange) * medRange;
 
             _ledCount = (int)(ActualWidth / ledHeight);
 
-            for (int bandNumber = 0; bandNumber < BandCount; bandNumber++)
+            for (var bandNumber = 0; bandNumber < BandCount; bandNumber++)
             {
                 double bandX = bandNumber * ledWidth;
                 double dataValue = isDouble ? _fftData[bandNumber].Value / 2 : _fftData[bandNumber].Value;
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
-                double vertValue = (eqHeight / maxRange) * dataValue;
-                double falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
+                var vertValue = (eqHeight / maxRange) * dataValue;
+                var falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
 
 
-                DrawArc(dc, FallOffColor, SweepDirection.Clockwise, bandX, falloffValue + (ledHeight / 2), ledWidth, BandSpacing);
+                DrawArc(dc, SweepDirection.Clockwise, bandX, falloffValue + ((double)ledHeight / 2), ledWidth, BandSpacing);
                 if (isDouble)
                 {
-                    DrawArc(dc, FallOffColor, SweepDirection.Counterclockwise, bandX, ((eqHeight * 2) - falloffValue) + (ledHeight / 2), ledWidth, BandSpacing);
+                    DrawArc(dc, SweepDirection.Counterclockwise, bandX, ((eqHeight * 2) - falloffValue) + ((double)ledHeight / 2), ledWidth, BandSpacing);
                 }
 
                 // Draw led's
-                for (int ledY = 0; ledY < _ledCount; ledY++)
+                for (var ledY = 0; ledY < _ledCount; ledY++)
                 {
                     double locationY = (ledHeight * ledY);
                     if (vertValue > locationY)
@@ -442,26 +439,26 @@ namespace MPDisplay.Common.Controls
         /// <param name="isDouble">if set to <c>true</c> [is double].</param>
         private void DrawBar(DrawingContext dc, bool isDouble)
         {
-            double eqHeight = isDouble ? (ActualHeight / 2) : ActualHeight;
+            var eqHeight = isDouble ? (ActualHeight / 2) : ActualHeight;
             double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
 
-            double bandMinLimit = (eqHeight / maxRange) * minRange;
-            double bandMedLimit = (eqHeight / maxRange) * medRange;
-            double barWidth = ActualWidth / BandCount;
+            var bandMinLimit = (eqHeight / maxRange) * minRange;
+            var bandMedLimit = (eqHeight / maxRange) * medRange;
+            var barWidth = ActualWidth / BandCount;
             _ledCount = (int)(ActualWidth / BandCount);
 
-            for (int bandNumber = 0; bandNumber < BandCount; bandNumber++)
+            for (var bandNumber = 0; bandNumber < BandCount; bandNumber++)
             {
-                double bandX = bandNumber * barWidth;
+                var bandX = bandNumber * barWidth;
                 double dataValue = isDouble ? _fftData[bandNumber].Value / 2 : _fftData[bandNumber].Value;
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
-                double vertValue = (eqHeight / maxRange) * dataValue;
-                double falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
-                double loVal = Math.Max(eqHeight - bandMinLimit, eqHeight - vertValue);
-                double medVal = Math.Max(eqHeight - bandMedLimit, eqHeight - vertValue);
-                double hghVal = Math.Max(0, eqHeight - vertValue);
+                var vertValue = (eqHeight / maxRange) * dataValue;
+                var falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
+                var loVal = Math.Max(eqHeight - bandMinLimit, eqHeight - vertValue);
+                var medVal = Math.Max(eqHeight - bandMedLimit, eqHeight - vertValue);
+                var hghVal = Math.Max(0, eqHeight - vertValue);
 
                 DrawRectangle(dc, FallOffColor, null, bandX, falloffValue, barWidth, FallOffHeight, BandSpacing, 0);
                 if (isDouble)
@@ -514,7 +511,7 @@ namespace MPDisplay.Common.Controls
         /// <param name="height">The height.</param>
         /// <param name="spaceX">The space X.</param>
         /// <param name="spaceY">The space Y.</param>
-        private void DrawRectangle(DrawingContext dc, Brush color, Pen border, double x, double y, double width, double height, int spaceX, int spaceY)
+        private static void DrawRectangle(DrawingContext dc, Brush color, Pen border, double x, double y, double width, double height, int spaceX, int spaceY)
         {
             var rect = new Rect(x, y, width, height);
             rect.Inflate(-spaceX, -spaceY);
@@ -534,7 +531,7 @@ namespace MPDisplay.Common.Controls
         /// <param name="spaceX">The space X.</param>
         /// <param name="spaceY">The space Y.</param>
         /// <param name="radius">The radius.</param>
-        private void DrawRoundedRectangle(DrawingContext dc, Brush color, Pen border, double x, double y, double width, double height, int spaceX, int spaceY, int radius)
+        private static void DrawRoundedRectangle(DrawingContext dc, Brush color, Pen border, double x, double y, double width, double height, int spaceX, int spaceY, int radius)
         {
             var rect = new Rect(x, y, width, height);
             rect.Inflate(-spaceX, -spaceY);
@@ -551,11 +548,11 @@ namespace MPDisplay.Common.Controls
         /// <param name="y">The y.</param>
         /// <param name="size">The size.</param>
         /// <param name="space">The space.</param>
-        private void DrawElipse(DrawingContext dc, Brush color, Pen border, double x, double y, double size, int space)
+        private static void DrawElipse(DrawingContext dc, Brush color, Pen border, double x, double y, double size, int space)
         {
             var rect = new Rect(x, y, size, size);
             rect.Inflate(-space, -space);
-            double radius = rect.Width / 2;
+            var radius = rect.Width / 2;
             dc.DrawEllipse(color, border, new Point(rect.X + radius, rect.Y + radius), radius, radius);
         }
 
@@ -563,19 +560,18 @@ namespace MPDisplay.Common.Controls
         /// Draws the arc.
         /// </summary>
         /// <param name="drawingContext">The drawing context.</param>
-        /// <param name="brush">The brush.</param>
         /// <param name="direction">The direction.</param>
         /// <param name="x">The x.</param>
         /// <param name="y">The y.</param>
         /// <param name="size">The size.</param>
         /// <param name="space">The space.</param>
-        private void DrawArc(DrawingContext drawingContext, Brush brush, SweepDirection direction, double x, double y, double size, int space)
+        private void DrawArc(DrawingContext drawingContext, SweepDirection direction, double x, double y, double size, int space)
         {
             var rect = new Rect(x, y, size, size);
             rect.Inflate(-space, -space);
             // setup the geometry object
-            PathGeometry geometry = new PathGeometry();
-            PathFigure figure = new PathFigure();
+            var geometry = new PathGeometry();
+            var figure = new PathFigure();
             geometry.Figures.Add(figure);
             figure.StartPoint = new Point(rect.X, rect.Y);
 
@@ -591,18 +587,6 @@ namespace MPDisplay.Common.Controls
         #region Helpers
 
         /// <summary>
-        /// Check If Value is within range
-        /// </summary>
-        /// <param name="value">The value to check</param>
-        /// <param name="rangeMin">The minimum range</param>
-        /// <param name="rangeMax">The Max range</param>
-        /// <returns>If the value is beteen minimum and maximum</returns>
-        private bool InRange(double value, double rangeMin, double rangeMax)
-        {
-            return (value >= rangeMin && value <= rangeMax);
-        }
-
-        /// <summary>
         /// Gets the color of the range.
         /// </summary>
         /// <param name="location">The location.</param>
@@ -615,11 +599,7 @@ namespace MPDisplay.Common.Controls
             {
                 return LowRangeColor;
             }
-            else if (location <= medLimit)
-            {
-                return MedRangeColor;
-            }
-            return MaxRangeColor;
+            return location <= medLimit ? MedRangeColor : MaxRangeColor;
         }
 
         /// <summary>
@@ -644,11 +624,11 @@ namespace MPDisplay.Common.Controls
         /// <returns></returns>
         public void ShowDummyEQData()
         {
-            byte[] meters1 = new byte[BandCount];
-            Random rand = new Random();
-            for (int i = 0; i < meters1.Length; i++)
+            var meters1 = new byte[BandCount];
+            var rand = new Random();
+            for (var i = 0; i < meters1.Length; i++)
             {
-                int t = meters1.Length / 6;
+                var t = meters1.Length / 6;
                 if (i < t)
                 {
                     meters1[i] = (byte)rand.Next(30, 100);
@@ -683,23 +663,21 @@ namespace MPDisplay.Common.Controls
         {
             if (ShowDummyData == false)
             {
-                if (_dummyDataTimer != null)
-                {
-                    _dummyDataTimer.Stop();
-                    _dummyDataTimer = null;
-                }
+                if (_dummyDataTimer == null) return;
+
+                _dummyDataTimer.Stop();
+                _dummyDataTimer = null;
             }
             else
             {
-                if (_dummyDataTimer == null)
+                if (_dummyDataTimer != null) return;
+
+                _dummyDataTimer = new DispatcherTimer(DispatcherPriority.Background)
                 {
-                    _dummyDataTimer = new DispatcherTimer(DispatcherPriority.Background)
-                    {
-                        Interval = TimeSpan.FromMilliseconds(60)
-                    };
-                    _dummyDataTimer.Tick += (s, e) => ShowDummyEQData();
-                    _dummyDataTimer.Start();
-                }
+                    Interval = TimeSpan.FromMilliseconds(60)
+                };
+                _dummyDataTimer.Tick += (s, e) => ShowDummyEQData();
+                _dummyDataTimer.Start();
             }
         }
 

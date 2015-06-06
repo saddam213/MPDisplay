@@ -41,7 +41,7 @@ namespace GUIFramework.GUI
         private const int DoubleClickDelay = 500;
         private DateTime _lastMediaportalAction;
         private double _viewportHorizontalPosition;
-        private const double Tolerance = 0.001;
+        private const double Tolerance = 0.00001;
 
         #endregion
 
@@ -255,9 +255,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public override void OnRegisterInfoData()
         {
-            base.OnRegisterInfoData();
-          
-           
+            base.OnRegisterInfoData(); 
             _updateTimer.Start();
         }
 
@@ -290,25 +288,22 @@ namespace GUIFramework.GUI
         // into viewport of EPG
         public void OnFocusedTVProgramChanged(int programId, int channelId)
         {
-            if ( programId > 0 && channelId > 0 ) 
+            if (programId <= 0 || channelId <= 0) return;
+
+            var channel = TVGuideRepository.Instance.GuideData.FirstOrDefault(p => p.Id == channelId);
+            if (channel == null) return;
+
+            var program = channel.Programs.FirstOrDefault(p => p.ChannelId == channelId && p.Id == programId);
+            if (program == null) return;
+
+            _lastMediaportalAction = DateTime.Now;
+            SelectedProgram = program;
+            TimelinePosition = (TimelineLength - ((TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+            programListBox.Dispatcher.BeginInvoke(new Action(delegate
             {
-                var channel = TVGuideRepository.Instance.GuideData.FirstOrDefault(p => p.Id == channelId);
-                if (channel != null)
-                {
-                    var program = channel.Programs.FirstOrDefault(p => p.ChannelId == channelId && p.Id == programId);
-                    if (program != null)
-                    {
-                        _lastMediaportalAction = DateTime.Now;
-                        SelectedProgram = program;
-                        TimelinePosition = (TimelineLength - ((TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                        programListBox.Dispatcher.BeginInvoke(new Action(delegate
-                        {
-                              programListBox.ScrollIntoView(channel);
-                             _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-                        }));
-                    }
-                }
-            }
+                programListBox.ScrollIntoView(channel);
+                _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+            }));
         }
 
         ///
@@ -317,40 +312,38 @@ namespace GUIFramework.GUI
         ///</summary>
         private void UpdateProgramFilter()
         {
-            if (_programScrollViewer.HorizontalOffset > 0.0 && Math.Abs(_viewportHorizontalPosition - _programScrollViewer.HorizontalOffset) > Tolerance)
-            {
-                if (_programScrollViewer.HorizontalOffset > (_viewportHorizontalPosition + (2 * _programScrollViewer.ViewportWidth)) ||
-                    _programScrollViewer.HorizontalOffset < (_viewportHorizontalPosition - _programScrollViewer.ViewportWidth))
-                {
-                    _viewportHorizontalPosition = _programScrollViewer.HorizontalOffset;
-                    DateTime start = TimelineStart.AddMinutes((_viewportHorizontalPosition - (2 * _programScrollViewer.ViewportWidth)) / TimelineMultiplier);
-                    DateTime end = TimelineStart.AddMinutes((_viewportHorizontalPosition + (3 *_programScrollViewer.ViewportWidth)) / TimelineMultiplier);
-                    TVGuideRepository.Instance.FilterPrograms(start, end);
-                }
-            }
+            if (!(_programScrollViewer.HorizontalOffset > 0.0) || !(Math.Abs(_viewportHorizontalPosition - _programScrollViewer.HorizontalOffset) > Tolerance)) return;
+
+            if (
+                !(_programScrollViewer.HorizontalOffset > (_viewportHorizontalPosition + (2*_programScrollViewer.ViewportWidth))) &&
+                !(_programScrollViewer.HorizontalOffset < (_viewportHorizontalPosition - _programScrollViewer.ViewportWidth))) return;
+
+            _viewportHorizontalPosition = _programScrollViewer.HorizontalOffset;
+            var start = TimelineStart.AddMinutes((_viewportHorizontalPosition - (2 * _programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+            var end = TimelineStart.AddMinutes((_viewportHorizontalPosition + (3 *_programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+            TVGuideRepository.Instance.FilterPrograms(start, end);
         }
 
-         /// <summary>
+        /// <summary>
         /// Creates the timeline.
         /// </summary>
         private void CreateTimeline()
         {
-            if (TimelineStart != DateTime.MinValue && TimelineEnd != DateTime.MinValue)
-            {
-                Timeline.Clear();
-                TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-                TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
-                Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
-                 {
-                     StartTime = begin.AddMinutes(30 * x),
-                     EndTime = begin.AddMinutes((30 * x) + 30),
-                     Title = begin.AddMinutes(30 * x).ToString("t")
-                 }).ToList();
+             if (TimelineStart == DateTime.MinValue || TimelineEnd == DateTime.MinValue) return;
 
-                TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
-                _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-            }
+             Timeline.Clear();
+             TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
+             TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+             var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
+             Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
+             {
+                 StartTime = begin.AddMinutes(30 * x),
+                 EndTime = begin.AddMinutes((30 * x) + 30),
+                 Title = begin.AddMinutes(30 * x).ToString("t")
+             }).ToList();
+
+             TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
+             _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
         }
 
         /// <summary>
@@ -358,16 +351,13 @@ namespace GUIFramework.GUI
         /// </summary>
         private void UpdateTimeline()
         {
-            if (ChannelData != null)
-            {
-                if (DateTime.Now > LastUserInteraction.AddSeconds(20) && DateTime.Now > _lastMediaportalAction.AddSeconds(30))
-                {
-                    TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                    TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
-                   _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-                }
+            if (ChannelData == null) return;
 
-            }
+            if (DateTime.Now <= LastUserInteraction.AddSeconds(20) || DateTime.Now <= _lastMediaportalAction.AddSeconds(30)) return;
+
+            TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+            TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
+            _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
         }
 
         /// <summary>
@@ -393,8 +383,8 @@ namespace GUIFramework.GUI
         /// <param name="e">The <see cref="ScrollChangedEventArgs"/> instance containing the event data.</param>
         private void ListBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            int voffset = (int)e.VerticalOffset;
-            int hoffset = (int)e.HorizontalOffset;
+            var voffset = (int)e.VerticalOffset;
+            var hoffset = (int)e.HorizontalOffset;
 
             if (!Equals(sender, timelineListBox))
             {
@@ -461,7 +451,7 @@ namespace GUIFramework.GUI
                 if (pg != null && pg.IsScheduled)                             // program has already been scheduled, so cancel now
                 {
                     var xmlGuide = BaseXml as XmlGuide;
-                    if (xmlGuide != null && !openConfirmationDialog(xmlGuide.CancelDialogId))
+                    if (xmlGuide != null && !OpenConfirmationDialog(xmlGuide.CancelDialogId))
                     {
                         TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
                         pg.IsScheduled = false;
@@ -471,7 +461,7 @@ namespace GUIFramework.GUI
                 else
                 {
                     var xmlGuide = BaseXml as XmlGuide;
-                    if (xmlGuide != null && !openConfirmationDialog(xmlGuide.CreateDialogId))
+                    if (xmlGuide != null && !OpenConfirmationDialog(xmlGuide.CreateDialogId))
                     {
                         TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
                         if (pg != null) pg.IsScheduled = true;
@@ -488,19 +478,17 @@ namespace GUIFramework.GUI
 
         // open the confirmation dialog, if any is configured
         // result is false if no dialog is configured, else true
-        private bool openConfirmationDialog( int dialogId )
+        private static bool OpenConfirmationDialog( int dialogId )
         {
-                if (dialogId > 0)
-                {
-                    XmlAction openaction = new XmlAction
-                    {
-                        ActionType = XmlActionType.OpenDialog,
-                        Param1 = dialogId.ToString()
-                    };
-                    GUIActionManager.ActionService.NotifyListeners(XmlActionType.OpenDialog, openaction);
-                    return true;
-                }
-                return false;
+            if (dialogId <= 0) return false;
+
+            var openaction = new XmlAction
+            {
+                ActionType = XmlActionType.OpenDialog,
+                Param1 = dialogId.ToString()
+            };
+            GUIActionManager.ActionService.NotifyListeners(XmlActionType.OpenDialog, openaction);
+            return true;
         }
 
         #endregion

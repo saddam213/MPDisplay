@@ -9,9 +9,7 @@ namespace SkinEditor.BindingConverters
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isSnapToGrid = (bool)values[0];
-            int gridSize = (int)values[1];
-            double value = (double)values[2];
+            var value = (double)values[2];
 
             return value;
         }

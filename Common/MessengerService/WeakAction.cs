@@ -32,29 +32,26 @@ namespace Common.MessengerService
             {
                 _delegateType = typeof(Action);
             }
-            else if (parameterTypes.Count() == 1)
+            else switch (parameterTypes.Count())
             {
-                _delegateType = typeof(Action<>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 2)
-            {
-                _delegateType = typeof(Action<,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 3)
-            {
-                _delegateType = typeof(Action<,,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 4)
-            {
-                _delegateType = typeof(Action<,,,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 5)
-            {
-                _delegateType = typeof(Action<,,,,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 6)
-            {
-                _delegateType = typeof(Action<,,,,,>).MakeGenericType(parameterTypes);
+                case 1:
+                    _delegateType = typeof(Action<>).MakeGenericType(parameterTypes);
+                    break;
+                case 2:
+                    _delegateType = typeof(Action<,>).MakeGenericType(parameterTypes);
+                    break;
+                case 3:
+                    _delegateType = typeof(Action<,,>).MakeGenericType(parameterTypes);
+                    break;
+                case 4:
+                    _delegateType = typeof(Action<,,,>).MakeGenericType(parameterTypes);
+                    break;
+                case 5:
+                    _delegateType = typeof(Action<,,,,>).MakeGenericType(parameterTypes);
+                    break;
+                case 6:
+                    _delegateType = typeof(Action<,,,,,>).MakeGenericType(parameterTypes);
+                    break;
             }
         }
 
@@ -73,18 +70,15 @@ namespace Common.MessengerService
             {
                 return Delegate.CreateDelegate(_delegateType, Method);
             }
-            else
+            try
             {
-                try
-                {
-                    object target = TargetRef.Target;
-                    if (target != null)
-                        return Delegate.CreateDelegate(_delegateType, target, Method);
-                }
-                catch
-                {
-                    // ignored
-                }
+                var target = TargetRef.Target;
+                if (target != null)
+                    return Delegate.CreateDelegate(_delegateType, target, Method);
+            }
+            catch
+            {
+                // ignored
             }
 
             return null;

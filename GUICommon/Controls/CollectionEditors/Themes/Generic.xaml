@@ -41,13 +41,13 @@
                                     <RowDefinition />
                                 </Grid.RowDefinitions>
                                 <TextBlock Margin="0,0,0,5" Text="Select type:" />
-                                <ComboBox x:Name="_newItemTypes" Grid.Row="1" Margin="0,0,0,3" HorizontalAlignment="Stretch"
+                                <ComboBox x:Name="_newItemTypes" Grid.Row="1" Grid.Column="0" Margin="0,0,0,3" HorizontalAlignment="Stretch"
                                           ItemsSource="{Binding NewItemTypes, RelativeSource={RelativeSource TemplatedParent}}"
                                           DisplayMemberPath="Name"
                                           SelectedIndex="0"/>
                                 <Button Margin="3,0,0,3" Grid.Row="1" Grid.Column="1" Padding="5,0" Content="Add" 
                                         Command="New" CommandParameter="{Binding SelectedItem, ElementName=_newItemTypes}"  />
-                                <ListBox x:Name="_itemsListBox" Grid.Row="2" Grid.ColumnSpan="2"
+                                <ListBox x:Name="_itemsListBox" Grid.Row="2" Grid.ColumnSpan="2" Grid.Column="0"
                                          ItemsSource="{Binding Items, RelativeSource={RelativeSource TemplatedParent}}"
                                          SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource TemplatedParent}}"
                                          SelectedIndex="0">
@@ -73,6 +73,10 @@
                                 </StackPanel>
                             </Grid>
                             <Grid Column="1" Margin="20,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition />

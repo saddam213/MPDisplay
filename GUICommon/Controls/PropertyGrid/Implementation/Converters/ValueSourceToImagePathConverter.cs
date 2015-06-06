@@ -12,10 +12,10 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            BaseValueSource bvs = (BaseValueSource)value;
+            var bvs = (BaseValueSource)value;
 
             const string uriPrefix = "/GUISkinFramework;component/Editor/WPFControls/PropertyGrid/Images/";
-            string imageName = "AdvancedProperties11";
+            var imageName = "AdvancedProperties11";
 
             switch (bvs)
             {

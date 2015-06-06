@@ -17,7 +17,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Delegate map between Exif tag types and associated creation methods
         /// </summary>
-        private static Dictionary<PropertyTagType, CreateExifValueDelegate> _createExifValueDelegateMap = new Dictionary<PropertyTagType, CreateExifValueDelegate>()
+        private static Dictionary<PropertyTagType, CreateExifValueDelegate> _createExifValueDelegateMap = new Dictionary<PropertyTagType, CreateExifValueDelegate>
         {
             { PropertyTagType.ASCII, CreateExifValueForAsciiData },
             { PropertyTagType.Byte, CreateExifValueForByteData },
@@ -48,12 +48,7 @@ namespace MediaPortalPlugin.ExifReader
             try
             {
                 CreateExifValueDelegate createExifValueDelegate;
-                if (_createExifValueDelegateMap.TryGetValue(type, out createExifValueDelegate))
-                {
-                    return createExifValueDelegate(value, length);
-                }
-
-                return new ExifValue<string>(new[] { type.ToString() });
+                return _createExifValueDelegateMap.TryGetValue(type, out createExifValueDelegate) ? createExifValueDelegate(value, length) : new ExifValue<string>(new[] { type.ToString() });
             }
             catch (Exception ex)
             {
@@ -90,8 +85,8 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Exif value representing the string</returns>
         private static IExifValue CreateExifValueForAsciiData(byte[] value, int length)
         {
-            string[] strings = new string[1]; // There's always 1 string
-            ASCIIEncoding encoding = new ASCIIEncoding();
+            var strings = new string[1]; // There's always 1 string
+            var encoding = new ASCIIEncoding();
 
             strings[0] = encoding.GetString(value).TrimEnd('\0');
 
@@ -117,7 +112,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Exif value representing the short data</returns>
         private static IExifValue CreateExifValueForShortData(byte[] value, int length)
         {
-            return CreateExifValueForGenericData(value, length, (bytes, pos) => BitConverter.ToUInt16(bytes, pos));
+            return CreateExifValueForGenericData(value, length, BitConverter.ToUInt16);
         }
 
         /// <summary>
@@ -128,7 +123,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Exif value representing the long data</returns>
         private static IExifValue CreateExifValueForLongData(byte[] value, int length)
         {
-            return CreateExifValueForGenericData(value, length, (bytes, pos) => BitConverter.ToUInt32(bytes, pos));
+            return CreateExifValueForGenericData(value, length, BitConverter.ToUInt32);
         }
 
         /// <summary>
@@ -139,7 +134,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Exif value representing the slong data</returns>
         private static IExifValue CreateExifValueForSLongData(byte[] value, int length)
         {
-            return CreateExifValueForGenericData(value, length, (bytes, pos) => BitConverter.ToInt32(bytes, pos));
+            return CreateExifValueForGenericData(value, length, BitConverter.ToInt32);
         }
 
         /// <summary>
@@ -182,7 +177,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Exif value representing the generic data type</returns>
         private static IExifValue CreateExifValueForGenericData<T>(byte[] value, int length, Func<byte[], int, T> converterFunction) where T : struct
         {
-            int size = Marshal.SizeOf(typeof(T));
+            var size = Marshal.SizeOf(typeof(T));
             return CreateExifValueForGenericData(value, length, size, converterFunction);
         }
 
@@ -197,7 +192,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Exif value representing the generic data type</returns>
         private static IExifValue CreateExifValueForGenericData<T>(byte[] value, int length, int dataValueSize, Func<byte[], int, T> converterFunction) where T : struct
         {
-            T[] data = new T[length / dataValueSize];
+            var data = new T[length / dataValueSize];
 
             for (int i = 0, pos = 0; i < length / dataValueSize; i++, pos += dataValueSize)
             {

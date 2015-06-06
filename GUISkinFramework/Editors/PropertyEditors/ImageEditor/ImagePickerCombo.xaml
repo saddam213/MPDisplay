@@ -42,6 +42,7 @@
                                             <RowDefinition Height="*" />
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
+                                        <!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
                                         <Image Grid.Row="0" Margin="2" Source="{Binding FileName}" Stretch="Uniform" />
 									<TextBlock VerticalAlignment="Bottom" Grid.Row="1" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" Margin="2" />
                                     </Grid>

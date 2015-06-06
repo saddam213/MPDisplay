@@ -13,7 +13,6 @@ namespace Common.Settings
         private string _propertyString;
         private string _path;
 
-        private string _fullPath;
         private bool _pathExists;
         private List<String> _extensions = new List<string> { ".png", ".jpg", ".bmp", ".tif" };
         private List<String> _mpProperties;
@@ -43,22 +42,19 @@ namespace Common.Settings
         }
 
         [XmlIgnore]
-        public string FullPath
-        {
-            get { return _fullPath; }
-            set { _fullPath = value; }
-        }
+        public string FullPath { get; set; }
 
         [XmlIgnore]
         public bool PathExists
         {
             get { return _pathExists; }
+            // ReSharper disable once ValueParameterNotUsed
             set
             {
                 _pathExists = false;
-                if (!String.IsNullOrEmpty(_fullPath))
+                if (!String.IsNullOrEmpty(FullPath))
                 {
-                    _pathExists = Directory.Exists(_fullPath);
+                    _pathExists = Directory.Exists(FullPath);
                 }
             }
         }
@@ -73,20 +69,16 @@ namespace Common.Settings
         public List<string> MPProperties
         {
             get { return _mpProperties; }
+            // ReSharper disable once ValueParameterNotUsed
             set
             {
                 _mpProperties = new List<string>();
 
-                if (!string.IsNullOrEmpty(_propertyString))
+                if (string.IsNullOrEmpty(_propertyString)) return;
+                var parts = _propertyString.Contains("+") ? _propertyString.Split('+').ToList() : new List<string> { _propertyString };
+                foreach (var part in parts.Where(part => part.StartsWith("#")))
                 {
-                    var parts = _propertyString.Contains("+") ? _propertyString.Split('+').ToList() : new List<string> { _propertyString };
-                    foreach (var part in parts)
-                    {
-                        if (part.StartsWith("#"))
-                        {
-                               _mpProperties.Add(part);
-                        }
-                    }
+                    _mpProperties.Add(part);
                 }
             }
         }

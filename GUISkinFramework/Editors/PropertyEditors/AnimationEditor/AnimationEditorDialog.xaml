@@ -2,18 +2,12 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
-        xmlns:xmlAnimations="clr-namespace:GUISkinFramework.Skin"
         xmlns:local="clr-namespace:GUISkinFramework.Editors"
         xmlns:implementation="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
         xmlns:implementation1="clr-namespace:MPDisplay.Common.Controls.Surface3D;assembly=MPDisplay.UICommon"
 
         Title="Action Editor"  Width="1200" Height="580" WindowStartupLocation="CenterOwner" x:Name="UI">
     <Window.Resources>
-        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="AnimationConditions">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="xmlAnimations:XmlAnimationCondition" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
 
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="AnimationTypes">
             <ObjectDataProvider.MethodParameters>
@@ -91,7 +85,7 @@
                 </Button>
              
             </StackPanel>
-            <ComboBox Margin="0,0,2,0" ItemsSource="{Binding Source={StaticResource AnimationTypes}}" SelectedItem="{Binding SelectedAnimationType}"/>
+            <ComboBox Grid.Column="0" Margin="0,0,2,0" ItemsSource="{Binding Source={StaticResource AnimationTypes}}" SelectedItem="{Binding SelectedAnimationType}"/>
             <Grid.Style>
                 <Style TargetType="Grid">
                     <Setter Property="IsEnabled" Value="True"/>
@@ -108,7 +102,7 @@
 
 
         <Border BorderBrush="Black" BorderThickness="1" Grid.Column="2" Margin="10,26,10,37" RenderTransformOrigin="0.15,0.556">
-            <Viewbox Grid.Row="1" Margin="5" x:Name="veiw" StretchDirection="Both" >
+            <Viewbox Margin="5" x:Name="veiw" StretchDirection="Both" >
                 <Grid>
                     <Border BorderBrush="Black" BorderThickness="1"  Height="720" Width="1280">
                         <Canvas x:Name="Surface"  ClipToBounds="True"  >

@@ -39,9 +39,9 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
                 return String.Empty;
             }
 
-            Rational32 exposure = rational32S.First();
-            uint numerator = (uint)exposure.Numerator;
-            uint denominator = (uint)exposure.Denominator;
+            var exposure = rational32S.First();
+            var numerator = (uint)exposure.Numerator;
+            var denominator = (uint)exposure.Denominator;
 
             return denominator == 1 ? String.Format("{0} sec.", numerator) : String.Format("{0}/{1} sec.", numerator, denominator);
         }

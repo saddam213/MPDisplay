@@ -29,7 +29,6 @@ namespace GUIFramework.GUI
         private double _longitude;
         private int _mapHeight;
         private int _mapWidth;
-
         #endregion
 
         #region Constructor
@@ -184,91 +183,86 @@ namespace GUIFramework.GUI
         // load the map from Google Maps into Image property
         private void LoadMapImage()
         {
-            if (Math.Abs(_latitude) > 0.0000001 && Math.Abs(_longitude) > 0.0000001)
+            if (!(Math.Abs(_latitude) > 0.0000001) || !(Math.Abs(_longitude) > 0.0000001)) return;
+
+            var location = _latitude.ToString("F6", CultureInfo.InvariantCulture) + "," +
+                           _longitude.ToString("F6", CultureInfo.InvariantCulture);
+            var url = "http://maps.googleapis.com/maps/api/staticmap?center=" + location +
+                      "&size=" + _mapWidth;
+            url += "x" + _mapHeight + "&markers=size:mid%7Ccolor:red%7C";
+            url += _location + "&zoom=" + _zoom;
+            url += "&maptype=" + _mapType + "&sensor=false";
+            if (!string.IsNullOrWhiteSpace(PropertyRepository.Instance.Settings.GoogleApiKey))
             {
-                var location = _latitude.ToString("F6", CultureInfo.InvariantCulture) + "," +
-                               _longitude.ToString("F6", CultureInfo.InvariantCulture);
-                var url = "http://maps.googleapis.com/maps/api/staticmap?center=" + location +
-                          "&size=" + _mapWidth;
-                url += "x" + _mapHeight + "&markers=size:mid%7Ccolor:red%7C";
-                url += _location + "&zoom=" + _zoom;
-                url += "&maptype=" + _mapType + "&sensor=false";
-                Image = GUIImageManager.GetImage(url);
+                url += "&key=" + PropertyRepository.Instance.Settings.GoogleApiKey;
             }
+            Image = GUIImageManager.GetImage(url);
         }
 
         private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_zoom < 21)
-            {
-                _zoom++;
-                LoadMapImage();
-            }
+            if (_zoom >= 21) return;
+
+            _zoom++;
+            LoadMapImage();
         }
 
         private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_zoom > 0)
-            {
-                _zoom--;
-                LoadMapImage();
-            }
+            if (_zoom <= 0) return;
+
+            _zoom--;
+            LoadMapImage();
         }
 
        private void RoadmapToggleButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!_mapType.Equals("roadmap"))
-            {
-                _mapType = "roadmap";
-                LoadMapImage();
-            }
+           if (_mapType.Equals("roadmap")) return;
+
+           _mapType = "roadmap";
+           LoadMapImage();
         }
 
        private void TerrainToggleButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!_mapType.Equals("terrain"))
-            {
-                _mapType = "terrain";
-                LoadMapImage();
-            }
+           if (_mapType.Equals("terrain")) return;
+
+           _mapType = "terrain";
+           LoadMapImage();
         }
 
        private void MoveUpButton_OnClick(object sender, RoutedEventArgs e)
        {
            // Use 88 to avoid values beyond 90 degrees of lat.
-           if (_latitude < 88)
-           {
-               _latitude += ShiftMap();
-               LoadMapImage();
-           }
+           if (!(_latitude < 88)) return;
+
+           _latitude += ShiftMap();
+           LoadMapImage();
        }
 
         private void MoveDownButton_OnClick(object sender, RoutedEventArgs e)
         {
            // Use 88 to avoid values beyond 90 degrees of lat.
-           if (_latitude > -88)
-           {
-              _latitude -= ShiftMap();
-              LoadMapImage();
-           }
+            if (!(_latitude > -88)) return;
+
+            _latitude -= ShiftMap();
+            LoadMapImage();
         }
 
         private void MoveLeftButton_OnClick(object sender, RoutedEventArgs e)
         {
-           if (_longitude > -179)
-           {
-              _longitude -= ShiftMap();
-              LoadMapImage();
-           }
+            if (!(_longitude > -179)) return;
+
+            _longitude -= ShiftMap();
+            LoadMapImage();
         }
 
         private void MoveRightButton_OnClick(object sender, RoutedEventArgs e)
         {
-           if (_longitude < 179)
-           {
-              _longitude += ShiftMap();
-              LoadMapImage();
-           }
+            if (!(_longitude < 179)) return;
+
+            _longitude += ShiftMap();
+            LoadMapImage();
         }
 
         private double ShiftMap()

@@ -10,10 +10,7 @@
 			 xmlns:local="clr-namespace:SkinEditor.Controls"
 
              d:DesignHeight="300" d:DesignWidth="300" Name="UI" >
-	<UserControl.Resources>
-		<local:CoverFlowGreaterThanSelectedIndexConverter  x:Key="GreaterThanSelectedIndexConverter" />
-	
-	</UserControl.Resources>
+
 	<Grid DataContext="{Binding ElementName=UI}">
 		<ListBox x:Name="listbox" ItemsSource="{Binding ListItems}"
 		         VirtualizingPanel.VirtualizationMode="Recycling" 

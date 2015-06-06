@@ -134,16 +134,15 @@ namespace Common.MessengerService
             }
 
             var actions = _messageToActionsMap.GetActions(message);
-            if (actions != null)
+            if (actions == null) return;
+
+            if (parameters == null || !parameters.Any())
             {
-                if (parameters == null || !parameters.Any())
-                {
-                    actions.ForEach(action => action.DynamicInvoke());
-                }
-                else
-                {
-                    actions.ForEach(action => action.DynamicInvoke(parameters));
-                }
+                actions.ForEach(action => action.DynamicInvoke());
+            }
+            else
+            {
+                actions.ForEach(action => action.DynamicInvoke(parameters));
             }
         }
 

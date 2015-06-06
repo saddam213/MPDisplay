@@ -59,7 +59,7 @@ namespace GUIConfig.Settings
                 }
             };
 
-            SerializationHelper.Serialize<LanguageFile>(_languageXmlFile, RegistrySettings.MPDisplayLanguageFile);
+            SerializationHelper.Serialize(_languageXmlFile, RegistrySettings.MPDisplayLanguageFile);
         }
 
         public static string GetLanguageValue(string key)
@@ -68,14 +68,16 @@ namespace GUIConfig.Settings
             {
                 return key ?? string.Empty;
             }
-            if (!_currentLanguage.LanguageKeys.Any(k => k.Key == key))
+            if (_currentLanguage.LanguageKeys.All(k => k.Key != key))
             {
                 _currentLanguage.LanguageKeys.Add(new LanguageKey { Key = key, Value = key });
-                SerializationHelper.Serialize<LanguageFile>(_languageXmlFile, RegistrySettings.MPDisplayLanguageFile);
-
+                SerializationHelper.Serialize(_languageXmlFile, RegistrySettings.MPDisplayLanguageFile);
             }
 
-            return _currentLanguage.LanguageKeys.FirstOrDefault(k => k.Key == key).Value ?? ""; ;
+            var firstOrDefault = _currentLanguage.LanguageKeys.FirstOrDefault(k => k.Key == key);
+            if (firstOrDefault != null)
+                return firstOrDefault.Value ?? "";
+            return string.Empty;
         }
     }
 

@@ -13,7 +13,7 @@
 	<Grid DataContext="{Binding ElementName=UI}">
 		<!--Skin Settings-->
 		<GroupBox  DataContext="{Binding SkinInfo}" Header="Skin Settings" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="210">
-			<StackPanel Grid.Column="0" Margin="5">
+			<StackPanel Margin="5">
 				<!--Name-->
 				<TextBlock Text="Skin Name" />
 				<TextBox Text="{Binding SkinName, UpdateSourceTrigger=PropertyChanged}"/>

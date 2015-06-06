@@ -21,11 +21,9 @@ namespace GUIFramework.GUI
         protected Log Log = LoggingManager.GetLog(typeof(GUIControl));
         private XmlControl _baseXml;
         private bool _isWindowOpenVisible = true;
-        private bool _isControlVisible;
         private bool _isVisibleToggled;
         private bool _isControlfocused;
         private GUIVisibleCondition _visibleCondition;
-        private AnimationCollection _animations;
         private List<int> _focusedControlIds;
         private bool _isDataRegistered;
         private DateTime _lastUserInteraction = DateTime.MinValue;
@@ -75,10 +73,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets a value indicating whether this instance is control visible.
         /// </summary>
-        public bool IsControlVisible
-        {
-            get { return _isControlVisible; }
-        }
+        public bool IsControlVisible { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether this instance is window open visible.
@@ -99,10 +94,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the animations.
         /// </summary>
-        public AnimationCollection Animations
-        {
-            get { return _animations; }
-        }
+        public AnimationCollection Animations { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether is focused.
@@ -168,15 +160,14 @@ namespace GUIFramework.GUI
         public virtual void OnWindowOpen()
         {
             _isVisibleToggled = false;
-            _isControlVisible = _isWindowOpenVisible;
+            IsControlVisible = _isWindowOpenVisible;
             NotifyPropertyChanged("IsControlVisible");
 
-            if (_isControlVisible)
-            {
-                Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
-                RegisterInfoData();
-                UpdateInfoData(); 
-            }
+            if (!IsControlVisible) return;
+
+            Animations.StartAnimation(XmlAnimationCondition.WindowOpen);
+            RegisterInfoData();
+            UpdateInfoData();
         } 
 
         #endregion
@@ -188,7 +179,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public void CreateAnimations()
         {
-            _animations = new AnimationCollection(this, BaseXml.Animations
+            Animations = new AnimationCollection(this, BaseXml.Animations
                 , condition => Dispatcher.Invoke(() => OnAnimationStarted(condition))
                 , condition => Dispatcher.Invoke(() => OnAnimationCompleted(condition)));
         }
@@ -264,11 +255,10 @@ namespace GUIFramework.GUI
 
         private void RegisterInfoData()
         {
-            if (!_isDataRegistered)
-            {
-                _isDataRegistered = true;
-                OnRegisterInfoData();
-            }
+            if (_isDataRegistered) return;
+
+            _isDataRegistered = true;
+            OnRegisterInfoData();
         }
 
         /// <summary>
@@ -276,11 +266,10 @@ namespace GUIFramework.GUI
         /// </summary>
         private void DeregisterInfoData()
         {
-            if (_isDataRegistered)
-            {
-                _isDataRegistered = false;
-                OnDeregisterInfoData();
-            }
+            if (!_isDataRegistered) return;
+
+            _isDataRegistered = false;
+            OnDeregisterInfoData();
         }
 
 
@@ -357,11 +346,10 @@ namespace GUIFramework.GUI
         /// <param name="action">The action.</param>
         public void ToggleControlVisibility(XmlAction action)
         {
-            if (action != null && action.GetParam1As(-1) == Id)
-            {
-                _isVisibleToggled = !_isVisibleToggled;
-                SetControlVisibility(!_isControlVisible);
-            }
+            if (action == null || action.GetParam1As(-1) != Id) return;
+
+            _isVisibleToggled = !_isVisibleToggled;
+            SetControlVisibility(!IsControlVisible);
         }
 
         /// <summary>
@@ -383,18 +371,17 @@ namespace GUIFramework.GUI
         /// <param name="visible">if set to <c>true</c> [visible].</param>
         private void SetControlVisibility(bool visible)
         {
-            if (visible != _isControlVisible)
+            if (visible == IsControlVisible) return;
+
+            IsControlVisible = visible;
+            GUIVisibilityManager.UpdateControlVisibility(this);
+            if (IsControlVisible)
             {
-                _isControlVisible = visible;
-                GUIVisibilityManager.UpdateControlVisibility(this);
-                if (_isControlVisible)
-                {
-                    OnVisibleTrue();
-                }
-                else
-                {
-                    OnVisibleFalse();
-                }
+                OnVisibleTrue();
+            }
+            else
+            {
+                OnVisibleFalse();
             }
         }
 
@@ -402,11 +389,11 @@ namespace GUIFramework.GUI
         {
             _isControlfocused = false;
             _isVisibleToggled = false;
-            _isControlVisible = _visibleCondition.HasCondition
+            IsControlVisible = _visibleCondition.HasCondition
                     ? _visibleCondition.ShouldBeVisible()
                     : _isWindowOpenVisible;
             GUIVisibilityManager.UpdateControlVisibility(this);
-            if (_isControlVisible)
+            if (IsControlVisible)
             {
                 OnVisibleTrue();
             }
@@ -442,22 +429,20 @@ namespace GUIFramework.GUI
         /// <param name="focusedControlId">The focused control id.</param>
         public void SetFocusedControlId(int focusedControlId)
         {
-            if (_focusedControlIds != null && _focusedControlIds.Any())
+            if (_focusedControlIds == null || !_focusedControlIds.Any()) return;
+
+            var shouldFocus = _focusedControlIds.Contains(focusedControlId);
+            if (shouldFocus == _isControlfocused) return;
+
+            if (_isControlfocused)
             {
-                bool shouldFocus = _focusedControlIds.Contains(focusedControlId);
-                if (shouldFocus != _isControlfocused)
-                {
-                    if (_isControlfocused)
-                    {
-                        OnFocusFalse();
-                    }
-                    else
-                    {
-                        OnFocusTrue();
-                    }
-                    IsControlFocused = shouldFocus;
-                }
+                OnFocusFalse();
             }
+            else
+            {
+                OnFocusTrue();
+            }
+            IsControlFocused = shouldFocus;
         }
 
         #endregion

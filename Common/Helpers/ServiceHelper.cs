@@ -58,16 +58,12 @@ namespace Common.Helpers
         {
             using (var service = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName == serviceName))
             {
-                if (service != null)
-                {
-                    if (service.Status != ServiceControllerStatus.Stopped)
-                    {
-                        service.Stop();
-                        service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, timeout));
-                        return service.Status == ServiceControllerStatus.Stopped;
-                    }
-                }
-                return true;
+                if (service == null) return true;
+                if (service.Status == ServiceControllerStatus.Stopped) return true;
+
+                service.Stop();
+                service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, timeout));
+                return service.Status == ServiceControllerStatus.Stopped;
             }
         }
 
@@ -177,6 +173,6 @@ namespace Common.Helpers
         // Summary:
         //     The service is paused. This corresponds to the Win32 SERVICE_PAUSED constant,
         //     which is defined as 0x00000007.
-        Paused = 7,
+        Paused = 7
     }
 }

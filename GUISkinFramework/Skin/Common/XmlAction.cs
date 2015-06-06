@@ -54,11 +54,9 @@ namespace GUISkinFramework.Skin
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-                PropertyChanged(this, new PropertyChangedEventArgs("DisplayName"));
-            }
+            if (PropertyChanged == null) return;
+            PropertyChanged(this, new PropertyChangedEventArgs(property));
+            PropertyChanged(this, new PropertyChangedEventArgs("DisplayName"));
         }
     }
 
@@ -113,29 +111,29 @@ namespace GUISkinFramework.Skin
         Connect,
 
         [XmlActionTypeDetails("ScheduleEPGAction", "Creates or cancels the currently selected EPG schedule.")]
-        ScheduleEPGAction,
+        ScheduleEPGAction
     }
 
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public class XmlActionTypeDetailsAttribute : Attribute
     {
-        protected string _displayName;
-        protected string _paramName;
+        protected string DdisplayName;
+        protected string PparamName;
 
         public XmlActionTypeDetailsAttribute(string displayName, string paramName)
         {
-            _displayName = displayName;
-            _paramName = paramName;
+            DdisplayName = displayName;
+            PparamName = paramName;
         }
 
         public string DisplayName
         {
-            get { return _displayName; }
+            get { return DdisplayName; }
         }
 
         public string ParamName
         {
-            get { return _paramName; }
+            get { return PparamName; }
         }
     }
 }

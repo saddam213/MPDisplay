@@ -25,6 +25,6 @@ namespace Common.Log
         /// <summary>
         /// No Logging
         /// </summary>
-        None = 5,
+        None = 5
     }
 }

@@ -82,15 +82,15 @@ namespace Common.MessengerService
                 if (!_map.ContainsKey(message))
                     return null;
 
-                List<WeakAction> weakActions = _map[message];
+                var weakActions = _map[message];
                 actions = new List<Delegate>(weakActions.Count);
-                for (int i = weakActions.Count - 1; i > -1; --i)
+                for (var i = weakActions.Count - 1; i > -1; --i)
                 {
-                    WeakAction weakAction = weakActions[i];
+                    var weakAction = weakActions[i];
                     if (weakAction == null)
                         continue;
 
-                    Delegate action = weakAction.CreateAction();
+                    var action = weakAction.CreateAction();
                     if (action != null)
                     {
                         actions.Add(action);

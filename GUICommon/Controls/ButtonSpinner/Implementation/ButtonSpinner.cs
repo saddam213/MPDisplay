@@ -13,7 +13,9 @@ namespace MPDisplay.Common.Controls
     [ContentProperty("Content")]
     public class ButtonSpinner : Spinner
     {
+        // ReSharper disable once InconsistentNaming
         private const string PART_IncreaseButton = "PART_IncreaseButton";
+        // ReSharper disable once InconsistentNaming
         private const string PART_DecreaseButton = "PART_DecreaseButton";
 
         #region Properties
@@ -48,7 +50,7 @@ namespace MPDisplay.Common.Controls
         /// <param name="e">Event arguments.</param>
         private static void OnContentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ButtonSpinner source = d as ButtonSpinner;
+            var source = d as ButtonSpinner;
             if (source != null) source.OnContentChanged(e.OldValue, e.NewValue);
         }
 
@@ -162,14 +164,13 @@ namespace MPDisplay.Common.Controls
                 }
             }
 
-            if (DecreaseButton != null && DecreaseButton.IsEnabled == false)
+            if (DecreaseButton == null || DecreaseButton.IsEnabled) return;
+
+            mousePosition = e.GetPosition(DecreaseButton);
+            if (mousePosition.X > 0 && mousePosition.X < DecreaseButton.ActualWidth &&
+                mousePosition.Y > 0 && mousePosition.Y < DecreaseButton.ActualHeight)
             {
-                mousePosition = e.GetPosition(DecreaseButton);
-                if (mousePosition.X > 0 && mousePosition.X < DecreaseButton.ActualWidth &&
-                    mousePosition.Y > 0 && mousePosition.Y < DecreaseButton.ActualHeight)
-                {
-                    e.Handled = true;
-                }
+                e.Handled = true;
             }
         }
 
@@ -196,7 +197,7 @@ namespace MPDisplay.Common.Controls
         private void OnButtonClick(object sender, RoutedEventArgs e)
         {
             if (!AllowSpin) return;
-            SpinDirection direction = Equals(sender, IncreaseButton) ? SpinDirection.Increase : SpinDirection.Decrease;
+            var direction = Equals(sender, IncreaseButton) ? SpinDirection.Increase : SpinDirection.Decrease;
             OnSpin(new SpinEventArgs(direction));
         }
 

@@ -6,6 +6,7 @@ using System.Windows;
 using Common.MessengerService;
 using Common.Settings;
 using GUIFramework.GUI;
+using GUIFramework.Managers;
 using GUIFramework.Utils;
 using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
@@ -93,32 +94,32 @@ namespace GUIFramework.Repositories
 
         public void AddListData(APIListMessage message)
         {
+            if (message == null) return;
 
-            if (message != null)
+            if (message.MessageType == APIListMessageType.List && message.List != null)
             {
-                if (message.MessageType == APIListMessageType.List && message.List != null)
+                switch (message.List.ListType)
                 {
-                    switch (message.List.ListType)
-                    {
-                        case APIListType.List:
+                    case APIListType.List:
 
-                            ProcessBatch(message.List);
-                            break;
-                        case APIListType.Menu:
-                            AddList(XmlListType.MediaPortalMenuControl, message.List.ListItems);
-                            break;
-                        case APIListType.GroupMenu:
-                            AddList(XmlListType.MediaPortalButtonGroup, message.List.ListItems);
-                            break;
-                        case APIListType.DialogList:
-                            AddList(XmlListType.MediaPortalDialogList, message.List.ListItems);
-                            break;
-                    }
+                        ProcessBatch(message.List);
+                        break;
+                    case APIListType.Menu:
+                        AddList(XmlListType.MediaPortalMenuControl, message.List.ListItems);
+                        break;
+                    case APIListType.GroupMenu:
+                        AddList(XmlListType.MediaPortalButtonGroup, message.List.ListItems);
+                        break;
+                    case APIListType.DialogList:
+                        AddList(XmlListType.MediaPortalDialogList, message.List.ListItems);
+                        break;
                 }
-                else if (message.MessageType == APIListMessageType.Action && message.Action != null)
+            }
+            else if (message.MessageType == APIListMessageType.Action && message.Action != null)
+            {
+                switch (message.Action.ActionType)
                 {
-                    if (message.Action.ActionType == APIListActionType.SelectedItem)
-                    {
+                    case APIListActionType.SelectedItem:
                         switch (message.Action.ItemListType)
                         {
                             case APIListType.List:
@@ -134,12 +135,12 @@ namespace GUIFramework.Repositories
                                 AddListSelection(XmlListType.MediaPortalDialogList, message.Action);
                                 break;
                         }
-                    }
-                    else if (message.Action.ActionType == APIListActionType.Layout)
-                    {
+                        break;
+
+                    case APIListActionType.Layout:
                         _mediaPortalListLayout = message.Action.ItemLayout;
                         NotifyListLayoutChanged();
-                    }
+                        break;
                 }
             }
         }
@@ -168,16 +169,14 @@ namespace GUIFramework.Repositories
                         _currentBatchId = message.BatchId;
                     }
 
-                    if (message.BatchId == _currentBatchId)
-                    {
-                        _data.Add(message.BatchNumber, message.ListItems);
-                        if (_data.Count == message.BatchCount)
-                        {
-                            AddList(XmlListType.MediaPortalListControl, _data.Values.SelectMany(k => k).ToList());
-                            _mediaPortalListLayout = message.ListLayout;
-                            NotifyListLayoutChanged();
-                        }
-                    }
+                    if (message.BatchId != _currentBatchId) return;
+
+                    _data.Add(message.BatchNumber, message.ListItems);
+                    if (_data.Count != message.BatchCount) return;
+
+                    AddList(XmlListType.MediaPortalListControl, _data.Values.SelectMany(k => k).ToList());
+                    _mediaPortalListLayout = message.ListLayout;
+                    NotifyListLayoutChanged();
                 }
             }
             catch
@@ -194,16 +193,15 @@ namespace GUIFramework.Repositories
         /// <param name="list">The list.</param>
         public void AddList(XmlListType listType, List<APIListItem> list)
         {
-            if (_listRepository.AddOrUpdate(listType, list))
-            {
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Count", list != null ? list.Count.ToString() : "0");
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", string.Empty);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", string.Empty);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", string.Empty);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", default(byte[]));
-                NotifyListChanged(listType);
-            }
+            if (!_listRepository.AddOrUpdate(listType, list)) return;
+
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Count", list != null ? list.Count.ToString() : "0");
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", string.Empty);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", string.Empty);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", string.Empty);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", default(byte[]));
+            NotifyListChanged(listType);
         }
 
         public void AddListSelection(XmlListType listType, APIListAction action)
@@ -226,19 +224,18 @@ namespace GUIFramework.Repositories
 
         public XmlListLayout GetMediaPortalListLayout(XmlListType listType)
         {
-            if (listType == XmlListType.MediaPortalListControl)
+            if (listType != XmlListType.MediaPortalListControl) return XmlListLayout.Vertical;
+
+            switch (_mediaPortalListLayout)
             {
-                switch (_mediaPortalListLayout)
-                {
-                    case APIListLayout.Vertical:
-                        return XmlListLayout.Vertical;
-                    case APIListLayout.VerticalIcon:
-                        return XmlListLayout.VerticalIcon;
-                    case APIListLayout.Horizontal:
-                        return XmlListLayout.Horizontal;
-                    case APIListLayout.CoverFlow:
-                        return XmlListLayout.CoverFlow;
-                }
+                case APIListLayout.Vertical:
+                    return XmlListLayout.Vertical;
+                case APIListLayout.VerticalIcon:
+                    return XmlListLayout.VerticalIcon;
+                case APIListLayout.Horizontal:
+                    return XmlListLayout.Horizontal;
+                case APIListLayout.CoverFlow:
+                    return XmlListLayout.CoverFlow;
             }
             return XmlListLayout.Vertical;
         }
@@ -318,61 +315,59 @@ namespace GUIFramework.Repositories
 
         public void FocusListControlItem(GUIList listcontrol, APIListItem item)
         {
-            if (listcontrol != null && item != null)
-            {
-                switch (listcontrol.ListType)
-                {
-                    case XmlListType.MediaPortalListControl:
-                        SendListAction(APIListActionType.FocusedItem, APIListType.List, item);
-                        break;
-                    case XmlListType.MediaPortalButtonGroup:
-                        SendListAction(APIListActionType.FocusedItem, APIListType.GroupMenu, item);
-                        break;
-                    case XmlListType.MediaPortalMenuControl:
-                        SendListAction(APIListActionType.FocusedItem, APIListType.Menu, item);
-                        break;
-                    case XmlListType.MediaPortalDialogList:
-                        SendListAction(APIListActionType.FocusedItem, APIListType.DialogList, item);
-                        break;
-                }
+            if (listcontrol == null || item == null) return;
 
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", item.Label);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", item.Label2);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", item.Label3);
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", item.Index.ToString());
-                PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image.ToImageBytes());
+            switch (listcontrol.ListType)
+            {
+                case XmlListType.MediaPortalListControl:
+                    SendListAction(APIListActionType.FocusedItem, APIListType.List, item);
+                    break;
+                case XmlListType.MediaPortalButtonGroup:
+                    SendListAction(APIListActionType.FocusedItem, APIListType.GroupMenu, item);
+                    break;
+                case XmlListType.MediaPortalMenuControl:
+                    SendListAction(APIListActionType.FocusedItem, APIListType.Menu, item);
+                    break;
+                case XmlListType.MediaPortalDialogList:
+                    SendListAction(APIListActionType.FocusedItem, APIListType.DialogList, item);
+                    break;
             }
+
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", item.Label);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", item.Label2);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", item.Label3);
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedindex", item.Index.ToString());
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selectedthumb", item.Image.ToImageBytes());
         }
 
         public void SelectListControlItem(GUIList listcontrol, APIListItem item)
         {
-            if (listcontrol != null && item != null)
+            if (listcontrol == null || item == null) return;
+
+            switch (listcontrol.ListType)
             {
-                switch (listcontrol.ListType)
-                {
-                    case XmlListType.None:
-                        break;
-                    case XmlListType.MediaPortalListControl:
-                        SendListAction(APIListActionType.SelectedItem, APIListType.List, item);
-                        break;
-                    case XmlListType.MediaPortalButtonGroup:
-                        SendListAction(APIListActionType.SelectedItem, APIListType.GroupMenu, item);
-                        break;
-                    case XmlListType.MediaPortalMenuControl:
-                        SendListAction(APIListActionType.SelectedItem, APIListType.Menu, item);
-                        break;
-                    case XmlListType.MediaPortalDialogList:
-                        SendListAction(APIListActionType.SelectedItem, APIListType.DialogList, item);
-                        break;
-                    case XmlListType.MPDisplaySkins:
-                        break;
-                    case XmlListType.MPDisplayStyles:
-                        SkinInfo.SetStyle(item.Label);
-                        break;
-                    case XmlListType.MPDisplayLanguages:
-                        SkinInfo.SetLanguage(item.Label);
-                        break;
-                }
+                case XmlListType.None:
+                    break;
+                case XmlListType.MediaPortalListControl:
+                    SendListAction(APIListActionType.SelectedItem, APIListType.List, item);
+                    break;
+                case XmlListType.MediaPortalButtonGroup:
+                    SendListAction(APIListActionType.SelectedItem, APIListType.GroupMenu, item);
+                    break;
+                case XmlListType.MediaPortalMenuControl:
+                    SendListAction(APIListActionType.SelectedItem, APIListType.Menu, item);
+                    break;
+                case XmlListType.MediaPortalDialogList:
+                    SendListAction(APIListActionType.SelectedItem, APIListType.DialogList, item);
+                    break;
+                case XmlListType.MPDisplaySkins:
+                    break;
+                case XmlListType.MPDisplayStyles:
+                    SkinInfo.SetStyle(item.Label);
+                    break;
+                case XmlListType.MPDisplayLanguages:
+                    SkinInfo.SetLanguage(item.Label);
+                    break;
             }
         }
 
@@ -383,7 +378,7 @@ namespace GUIFramework.Repositories
                          ActionType = actionType,
                          ItemListType = listType,
                          ItemText = item.Label,
-                         ItemIndex = item.Index,
+                         ItemIndex = item.Index
                      };
 
 
@@ -465,16 +460,14 @@ namespace GUIFramework.Repositories
             {
                 _listService.NotifyListeners(ListServiceMessage.ListItemLayout);
             });
+            GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
+            GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
         }
 
  
         public static List<APIListType> GetRegisteredLists(IControlHost window)
         {
-            if (window != null)
-            {
-                return window.Controls.GetControls().OfType<GUIList>().Select(l => l.ListType.ToAPIType()).ToList();
-            }
-            return new List<APIListType>();
+            return window != null ? window.Controls.GetControls().OfType<GUIList>().Select(l => l.ListType.ToAPIType()).ToList() : new List<APIListType>();
         }
     }
 

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Globalization;
 using System.Linq;
 using System.Xml.Serialization;
 
@@ -21,24 +22,17 @@ namespace GUISkinFramework.Skin
         [XmlIgnore]
         public ObservableCollection<XmlProperty> AllProperties
         {
-            get
-            {
-                if (_allPropertes == null)
-                {
-                    _allPropertes = new ObservableCollection<XmlProperty>(InternalPropertiesProperties.Concat(_properties));
-                }
-                return _allPropertes; 
-            } 
+            get {
+                return _allPropertes ?? (_allPropertes = new ObservableCollection<XmlProperty>(InternalPropertiesProperties.Concat(_properties)));
+            }
         }
 
         public void AddInternalProperty(XmlProperty prop)
         {
-            if (prop != null && _internalProperties.FirstOrDefault(p => p.SkinTag == prop.SkinTag ) == null )
-            {
-                prop.IsInternal = true;
-                prop.MediaPortalTags.Add(new XmlMediaPortalTag { Tag = prop.SkinTag });
-               _internalProperties.Add(prop);
-            }
+            if (prop == null || _internalProperties.FirstOrDefault(p => p.SkinTag == prop.SkinTag) != null) return;
+            prop.IsInternal = true;
+            prop.MediaPortalTags.Add(new XmlMediaPortalTag { Tag = prop.SkinTag });
+            _internalProperties.Add(prop);
         }
 
         [XmlIgnore]
@@ -113,31 +107,31 @@ namespace GUISkinFramework.Skin
                 yield return new XmlProperty { IsInternal = true, SkinTag = "#MP.SystemInfo.Label.OSVersion", DesignerValue = "6.2.7601.65536" };
 
 
-                Random ran = new Random();
-                var letters = new string[] { "C", "D", "E", "F", "G", "H", "I", "J", "K", "L" };
+                var ran = new Random();
+                var letters = new[] { "C", "D", "E", "F", "G", "H", "I", "J", "K", "L" };
                
-                for (int i = 0; i < 4; i++)
+                for (var i = 0; i < 4; i++)
                 {
-                    double size = Math.Round(((double)(ran.Next(50, 900))) + ran.NextDouble(),2);
-                    double size2 = Math.Round(((double)(ran.Next(50, 900))) + ran.NextDouble(),2);
-                    double free = Math.Round(((double)(ran.Next(10, (int)size))) + ran.NextDouble(),2);
-                    double free2 = Math.Round(((double)(ran.Next(10, (int)size2))) + ran.NextDouble(), 2);
-                    double percentFree = Math.Round(100 * free / size, 2);
-                    double percentFree2 = Math.Round(100 * free2 / size2, 2);
+                    var size = Math.Round(ran.Next(50, 900) + ran.NextDouble(),2);
+                    var size2 = Math.Round(ran.Next(50, 900) + ran.NextDouble(),2);
+                    var free = Math.Round(ran.Next(10, (int)size) + ran.NextDouble(),2);
+                    var free2 = Math.Round(ran.Next(10, (int)size2) + ran.NextDouble(), 2);
+                    var percentFree = Math.Round(100 * free / size, 2);
+                    var percentFree2 = Math.Round(100 * free2 / size2, 2);
 
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Label.Drive{0}.Name", i), DesignerValue = letters[i] + ":\\" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Label.Drive{0}.VolumeLabel", i), DesignerValue = "Drive " + i };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Label.Drive{0}.TotalSpace", i), DesignerValue = size+"Gb" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Label.Drive{0}.FreeSpace", i), DesignerValue = free+"Gb" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Label.Drive{0}.PercentFree", i), DesignerValue = percentFree+" %" };
-                    yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Number.Drive{0}.PercentFree", i), DesignerValue = percentFree.ToString(), PropertyType = XmlPropertyType.Number };
+                    yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MPD.SystemInfo.Number.Drive{0}.PercentFree", i), DesignerValue = percentFree.ToString(CultureInfo.InvariantCulture), PropertyType = XmlPropertyType.Number };
 
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Label.Drive{0}.Name", i), DesignerValue = letters[i] + ":\\" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Label.Drive{0}.VolumeLabel", i), DesignerValue = "Drive " + i };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Label.Drive{0}.TotalSpace", i), DesignerValue = size2+"Gb" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Label.Drive{0}.FreeSpace", i), DesignerValue = free2+"Gb" };
                     yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Label.Drive{0}.PercentFree", i), DesignerValue = percentFree2+" %" };
-                    yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Number.Drive{0}.PercentFree", i), DesignerValue = percentFree2.ToString(), PropertyType = XmlPropertyType.Number };
+                    yield return new XmlProperty { IsInternal = true, SkinTag = string.Format("#MP.SystemInfo.Number.Drive{0}.PercentFree", i), DesignerValue = percentFree2.ToString(CultureInfo.InvariantCulture), PropertyType = XmlPropertyType.Number };
                 }
 
                 foreach (var p in _internalProperties)

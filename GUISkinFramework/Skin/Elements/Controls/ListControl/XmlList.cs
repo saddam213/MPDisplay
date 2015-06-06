@@ -102,11 +102,11 @@ namespace GUISkinFramework.Skin
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlListStyle>(ControlStyle);
-            VerticalItemStyle = style.GetControlStyle<XmlListItemStyle>(VerticalItemStyle);
-            VerticalIconItemStyle = style.GetControlStyle<XmlListItemStyle>(VerticalIconItemStyle);
-            HorizontalItemStyle = style.GetControlStyle<XmlListItemStyle>(HorizontalItemStyle);
-            CoverFlowItemStyle = style.GetControlStyle<XmlListItemStyle>(CoverFlowItemStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
+            VerticalItemStyle = style.GetControlStyle(VerticalItemStyle);
+            VerticalIconItemStyle = style.GetControlStyle(VerticalIconItemStyle);
+            HorizontalItemStyle = style.GetControlStyle(HorizontalItemStyle);
+            CoverFlowItemStyle = style.GetControlStyle(CoverFlowItemStyle);
         }
     }
 

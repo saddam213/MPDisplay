@@ -25,15 +25,12 @@ namespace GUIFramework.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var apiImage = value as APIImage;
-            if (apiImage != null)
-            {
-                var image = apiImage;
-                return image.IsFile 
-                    ? GUIImageManager.GetImage(image.FileName)
-                    : GUIImageManager.GetImage(image.FileBytes);
-            }
+            if (apiImage == null) return new BitmapImage();
 
-            return new BitmapImage();
+            var image = apiImage;
+            return image.IsFile 
+                ? GUIImageManager.GetImage(image.FileName)
+                : GUIImageManager.GetImage(image.FileBytes);
         }
 
         /// <summary>

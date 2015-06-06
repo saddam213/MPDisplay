@@ -18,14 +18,9 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>An IExifValueUndefinedExtractor</returns>
         internal static IExifValueUndefinedExtractor GetExifValueUndefinedExtractor(PropertyTagId tagId)
         {
-            ExifValueUndefinedExtractorAttribute attribute = CachedAttributeExtractor<PropertyTagId, ExifValueUndefinedExtractorAttribute>.Instance.GetAttributeForField(tagId.ToString());
+            var attribute = CachedAttributeExtractor<PropertyTagId, ExifValueUndefinedExtractorAttribute>.Instance.GetAttributeForField(tagId.ToString());
 
-            if (attribute != null)
-            {
-                return attribute.GetUndefinedExtractor();
-            }
-
-            return new SimpleUndefinedExtractor();
+            return attribute != null ? attribute.GetUndefinedExtractor() : new SimpleUndefinedExtractor();
         }
     }
 }

@@ -54,13 +54,10 @@ namespace GUIFramework.Converters
                 }
                 return gradient;
             }
-            else
+            var imageBrush = value as XmlImageBrush;
+            if (imageBrush != null)
             {
-                var imageBrush = value as XmlImageBrush;
-                if (imageBrush != null)
-                {
-                    return GUIImageManager.GetSkinImage(imageBrush);
-                }
+                return GUIImageManager.GetSkinImage(imageBrush);
             }
             return new SolidColorBrush(Colors.Transparent);
         }

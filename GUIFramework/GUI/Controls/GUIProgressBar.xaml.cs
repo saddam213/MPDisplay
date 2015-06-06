@@ -49,11 +49,10 @@ namespace GUIFramework.GUI
             get { return _progress; }
             set
             {
-                if (HasChanged(_progress, value))
-                {
-                    _progress = value;
-                    NotifyPropertyChanged("Progress");
-                }
+                if (!HasChanged(_progress, value)) return;
+
+                _progress = value;
+                NotifyPropertyChanged("Progress");
             }
         }
 
@@ -149,7 +148,7 @@ namespace GUIFramework.GUI
         /// <param name="value1">The value1.</param>
         /// <param name="value2">The value2.</param>
         /// <returns>If the value has changed to 1 decmal point</returns>
-        private bool HasChanged(double value1, double value2)
+        private static bool HasChanged(double value1, double value2)
         {
             return Math.Abs(Math.Round(value1, 1) - Math.Round(value2, 1)) > Tolerance;
         }

@@ -44,7 +44,7 @@ namespace SkinEditor.Themes
 
         // Using a DependencyProperty as the backing store for SkinInfo.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SkinInfoProperty =
-            DependencyProperty.Register("SkinInfo", typeof(XmlSkinInfo), typeof(EditorViewModel), new PropertyMetadata(new XmlSkinInfo(), (d,e) => (d as EditorViewModel).Initialize()));
+            DependencyProperty.Register("SkinInfo", typeof(XmlSkinInfo), typeof(EditorViewModel), new PropertyMetadata(new XmlSkinInfo(), (d,e) => ((EditorViewModel) d).Initialize()));
 
         
 

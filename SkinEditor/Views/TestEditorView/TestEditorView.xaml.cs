@@ -45,21 +45,6 @@ namespace SkinEditor.Views
             NotifyPropertyChanged("LabelProperties");
         }
 
-        private void Button_Click_SendProperty(object sender, RoutedEventArgs e)
-        {
-          //  GUIInfoManager.OnPropertyStringReceived(SelectedProperty, (sender as Button).Tag.ToString());
-        }
-
-        private void Button_Click_OpenMpWindow(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        //public ObservableCollection<string> LabelProperties
-        //{
-        //    get { return GUIInfoManager.RegisteredProperties; }
-        //}
-
         private string _selectedProperty;
 
         public string SelectedProperty
@@ -67,23 +52,5 @@ namespace SkinEditor.Views
             get { return _selectedProperty; }
             set { _selectedProperty = value; NotifyPropertyChanged("SelectedProperty"); }
         }
- 
-
-        private void Button_Click_SendWindowId(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-
-
-
-
-
-
-
-
-
-
-       
     }
 }

@@ -14,18 +14,10 @@ namespace MediaPortalPlugin.Plugins
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                var currentMovie = ReflectionHelper.GetPropertyValue(PluginWindow, "curAnimeEpisode", string.Empty);
-                if (currentMovie != null)
-                {
-                    if (ReflectionHelper.GetPropertyValue(currentMovie, "FullPath", string.Empty) == filename)
-                    {
-                        return true;
-                    }
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            var currentMovie = ReflectionHelper.GetPropertyValue(PluginWindow, "curAnimeEpisode", string.Empty);
+            if (currentMovie == null) return false;
+            return ReflectionHelper.GetPropertyValue(currentMovie, "FullPath", string.Empty) == filename;
         }
 
         public override APIPlaybackType PlayType

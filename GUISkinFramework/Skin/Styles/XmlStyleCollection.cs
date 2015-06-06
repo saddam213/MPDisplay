@@ -41,104 +41,87 @@ namespace GUISkinFramework.Skin
 
         public void SaveStyle<T>(T style) where T : XmlStyle
         {
-            if (style != null)
+            if (style == null) return;
+            if (style is XmlBrush)
             {
-                if (style is XmlBrush)
-                {
-                    BrushStyles.Remove(BrushStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId)));
-                    BrushStyles.Add(style as XmlBrush);
-                }
-                else if (style is XmlControlStyle)
-                {
-                    ControlStyles.Remove(ControlStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId)));
-                    ControlStyles.Add(style as XmlControlStyle);
-                }
+                BrushStyles.Remove(BrushStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId)));
+                BrushStyles.Add(style as XmlBrush);
+            }
+            else if (style is XmlControlStyle)
+            {
+                ControlStyles.Remove(ControlStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId)));
+                ControlStyles.Add(style as XmlControlStyle);
             }
         }
 
         public T GetStyle<T>(T style) where T : XmlStyle
         {
-            if (style != null)
+            if (style == null) return default(T);
+            if (string.IsNullOrEmpty(style.StyleId)) return style;
+            if (style is XmlBrush)
             {
-                if (!string.IsNullOrEmpty(style.StyleId))
-                {
-                    if (style is XmlBrush)
-                    {
-                        return (T)(object)BrushStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId));
-                    }
-                    else if (style is XmlControlStyle)
-                    {
-                        return (T)(object)ControlStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId));
-                    }
-                }
-                return style;
+                return (T)(object)BrushStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId));
             }
-            return default(T);
+            if (style is XmlControlStyle)
+            {
+                return (T)(object)ControlStyles.FirstOrDefault(s => s.StyleId.Equals(style.StyleId));
+            }
+            return style;
         }
 
 
         public T GetStyle<T>(string styleId) where T : XmlStyle
         {
-            if (!string.IsNullOrEmpty(styleId))
+            if (string.IsNullOrEmpty(styleId)) return default(T);
+            if (typeof(T) == typeof(XmlBrush))
             {
-                if (typeof(T) == typeof(XmlBrush))
-                {
-                    return (T)(object)BrushStyles.FirstOrDefault(s => s.StyleId.Equals(styleId));
-                }
-                else if (typeof(T) == typeof(XmlControlStyle))
-                {
-                    return (T)(object)ControlStyles.FirstOrDefault(s => s.StyleId.Equals(styleId));
-                }
+                return (T)(object)BrushStyles.FirstOrDefault(s => s.StyleId.Equals(styleId));
+            }
+            if (typeof(T) == typeof(XmlControlStyle))
+            {
+                return (T)(object)ControlStyles.FirstOrDefault(s => s.StyleId.Equals(styleId));
             }
             return default(T);
         }
 
         public XmlControlStyle GetDesignerStyle(Type controlType)
         {
-            if (ControlStyles.Any(s => s.StyleId == controlType.Name))
-            {
-                var style = ControlStyles.FirstOrDefault(s => s.StyleId == controlType.Name).CreateCopy();
-                style.StyleId = string.Empty;
-                return style;
-            }
-            return null;
+            if (ControlStyles.All(s => s.StyleId != controlType.Name)) return null;
+            var style = ControlStyles.FirstOrDefault(s => s.StyleId == controlType.Name).CreateCopy();
+            style.StyleId = string.Empty;
+            return style;
         }
 
         public XmlControlStyle GetDesignerStyle(string name)
         {
-            if (ControlStyles.Any(s => s.StyleId == name))
-            {
-                var style = ControlStyles.FirstOrDefault(s => s.StyleId == name).CreateCopy();
-                style.StyleId = string.Empty;
-                return style;
-            }
-            return null;
+            if (ControlStyles.All(s => s.StyleId != name)) return null;
+
+            var style = ControlStyles.FirstOrDefault(s => s.StyleId == name).CreateCopy();
+            style.StyleId = string.Empty;
+            return style;
         }
 
         public XmlBrush GetDesignerBrushStyle(string styleId)
         {
-            if (BrushStyles.Any(s => s.StyleId == styleId))
-            {
-                var brush = BrushStyles.FirstOrDefault(s => s.StyleId == styleId).CreateCopy();
-                brush.StyleId = string.Empty;
-                return brush;
-            }
-            return null;
+            if (BrushStyles.All(s => s.StyleId != styleId)) return null;
+
+            var brush = BrushStyles.FirstOrDefault(s => s.StyleId == styleId).CreateCopy();
+            brush.StyleId = string.Empty;
+            return brush;
         }
 
 
         public bool StyleExists(XmlStyle style)
         {
-            if (style != null)
+            if (style == null) return false;
+
+            if (style is XmlBrush)
             {
-                if (style is XmlBrush)
-                {
-                    return BrushStyles.Any(s => s.StyleId.Equals(style.StyleId));
-                }
-                else if (style is XmlControlStyle)
-                {
-                    return ControlStyles.Any(s => s.StyleId.Equals(style.StyleId));
-                }
+                return BrushStyles.Any(s => s.StyleId.Equals(style.StyleId));
+            }
+            if (style is XmlControlStyle)
+            {
+                return ControlStyles.Any(s => s.StyleId.Equals(style.StyleId));
             }
             return false;
         }
@@ -146,16 +129,14 @@ namespace GUISkinFramework.Skin
 
         public T GetControlStyle<T>(T controlStyle) where T : XmlControlStyle
         {
-            if (controlStyle != null)
+            if (controlStyle == null) return Activator.CreateInstance<T>();
+            if (!string.IsNullOrEmpty(controlStyle.StyleId))
             {
-                if (!string.IsNullOrEmpty(controlStyle.StyleId))
-                {
-                    return (T)(object)ControlStyles.FirstOrDefault(c => c.StyleId.Equals(controlStyle.StyleId))
-                                   ?? Activator.CreateInstance<T>();
-                }
-                controlStyle.LoadSubStyles(this);
+                return (T)ControlStyles.FirstOrDefault(c => c.StyleId.Equals(controlStyle.StyleId))
+                       ?? Activator.CreateInstance<T>();
             }
-            return controlStyle ?? Activator.CreateInstance<T>();
+            controlStyle.LoadSubStyles(this);
+            return controlStyle;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

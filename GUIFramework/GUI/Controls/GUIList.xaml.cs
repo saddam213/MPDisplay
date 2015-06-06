@@ -131,6 +131,7 @@ namespace GUIFramework.GUI
         {
             base.OnDeregisterInfoData();
             ListRepository.DeregisterListMessage(this, SkinXml.ListType);
+            // ReSharper disable once InvokeAsExtensionMethod
             GUIActionManager.DeregisterAction(this, XmlActionType.ChangeListView);
         }
 
@@ -151,6 +152,7 @@ namespace GUIFramework.GUI
         {
              await Dispatcher.InvokeAsync(OnPropertyChanging);
              OnSelectedItemReceived();
+
         }
 
         /// <summary>
@@ -160,11 +162,9 @@ namespace GUIFramework.GUI
         {
             await Dispatcher.InvokeAsync(() =>
             {
-                if (SkinXml.ListLayout == XmlListLayout.Auto)
-                {
-                    ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout(SkinXml.ListType));
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-                }
+                if (SkinXml.ListLayout != XmlListLayout.Auto) return;
+
+                ChangeLayout(ListRepository.GetCurrentMediaPortalListLayout(SkinXml.ListType));
             });
         }
 
@@ -174,18 +174,17 @@ namespace GUIFramework.GUI
         public async void OnSelectedItemReceived()
         {
             var selectedItem = await ListRepository.GetCurrentSelectedListItem(SkinXml.ListType);
-            if (selectedItem != null && ListItems != null)
+            if (selectedItem == null || ListItems == null) return;
+
+            var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex)
+                       ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText)
+                       ?? ListItems.FirstOrDefault(x => x.Index == selectedItem.ItemIndex);
+            if (item != null)
             {
-                var item = ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText && x.Index == selectedItem.ItemIndex)
-                    ?? ListItems.FirstOrDefault(x => x.Label == selectedItem.ItemText)
-                ?? ListItems.FirstOrDefault(x => x.Index == selectedItem.ItemIndex);
-                if (item != null)
+                await Dispatcher.InvokeAsync(() =>
                 {
-                    await Dispatcher.InvokeAsync(() =>
-                    {
-                        SelectItem(item);
-                    });
-                }
+                    SelectItem(item);
+                });
             }
         }
 
@@ -199,11 +198,8 @@ namespace GUIFramework.GUI
             {
                Dispatcher.InvokeAsync(() =>
                {
-                   XmlListLayout layout = XmlListLayout.Vertical;
-                   if (Enum.TryParse(action.Param1, out layout))
-                   {
-                       ChangeLayout(layout);
-                   }
+                   XmlListLayout layout;
+                   ChangeLayout(Enum.TryParse(action.Param1, out layout) ? layout : XmlListLayout.Vertical);
                });
             }
         }
@@ -242,6 +238,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the drag threshold.
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private double DragThreshold
         {
             get { return IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width; }
@@ -285,50 +282,40 @@ namespace GUIFramework.GUI
         /// <param name="item">The item.</param>
         public void ScrollItemToCenter(APIListItem item)
         {
-            if (item != null)
+            if (item == null) return;
+
+            var positionFromCenter = listbox.GetItemOffsetFromCenterOfView(item);
+            if (positionFromCenter != null)
             {
-                Point? positionFromCenter = listbox.GetItemOffsetFromCenterOfView(item);
-                if (positionFromCenter != null)
+                var newpos = positionFromCenter.Value;
+                if (IsLayoutVertical)
                 {
-                    Point newpos = positionFromCenter.Value;
-                    if (IsLayoutVertical)
-                    {
-                        if (Math.Abs(newpos.Y) > 0.0000001 && Math.Abs(newpos.Y - ScrollViewer.VerticalOffset) > 0.0000001)
-                        {
-                            int duration = newpos.Y < ScrollViewer.VerticalOffset
-                               ? (int)Math.Min(1000, Math.Max(0, ScrollViewer.VerticalOffset - newpos.Y))
-                               : (int)Math.Min(1000, Math.Max(0, newpos.Y - ScrollViewer.VerticalOffset));
+                    if (!(Math.Abs(newpos.Y) > 0.0000001) || !(Math.Abs(newpos.Y - ScrollViewer.VerticalOffset) > 0.0000001)) return;
 
-                            if (duration != 0)
-                            {
-                                var animation = new DoubleAnimation(ScrollViewer.VerticalOffset, newpos.Y, new Duration(TimeSpan.FromMilliseconds(duration)));
-                                animation.Completed += (s, e) => AdjustItemCenter();
-                                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
-                            }
-                        }
-                        return;
-                    }
-                    else
-                    {
-                        if (Math.Abs(newpos.X) > 0.0000001 && Math.Abs(newpos.X - ScrollViewer.HorizontalOffset) > 0.0000001)
-                        {
-                            int duration = newpos.X < ScrollViewer.HorizontalOffset
-                                ? (int)Math.Min(500, Math.Max(0, (ScrollViewer.HorizontalOffset - newpos.X) / 2))
-                                : (int)Math.Min(500, Math.Max(0, (newpos.X - ScrollViewer.HorizontalOffset) / 2));
+                    var duration = newpos.Y < ScrollViewer.VerticalOffset
+                        ? (int)Math.Min(1000, Math.Max(0, ScrollViewer.VerticalOffset - newpos.Y))
+                        : (int)Math.Min(1000, Math.Max(0, newpos.Y - ScrollViewer.VerticalOffset));
 
-                            if (duration != 0)
-                            {
-                                var animation = new DoubleAnimation(ScrollViewer.HorizontalOffset, newpos.X, new Duration(TimeSpan.FromMilliseconds(duration)));
-                                animation.Completed += (s, e) => AdjustItemCenter();
-                                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
-                            }
-                        }
-                        return;
-                    }
-                   
+                    if (duration == 0) return;
+
+                    var animation = new DoubleAnimation(ScrollViewer.VerticalOffset, newpos.Y, new Duration(TimeSpan.FromMilliseconds(duration)));
+                    animation.Completed += (s, e) => AdjustItemCenter();
+                    ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
+                    return;
                 }
-                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty,null);
+                if (!(Math.Abs(newpos.X) > 0.0000001) || !(Math.Abs(newpos.X - ScrollViewer.HorizontalOffset) > 0.0000001)) return;
+                var duration1 = newpos.X < ScrollViewer.HorizontalOffset
+                    ? (int)Math.Min(500, Math.Max(0, (ScrollViewer.HorizontalOffset - newpos.X) / 2))
+                    : (int)Math.Min(500, Math.Max(0, (newpos.X - ScrollViewer.HorizontalOffset) / 2));
+
+                if (duration1 == 0) return;
+
+                var animation1 = new DoubleAnimation(ScrollViewer.HorizontalOffset, newpos.X, new Duration(TimeSpan.FromMilliseconds(duration1)));
+                animation1.Completed += (s, e) => AdjustItemCenter();
+                ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty, animation1, HandoffBehavior.SnapshotAndReplace);
+                return;
             }
+            ScrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty,null);
         }
 
         /// <summary>
@@ -341,11 +328,10 @@ namespace GUIFramework.GUI
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
                 {
-                    if ((listbox.SelectedItem as APIListItem) != GetCenterItem())
-                    {
-                        listbox.ScrollIntoView(listbox.SelectedItem);
-                        ScrollItemToCenter(listbox.SelectedItem as APIListItem);
-                    }
+                    if ((listbox.SelectedItem as APIListItem) == GetCenterItem()) return;
+
+                    listbox.ScrollIntoView(listbox.SelectedItem);
+                    ScrollItemToCenter(listbox.SelectedItem as APIListItem);
                 }, DispatcherPriority.Background);
             });
         }
@@ -375,13 +361,13 @@ namespace GUIFramework.GUI
                     CurrentLayout = SkinXml.CoverFlowItemStyle;
                     break;
             }
-        
-            if (_currentListLayout != layout)
-            {
-                _currentListLayout = layout;
-                listbox.Items.Refresh();
-                SetZoomAnimation(CurrentLayout.SelectionZoomX, CurrentLayout.SelectionZoomY);
-            }
+
+            if (_currentListLayout == layout) return;
+
+            _currentListLayout = layout;
+
+            listbox.Items.Refresh();
+            SetZoomAnimation(CurrentLayout.SelectionZoomX, CurrentLayout.SelectionZoomY);
         }
 
         /// <summary>
@@ -389,34 +375,31 @@ namespace GUIFramework.GUI
         /// </summary>
         private void CreateZoomAnimation()
         {
-            if (_selectedZoomBackAnimation == null)
-            {
-                Duration duration = new Duration(TimeSpan.FromMilliseconds(CurrentLayout.SelectionZoomDuration));
-                _selectedZoomX = new DoubleAnimation();
-                _selectedZoomY = new DoubleAnimation();
-                DoubleAnimation outX = new DoubleAnimation();
-                DoubleAnimation outY = new DoubleAnimation();
-                _selectedZoomX.Duration = duration;
-                _selectedZoomY.Duration = duration;
-                outX.Duration = duration;
-                outY.Duration = duration;
-                Storyboard sbIn = new Storyboard();
-                sbIn.Duration = duration;
-                sbIn.Children.Add(_selectedZoomX);
-                sbIn.Children.Add(_selectedZoomY);
-                Storyboard sbOut = new Storyboard();
-                sbOut.Duration = duration;
-                sbOut.Children.Add(outX);
-                sbOut.Children.Add(outY);
-                Storyboard.SetTargetProperty(_selectedZoomX, new PropertyPath("LayoutTransform.ScaleX"));
-                Storyboard.SetTargetProperty(_selectedZoomY, new PropertyPath("LayoutTransform.ScaleY"));
-                Storyboard.SetTargetProperty(outX, new PropertyPath("LayoutTransform.ScaleX"));
-                Storyboard.SetTargetProperty(outY, new PropertyPath("LayoutTransform.ScaleY"));
-                outX.To = 1;
-                outY.To = 1;
-                _selectedZoomAnimation = sbIn;
-                _selectedZoomBackAnimation = sbOut;
-            }
+            if (_selectedZoomBackAnimation != null) return;
+
+            var duration = new Duration(TimeSpan.FromMilliseconds(CurrentLayout.SelectionZoomDuration));
+            _selectedZoomX = new DoubleAnimation();
+            _selectedZoomY = new DoubleAnimation();
+            var outX = new DoubleAnimation();
+            var outY = new DoubleAnimation();
+            _selectedZoomX.Duration = duration;
+            _selectedZoomY.Duration = duration;
+            outX.Duration = duration;
+            outY.Duration = duration;
+            var sbIn = new Storyboard {Duration = duration};
+            sbIn.Children.Add(_selectedZoomX);
+            sbIn.Children.Add(_selectedZoomY);
+            var sbOut = new Storyboard {Duration = duration};
+            sbOut.Children.Add(outX);
+            sbOut.Children.Add(outY);
+            Storyboard.SetTargetProperty(_selectedZoomX, new PropertyPath("LayoutTransform.ScaleX"));
+            Storyboard.SetTargetProperty(_selectedZoomY, new PropertyPath("LayoutTransform.ScaleY"));
+            Storyboard.SetTargetProperty(outX, new PropertyPath("LayoutTransform.ScaleX"));
+            Storyboard.SetTargetProperty(outY, new PropertyPath("LayoutTransform.ScaleY"));
+            outX.To = 1;
+            outY.To = 1;
+            _selectedZoomAnimation = sbIn;
+            _selectedZoomBackAnimation = sbOut;
         }
 
         /// <summary>
@@ -426,11 +409,10 @@ namespace GUIFramework.GUI
         /// <param name="y">The y.</param>
         private void SetZoomAnimation(int x, int y)
         {
-            if (_selectedZoomX != null && _selectedZoomY != null)
-            {
-                _selectedZoomX.To = Math.Max(1.0, (x / 100.0));
-                _selectedZoomY.To = Math.Max(1.0, (y / 100.0));
-            }
+            if (_selectedZoomX == null || _selectedZoomY == null) return;
+
+            _selectedZoomX.To = Math.Max(1.0, (x / 100.0));
+            _selectedZoomY.To = Math.Max(1.0, (y / 100.0));
         }
 
         /// <summary>
@@ -440,12 +422,10 @@ namespace GUIFramework.GUI
         private APIListItem GetCenterItem()
         {
             var element = listbox.InputHitTest(new Point((listbox.ActualWidth / 2.0), (listbox.ActualHeight / 2.0))) as Border;
-            if (element != null)
-            {
-                var contentPresenter = element.Child as ContentPresenter;
-                if (contentPresenter != null)
-                    return contentPresenter.Content as APIListItem;
-            }
+            if (element == null) return null;
+
+            var contentPresenter = element.Child as ContentPresenter;
+            if (contentPresenter != null) return contentPresenter.Content as APIListItem;
             return null;
         }
 
@@ -468,13 +448,12 @@ namespace GUIFramework.GUI
                 }
 
                 var currentContainer = sender as ListBoxItem;
-                if (currentContainer != null)
-                {
-                    currentContainer.LayoutTransform = new ScaleTransform(1, 1);
-                    currentContainer.RenderTransformOrigin = new Point(0.5, 0.5);
-                    _selectedZoomAnimation.Begin(currentContainer);
-                    _selectedContainer = currentContainer;
-                }
+                if (currentContainer == null) return;
+
+                currentContainer.LayoutTransform = new ScaleTransform(1, 1);
+                currentContainer.RenderTransformOrigin = new Point(0.5, 0.5);
+                _selectedZoomAnimation.Begin(currentContainer);
+                _selectedContainer = currentContainer;
             }
             catch
             {
@@ -506,17 +485,15 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         private void OnListItem_PreviewMouseUp(object sender, RoutedEventArgs e)
         {
-            if (IsScrolling == false && IsMouseDoubleClick == false)
+            if (IsScrolling || IsMouseDoubleClick) return;
+
+            var listBoxItem = sender as ListBoxItem;
+            if (listBoxItem == null) return;
+
+            var item = listBoxItem.Content as APIListItem;
+            if (item != null)
             {
-                var listBoxItem = sender as ListBoxItem;
-                if (listBoxItem != null)
-                {
-                    var item = listBoxItem.Content as APIListItem;
-                    if (item != null)
-                    {
-                        ListRepository.Instance.FocusListControlItem(this, item);
-                    }
-                }
+                ListRepository.Instance.FocusListControlItem(this, item);
             }
         }
 
@@ -527,8 +504,6 @@ namespace GUIFramework.GUI
         }
 
         #endregion
-
- 
 
     }
 }

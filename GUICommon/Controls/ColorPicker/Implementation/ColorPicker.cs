@@ -12,9 +12,9 @@ namespace MPDisplay.Common.Controls
     {
         #region Members
 
-        private System.Windows.Controls.ListBox _availableColors;
-        private System.Windows.Controls.ListBox _standardColors;
-        private System.Windows.Controls.ListBox _recentColors;
+        private ListBox _availableColors;
+        private ListBox _standardColors;
+        private ListBox _recentColors;
         private Button _okButton;
 
         #endregion //Members
@@ -110,7 +110,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnSelectedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ColorPicker colorPicker = (ColorPicker)d;
+            var colorPicker = (ColorPicker)d;
             if (colorPicker != null)
                 colorPicker.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
         }
@@ -119,7 +119,7 @@ namespace MPDisplay.Common.Controls
         {
             SelectedColorText = newValue.GetColorName();
 
-            RoutedPropertyChangedEventArgs<Color> args = new RoutedPropertyChangedEventArgs<Color>(oldValue, newValue)
+            var args = new RoutedPropertyChangedEventArgs<Color>(oldValue, newValue)
             {
                 RoutedEvent = SelectedColorChangedEvent
             };
@@ -232,21 +232,21 @@ namespace MPDisplay.Common.Controls
             if (_availableColors != null)
                 _availableColors.SelectionChanged -= Color_SelectionChanged;
 
-            _availableColors = GetTemplateChild("PART_AvailableColors") as System.Windows.Controls.ListBox;
+            _availableColors = GetTemplateChild("PART_AvailableColors") as ListBox;
             if (_availableColors != null)
                 _availableColors.SelectionChanged += Color_SelectionChanged;
 
             if (_standardColors != null)
                 _standardColors.SelectionChanged -= Color_SelectionChanged;
 
-            _standardColors = GetTemplateChild("PART_StandardColors") as System.Windows.Controls.ListBox;
+            _standardColors = GetTemplateChild("PART_StandardColors") as ListBox;
             if (_standardColors != null)
                 _standardColors.SelectionChanged += Color_SelectionChanged;
 
             if (_recentColors != null)
                 _recentColors.SelectionChanged -= Color_SelectionChanged;
 
-            _recentColors = GetTemplateChild("PART_RecentColors") as System.Windows.Controls.ListBox;
+            _recentColors = GetTemplateChild("PART_RecentColors") as ListBox;
             if (_recentColors != null)
                 _recentColors.SelectionChanged += Color_SelectionChanged;
 
@@ -284,16 +284,15 @@ namespace MPDisplay.Common.Controls
 
         private void Color_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            System.Windows.Controls.ListBox lb = (System.Windows.Controls.ListBox)sender;
+            var lb = (ListBox)sender;
 
-            if (e.AddedItems.Count > 0)
-            {
-                var colorItem = (ColorItem)e.AddedItems[0];
-                SelectedColor = colorItem.Color;
+            if (e.AddedItems.Count <= 0) return;
+
+            var colorItem = (ColorItem)e.AddedItems[0];
+            SelectedColor = colorItem.Color;
                
-              //  CloseColorPicker();
-                lb.SelectedIndex = -1; //for now I don't care about keeping track of the selected color
-            }
+            //  CloseColorPicker();
+            lb.SelectedIndex = -1; //for now I don't care about keeping track of the selected color
         }
 
         #endregion //Event Handlers
@@ -330,7 +329,7 @@ namespace MPDisplay.Common.Controls
 
         private static ObservableCollection<ColorItem> CreateStandardColors()
         {
-            ObservableCollection<ColorItem> standardColors = new ObservableCollection<ColorItem>
+            var standardColors = new ObservableCollection<ColorItem>
             {
                 new ColorItem(Colors.Transparent, "Transparent"),
                 new ColorItem(Colors.White, "White"),
@@ -348,16 +347,14 @@ namespace MPDisplay.Common.Controls
 
         private static ObservableCollection<ColorItem> CreateAvailableColors()
         {
-            ObservableCollection<ColorItem> standardColors = new ObservableCollection<ColorItem>();
+            var standardColors = new ObservableCollection<ColorItem>();
 
             foreach (var item in ColorUtilities.KnownColors)
             {
-                if (!String.Equals(item.Key, "Transparent"))
-                {
-                    var colorItem = new ColorItem(item.Value, item.Key);
-                    if (!standardColors.Contains(colorItem))
-                        standardColors.Add(colorItem);
-                }
+                if (String.Equals(item.Key, "Transparent")) continue;
+
+                var colorItem = new ColorItem(item.Value, item.Key);
+                if (!standardColors.Contains(colorItem)) standardColors.Add(colorItem);
             }
 
             return standardColors;

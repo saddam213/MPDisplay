@@ -67,7 +67,7 @@ namespace SkinEditor.Dialogs
   
         private void Button_OK_Click(object sender, RoutedEventArgs e)
         {
-            string newPath = Path.Combine(SkinFolder, SkinName);
+            var newPath = Path.Combine(SkinFolder, SkinName);
             if (FileSystemHelper.DirecoryExists(newPath))
             {
                 MessageBox.Show(string.Format("Directory {0} already exists{1}please choose another directory", newPath, Environment.NewLine), "Error");

@@ -5,12 +5,10 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
 			 xmlns:system="clr-namespace:System;assembly=mscorlib"
-			    xmlns:theading="clr-namespace:System.Threading;assembly=mscorlib"
-         xmlns:cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
-		 xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-                     xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-
-		 mc:Ignorable="d" x:Name="UI" >
+			 xmlns:theading="clr-namespace:System.Threading;assembly=mscorlib"
+             xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+		     mc:Ignorable="d" x:Name="UI" >
     <Grid DataContext="{Binding ElementName=UI}">
 		<Grid.Resources>
 			<ObjectDataProvider x:Key="ThreadPriorities" MethodName="GetNames" ObjectType="{x:Type system:Enum}">
@@ -19,13 +17,6 @@
 				</ObjectDataProvider.MethodParameters>
 			</ObjectDataProvider>
 
-		
-
-			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type system:Enum}">
-				<ObjectDataProvider.MethodParameters>
-					<x:Type TypeName="cursors:CursorType"/>
-				</ObjectDataProvider.MethodParameters>
-			</ObjectDataProvider>
 		</Grid.Resources>
 
 
@@ -96,6 +87,8 @@
 						<ComboBox ItemsSource="{Binding Source={StaticResource LogLevels}}" SelectedItem="{Binding LogLevel, ElementName=UI}"/>
                         <TextBlock Text="{Binding ConverterParameter=User Interaction Delay, Converter={StaticResource LanguageConverter}, FallbackValue=User Interaction Delay}" VerticalAlignment="Bottom" Margin="0,10,0,0"/>
                         <TextBox Text="{Binding DataObject.UserInteractionDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,80,0" />
+                        <TextBlock Text="{Binding ConverterParameter=Google API Key, Converter={StaticResource LanguageConverter}, FallbackValue=Google API Key}" VerticalAlignment="Bottom" Margin="0,10,0,0"/>
+                        <TextBox Text="{Binding DataObject.GoogleApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,0" />
                     </StackPanel>
 				</GroupBox>
 

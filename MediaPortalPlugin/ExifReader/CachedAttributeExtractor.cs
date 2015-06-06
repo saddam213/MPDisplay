@@ -49,16 +49,14 @@ namespace MediaPortalPlugin.ExifReader
         {
             TA attribute;
 
-            if (!_fieldAttributeMap.TryGetValue(field, out attribute))
+            if (_fieldAttributeMap.TryGetValue(field, out attribute)) return attribute;
+            if (TryExtractAttributeFromField(field, out attribute))
             {
-                if (TryExtractAttributeFromField(field, out attribute))
-                {
-                    _fieldAttributeMap[field] = attribute;
-                }
-                else
-                {
-                    attribute = null;
-                }
+                _fieldAttributeMap[field] = attribute;
+            }
+            else
+            {
+                attribute = null;
             }
 
             return attribute;
@@ -70,18 +68,17 @@ namespace MediaPortalPlugin.ExifReader
         /// <param name="field">Name of the field</param>
         /// <param name="attribute">The attribute</param>
         /// <returns>Returns true of the attribute was found</returns>
-        private bool TryExtractAttributeFromField(string field, out TA attribute)
+        private static bool TryExtractAttributeFromField(string field, out TA attribute)
         {
             var fieldInfo = typeof(T).GetField(field);
             attribute = null;
 
-            if (fieldInfo != null)
+            if (fieldInfo == null) return false;
+
+            var attributes = fieldInfo.GetCustomAttributes(typeof(TA), false) as TA[];
+            if (attributes != null && attributes.Length > 0)
             {
-                TA[] attributes = fieldInfo.GetCustomAttributes(typeof(TA), false) as TA[];
-                if (attributes.Length > 0)
-                {
-                    attribute = attributes[0];
-                }
+                attribute = attributes[0];
             }
 
             return attribute != null;

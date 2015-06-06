@@ -38,7 +38,6 @@ namespace MediaPortalPlugin.InfoManagers
 
         private Log _log;
         private bool _isFullscreenVideo;
-        private GUIWindow _currentWindow;
         private PluginSettings _settings;
         private AdvancedPluginSettings _advancedSettings;
         private AddImageSettings _addImageSettings;
@@ -53,21 +52,14 @@ namespace MediaPortalPlugin.InfoManagers
         private List<string> _enabledlugins;
         private bool _isFullScreenMusic;
         private APIPlayerMessage _lastPlayerMessage;
-        private PluginHelper _currentPlugin;
-     
-        public GUIWindow CurrentWindow
-        {
-            get { return _currentWindow; }
-        }
 
-        public PluginHelper CurrentPlugin
-        {
-            get { return _currentPlugin; }
-        }
+        public GUIWindow CurrentWindow { get; private set; }
+
+        public PluginHelper CurrentPlugin { get; private set; }
 
         public int CurrentWindowFocusedControlId
         {
-            get { return _currentWindow != null ? _currentWindow.GetFocusControlId() : -1; }
+            get { return CurrentWindow != null ? CurrentWindow.GetFocusControlId() : -1; }
         }
 
         public void Initialize(PluginSettings settings, AdvancedPluginSettings advancedSettings, AddImageSettings addImageSettings)
@@ -124,15 +116,11 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void CheckUserInteraction()
         {
-            if (_isUserInteracting)
-            {
-                if (DateTime.Now > _lastIteraction.AddSeconds(_settings.UserInteractionDelay))
-                {
-                    _isUserInteracting = false;
-                    _lastIteraction = DateTime.Now.AddYears(1);
-                    OnUserInteractionEnded();
-                }
-            }
+            if (!_isUserInteracting) return;
+            if (DateTime.Now <= _lastIteraction.AddSeconds(_settings.UserInteractionDelay)) return;
+            _isUserInteracting = false;
+            _lastIteraction = DateTime.Now.AddYears(1);
+            OnUserInteractionEnded();
         }
 
         private void ResetUserInteraction()
@@ -144,27 +132,22 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void OnUserInteractionEnded()
         {
-            if (_currentPlaybackType.IsMusic() && !_isFullScreenMusic)
-            {
-                _isFullScreenMusic = true;
-                SendPlayerMessage();
-                EqualizerManager.Instance.StartEqualizer();
-            }
+            if (!_currentPlaybackType.IsMusic() || _isFullScreenMusic) return;
+            _isFullScreenMusic = true;
+            SendPlayerMessage();
+            EqualizerManager.Instance.StartEqualizer();
         }
 
         private void OnUserInteractionStarted()
         {
-            if (_currentPlaybackType.IsMusic() && _isFullScreenMusic)
-            {
-                _isFullScreenMusic = false;
-                EqualizerManager.Instance.StopEqualizer();
-                SendPlayerMessage();
-            }
+            if (!_currentPlaybackType.IsMusic() || !_isFullScreenMusic) return;
+            _isFullScreenMusic = false;
+            EqualizerManager.Instance.StopEqualizer();
+            SendPlayerMessage();
         }
      
         private void GUIWindowManager_OnNewAction(Action action)
         {
-         
                 switch (action.wID)
                 {
                     case Action.ActionType.ACTION_MOVE_DOWN:
@@ -184,7 +167,7 @@ namespace MediaPortalPlugin.InfoManagers
             // detail screen (control 6). Therefore, instead of sending the actual focussed control 50 send control ID 6. If selecting a movie directly plays the movie (instead of the detail screen)
             // the detail screen will shortly display on MPD, then the player screen will be activated.
             if ((action.wID == Action.ActionType.ACTION_SELECT_ITEM || action.wID == Action.ActionType.ACTION_KEY_PRESSED) &&
-                    _currentWindow.GetID == 96742 && CurrentWindowFocusedControlId == 50)
+                    CurrentWindow.GetID == 96742 && CurrentWindowFocusedControlId == 50)
             {
                 SendFocusedControlMessage(6);
             }
@@ -207,62 +190,58 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void OnMediaPortalMessageReceived(APIMediaPortalMessage message)
         {
-            if (message != null)
+            if (message == null) return;
+
+            _log.Message(LogLevel.Debug, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
+            switch (message.MessageType)
             {
-                _log.Message(LogLevel.Debug, "[ReceiveMediaPortalMessage] - MediaPortalMessage received from MPDisplay, MessageType: {0}", message.MessageType);
-                if (message.MessageType == APIMediaPortalMessageType.WindowInfoMessage)
-                {
+                case APIMediaPortalMessageType.WindowInfoMessage:
                     if (message.WindowMessage != null)
                     {
                         PropertyManager.Instance.RegisterWindowProperties(message.WindowMessage.Properties);
                         ListManager.Instance.RegisterWindowListTypes(message.WindowMessage.Lists);
                         EqualizerManager.Instance.RegisterEqualizer(message.WindowMessage.EQData);
                     }
-                }
-                else if (message.MessageType == APIMediaPortalMessageType.DialogInfoMessage)
-                {
+                    break;
+                case APIMediaPortalMessageType.DialogInfoMessage:
                     if (message.WindowMessage != null)
                     {
                         DialogManager.Instance.RegisterDialogInfo(message.WindowMessage);
                     }
-                }
+                    break;
+            }
 
-                if (message.MessageType == APIMediaPortalMessageType.ActionMessage)
-                {
-                    if (message.ActionMessage != null)
+            if (message.MessageType != APIMediaPortalMessageType.ActionMessage) return;
+            if (message.ActionMessage == null) return;
+
+            switch (message.ActionMessage.ActionType)
+            {
+                case APIActionMessageType.WindowListAction:
+                    ListManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                    break;
+                case APIActionMessageType.DialogListAction:
+                    DialogManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                    break;
+                case APIActionMessageType.GuideAction:
+                    TvServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                    break;
+                default:
+                    if (message.ActionMessage.MediaPortalAction != null)
                     {
-                        if (message.ActionMessage.ActionType == APIActionMessageType.WindowListAction)
+                        SupportedPluginManager.GuiSafeInvoke(() =>
                         {
-                            ListManager.Instance.OnActionMessageReceived(message.ActionMessage);
-                        }
-                        else if (message.ActionMessage.ActionType == APIActionMessageType.DialogListAction)
-                        {
-                            DialogManager.Instance.OnActionMessageReceived(message.ActionMessage);
-                        }
-                        else if (message.ActionMessage.ActionType == APIActionMessageType.GuideAction)
-                        {
-                            TvServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
-                        }
-                        else
-                        {
-                            if (message.ActionMessage.MediaPortalAction != null)
+                            if (message.ActionMessage.ActionType == APIActionMessageType.MediaPortalAction)
                             {
-                                SupportedPluginManager.GuiSafeInvoke(() =>
-                                {
-                                    if (message.ActionMessage.ActionType == APIActionMessageType.MediaPortalAction)
-                                    {
-                                        GUIGraphicsContext.OnAction(new Action((Action.ActionType)message.ActionMessage.MediaPortalAction.ActionId, 0f, 0f));
-                                    }
-
-                                    if (message.ActionMessage.ActionType == APIActionMessageType.MediaPortalWindow)
-                                    {
-                                        GUIWindowManager.ActivateWindow(message.ActionMessage.MediaPortalAction.ActionId);
-                                    }
-                                });
+                                GUIGraphicsContext.OnAction(new Action((Action.ActionType)message.ActionMessage.MediaPortalAction.ActionId, 0f, 0f));
                             }
-                        }
+
+                            if (message.ActionMessage.ActionType == APIActionMessageType.MediaPortalWindow)
+                            {
+                                GUIWindowManager.ActivateWindow(message.ActionMessage.MediaPortalAction.ActionId);
+                            }
+                        });
                     }
-                }
+                    break;
             }
         }
 
@@ -278,146 +257,137 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SetCurrentWindow(int windowId)
         {
-            if (!GUIWindowManager.IsRouted)
+            if (GUIWindowManager.IsRouted) return;
+
+            ListManager.Instance.ClearWindowListControls();
+            PropertyManager.Instance.Suspend(true);
+
+            var retry = 0;
+            while (GUIWindowManager.IsSwitchingToNewWindow || !GUIWindowManager.Initalized)
             {
-                ListManager.Instance.ClearWindowListControls();
-                PropertyManager.Instance.Suspend(true);
-
-                int retry = 0;
-                while (GUIWindowManager.IsSwitchingToNewWindow || !GUIWindowManager.Initalized)
+                _log.Message(LogLevel.Debug, "[SetCurrentWindow] - Waiting for window to initalize, WindowId: {0}", windowId);
+                Thread.Sleep(200);
+                if (retry > 100)
                 {
-                    _log.Message(LogLevel.Debug, "[SetCurrentWindow] - Waiting for window to initalize, WindowId: {0}", windowId);
-                    Thread.Sleep(200);
-                    if (retry > 100)
-                    {
-                        _log.Message(LogLevel.Error, "[SetCurrentWindow] - I've been waiting for ages... So I am giving up.., WindowId: {0}", windowId);
-                        break;
-                    }
-                    retry++;
+                    _log.Message(LogLevel.Error, "[SetCurrentWindow] - I've been waiting for ages... So I am giving up.., WindowId: {0}", windowId);
+                    break;
                 }
-
-                _currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindow);
-                bool fullscreen = GUIGraphicsContext.IsFullScreenVideo || _currentWindow.GetID == 2005 || _currentWindow.GetID == 602;
-
-                if (!fullscreen)
-                {
-                    _currentPlugin = SupportedPluginManager.GetPluginHelper(Instance.CurrentWindow.GetID);
-                    SendWindowMessage();
-                    ListManager.Instance.SetWindowListControls();
-                    if (Instance.CurrentWindow.GetID == 600 || Instance.CurrentWindow.GetID == 604)
-                    {
-                        var firstEpg = Instance.CurrentWindow.GetControls().FirstOrDefault(c => c.GetID > 50000);
-                        if (firstEpg != null)
-                        {
-                            SendFocusedControlMessage(firstEpg.GetID);
-                        }
-                    }
-                }
-
-                // if fullscreen state has changed send player update
-                if (fullscreen != _isFullscreenVideo)
-                {
-                    _isFullscreenVideo = fullscreen;
-                    SendPlayerMessage();
-                }
-                // SendFocusedControlMessage();
-                PropertyManager.Instance.Suspend(false);
-
+                retry++;
             }
-         
+
+            CurrentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindow);
+            var fullscreen = GUIGraphicsContext.IsFullScreenVideo || CurrentWindow.GetID == 2005 || CurrentWindow.GetID == 602;
+
+            if (!fullscreen)
+            {
+                CurrentPlugin = SupportedPluginManager.GetPluginHelper(Instance.CurrentWindow.GetID);
+                SendWindowMessage();
+                ListManager.Instance.SetWindowListControls();
+                if (Instance.CurrentWindow.GetID == 600 || Instance.CurrentWindow.GetID == 604)
+                {
+                    var firstEpg = Instance.CurrentWindow.GetControls().FirstOrDefault(c => c.GetID > 50000);
+                    if (firstEpg != null)
+                    {
+                        SendFocusedControlMessage(firstEpg.GetID);
+                    }
+                }
+            }
+
+            // if fullscreen state has changed send player update
+            if (fullscreen != _isFullscreenVideo)
+            {
+                _isFullscreenVideo = fullscreen;
+                SendPlayerMessage();
+            }
+            // SendFocusedControlMessage();
+            PropertyManager.Instance.Suspend(false);
         }
 
         private void SendWindowMessage()
         {
-            if (_currentWindow != null && MessageService.Instance.IsMpDisplayConnected)
-            {
-                _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}"
-                   , _currentWindow.GetID, _currentWindow.GetFocusControlId());
-                MessageService.Instance.SendInfoMessage(new APIInfoMessage
-                {
-                    MessageType = APIInfoMessageType.WindowMessage,
-                    WindowMessage = new APIWindowMessage
-                    {
-                        WindowId = _currentWindow.GetID,
-                        FocusedControlId = _currentWindow.GetFocusControlId(),
-                        EnabledPlugins = _enabledlugins
-                    }
-                });
+            if (CurrentWindow == null || !MessageService.Instance.IsMpDisplayConnected) return;
 
-                SendEditorData(APISkinEditorDataType.WindowId, _currentWindow.GetID);
-            }
+            _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}" , CurrentWindow.GetID, CurrentWindow.GetFocusControlId());
+            MessageService.Instance.SendInfoMessage(new APIInfoMessage
+            {
+                MessageType = APIInfoMessageType.WindowMessage,
+                WindowMessage = new APIWindowMessage
+                {
+                    WindowId = CurrentWindow.GetID,
+                    FocusedControlId = CurrentWindow.GetFocusControlId(),
+                    EnabledPlugins = _enabledlugins
+                }
+            });
+
+            SendEditorData(APISkinEditorDataType.WindowId, CurrentWindow.GetID);
         }
 
         private void SendFocusedControlMessage(int controlId)
         {
-            if (_currentWindow != null && MessageService.Instance.IsMpDisplayConnected)
+            if (CurrentWindow == null || !MessageService.Instance.IsMpDisplayConnected) return;
+
+            var channelId = -1;
+            var programId = -1;
+
+            var focusId = CurrentWindowFocusedControlId;
+            if (controlId >= 0) focusId = controlId;
+
+            // If control is a TVGuide item send also programId and channelId
+            if ((CurrentWindow.GetID == 600 || CurrentWindow.GetID == 604) && focusId >= 50000)
             {
-                int channelId = -1;
-                int programId = -1;
-
-                int focusId = CurrentWindowFocusedControlId;
-                if (controlId >= 0) focusId = controlId;
-
-                // If control is a TVGuide item send also programId and channelId
-                if ((_currentWindow.GetID == 600 || _currentWindow.GetID == 604) && focusId >= 50000)
-                {
-                        var item = _currentWindow.GetControl(focusId);
-                        var program = item.Data;
-                        channelId = ReflectionHelper.GetPropertyValue(program, "IdChannel", -1);
-                        programId = ReflectionHelper.GetPropertyValue(program, "IdProgram", -1);
-                 }
- 
-                if (focusId != _previousFocusedControlId || programId > 0)
-                {
-                _previousFocusedControlId = focusId;
-                _log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
-                    MessageService.Instance.SendInfoMessage(new APIInfoMessage
-                    {
-                        MessageType = APIInfoMessageType.WindowMessage,
-                        WindowMessage = new APIWindowMessage
-                        {
-                            MessageType = APIWindowMessageType.FocusedControlId,
-                            FocusedControlId = focusId,
-                            ProgramId = programId,
-                            ChannelId = channelId
-                        }
-                    });
-
-                    SendEditorData(APISkinEditorDataType.FocusedControlId, focusId);
-                }
+                var item = CurrentWindow.GetControl(focusId);
+                var program = item.Data;
+                channelId = ReflectionHelper.GetPropertyValue(program, "IdChannel", -1);
+                programId = ReflectionHelper.GetPropertyValue(program, "IdProgram", -1);
             }
+
+            if (focusId == _previousFocusedControlId && programId <= 0) return;
+
+            _previousFocusedControlId = focusId;
+            _log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
+            MessageService.Instance.SendInfoMessage(new APIInfoMessage
+            {
+                MessageType = APIInfoMessageType.WindowMessage,
+                WindowMessage = new APIWindowMessage
+                {
+                    MessageType = APIWindowMessageType.FocusedControlId,
+                    FocusedControlId = focusId,
+                    ProgramId = programId,
+                    ChannelId = channelId
+                }
+            });
+
+            SendEditorData(APISkinEditorDataType.FocusedControlId, focusId);
         }
 
        
 
         private void SendPlayerMessage()
         {
-            if (_currentWindow != null && MessageService.Instance.IsMpDisplayConnected)
-            {
-                var message = new APIPlayerMessage
-                    {
-                        PlaybackState = _currentPlaybackState,
-                        PlaybackType = _currentPlaybackType,
-                        PlayerPluginType = _currentPlayerPlugin,
-                        PlayerFullScreen = _isFullscreenVideo || _isFullScreenMusic
-                    };
+            if (CurrentWindow == null || !MessageService.Instance.IsMpDisplayConnected) return;
 
-                if (!message.IsEquals(_lastPlayerMessage))
-                {
-                    _log.Message(LogLevel.Debug, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
-                                                                , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin, _isFullScreenMusic || _isFullscreenVideo);
-                    _lastPlayerMessage = message;
-                    MessageService.Instance.SendInfoMessage(new APIInfoMessage
-                    {
-                        MessageType = APIInfoMessageType.PlayerMessage,
-                        PlayerMessage = message
-                    });
-                }
-            }
+            var message = new APIPlayerMessage
+            {
+                PlaybackState = _currentPlaybackState,
+                PlaybackType = _currentPlaybackType,
+                PlayerPluginType = _currentPlayerPlugin,
+                PlayerFullScreen = _isFullscreenVideo || _isFullScreenMusic
+            };
+
+            if (message.IsEquals(_lastPlayerMessage)) return;
+
+            _log.Message(LogLevel.Debug, "[SendPlayerMessage] - PlaybackState: {0}, PlaybackType: {1}, PlayerPluginType: {2}, FullScreen: {3}"
+                , _currentPlaybackState, _currentPlaybackType, _currentPlayerPlugin, _isFullScreenMusic || _isFullscreenVideo);
+            _lastPlayerMessage = message;
+            MessageService.Instance.SendInfoMessage(new APIInfoMessage
+            {
+                MessageType = APIInfoMessageType.PlayerMessage,
+                PlayerMessage = message
+            });
         }
 
 
-        private void SendActionIdMessage(int actionId)
+        private static void SendActionIdMessage(int actionId)
         {
             if (MessageService.Instance.IsMpDisplayConnected)
             {
@@ -434,8 +404,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void Player_PlayBackEnded(g_Player.MediaType type, string filename)
         {
-            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(10))   // Ignore Player Ended event due to MovingPictures
-                                                                     // bug when playing multiple files
+            if (DateTime.Now > _lastPlayBackChanged.AddSeconds(10))   // Ignore Player Ended event due to MovingPictures issue when playing multiple files
             {
 
                 _log.Message(LogLevel.Debug, "[Player_PlayBackEnded] - PlayType: {0}", type);
@@ -489,7 +458,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private APIPlaybackType GetPlaybackType(g_Player.MediaType type)
+        private static APIPlaybackType GetPlaybackType(g_Player.MediaType type)
         {
             switch (type)
             {
@@ -514,7 +483,7 @@ namespace MediaPortalPlugin.InfoManagers
         #endregion
 
 
-        private void SendEditorData(APISkinEditorDataType type, int value)
+        private static void SendEditorData(APISkinEditorDataType type, int value)
         {
             if (MessageService.Instance.IsSkinEditorConnected)
             {

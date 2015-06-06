@@ -56,7 +56,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <returns>The formatted string</returns>
         public virtual string GetFormattedString(IExifValue exifValue)
         {
-            string firstValue = String.Empty;
+            var firstValue = String.Empty;
 
             foreach (var item in exifValue.Values)
             {

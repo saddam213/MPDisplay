@@ -97,7 +97,7 @@ namespace GUIFramework
     {
     }
 
-    [DebuggerStepThrough()]
+    [DebuggerStepThrough]
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
     public class MessageClient : DuplexClientBase<IMessage>, IMessage
     {

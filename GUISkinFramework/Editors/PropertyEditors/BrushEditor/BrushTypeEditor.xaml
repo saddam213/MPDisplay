@@ -1,4 +1,5 @@
-﻿<UserControl x:Class="GUISkinFramework.Editors.BrushTypeEditor"
+﻿<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<UserControl x:Class="GUISkinFramework.Editors.BrushTypeEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
@@ -13,19 +14,7 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 
-        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="StretchValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="Stretch" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-        <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="GradientAngleValues">
-            <ObjectDataProvider.MethodParameters>
-                <x:Type TypeName="local:GradientAngle" />
-            </ObjectDataProvider.MethodParameters>
-        </ObjectDataProvider>
-
-		<CollectionViewSource x:Key="brushStyles" Source="{Binding SkinInfo.Style.BrushStyles, ElementName=UI}">
+        <CollectionViewSource x:Key="brushStyles" Source="{Binding SkinInfo.Style.BrushStyles, ElementName=UI}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="StyleType" />
             </CollectionViewSource.GroupDescriptions>
@@ -188,7 +177,7 @@
         </Grid>
 
         <!--Preview Panel-->
-        <Border BorderThickness="1" BorderBrush="Black" Margin="5">
+        <Border Grid.Row="0" Grid.Column="1" BorderThickness="1" BorderBrush="Black" Margin="5">
             <Border.Style>
                 <Style TargetType="Border">
                     <Setter Property="Grid.Column" Value="1" />

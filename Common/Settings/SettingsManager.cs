@@ -13,7 +13,7 @@ namespace Common.Settings
         /// <returns></returns>
         public static bool Save<T>(T obj, string filename) where T : SettingsBase
         {
-            return SerializationHelper.Serialize<T>(obj, filename);
+            return SerializationHelper.Serialize(obj, filename);
         }
 
         /// <summary>

@@ -25,36 +25,33 @@ namespace GUIFramework.GUI
         {
             var storyboard = new GUIStoryboard { Condition = condition };
             var xmlAnimations = animations as IList<XmlAnimation> ?? animations.ToList();
-            if (animations != null && xmlAnimations.Any())
+            if (animations == null || !xmlAnimations.Any()) return null;
+
+            foreach (var animation in xmlAnimations.OfType<XmlSlideAnimation>())
             {
-                foreach (var animation in xmlAnimations.OfType<XmlSlideAnimation>())
-                {
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.StartX, animation.EndX, animation), new PropertyPath(Canvas.LeftProperty));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.StartY, animation.EndY, animation), new PropertyPath("(Canvas.Top)"));
-                    storyboard.AddAnimation(element, CreateIntAnimation(animation.StartZ, animation.EndZ, animation), new PropertyPath(Panel.ZIndexProperty));
-                }
-                foreach (var animation in xmlAnimations.OfType<XmlFadeAnimation>())
-                {
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(GetOpacity(animation.From), GetOpacity( animation.To), animation), new PropertyPath(UIElement.OpacityProperty));
-                }
-                foreach (var animation in xmlAnimations.OfType<XmlZoomAnimation>())
-                {
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleX"));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleY"));
-                }
-                foreach (var animation in xmlAnimations.OfType<XmlRotateAnimation>())
-                {
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DXFrom, animation.Pos3DXTo, animation), new PropertyPath(Surface3D.RotationXProperty));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DYFrom, animation.Pos3DYTo, animation), new PropertyPath(Surface3D.RotationYProperty));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DZFrom, animation.Pos3DZTo, animation), new PropertyPath(Surface3D.RotationZProperty));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterXFrom, animation.Pos3DCenterXTo, animation), new PropertyPath(Surface3D.RotationCenterXProperty));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterYFrom, animation.Pos3DCenterYTo, animation), new PropertyPath(Surface3D.RotationCenterYProperty));
-                    storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterZFrom, animation.Pos3DCenterZTo, animation), new PropertyPath(Surface3D.RotationCenterZProperty));
-                }
-                return storyboard;
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.StartX, animation.EndX, animation), new PropertyPath(Canvas.LeftProperty));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.StartY, animation.EndY, animation), new PropertyPath("(Canvas.Top)"));
+                storyboard.AddAnimation(element, CreateIntAnimation(animation.StartZ, animation.EndZ, animation), new PropertyPath(Panel.ZIndexProperty));
             }
-         
-            return null;
+            foreach (var animation in xmlAnimations.OfType<XmlFadeAnimation>())
+            {
+                storyboard.AddAnimation(element, CreateDoubleAnimation(GetOpacity(animation.From), GetOpacity( animation.To), animation), new PropertyPath(UIElement.OpacityProperty));
+            }
+            foreach (var animation in xmlAnimations.OfType<XmlZoomAnimation>())
+            {
+                storyboard.AddAnimation(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleX"));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(GetZoom(animation.From), GetZoom(animation.To), animation), new PropertyPath("RenderTransform.ScaleY"));
+            }
+            foreach (var animation in xmlAnimations.OfType<XmlRotateAnimation>())
+            {
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DXFrom, animation.Pos3DXTo, animation), new PropertyPath(Surface3D.RotationXProperty));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DYFrom, animation.Pos3DYTo, animation), new PropertyPath(Surface3D.RotationYProperty));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DZFrom, animation.Pos3DZTo, animation), new PropertyPath(Surface3D.RotationZProperty));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterXFrom, animation.Pos3DCenterXTo, animation), new PropertyPath(Surface3D.RotationCenterXProperty));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterYFrom, animation.Pos3DCenterYTo, animation), new PropertyPath(Surface3D.RotationCenterYProperty));
+                storyboard.AddAnimation(element, CreateDoubleAnimation(animation.Pos3DCenterZFrom, animation.Pos3DCenterZTo, animation), new PropertyPath(Surface3D.RotationCenterZProperty));
+            }
+            return storyboard;
         }
        
         /// <summary>
@@ -64,7 +61,7 @@ namespace GUIFramework.GUI
         /// <param name="element">The element.</param>
         /// <param name="animation">The animation.</param>
         /// <param name="propertyTarget">The property target.</param>
-        private static void AddAnimation(this GUIStoryboard storyboard, FrameworkElement element, Timeline animation, PropertyPath propertyTarget)
+        private static void AddAnimation(this TimelineGroup storyboard, DependencyObject element, Timeline animation, PropertyPath propertyTarget)
         {
             storyboard.Children.Add(animation);
             Storyboard.SetTarget(animation, element);

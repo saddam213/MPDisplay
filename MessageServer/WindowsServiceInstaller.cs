@@ -13,8 +13,8 @@ namespace MessageServer
         /// </summary>
         public WindowsServiceInstaller()
         {
-            ServiceProcessInstaller serviceProcessInstaller = new ServiceProcessInstaller();
-            ServiceInstaller serviceInstaller = new ServiceInstaller();
+            var serviceProcessInstaller = new ServiceProcessInstaller();
+            var serviceInstaller = new ServiceInstaller();
 
             //# Service Account Information
             serviceProcessInstaller.Account = ServiceAccount.LocalService;

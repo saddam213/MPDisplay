@@ -37,18 +37,17 @@ namespace MPDisplay.Common.Controls
 
         static void OnIsContentShowingChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            BackgroundVisualHost bvh = (BackgroundVisualHost)d;
+            var bvh = (BackgroundVisualHost)d;
 
-            if (bvh.CreateContent != null)
+            if (bvh.CreateContent == null) return;
+
+            if ((bool)e.NewValue)
             {
-                if ((bool)e.NewValue)
-                {
-                    bvh.CreateContentHelper();
-                }
-                else
-                {
-                    bvh.HideContentHelper();
-                }
+                bvh.CreateContentHelper();
+            }
+            else
+            {
+                bvh.HideContentHelper();
             }
         }
         #endregion
@@ -74,14 +73,12 @@ namespace MPDisplay.Common.Controls
 
         static void OnCreateContentChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            BackgroundVisualHost bvh = (BackgroundVisualHost)d;
+            var bvh = (BackgroundVisualHost)d;
 
-            if (bvh.IsContentShowing)
-            {
-                bvh.HideContentHelper();
-                if (e.NewValue != null)
-                    bvh.CreateContentHelper();
-            }
+            if (!bvh.IsContentShowing) return;
+
+            bvh.HideContentHelper();
+            if (e.NewValue != null) bvh.CreateContentHelper();
         } 
         #endregion
 
@@ -92,8 +89,7 @@ namespace MPDisplay.Common.Controls
 
         protected override Visual GetVisualChild(int index)
         {
-            if (_hostVisual != null && index == 0)
-                return _hostVisual;
+            if (_hostVisual != null && index == 0) return _hostVisual;
 
             throw new IndexOutOfRangeException("index");
         }
@@ -120,29 +116,24 @@ namespace MPDisplay.Common.Controls
 
         private void HideContentHelper()
         {
-            if (_threadedHelper != null)
-            {
-                _threadedHelper.Exit();
-                _threadedHelper = null;
-                InvalidateMeasure();
-            }
+            if (_threadedHelper == null) return;
+
+            _threadedHelper.Exit();
+            _threadedHelper = null;
+            InvalidateMeasure();
         }
 
       
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            if (_threadedHelper != null)
-                return _threadedHelper.DesiredSize;
-
-            return base.MeasureOverride(availableSize);
+            return _threadedHelper != null ? _threadedHelper.DesiredSize : base.MeasureOverride(availableSize);
         }
 
         private class ThreadedVisualHelper
         {
             private readonly HostVisual _hostVisual;
-            private readonly AutoResetEvent _sync = 
-                new AutoResetEvent(false);
+            private readonly AutoResetEvent _sync = new AutoResetEvent(false);
             private readonly CreateContentFunction _createContent;
             private readonly Action _invalidateMeasure;
 
@@ -158,7 +149,7 @@ namespace MPDisplay.Common.Controls
                 _createContent = createContent;
                 _invalidateMeasure = invalidateMeasure;
 
-                Thread backgroundUi = new Thread(CreateAndShowContent);
+                var backgroundUi = new Thread(CreateAndShowContent);
                 backgroundUi.SetApartmentState(ApartmentState.STA);
                 backgroundUi.Name = "BackgroundVisualHostThread";
                 backgroundUi.IsBackground = true;
@@ -175,7 +166,7 @@ namespace MPDisplay.Common.Controls
             private void CreateAndShowContent()
             {
                 Dispatcher = Dispatcher.CurrentDispatcher;
-                VisualTargetPresentationSource source = 
+                var source = 
                     new VisualTargetPresentationSource(_hostVisual);
                 _sync.Set();
                 source.RootVisual = _createContent();

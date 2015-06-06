@@ -94,12 +94,11 @@ namespace GUISkinFramework.Editors
         private void Button_SaveStyle_Click(object sender, RoutedEventArgs e)
         {
             var saveDialog = new StyleSaveDialog(NewValue, SkinInfo);
-            if (saveDialog.ShowDialog() == true)
-            {
-                NotifyPropertyChanged("Styles");
-                NewValue = saveDialog.NewStyle as XmlBrush;
-                Value = saveDialog.NewStyle as XmlBrush;
-            }
+            if (saveDialog.ShowDialog() != true) return;
+
+            NotifyPropertyChanged("Styles");
+            NewValue = saveDialog.NewStyle as XmlBrush;
+            Value = saveDialog.NewStyle as XmlBrush;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

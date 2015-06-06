@@ -15,55 +15,45 @@ namespace MediaPortalPlugin
 
         public static IEnumerable<T> GetControls<T>(this GUIWindow window)
         {
-            if (window != null)
-            {
-                return window.Children.GetControls().OfType<T>();
-            }
-            return null;
+            return window != null ? window.Children.GetControls().OfType<T>() : null;
         }
 
         public static bool HasControl<T>(this GUIWindow window)
         {
-            if (window != null)
-            {
-                return window.Children.GetControls().OfType<T>().Any();
-            }
-            return false;
+            return window != null && window.Children.GetControls().OfType<T>().Any();
         }
 
         public static IEnumerable<GUIControl> GetControls(this IEnumerable<GUIControl> controls)
         {
-            foreach (var conrol in controls)
+            foreach (var control in controls)
             {
-                yield return conrol;
-                if (conrol is GUIGroup)
+                yield return control;
+                if (!(control is GUIGroup)) continue;
+
+                foreach (var item in (control as GUIGroup).Children.GetControls())
                 {
-                    foreach (var item in (conrol as GUIGroup).Children.GetControls())
-                    {
-                        yield return item;
-                    }
+                    yield return item;
                 }
             }
         }
 
         public static void CloseAll(this Process[] processes, bool closeMainWindow = true, bool killProcess = false)
         {
-            if (processes != null)
+            if (processes == null) return;
+
+            foreach (var process in processes)
             {
-                foreach (var process in processes)
+                if (killProcess)
                 {
-                    if (killProcess)
-                    {
-                        process.Kill();
-                    }
-                    else if (closeMainWindow)
-                    {
-                        process.CloseMainWindow();
-                    }
-                    else
-                    {
-                        process.Close();
-                    }
+                    process.Kill();
+                }
+                else if (closeMainWindow)
+                {
+                    process.CloseMainWindow();
+                }
+                else
+                {
+                    process.Close();
                 }
             }
         }

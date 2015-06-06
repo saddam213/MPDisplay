@@ -14,11 +14,11 @@ namespace GUISkinFramework.Skin
         private string _labelText = "";
         private string _defaultLabelText = "";
         private string _labelNumberFormat = "";
-        private int _lineHeight = 0;
+        private int _lineHeight;
         private TextAlignment _labelTextAlignment = TextAlignment.Left;
         private bool _isScrollingEnabled = true;
         private XmlLabelStyle _controlStyle;
-        private bool _isScrollWrapEnabled = false;
+        private bool _isScrollWrapEnabled;
         private int _scrollDelay = 3;
         private int _scrollSpeed = 2;
         private string _scrollSeperator = " | ";
@@ -145,7 +145,7 @@ namespace GUISkinFramework.Skin
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlLabelStyle>(ControlStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
         }
     }
 }

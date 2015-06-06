@@ -57,7 +57,7 @@
                 <Button Content=".." Grid.Column="1" Click="Button_Browse_Click">
                   
                 </Button>
-                <TextBox x:Name="skinPath" IsReadOnly="True" TextWrapping="Wrap" Margin="0,0,3,0">
+                <TextBox Grid.Column="0" x:Name="skinPath" IsReadOnly="True" TextWrapping="Wrap" Margin="0,0,3,0">
                     <TextBox.Text>
                         <Binding Path="SkinFolder" UpdateSourceTrigger="PropertyChanged" >
                             <Binding.ValidationRules>

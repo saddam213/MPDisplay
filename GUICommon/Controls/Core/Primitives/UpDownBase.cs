@@ -76,7 +76,7 @@ namespace MPDisplay.Common.Controls.Core
 
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            UpDownBase<T> upDownBase = o as UpDownBase<T>;
+            var upDownBase = o as UpDownBase<T>;
             if (upDownBase != null)
                 upDownBase.OnValueChanged((T)e.OldValue, (T)e.NewValue);
         }
@@ -89,7 +89,7 @@ namespace MPDisplay.Common.Controls.Core
 
             SetValidSpinDirection();
 
-            RoutedPropertyChangedEventArgs<object> args = new RoutedPropertyChangedEventArgs<object>(oldValue, newValue)
+            var args = new RoutedPropertyChangedEventArgs<object>(oldValue, newValue)
             {
                 RoutedEvent = ValueChangedEvent
             };
@@ -173,19 +173,18 @@ namespace MPDisplay.Common.Controls.Core
         {
             base.OnMouseWheel(e);
 
-            if (!e.Handled && AllowSpin && !IsReadOnly && ((TextBox.IsFocused && MouseWheelActiveOnFocus) || !MouseWheelActiveOnFocus))
-            {
-                if (e.Delta < 0)
-                {
-                    DoDecrement();
-                }
-                else if (0 < e.Delta)
-                {
-                    DoIncrement();
-                }
+            if (e.Handled || !AllowSpin || IsReadOnly || ((!TextBox.IsFocused || !MouseWheelActiveOnFocus) && MouseWheelActiveOnFocus)) return;
 
-                e.Handled = true;
+            if (e.Delta < 0)
+            {
+                DoDecrement();
             }
+            else if (0 < e.Delta)
+            {
+                DoIncrement();
+            }
+
+            e.Handled = true;
         }
 
         protected override void OnTextChanged(string oldValue, string newValue)

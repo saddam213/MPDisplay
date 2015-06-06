@@ -40,11 +40,10 @@ namespace GUIConfig.Settings
             try
             {
                
-                string connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
                 var serverEndpoint = new EndpointAddress(connectionString);
                 var serverBinding = ConnectHelper.GetServerBinding();
-
- InstanceContext site = new InstanceContext(this);
+                var site = new InstanceContext(this);
                 var messageClient = new MessageClient(site, serverBinding, serverEndpoint);
                 var connection = new APIConnection("MediaPortalPlugin");
 
@@ -160,7 +159,7 @@ namespace GUIConfig.Settings
     {
     }
 
-    [DebuggerStepThrough()]
+    [DebuggerStepThrough]
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
     public class MessageClient : DuplexClientBase<IMessage>, IMessage
     {

@@ -5,6 +5,8 @@ using System.Xml.Serialization;
 using GUISkinFramework.Editors;
 using MPDisplay.Common.Controls.PropertyGrid;
 
+// ReSharper disable InconsistentNaming
+
 namespace GUISkinFramework.Skin
 {
     [Serializable]
@@ -36,7 +38,6 @@ namespace GUISkinFramework.Skin
         private int _pos3DZ;
         private int _pos3DY;
         private int _pos3DX;
-        private string _visibleCondition = string.Empty;
         private ObservableCollection<XmlAnimation> _animations = new ObservableCollection<XmlAnimation>();
         private ObservableCollection<int> _mediaPortalFocusControls = new ObservableCollection<int>();
         private bool _designerVisible = true;

@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using MPDisplay.Common.Controls.Core;
@@ -33,7 +32,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnSelectedColorChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ColorCanvas colorCanvas = o as ColorCanvas;
+            var colorCanvas = o as ColorCanvas;
             if (colorCanvas != null)
                 colorCanvas.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
         }
@@ -44,8 +43,10 @@ namespace MPDisplay.Common.Controls
             UpdateRGBValues(newValue);
             UpdateColorShadeSelectorPosition(newValue);
 
-            RoutedPropertyChangedEventArgs<Color> args = new RoutedPropertyChangedEventArgs<Color>(oldValue, newValue);
-            args.RoutedEvent = SelectedColorChangedEvent;
+            var args = new RoutedPropertyChangedEventArgs<Color>(oldValue, newValue)
+            {
+                RoutedEvent = SelectedColorChangedEvent
+            };
             RaiseEvent(args);
         }
 
@@ -64,7 +65,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnAChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ColorCanvas colorCanvas = o as ColorCanvas;
+            var colorCanvas = o as ColorCanvas;
             if (colorCanvas != null)
                 colorCanvas.OnAChanged((byte)e.OldValue, (byte)e.NewValue);
         }
@@ -88,7 +89,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ColorCanvas colorCanvas = o as ColorCanvas;
+            var colorCanvas = o as ColorCanvas;
             if (colorCanvas != null)
                 colorCanvas.OnRChanged((byte)e.OldValue, (byte)e.NewValue);
         }
@@ -112,7 +113,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnGChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ColorCanvas colorCanvas = o as ColorCanvas;
+            var colorCanvas = o as ColorCanvas;
             if (colorCanvas != null)
                 colorCanvas.OnGChanged((byte)e.OldValue, (byte)e.NewValue);
         }
@@ -136,7 +137,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnBChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ColorCanvas colorCanvas = o as ColorCanvas;
+            var colorCanvas = o as ColorCanvas;
             if (colorCanvas != null)
                 colorCanvas.OnBChanged((byte)e.OldValue, (byte)e.NewValue);
         }
@@ -162,19 +163,18 @@ namespace MPDisplay.Common.Controls
 
         private static void OnHexadecimalStringChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ColorCanvas colorCanvas = o as ColorCanvas;
+            var colorCanvas = o as ColorCanvas;
             if (colorCanvas != null)
                 colorCanvas.OnHexadecimalStringChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnHexadecimalStringChanged(string oldValue, string newValue)
         {
-            if (!SelectedColor.ToString().Equals(newValue))
-            {
-                var convertFromString = ColorConverter.ConvertFromString(newValue);
-                if (convertFromString != null)
-                    UpdateSelectedColor((Color)convertFromString);
-            }
+            if (SelectedColor.ToString().Equals(newValue)) return;
+
+            var convertFromString = ColorConverter.ConvertFromString(newValue);
+            if (convertFromString != null)
+                UpdateSelectedColor((Color)convertFromString);
         }
 
         #endregion //HexadecimalString
@@ -234,11 +234,10 @@ namespace MPDisplay.Common.Controls
         protected override void OnPreviewKeyDown(KeyEventArgs e)
         {
             //hitting enter on textbox will update value of underlying source
-            if (e.Key == Key.Enter && e.OriginalSource is TextBox)
-            {
-                BindingExpression be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
-                if (be != null) be.UpdateSource();
-            }
+            if (e.Key != Key.Enter || !(e.OriginalSource is TextBox)) return;
+
+            var be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
+            if (be != null) be.UpdateSource();
         }
 
         #endregion //Base Class Overrides
@@ -247,7 +246,7 @@ namespace MPDisplay.Common.Controls
 
         void ColorShadingCanvas_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            Point p = e.GetPosition(_colorShadingCanvas);
+            var p = e.GetPosition(_colorShadingCanvas);
             UpdateColorShadeSelectorPositionAndCalculateColor(p, true);
             _colorShadingCanvas.CaptureMouse();
         }
@@ -259,26 +258,24 @@ namespace MPDisplay.Common.Controls
 
         void ColorShadingCanvas_MouseMove(object sender, MouseEventArgs e)
         {
-            if (e.LeftButton == MouseButtonState.Pressed)
-            {
-                Point p = e.GetPosition(_colorShadingCanvas);
-                UpdateColorShadeSelectorPositionAndCalculateColor(p, true);
-                Mouse.Synchronize();
-            }
+            if (e.LeftButton != MouseButtonState.Pressed) return;
+
+            var p = e.GetPosition(_colorShadingCanvas);
+            UpdateColorShadeSelectorPositionAndCalculateColor(p, true);
+            Mouse.Synchronize();
         }
 
         void ColorShadingCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
         {
-            if (_currentColorPosition != null)
-            {
-                Point newPoint = new Point
-                {
-                    X = ((Point)_currentColorPosition).X * e.NewSize.Width,
-                    Y = ((Point)_currentColorPosition).Y * e.NewSize.Height
-                };
+            if (_currentColorPosition == null) return;
 
-                UpdateColorShadeSelectorPositionAndCalculateColor(newPoint, false);
-            }
+            var newPoint = new Point
+            {
+                X = ((Point)_currentColorPosition).X * e.NewSize.Width,
+                Y = ((Point)_currentColorPosition).Y * e.NewSize.Height
+            };
+
+            UpdateColorShadeSelectorPositionAndCalculateColor(newPoint, false);
         }
 
         void SpectrumSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -359,12 +356,12 @@ namespace MPDisplay.Common.Controls
 
             _currentColorPosition = null;
 
-            HsvColor hsv = ColorUtilities.ConvertRgbToHsv(color.R, color.G, color.B);
+            var hsv = ColorUtilities.ConvertRgbToHsv(color.R, color.G, color.B);
 
             if (!(color.R == color.G && color.R == color.B))
                 _spectrumSlider.Value = hsv.H;
 
-            Point p = new Point(hsv.S, 1 - hsv.V);
+            var p = new Point(hsv.S, 1 - hsv.V);
 
             _currentColorPosition = p;
 
@@ -374,7 +371,7 @@ namespace MPDisplay.Common.Controls
 
         private void CalculateColor(Point p)
         {
-            HsvColor hsv = new HsvColor(360 - _spectrumSlider.Value, 1, 1) { S = p.X, V = 1 - p.Y };
+            var hsv = new HsvColor(360 - _spectrumSlider.Value, 1, 1) { S = p.X, V = 1 - p.Y };
             var currentColor = ColorUtilities.ConvertHsvToRgb(hsv.H, hsv.S, hsv.V);
             currentColor.A = A;
             SelectedColor = currentColor;

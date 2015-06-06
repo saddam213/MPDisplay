@@ -55,10 +55,12 @@
     </DrawingBrush>
 
     <Style x:Key="ColorItemContainerStyle" TargetType="{x:Type ListBoxItem}">
+        <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
         <Setter Property="ToolTip" Value="{Binding Name}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                    <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
                     <Grid ToolTip="{Binding Name}">
                         <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
                         <Border BorderThickness="1" Background="Transparent" BorderBrush="Transparent" x:Name="_outerBorder" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">

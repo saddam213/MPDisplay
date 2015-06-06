@@ -116,7 +116,7 @@ namespace MediaPortalPlugin
             }
         }
 
-        private void OnCloseConfigForm()
+        private static void OnCloseConfigForm()
         {
 
         }

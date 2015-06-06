@@ -17,8 +17,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            CollectionEditorDialog editor = new CollectionEditorDialog(_item.PropertyType);
-            Binding binding = new Binding("Value")
+            var editor = new CollectionEditorDialog(_item.PropertyType);
+            var binding = new Binding("Value")
             {
                 Source = _item,
                 Mode = _item.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay

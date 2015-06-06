@@ -19,15 +19,13 @@ namespace SkinEditor
         {
          
             base.OnStartup(e);
-            if (e.Args != null && e.Args.Any())
+            if (!e.Args.Any()) return;
+
+            var skinInfoFile = e.Args[0];
+            if (File.Exists(skinInfoFile))
             {
-                string skinInfoFile = e.Args[0];
-                if (File.Exists(skinInfoFile))
-                {
-                    _startupSkinInfoFilename = skinInfoFile;
-                }
+                _startupSkinInfoFilename = skinInfoFile;
             }
-          
         }
     }
 }

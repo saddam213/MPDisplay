@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using GUISkinFramework.Skin;
 
 namespace GUISkinFramework.Editors
@@ -8,7 +7,7 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for ImagePicker.xaml
     /// </summary>
-    public partial class ImagePickerCombo : UserControl, INotifyPropertyChanged
+    public partial class ImagePickerCombo : INotifyPropertyChanged
     {
      
         public ImagePickerCombo()
@@ -53,11 +52,6 @@ namespace GUISkinFramework.Editors
         }
 
         #endregion
-
       
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
     }
 }

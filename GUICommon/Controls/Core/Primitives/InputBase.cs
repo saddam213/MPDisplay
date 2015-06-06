@@ -20,7 +20,7 @@ namespace MPDisplay.Common.Controls.Core
 
         private static void OnCultureInfoChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            InputBase inputBase = o as InputBase;
+            var inputBase = o as InputBase;
             if (inputBase != null)
                 inputBase.OnCultureInfoChanged((CultureInfo)e.OldValue, (CultureInfo)e.NewValue);
         }
@@ -54,7 +54,7 @@ namespace MPDisplay.Common.Controls.Core
 
         private static void OnTextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            InputBase inputBase = o as InputBase;
+            var inputBase = o as InputBase;
             if (inputBase != null)
                 inputBase.OnTextChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -83,7 +83,7 @@ namespace MPDisplay.Common.Controls.Core
         public static readonly DependencyProperty WatermarkProperty = DependencyProperty.Register("Watermark", typeof(object), typeof(InputBase), new UIPropertyMetadata(null));
         public object Watermark
         {
-            get { return (object)GetValue(WatermarkProperty); }
+            get { return GetValue(WatermarkProperty); }
             set { SetValue(WatermarkProperty, value); }
         }
 

@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-                           xmlns:commonConve="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
-                           xmlns:baseViews="clr-namespace:SkinEditor.Themes"
+             xmlns:commonConve="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
+             xmlns:baseViews="clr-namespace:SkinEditor.Themes"
              xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" x:Name="Ui"  >
     <baseViews:EditorViewModel.Resources>
@@ -124,7 +124,7 @@
             </Grid>
         </GroupBox>
 
-        <GroupBox Margin="10,207,9,10" Header="ListItem">
+        <GroupBox Grid.Column="0" Margin="10,207,9,10" Header="ListItem">
             <Grid>
                 <DataGrid Margin="0,0,0,31" ItemsSource="{Binding ListItemData}" AutoGenerateColumns="False" CanUserAddRows="False" CanUserDeleteRows="False">
                     <DataGrid.Columns>

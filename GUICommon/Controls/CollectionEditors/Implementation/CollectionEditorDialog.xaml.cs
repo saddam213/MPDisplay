@@ -54,7 +54,7 @@ namespace MPDisplay.Common.Controls
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            _propertyGrid.PersistChanges();
+            PropertyGrid.PersistChanges();
             Close();
         }
 

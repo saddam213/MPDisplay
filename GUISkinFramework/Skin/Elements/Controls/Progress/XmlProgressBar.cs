@@ -103,7 +103,7 @@ namespace GUISkinFramework.Skin
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlProgressBarStyle>(ControlStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
         }
     }
 }

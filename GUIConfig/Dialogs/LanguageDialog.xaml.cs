@@ -10,14 +10,14 @@ namespace GUIConfig.Dialogs
     /// <summary>
     /// Interaction logic for LanguageDialog.xaml
     /// </summary>
-    public partial class LanguageDialog : Window, INotifyPropertyChanged
+    public partial class LanguageDialog : INotifyPropertyChanged
     {
         private Log _log = LoggingManager.GetLog(typeof(LanguageDialog));
 
         private string _selectedLanguage = "English";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DialogLanguagePicker"/> class.
+        /// Initializes a new instance of the DialogLanguagePicker class.
         /// </summary>
         public LanguageDialog()
         {

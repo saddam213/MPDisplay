@@ -59,11 +59,10 @@ namespace MPDisplay.Common.Controls.Core
 
                 _child = value;
 
-                if (_child != null)
-                {
-                    AddLogicalChild(_child);
-                    AddVisualChild(_child);
-                }
+                if (_child == null) return;
+
+                AddLogicalChild(_child);
+                AddVisualChild(_child);
             }
         }
 
@@ -78,7 +77,8 @@ namespace MPDisplay.Common.Controls.Core
         /// <returns></returns>
         public override GeneralTransform GetDesiredTransform(GeneralTransform transform)
         {
-            GeneralTransformGroup result = new GeneralTransformGroup();
+            var result = new GeneralTransformGroup();
+            // ReSharper disable once AssignNullToNotNullAttribute
             result.Children.Add(base.GetDesiredTransform(transform));
             result.Children.Add(new TranslateTransform(_offsetLeft, _offsetTop));
             return result;
@@ -173,7 +173,7 @@ namespace MPDisplay.Common.Controls.Core
         {
             get
             {
-                ArrayList list = new ArrayList();
+                var list = new ArrayList();
                 if (_child != null)
                     list.Add(_child);
                 return list.GetEnumerator();
@@ -204,7 +204,7 @@ namespace MPDisplay.Common.Controls.Core
 
         void UpdateLocation()
         {
-            AdornerLayer adornerLayer = Parent as AdornerLayer;
+            var adornerLayer = Parent as AdornerLayer;
             if (adornerLayer != null)
                 adornerLayer.Update(AdornedElement);
         }

@@ -11,7 +11,7 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for PropertyEditor.xaml
     /// </summary>
-    public partial class LanguageEditor : UserControl, INotifyPropertyChanged
+    public partial class LanguageEditor : INotifyPropertyChanged
     {
         private XmlLanguageEntry _selectedLanguage;
      
@@ -95,12 +95,7 @@ namespace GUISkinFramework.Editors
                 return new ValidationResult(false, "The language tag may not be empty.");
             }
 
-            if (!tag.StartsWith("@"))
-            {
-                return new ValidationResult(false, "The language tag must start with '@'");
-            }
-
-            return new ValidationResult(true, null);
+            return !tag.StartsWith("@") ? new ValidationResult(false, "The language tag must start with '@'") : new ValidationResult(true, null);
         }
     }
 

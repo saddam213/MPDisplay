@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
 namespace MPDisplay.Common.Controls.PropertyGrid
 {
@@ -15,7 +16,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         protected override void SetValueDependencyProperty()
         {
-            ValueProperty = ComboBox.SelectedValueProperty;
+            ValueProperty = Selector.SelectedValueProperty;
         }
 
         protected override void ResolveValueBinding(PropertyItem propertyItem)

@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of metering modes to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _meteringModeMap = new Dictionary<ushort, string>()
+        private Dictionary<ushort, string> _meteringModeMap = new Dictionary<ushort, string>
         {
             { 0, "Unknown" },
             { 1, "Average" },

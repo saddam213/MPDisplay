@@ -19,12 +19,12 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// The numerator
         /// </summary>
-        private CommonInt32 _numerator;
+        private readonly CommonInt32 _numerator;
         
         /// <summary>
         /// The denominator
         /// </summary>
-        private CommonInt32 _denominator;        
+        private readonly CommonInt32 _denominator;        
 
         /// <summary>
         /// Initializes a new instance of the Rational32 struct for signed use
@@ -34,7 +34,7 @@ namespace MediaPortalPlugin.ExifReader
         public Rational32(int numerator, int denominator)
             : this()
         {
-            int gcd = EuclidGCD(numerator, denominator);
+            var gcd = EuclidGCD(numerator, denominator);
 
             _numerator = new CommonInt32(numerator / gcd);
             _denominator = new CommonInt32(denominator / gcd);
@@ -48,7 +48,7 @@ namespace MediaPortalPlugin.ExifReader
         public Rational32(uint numerator, uint denominator)
             : this()
         {
-            uint gcd = EuclidGCD(numerator, denominator);
+            var gcd = EuclidGCD(numerator, denominator);
 
             _numerator = new CommonInt32(numerator / gcd);
             _denominator = new CommonInt32(denominator / gcd);
@@ -194,12 +194,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>Zero of equal, 1 if greater than, and -1 if less than the compared to object</returns>
         public int CompareTo(Rational32 other)
         {
-            if (Equals(other))
-            {
-                return 0;
-            }
-
-            return ((double)this).CompareTo((double)other);
+            return Equals(other) ? 0 : ((double)this).CompareTo((double)other);
         }
 
         /// <summary>

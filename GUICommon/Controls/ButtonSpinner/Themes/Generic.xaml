@@ -33,7 +33,7 @@
 
                         <Border x:Name="Border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Grid.ColumnSpan="2" />
 
-                        <ContentPresenter Focusable="False" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        <ContentPresenter Grid.Column="0" Focusable="False" Margin="{TemplateBinding Padding}" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
 
                         <Grid Grid.Column="1" Visibility="{TemplateBinding ShowButtonSpinner, Converter={StaticResource BooleanToVisibilityConverter}}" Width="{DynamicResource {x:Static SystemParameters.VerticalScrollBarWidthKey}}">
                             <Grid.RowDefinitions>

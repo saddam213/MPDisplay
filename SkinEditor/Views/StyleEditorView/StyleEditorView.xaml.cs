@@ -76,79 +76,74 @@ namespace SkinEditor.Views
             get
             {
                 var addMenu = CreateContextMenuItem("Add", "Add", null);
-                addMenu.Items.Add(CreateContextMenuItem("ColorBrush", "", () => AddBrush<XmlColorBrush>()));
-                addMenu.Items.Add(CreateContextMenuItem("GradientBrush", "", () => AddBrush<XmlGradientBrush>()));
-                addMenu.Items.Add(CreateContextMenuItem("ImageBrush", "XmlImage", () => AddBrush<XmlImageBrush>()));
+                addMenu.Items.Add(CreateContextMenuItem("ColorBrush", "", AddBrush<XmlColorBrush>));
+                addMenu.Items.Add(CreateContextMenuItem("GradientBrush", "", AddBrush<XmlGradientBrush>));
+                addMenu.Items.Add(CreateContextMenuItem("ImageBrush", "XmlImage", AddBrush<XmlImageBrush>));
                 yield return addMenu;
                 yield return new Separator { Name = "Add" };
-                yield return CreateContextMenuItem("Copy", "Copy", () => CopyBrushStyle());
-                yield return CreateContextMenuItem("Rename", "", () => RenameBrushStyle());
-                yield return CreateContextMenuItem("Delete", "Delete", () => DeleteBrushStyle());
+                yield return CreateContextMenuItem("Copy", "Copy", CopyBrushStyle);
+                yield return CreateContextMenuItem("Rename", "", RenameBrushStyle);
+                yield return CreateContextMenuItem("Delete", "Delete", DeleteBrushStyle);
             }
         }
 
         private void DeleteBrushStyle()
         {
-            if (SelectedBrushStyle != null)
+            if (SelectedBrushStyle == null) return;
+
+            if (MessageBox.Show(string.Format("Are you sure you want to delete ControlStyle: {0} ?", SelectedBrushStyle.StyleId),
+                    "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+
+            foreach (var style in SkinInfo.Styles.Values)
             {
-                if (MessageBox.Show(string.Format("Are you sure you want to delete ControlStyle: {0} ?", SelectedBrushStyle.StyleId), "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    foreach (var style in SkinInfo.Styles.Values)
-                    {
-                        style.BrushStyles.Remove(style.BrushStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedBrushStyle.StyleId)));
-                    }
-                    SelectedBrushStyle = null;
-                }
+                style.BrushStyles.Remove(style.BrushStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedBrushStyle.StyleId)));
             }
+            SelectedBrushStyle = null;
         }
 
         private void RenameBrushStyle()
         {
-            if (SelectedBrushStyle != null)
+            if (SelectedBrushStyle == null) return;
+
+            var newStyle = TextBoxDialog.ShowDialog("Rename Style", "New StyleId", SelectedBrushStyle.StyleId);
+            if (string.IsNullOrEmpty(newStyle)) return;
+
+            if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                string newStyle = TextBoxDialog.ShowDialog("Rename Style", "New StyleId", SelectedBrushStyle.StyleId);
-                if (!string.IsNullOrEmpty(newStyle))
+                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            foreach (var styleCollection in SkinInfo.Styles.Values)
+            {
+                var style = styleCollection.BrushStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedBrushStyle.StyleId));
+                if (style != null)
                 {
-                    if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
-                    {
-                        MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    }
-
-                    foreach (var styleCollection in SkinInfo.Styles.Values)
-                    {
-                        var style = styleCollection.BrushStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedBrushStyle.StyleId));
-                        if (style != null)
-                        {
-                            style.StyleId = newStyle;
-                        }
-                    }
-
-                    SelectedBrushStyle.StyleId = newStyle;
+                    style.StyleId = newStyle;
                 }
             }
+
+            SelectedBrushStyle.StyleId = newStyle;
         }
 
         private void CopyBrushStyle()
         {
-            if (SelectedBrushStyle != null)
-            {
-                string newStyle = TextBoxDialog.ShowDialog("Copy Style", "New StyleId", SelectedBrushStyle.StyleId);
-                if (!string.IsNullOrEmpty(newStyle))
-                {
-                    if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
-                    {
-                        MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    }
+            if (SelectedBrushStyle == null) return;
 
-                    var newControl = SelectedBrushStyle.CreateCopy();
-                    newControl.StyleId = newStyle;
-                    foreach (var style in SkinInfo.Styles.Values)
-                    {
-                        style.BrushStyles.Add(newControl);
-                    }
-                }
+            var newStyle = TextBoxDialog.ShowDialog("Copy Style", "New StyleId", SelectedBrushStyle.StyleId);
+            if (string.IsNullOrEmpty(newStyle)) return;
+
+            if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
+            {
+                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            var newControl = SelectedBrushStyle.CreateCopy();
+            newControl.StyleId = newStyle;
+            foreach (var style in SkinInfo.Styles.Values)
+            {
+                style.BrushStyles.Add(newControl);
             }
         }
 
@@ -157,15 +152,13 @@ namespace SkinEditor.Views
         {
             get
             {
-                if (SkinInfo.Styles.Any())
+                if (!SkinInfo.Styles.Any()) return null;
+
+                if (!string.IsNullOrEmpty(SelectedStyle) && SkinInfo.Styles.ContainsKey(SelectedStyle))
                 {
-                    if (!string.IsNullOrEmpty(SelectedStyle) && SkinInfo.Styles.ContainsKey(SelectedStyle))
-                    {
-                        return SkinInfo.Styles[SelectedStyle].BrushStyles;
-                    }
-                    return SkinInfo.Styles["Default"].BrushStyles;
+                    return SkinInfo.Styles[SelectedStyle].BrushStyles;
                 }
-                return null; 
+                return SkinInfo.Styles["Default"].BrushStyles;
             }
         }
 
@@ -181,9 +174,6 @@ namespace SkinEditor.Views
                 NotifyPropertyChanged("CurrentBrushType");
             }
         }
-
-
-
 
         private void ColorPickerPanel_SelectedColorChanged_1(object sender, RoutedPropertyChangedEventArgs<Color> e)
         {
@@ -202,8 +192,6 @@ namespace SkinEditor.Views
         {
             if (SelectedBrushStyle is XmlImageBrush)
             {
-            //   (SelectedBrushStyle as XmlImageBrush).ImageName = imageBrush.ImageName;
-            //   (SelectedBrushStyle as XmlImageBrush).ImageStretch = imageBrush.ImageStretch;
                 NotifyPropertyChanged("SelectedBrushStyle");
             }
         }
@@ -211,19 +199,18 @@ namespace SkinEditor.Views
         private void AddBrush<T>() where T : XmlBrush
         {
             var newBrush = Activator.CreateInstance<T>();
-            string newStyle = TextBoxDialog.ShowDialog(string.Format("New {0}", newBrush.StyleType), string.Format("{0} StyleId", newBrush.StyleType));
-            if (!string.IsNullOrEmpty(newStyle))
-            {
-                if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
-                {
-                    MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    return;
-                }
+            var newStyle = TextBoxDialog.ShowDialog(string.Format("New {0}", newBrush.StyleType), string.Format("{0} StyleId", newBrush.StyleType));
+            if (string.IsNullOrEmpty(newStyle)) return;
 
-                newBrush.StyleId = newStyle;
-                SkinInfo.Styles[SelectedStyle].BrushStyles.Add(newBrush);
-                SelectedBrushStyle = newBrush;
+            if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
+            {
+                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
+
+            newBrush.StyleId = newStyle;
+            SkinInfo.Styles[SelectedStyle].BrushStyles.Add(newBrush);
+            SelectedBrushStyle = newBrush;
         }
 
         // HACK: to indicate value changed, but I should fix the brush editors to only report on change
@@ -248,15 +235,13 @@ namespace SkinEditor.Views
         {
             get
             {
-                if (SkinInfo.Styles.Any())
+                if (!SkinInfo.Styles.Any()) return null;
+
+                if (!string.IsNullOrEmpty(SelectedStyle) && SkinInfo.Styles.ContainsKey(SelectedStyle))
                 {
-                    if (!string.IsNullOrEmpty(SelectedStyle) && SkinInfo.Styles.ContainsKey(SelectedStyle))
-                    {
-                        return SkinInfo.Styles[SelectedStyle].ControlStyles;
-                    }
-                    return SkinInfo.Styles["Default"].ControlStyles;
+                    return SkinInfo.Styles[SelectedStyle].ControlStyles;
                 }
-                return null;
+                return SkinInfo.Styles["Default"].ControlStyles;
             }
         }
 
@@ -283,20 +268,6 @@ namespace SkinEditor.Views
             get { return _controlHost; }
             set { _controlHost = value; NotifyPropertyChanged("ControlHost"); SetInnerControlColors(_showInnerControls); }
         }
-
-        /// <summary>
-        /// Gets or sets the current control.
-        /// </summary>
-        //public GUIControl CurrentControl
-        //{
-        //    get { return _currentControl; }
-        //    set
-        //    {
-        //        _currentControl = value;
-        //        NotifyPropertyChanged("CurrentControl");
-        //        SetInnerControlColors(_showInnerControls);
-        //    }
-        //}
 
         /// <summary>
         /// Gets or sets a value indicating whether [show control resize].
@@ -333,11 +304,12 @@ namespace SkinEditor.Views
         public void OnSelectedControlStyleChanged()
         {
             ShowControlResize = true;
-            if (_selectedControlStyle is XmlButtonStyle)
+            var style = _selectedControlStyle as XmlButtonStyle;
+            if (style != null)
             {
                 ControlHost = new XmlButton
                 {
-                    ControlStyle = _selectedControlStyle as XmlButtonStyle,
+                    ControlStyle = style,
                     LabelText = "MPDisplay",
                     Image = "/SkinEditor;component/Images/MPLogo.png"
                 };
@@ -358,54 +330,60 @@ namespace SkinEditor.Views
                 };
             }
 
-            if (_selectedControlStyle is XmlLabelStyle)
+            var labelStyle = _selectedControlStyle as XmlLabelStyle;
+            if (labelStyle != null)
             {
                 ControlHost = new XmlLabel
                 {
-                    ControlStyle = _selectedControlStyle as XmlLabelStyle,
+                    ControlStyle = labelStyle,
                     LabelText = "MPDisplay"
                 };
             }
 
-            if (_selectedControlStyle is XmlImageStyle)
+            var imageStyle = _selectedControlStyle as XmlImageStyle;
+            if (imageStyle != null)
             {
                 ControlHost = new XmlImage
                 {
-                    ControlStyle = _selectedControlStyle as XmlImageStyle,
+                    ControlStyle = imageStyle,
                     Image = "/SkinEditor;component/Images/MPLogo.png"
                 };
             }
 
-            if (_selectedControlStyle is XmlGroupStyle)
+            var groupStyle = _selectedControlStyle as XmlGroupStyle;
+            if (groupStyle != null)
             {
                 ControlHost = new XmlGroup
                 {
-                    ControlStyle = _selectedControlStyle as XmlGroupStyle,
+                    ControlStyle = groupStyle,
                     Controls = new ObservableCollection<XmlControl>()
                 };
             }
 
-            if (_selectedControlStyle is XmlListStyle)
+            var listStyle = _selectedControlStyle as XmlListStyle;
+            if (listStyle != null)
             {
                 ControlHost = new XmlList
                 {
-                    ControlStyle = _selectedControlStyle as XmlListStyle,
+                    ControlStyle = listStyle
                 };
             }
 
-            if (_selectedControlStyle is XmlGuideStyle)
+            var guideStyle = _selectedControlStyle as XmlGuideStyle;
+            if (guideStyle != null)
             {
                 ControlHost = new XmlGuide
                 {
-                    ControlStyle = _selectedControlStyle as XmlGuideStyle,
+                    ControlStyle = guideStyle
                 };
             }
 
-            if (_selectedControlStyle is XmlProgressBarStyle)
+            var barStyle = _selectedControlStyle as XmlProgressBarStyle;
+            if (barStyle != null)
             {
                 ControlHost = new XmlProgressBar
                 {
-                    ControlStyle = _selectedControlStyle as XmlProgressBarStyle,
+                    ControlStyle = barStyle,
                     Width = 500,
                     Height = 70,
                     ProgressValue = "60",
@@ -424,21 +402,16 @@ namespace SkinEditor.Views
         private void PropertyGrid_ControlStyleValueChanged(object sender, PropertyValueChangedEventArgs e)
         {
             var property = e.OriginalSource as PropertyItem;
-            if (property != null)
-            {
-                HasPendingChanges = true;
-                if (_selectedControlStyle is XmlListItemStyle)
-                {
-                    if (property.Name == "Width" || property.Name == "Height")
-                    {
-                        if (ControlHost != null)
-                        {
-                            ControlHost.Width = (_selectedControlStyle as XmlListItemStyle).Width;
-                            ControlHost.Height = (_selectedControlStyle as XmlListItemStyle).Height;
-                        }
-                    }
-                }
-            }
+            if (property == null) return;
+
+            HasPendingChanges = true;
+            if (!(_selectedControlStyle is XmlListItemStyle)) return;
+            if (property.Name != "Width" && property.Name != "Height") return;
+
+            if (ControlHost == null) return;
+
+            ControlHost.Width = ((XmlListItemStyle) _selectedControlStyle).Width;
+            ControlHost.Height = ((XmlListItemStyle) _selectedControlStyle).Height;
         }
 
         /// <summary>
@@ -449,63 +422,49 @@ namespace SkinEditor.Views
         {
             Dispatcher.BeginInvoke((Action)delegate
             {
-                if (_selectedControlStyle is XmlButtonStyle || _selectedControlStyle is XmlListItemStyle || _selectedControlStyle is XmlImageStyle)
+                if (!(_selectedControlStyle is XmlButtonStyle) && !(_selectedControlStyle is XmlImageStyle)) return;
+                if (controlSurface == null) return;
+
+                if (_selectedControlStyle is XmlListItemStyle)
                 {
-                    if (controlSurface != null)
+                    var text = controlSurface.FindVisualChildren<TextBlock>();
+                    var textBlocks = text as IList<TextBlock> ?? text.ToList();
+                    int count;
+                    Color[] colors;
+                    if (text != null && textBlocks.Any())
                     {
-                        if (_selectedControlStyle is XmlListItemStyle)
+                        count = 0;
+                        colors = new[] { Colors.Purple, Colors.LightBlue, Colors.LimeGreen, Colors.Moccasin, Colors.Tan, Colors.SteelBlue };
+                        foreach (var item in textBlocks)
                         {
-                            var text = controlSurface.FindVisualChildren<TextBlock>();
-                            if (text != null && text.Any())
-                            {
-                                int count = 0;
-                                var colors = new Color[] { Colors.Purple, Colors.LightBlue, Colors.LimeGreen, Colors.Moccasin, Colors.Tan, Colors.SteelBlue };
-                                foreach (var item in text)
-                                {
-                                    item.Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
-                                    count++;
-                                }
-                            }
-
-                            var images = controlSurface.FindVisualChildren<RoundedImage>();
-                            if (images != null && images.Any())
-                            {
-                                int count = 0;
-                                var colors = new Color[] { Colors.DarkOrange, Colors.LightCoral, Colors.Peru, Colors.YellowGreen, Colors.SlateBlue, Colors.Silver };
-                                foreach (var image in images)
-                                {
-                                    if (image != null && image.Descendants<Border>().Any())
-                                    {
-                                        var border = image.Ancestors<Border>().First() as Border;
-                                        if (border != null)
-                                            border.Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
-                                        count++;
-                                    }
-                                }
-                            }
-
-
+                            item.Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
+                            count++;
                         }
-                        else
-                        {
-                            var text = controlSurface.FindVisualChildren<TextBlock>().FirstOrDefault();
-                            if (text != null)
-                            {
-                                text.Background = new SolidColorBrush(showColors ? Colors.Orange : Colors.Transparent);
-                            }
+                    }
 
-                            var image = controlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();
-                            if (image != null && image.Parent is Border)
-                            {
-                                (image.Parent as Border).Background = new SolidColorBrush(showColors ? Colors.Red : Colors.Transparent);
-                            }
-                        }
+                    var images = controlSurface.FindVisualChildren<RoundedImage>();
+                    var roundedImages = images as IList<RoundedImage> ?? images.ToList();
+                    if (images == null || !roundedImages.Any()) return;
+                    count = 0;
+                    colors = new[] { Colors.DarkOrange, Colors.LightCoral, Colors.Peru, Colors.YellowGreen, Colors.SlateBlue, Colors.Silver };
+                    foreach (var border in from image in roundedImages where image != null && image.Descendants<Border>().Any() select image.Ancestors<Border>().First() as Border)
+                    {
+                        if (border != null) border.Background = new SolidColorBrush(showColors ? colors[count] : Colors.Transparent);
+                        count++;
+                    }
+                }
+                else
+                {
+                    var text = controlSurface.FindVisualChildren<TextBlock>().FirstOrDefault();
+                    if (text != null)
+                    {
+                        text.Background = new SolidColorBrush(showColors ? Colors.Orange : Colors.Transparent);
+                    }
 
-                  
-
-
-                     
-
+                    var image = controlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();
+                    if (image != null && image.Parent is Border)
+                    {
+                        ((Border) image.Parent).Background = new SolidColorBrush(showColors ? Colors.Red : Colors.Transparent);
                     }
                 }
             }, DispatcherPriority.Background);
@@ -515,19 +474,17 @@ namespace SkinEditor.Views
         /// Sets the control style size from settings.
         /// </summary>
         /// <param name="style">The style.</param>
-        private void SetControlStyleSizeFromSettings(XmlControlStyle style)
+        private void SetControlStyleSizeFromSettings(XmlStyle style)
         {
-            if (style != null && !(_selectedControlStyle is XmlListItemStyle))
-            {
-                var setting = Settings.StyleItemSettings.FirstOrDefault(s => s.SkinName.Equals(SkinInfo.SkinName) && s.StyleId.Equals(style.StyleId))
-                     ?? CreateNewControlStyleSetting(style);
+            if (style == null || _selectedControlStyle is XmlListItemStyle) return;
 
-                if (ControlHost != null)
-                {
-                    ControlHost.Width = setting.Width;
-                    ControlHost.Height = setting.Height;
-                }
-            }
+            var setting = Settings.StyleItemSettings.FirstOrDefault(s => s.SkinName.Equals(SkinInfo.SkinName) && s.StyleId.Equals(style.StyleId))
+                          ?? CreateNewControlStyleSetting(style);
+
+            if (ControlHost == null) return;
+
+            ControlHost.Width = setting.Width;
+            ControlHost.Height = setting.Height;
         }
 
         /// <summary>
@@ -535,7 +492,7 @@ namespace SkinEditor.Views
         /// </summary>
         /// <param name="style">The style.</param>
         /// <returns></returns>
-        private DesignerStyleSetting CreateNewControlStyleSetting(XmlControlStyle style)
+        private DesignerStyleSetting CreateNewControlStyleSetting(XmlStyle style)
         {
             var setting = new DesignerStyleSetting
             {
@@ -552,19 +509,17 @@ namespace SkinEditor.Views
         /// Saves the control style size from settings.
         /// </summary>
         /// <param name="style">The style.</param>
-        private void SaveControlStyleSizeFromSettings(XmlControlStyle style)
+        private void SaveControlStyleSizeFromSettings(XmlStyle style)
         {
-            if (style != null && !(_selectedControlStyle is XmlListItemStyle))
-            {
-                var setting = Settings.StyleItemSettings.FirstOrDefault(s => s.SkinName.Equals(SkinInfo.SkinName) && s.StyleId.Equals(style.StyleId))
-                    ?? CreateNewControlStyleSetting(style);
+            if (style == null || _selectedControlStyle is XmlListItemStyle) return;
 
-                if (ControlHost != null)
-                {
-                    setting.Width = ControlHost.Width;
-                    setting.Height = ControlHost.Height;
-                }
-            }
+            var setting = Settings.StyleItemSettings.FirstOrDefault(s => s.SkinName.Equals(SkinInfo.SkinName) && s.StyleId.Equals(style.StyleId))
+                          ?? CreateNewControlStyleSetting(style);
+
+            if (ControlHost == null) return;
+
+            setting.Width = ControlHost.Width;
+            setting.Height = ControlHost.Height;
         }
 
         #region ControlStyle ContextMenu
@@ -577,19 +532,19 @@ namespace SkinEditor.Views
             get
             {
                 var addMenu = CreateContextMenuItem("Add", "Add", null);
-                addMenu.Items.Add(CreateContextMenuItem("Label Style", "XmlLabel", () => AddControlStyle<XmlLabelStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("Button Style", "XmlButton", () => AddControlStyle<XmlButtonStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("Image Style", "XmlImage", () => AddControlStyle<XmlImageStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("Group Style", "XmlGroup", () => AddControlStyle<XmlGroupStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("Guide Style", "XmlGuide", () => AddControlStyle<XmlGuideStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("ProgressBar Style", "XmlProgressBar", () => AddControlStyle<XmlProgressBarStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("List Style", "XmlList", () => AddControlStyle<XmlListStyle>()));
-                addMenu.Items.Add(CreateContextMenuItem("ListItem Style", "XmlList", () => AddControlStyle<XmlListItemStyle>()));
+                addMenu.Items.Add(CreateContextMenuItem("Label Style", "XmlLabel", AddControlStyle<XmlLabelStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("Button Style", "XmlButton", AddControlStyle<XmlButtonStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("Image Style", "XmlImage", AddControlStyle<XmlImageStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("Group Style", "XmlGroup", AddControlStyle<XmlGroupStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("Guide Style", "XmlGuide", AddControlStyle<XmlGuideStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("ProgressBar Style", "XmlProgressBar", AddControlStyle<XmlProgressBarStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("List Style", "XmlList", AddControlStyle<XmlListStyle>));
+                addMenu.Items.Add(CreateContextMenuItem("ListItem Style", "XmlList", AddControlStyle<XmlListItemStyle>));
                 yield return addMenu;
                 yield return new Separator { Name = "Add" };
-                yield return CreateContextMenuItem("Copy", "Copy", () => CopyControlStyle());
-                yield return CreateContextMenuItem("Rename", "", () => RenameControlStyle());
-                yield return CreateContextMenuItem("Delete", "Delete", () => DeleteControlStyle());
+                yield return CreateContextMenuItem("Copy", "Copy", CopyControlStyle);
+                yield return CreateContextMenuItem("Rename", "", RenameControlStyle);
+                yield return CreateContextMenuItem("Delete", "Delete", DeleteControlStyle);
             }
         }
 
@@ -598,23 +553,21 @@ namespace SkinEditor.Views
         /// </summary>
         private void CopyControlStyle()
         {
-            if (SelectedControlStyle != null)
+            if (SelectedControlStyle == null) return;
+
+            var newStyle = TextBoxDialog.ShowDialog("Copy Style", "New StyleId", SelectedBrushStyle.StyleId);
+            if (string.IsNullOrEmpty(newStyle)) return;
+
+            if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                 string newStyle = TextBoxDialog.ShowDialog("Copy Style", "New StyleId", SelectedBrushStyle.StyleId);
-                 if (!string.IsNullOrEmpty(newStyle))
-                 {
-                     if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
-                     {
-                         MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                         return;
-                     }
-                     var newControl = SelectedControlStyle.CreateCopy();
-                     newControl.StyleId = newStyle;
-                     foreach (var style in SkinInfo.Styles.Values)
-                     {
-                         style.ControlStyles.Add(newControl.CreateCopy());
-                     }
-                 }
+                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+            var newControl = SelectedControlStyle.CreateCopy();
+            newControl.StyleId = newStyle;
+            foreach (var style in SkinInfo.Styles.Values)
+            {
+                style.ControlStyles.Add(newControl.CreateCopy());
             }
         }
 
@@ -623,17 +576,16 @@ namespace SkinEditor.Views
         /// </summary>
         private void DeleteControlStyle()
         {
-            if (SelectedControlStyle != null)
+            if (SelectedControlStyle == null) return;
+
+            if (MessageBox.Show(string.Format("Are you sure you want to delete ControlStyle: {0} ?", SelectedControlStyle.StyleId),
+                    "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+
+            foreach (var style in SkinInfo.Styles.Values)
             {
-                if (MessageBox.Show(string.Format("Are you sure you want to delete ControlStyle: {0} ?", SelectedControlStyle.StyleId), "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    foreach (var style in SkinInfo.Styles.Values)
-                    {
-                        style.ControlStyles.Remove(style.ControlStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedControlStyle.StyleId)));
-                    }
-                    SelectedControlStyle = null;
-                }
+                style.ControlStyles.Remove(style.ControlStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedControlStyle.StyleId)));
             }
+            SelectedControlStyle = null;
         }
 
         /// <summary>
@@ -641,29 +593,27 @@ namespace SkinEditor.Views
         /// </summary>
         private void RenameControlStyle()
         {
-            if (SelectedControlStyle != null)
+            if (SelectedControlStyle == null) return;
+
+            var newStyle = TextBoxDialog.ShowDialog("Rename Style", "New StyleId", SelectedControlStyle.StyleId);
+            if (string.IsNullOrEmpty(newStyle)) return;
+
+            if (SkinInfo.Styles[SelectedStyle].ControlStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                string newStyle = TextBoxDialog.ShowDialog("Rename Style", "New StyleId", SelectedControlStyle.StyleId);
-                if (!string.IsNullOrEmpty(newStyle))
+                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
+            }
+
+            foreach (var styleCollection in SkinInfo.Styles.Values)
+            {
+                var style = styleCollection.ControlStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedControlStyle.StyleId));
+                if (style != null)
                 {
-                    if (SkinInfo.Styles[SelectedStyle].ControlStyles.Any(b => b.StyleId.Equals(newStyle)))
-                    {
-                        MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    }
-
-                    foreach (var styleCollection in SkinInfo.Styles.Values)
-                    {
-                        var style = styleCollection.ControlStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedControlStyle.StyleId));
-                        if (style != null)
-                        {
-                            style.StyleId = newStyle;
-                        }
-                    }
-
-                    SelectedControlStyle.StyleId = newStyle;
+                    style.StyleId = newStyle;
                 }
             }
+
+            SelectedControlStyle.StyleId = newStyle;
         }
 
         /// <summary>
@@ -675,20 +625,19 @@ namespace SkinEditor.Views
             try
             {
                 var newControl = Activator.CreateInstance<T>();
-                string newStyle = TextBoxDialog.ShowDialog(string.Format("New {0}", newControl.StyleType), string.Format("{0} StyleId", newControl.StyleType));
-                if (!string.IsNullOrEmpty(newStyle))
-                {
-                    if (SkinInfo.Styles[SelectedStyle].ControlStyles.Any(b => b.StyleId.Equals(newStyle)))
-                    {
-                        MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                        return;
-                    }
+                var newStyle = TextBoxDialog.ShowDialog(string.Format("New {0}", newControl.StyleType), string.Format("{0} StyleId", newControl.StyleType));
+                if (string.IsNullOrEmpty(newStyle)) return;
 
-                    newControl.StyleId = newStyle;
-                    foreach (var style in SkinInfo.Styles.Values)
-                    {
-                        style.ControlStyles.Add(newControl.CreateCopy());
-                    }
+                if (SkinInfo.Styles[SelectedStyle].ControlStyles.Any(b => b.StyleId.Equals(newStyle)))
+                {
+                    MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    return;
+                }
+
+                newControl.StyleId = newStyle;
+                foreach (var style in SkinInfo.Styles.Values)
+                {
+                    style.ControlStyles.Add(newControl.CreateCopy());
                 }
             }
             catch (Exception ex)
@@ -701,41 +650,32 @@ namespace SkinEditor.Views
 
         #endregion
 
-
-
-
-
-
-
-
-
         private void Button_NewStyle_Click(object sender, RoutedEventArgs e)
         {
-            string newStyle = TextBoxDialog.ShowDialog("New Style", "Style Name");
-            if (!string.IsNullOrEmpty(newStyle))
-            {
-                if (SkinInfo.Styles.ContainsKey(newStyle))
-                {
-                    MessageBox.Show(string.Format("Style name '{0}' already exists, please select a new Style name", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    return;
-                }
+            var newStyle = TextBoxDialog.ShowDialog("New Style", "Style Name");
+            if (string.IsNullOrEmpty(newStyle)) return;
 
-                SkinInfo.Styles.Add(newStyle, SkinInfo.Styles["Default"].CreateCopy());
-                NotifyPropertyChanged("Styles");
-                SelectedStyle = newStyle;
+            if (SkinInfo.Styles.ContainsKey(newStyle))
+            {
+                MessageBox.Show(string.Format("Style name '{0}' already exists, please select a new Style name", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                return;
             }
+
+            SkinInfo.Styles.Add(newStyle, SkinInfo.Styles["Default"].CreateCopy());
+            NotifyPropertyChanged("Styles");
+            SelectedStyle = newStyle;
         }
 
         private void Button_DeleteStyle_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(string.Format("Are you sure you want to delete {0} style", SelectedStyle), "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-            {
-                FileHelpers.TryDelete(SkinInfo.SkinStyleFolder + SelectedStyle + ".xml");
-                SkinInfo.Styles.Remove(SelectedStyle);
+            if (MessageBox.Show(string.Format("Are you sure you want to delete {0} style", SelectedStyle),
+                    "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
+
+            FileHelpers.TryDelete(SkinInfo.SkinStyleFolder + SelectedStyle + ".xml");
+            SkinInfo.Styles.Remove(SelectedStyle);
                
-                NotifyPropertyChanged("Styles");
-                SelectedStyle = "Default";
-            }
+            NotifyPropertyChanged("Styles");
+            SelectedStyle = "Default";
         }
 
         private void Button_SaveStyle_Click(object sender, RoutedEventArgs e)
@@ -752,7 +692,7 @@ namespace SkinEditor.Views
         /// <param name="icon">The icon.</param>
         /// <param name="handler">The handler.</param>
         /// <returns></returns>
-        private MenuItem CreateContextMenuItem(string header, string icon, Action handler)
+        private static MenuItem CreateContextMenuItem(string header, string icon, Action handler)
         {
             var menuItem = new MenuItem
             {
@@ -790,20 +730,6 @@ namespace SkinEditor.Views
         {
             OnSelectedControlStyleChanged();
         }
-
-     
-
-        private void Grid_PreviewMouseUp_1(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-
-
-
-
-
-       
     }
 
 

@@ -11,11 +11,7 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
-            {
-                return new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", value.GetType().Name), UriKind.Relative));
-            }
-            return null;
+            return value != null ? new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", value.GetType().Name), UriKind.Relative)) : null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -28,12 +24,9 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value is IXmlControlHost)
             {
-                if (value is IXmlControlHost)
-                {
-                    return FontWeights.Bold;
-                }
+                return FontWeights.Bold;
             }
             return FontWeights.Normal;
         }

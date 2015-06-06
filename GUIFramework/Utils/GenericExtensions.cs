@@ -33,12 +33,11 @@ namespace GUIFramework.Utils
             foreach (var control in controls)
             {
                 yield return control;
-                if (control is IControlHost)
+                if (!(control is IControlHost)) continue;
+
+                foreach (var grpControl in (control as IControlHost).Controls.GetControls())
                 {
-                    foreach (var grpControl in (control as IControlHost).Controls.GetControls())
-                    {
-                        yield return grpControl;
-                    }
+                    yield return grpControl;
                 }
             }
         }
@@ -96,16 +95,9 @@ namespace GUIFramework.Utils
 
         public static byte[] ToImageBytes(this APIImage image)
         {
-            if (image != null)
-            {
-                if (!image.IsFile)
-                {
-                    return image.FileBytes;
-                }
+            if (image == null) return null;
 
-                return FileHelpers.ReadBytesFromFile(image.FileName);
-            }
-            return null;
+            return !image.IsFile ? image.FileBytes : FileHelpers.ReadBytesFromFile(image.FileName);
         }
 
 
@@ -150,11 +142,7 @@ namespace GUIFramework.Utils
                 return second.FileName == first.FileName;
             }
 
-            if (!second.IsFile)
-            {
-                return second.FileBytes.ImageEquals(first.FileBytes);
-            }
-            return false;
+            return !second.IsFile && second.FileBytes.ImageEquals(first.FileBytes);
         }
 
 

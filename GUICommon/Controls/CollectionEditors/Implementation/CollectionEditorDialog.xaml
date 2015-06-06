@@ -10,7 +10,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
-        <implementation:CollectionEditor x:Name="_propertyGrid"
+        <implementation:CollectionEditor x:Name="PropertyGrid"
                                      ItemsSourceType="{Binding ItemsSourceType, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                                      ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                                      NewItemTypes="{Binding NewItemTypes, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"

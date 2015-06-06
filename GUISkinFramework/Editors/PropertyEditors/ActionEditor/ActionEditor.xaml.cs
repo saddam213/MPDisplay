@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
 
@@ -11,10 +11,10 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class ActionEditor : UserControl, ITypeEditor
+    public partial class ActionEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public ActionEditor()
         {
@@ -56,11 +56,11 @@ namespace GUISkinFramework.Editors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            ActionEditorDialog editor = new ActionEditorDialog(_Item.Instance);
-            editor.SetItems((_Item.Value as ObservableCollection<XmlAction>) ?? new ObservableCollection<XmlAction>());
+            var editor = new ActionEditorDialog(_item.Instance);
+            editor.SetItems((_item.Value as ObservableCollection<XmlAction>) ?? new ObservableCollection<XmlAction>());
             if (editor.ShowDialog() == true)
             {
-                _Item.Value = editor.GetItems();
+                _item.Value = editor.GetItems();
             }
             ActionInfo = GetText();
             ActionToolTip = GetToolTipText();
@@ -68,7 +68,7 @@ namespace GUISkinFramework.Editors
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
+            _item = propertyItem;
             ActionInfo = GetText();
             ActionToolTip = GetToolTipText();
             return this;
@@ -76,29 +76,20 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_Item != null && _Item.Value != null)
+            if (_item == null || _item.Value == null) return "(Empty)";
+            var list = _item.Value as IList;
+            if (list != null)
             {
-                if (_Item.Value is IList)
-                {
-                    return (_Item.Value as IList).Count > 0 ? "(Collection)" : "(Empty)";
-                }
+                return list.Count > 0 ? "(Collection)" : "(Empty)";
             }
             return "(Empty)";
         }
 
         private string GetToolTipText()
         {
-           
-            if (_Item != null && _Item.Value is IList && (_Item.Value as IList).Count > 0)
-            {
-                string returnValue = "Actions:" + Environment.NewLine;
-                foreach (var item in (_Item.Value as IList))
-                {
-                    returnValue += (item as XmlAction).DisplayName + Environment.NewLine;
-                }
-                return returnValue;
-            }
-            return "(Empty)";
+            if (_item == null || !(_item.Value is IList) || ((IList) _item.Value).Count <= 0) return "(Empty)";
+            var returnValue = "Actions:" + Environment.NewLine;
+            return ((IList) _item.Value).OfType<XmlAction>().Aggregate(returnValue, (current, xmlAction) => current + (xmlAction.DisplayName + Environment.NewLine));
         }
     }
 

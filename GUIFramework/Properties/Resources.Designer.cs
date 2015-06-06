@@ -44,7 +44,7 @@ namespace GUIFramework.Properties {
         internal static ResourceManager ResourceManager {
             get {
                 if (ReferenceEquals(resourceMan, null)) {
-                    ResourceManager temp = new ResourceManager("GUIFramework.Properties.Resources", typeof(Resources).Assembly);
+                    var temp = new ResourceManager("GUIFramework.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

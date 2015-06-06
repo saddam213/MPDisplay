@@ -32,6 +32,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type local:DropDownButton}">
                     <Grid x:Name="MainGrid" SnapsToDevicePixels="True">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition />
+                            <ColumnDefinition />
+                        </Grid.ColumnDefinitions>
                         <ToggleButton x:Name="PART_DropDownButton" Grid.Column="1"
                                       IsChecked="{Binding IsOpen, RelativeSource={RelativeSource TemplatedParent}, Mode=TwoWay}"
                                       IsHitTestVisible="{Binding IsOpen, RelativeSource={RelativeSource TemplatedParent}, Converter={StaticResource InverseBoolConverter}}" >
@@ -61,7 +65,7 @@
                             </Grid>
                         </ToggleButton>
 
-                        <Popup x:Name="PART_Popup" 
+                        <Popup Grid.Column="0" x:Name="PART_Popup" 
                                HorizontalOffset="1"
                                VerticalOffset="1"
                                AllowsTransparency="True"

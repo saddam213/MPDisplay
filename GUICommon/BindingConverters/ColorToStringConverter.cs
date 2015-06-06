@@ -21,31 +21,25 @@ namespace MPDisplay.Common.BindingConverters
         /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value == null) return null;
+            if (value is Color)
             {
-                if (value is Color)
-                {
-                    return ((Color)value).ToString();
-                }
-                if (value is string)
-                {
-                    var getcolor = Colors.Transparent;
-                    try
-                    {
-                        var convertFromString = ColorConverter.ConvertFromString(value.ToString());
-                        if (convertFromString != null)
-                            // ReSharper disable once PossibleInvalidCastException
-                            getcolor = (Color)convertFromString;
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                    return getcolor;
-                }
+                return ((Color)value).ToString();
             }
-
-            return value;
+            if (!(value is string)) return value;
+            var getcolor = Colors.Transparent;
+            try
+            {
+                var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                if (convertFromString != null)
+                    // ReSharper disable once PossibleInvalidCastException
+                    getcolor = (Color)convertFromString;
+            }
+            catch
+            {
+                // ignored
+            }
+            return getcolor;
         }
 
 
@@ -62,27 +56,26 @@ namespace MPDisplay.Common.BindingConverters
         /// </returns>
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value == null) return null;
+
+            if (value is string)
             {
-                if (value is string)
+                var getcolor = Colors.Transparent;
+                try
                 {
-                    var getcolor = Colors.Transparent;
-                    try
-                    {
-                        var convertFromString = ColorConverter.ConvertFromString(value.ToString());
-                        if (convertFromString != null)
-                            getcolor = (Color)convertFromString;
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
-                    return getcolor;
+                    var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                    if (convertFromString != null)
+                        getcolor = (Color)convertFromString;
                 }
-                if (value is Color)
+                catch
                 {
-                    return value;
+                    // ignored
                 }
+                return getcolor;
+            }
+            if (value is Color)
+            {
+                return value;
             }
 
             return value;

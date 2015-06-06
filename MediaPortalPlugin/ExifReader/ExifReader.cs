@@ -69,8 +69,7 @@ namespace MediaPortalPlugin.ExifReader
                 InitializeExifProperties();
             }
 
-            if (_exifproperties != null) return _exifproperties.AsReadOnly();
-            return null;
+            return _exifproperties != null ? _exifproperties.AsReadOnly() : null;
         }
 
         /// <summary>
@@ -80,7 +79,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>An IExifPropertyFormatter or null if there's no formatter available</returns>
         internal IExifPropertyFormatter QueryForCustomPropertyFormatter(int tagId)
         {
-            QueryPropertyFormatterEventArgs eventArgs = new QueryPropertyFormatterEventArgs(tagId);
+            var eventArgs = new QueryPropertyFormatterEventArgs(tagId);
             FireQueryPropertyFormatter(eventArgs);
             return eventArgs.PropertyFormatter;
         }
@@ -92,7 +91,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>An IExifValueUndefinedExtractor or null if there's no formatter available</returns>
         internal IExifValueUndefinedExtractor QueryForCustomUndefinedExtractor(int tagId)
         {
-            QueryUndefinedExtractorEventArgs eventArgs = new QueryUndefinedExtractorEventArgs(tagId);
+            var eventArgs = new QueryUndefinedExtractorEventArgs(tagId);
             FireQueryUndefinedExtractor(eventArgs);
             return eventArgs.UndefinedExtractor;
         }
@@ -103,7 +102,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <param name="eventArgs">Args data for the QueryPropertyFormatter event</param>
         private void FireQueryPropertyFormatter(QueryPropertyFormatterEventArgs eventArgs)
         {
-            EventHandler<QueryPropertyFormatterEventArgs> queryPropertyFormatter = QueryPropertyFormatter;
+            var queryPropertyFormatter = QueryPropertyFormatter;
 
             if (queryPropertyFormatter != null)
             {
@@ -117,7 +116,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <param name="eventArgs">Args data for the QueryUndefinedExtractor event</param>
         private void FireQueryUndefinedExtractor(QueryUndefinedExtractorEventArgs eventArgs)
         {
-            EventHandler<QueryUndefinedExtractorEventArgs> queryUndefinedExtractor = QueryUndefinedExtractor;
+            var queryUndefinedExtractor = QueryUndefinedExtractor;
 
             if (queryUndefinedExtractor != null)
             {

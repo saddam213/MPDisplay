@@ -40,18 +40,12 @@ namespace SkinEditor.Helpers
 
         private InfoEditorViewSettings _settings;
 
-        private EditorViewModel _baseclass;
-
         public ConnectionHelper()
         {
-            _baseclass = null;
+            Baseclass = null;
         }
 
-        public EditorViewModel Baseclass
-        {
-            set { _baseclass = value; }
-            get { return _baseclass; }
-        }
+        public EditorViewModel Baseclass { set; get; }
 
         public InfoEditorViewSettings Settings
         {
@@ -104,12 +98,11 @@ namespace SkinEditor.Helpers
         {
             get
             {
-                if (_propertyTagCache == null)
+                if (_propertyTagCache != null) return _propertyTagCache;
+
+                if (Baseclass != null)
                 {
-                    if (_baseclass != null)
-                    {
-                        _propertyTagCache = _baseclass.SkinInfo.Properties.SelectMany(x => x.MediaPortalTags).Select(m => m.Tag).ToList();
-                    }
+                    _propertyTagCache = Baseclass.SkinInfo.Properties.SelectMany(x => x.MediaPortalTags).Select(m => m.Tag).ToList();
                 }
                 return _propertyTagCache;
             }
@@ -119,7 +112,7 @@ namespace SkinEditor.Helpers
          // call notifyer of all registered baseclasses uning this instance
         private void NotifyPropertyChangedAll(string property)
         {
-                if ( _baseclass != null ) _baseclass.NotifyPropertyChanged(property);
+                if ( Baseclass != null ) Baseclass.NotifyPropertyChanged(property);
          }
 
         public async Task InitializeServerConnection()
@@ -129,7 +122,7 @@ namespace SkinEditor.Helpers
             // Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", serverEndpoint);
             _serverBinding = ConnectHelper.GetServerBinding();
 
-            InstanceContext site = new InstanceContext(this);
+            var site = new InstanceContext(this);
             if (_messageBroker != null)
             {
                 _messageBroker.InnerChannel.Faulted -= Channel_Faulted;
@@ -185,17 +178,16 @@ namespace SkinEditor.Helpers
         public Task Disconnect()
         {
             IsConnected = false;
-            if (_messageBroker != null)
+            if (_messageBroker == null) return Task.FromResult<object>(null);
+
+            try
             {
-                try
-                {
-                    //  Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
-                    return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
-                }
-                catch
-                {
-                   // ignored
-                }
+                //  Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
+                return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
+            }
+            catch
+            {
+                // ignored
             }
             return Task.FromResult<object>(null);
         }
@@ -206,18 +198,17 @@ namespace SkinEditor.Helpers
         /// <param name="connection">The connection.</param>
         public void SessionConnected(APIConnection connection)
         {
-            if (connection != null)
-            {
-                if (connection.ConnectionName.Equals("SkinEditor"))
-                {
-                    IsConnected = true;
-                }
+            if (connection == null) return;
 
-                if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                    // Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
-                    IsMediaPortalConnected = true;
-                }
+            if (connection.ConnectionName.Equals("SkinEditor"))
+            {
+                IsConnected = true;
+            }
+
+            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
+            {
+                // Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
+                IsMediaPortalConnected = true;
             }
         }
 
@@ -227,18 +218,17 @@ namespace SkinEditor.Helpers
         /// <param name="connection">The connection.</param>
         public void SessionDisconnected(APIConnection connection)
         {
-            if (connection != null)
-            {
-                if (connection.ConnectionName.Equals("SkinEditor"))
-                {
-                    Disconnect();
-                }
+            if (connection == null) return;
 
-                if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                    // Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
-                    IsMediaPortalConnected = false;
-                }
+            if (connection.ConnectionName.Equals("SkinEditor"))
+            {
+                Disconnect();
+            }
+
+            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
+            {
+                // Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
+                IsMediaPortalConnected = false;
             }
         }
         /// <summary>
@@ -246,13 +236,11 @@ namespace SkinEditor.Helpers
         /// </summary>
         public void StartSecondTimer()
         {
-            if (_secondTimer == null)
-            {
-                _secondTimer = new DispatcherTimer(DispatcherPriority.Background);
-                _secondTimer.Interval = TimeSpan.FromSeconds(1);
-                _secondTimer.Tick += SecondTimer_Tick;
-                _secondTimer.Start();
-            }
+            if (_secondTimer != null) return;
+
+            _secondTimer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(1)};
+            _secondTimer.Tick += SecondTimer_Tick;
+            _secondTimer.Start();
         }
 
         /// <summary>
@@ -260,12 +248,11 @@ namespace SkinEditor.Helpers
         /// </summary>
         public void StopSecondTimer()
         {
-            if (_secondTimer != null)
-            {
-                _secondTimer.Tick -= SecondTimer_Tick;
-                _secondTimer.Stop();
-                _secondTimer = null;
-            }
+            if (_secondTimer == null) return;
+
+            _secondTimer.Tick -= SecondTimer_Tick;
+            _secondTimer.Stop();
+            _secondTimer = null;
         }
 
         /// <summary>
@@ -332,48 +319,47 @@ namespace SkinEditor.Helpers
                     return;
                 }
 
-                if (message != null && message.DataType == APIDataMessageType.SkinEditorInfo)
+                if (message == null || message.DataType != APIDataMessageType.SkinEditorInfo) return;
+
+                var skineditorData = message.SkinEditorData;
+                if (skineditorData.DataType == APISkinEditorDataType.Property)
                 {
-                    var skineditorData = message.SkinEditorData;
-                    if (skineditorData.DataType == APISkinEditorDataType.Property)
+                    var property = skineditorData.PropertyData;
+                    if (property != null && property.Count() == 2)
                     {
-                        var property = skineditorData.PropertyData;
-                        if (property != null && property.Count() == 2)
+
+                        var existing = _propertyData.FirstOrDefault(p => p.Tag == property[0]);
+                        if (existing != null)
                         {
-
-                            var existing = _propertyData.FirstOrDefault(p => p.Tag == property[0]);
-                            if (existing != null)
-                            {
-                                existing.Value = property[1];
-                                return;
-                            }
-                            PropertyData.Add(new SkinPropertyItem { Tag = property[0], Value = property[1], IsDefined = PropertyTagCache.Contains(property[0]) });
+                            existing.Value = property[1];
+                            return;
                         }
+                        PropertyData.Add(new SkinPropertyItem { Tag = property[0], Value = property[1], IsDefined = PropertyTagCache.Contains(property[0]) });
                     }
+                }
 
-                    if (skineditorData.DataType == APISkinEditorDataType.ListItem)
+                if (skineditorData.DataType == APISkinEditorDataType.ListItem)
+                {
+                    ListItemData.Clear();
+                    foreach (var item in skineditorData.ListItemData.Where(x => x != null && x.Count() == 2).ToArray())
                     {
-                        ListItemData.Clear();
-                        foreach (var item in skineditorData.ListItemData.Where(x => x != null && x.Count() == 2).ToArray())
-                        {
-                            ListItemData.Add(new SkinPropertyItem { Tag = item[0], Value = item[1] });
-                        }
+                        ListItemData.Add(new SkinPropertyItem { Tag = item[0], Value = item[1] });
                     }
+                }
 
-                    if (skineditorData.DataType == APISkinEditorDataType.WindowId)
-                    {
-                        WindowId = skineditorData.IntValue;
-                    }
+                if (skineditorData.DataType == APISkinEditorDataType.WindowId)
+                {
+                    WindowId = skineditorData.IntValue;
+                }
 
-                    if (skineditorData.DataType == APISkinEditorDataType.DialogId)
-                    {
-                        DialogId = skineditorData.IntValue;
-                    }
+                if (skineditorData.DataType == APISkinEditorDataType.DialogId)
+                {
+                    DialogId = skineditorData.IntValue;
+                }
 
-                    if (skineditorData.DataType == APISkinEditorDataType.FocusedControlId)
-                    {
-                        FocusedControlId = skineditorData.IntValue;
-                    }
+                if (skineditorData.DataType == APISkinEditorDataType.FocusedControlId)
+                {
+                    FocusedControlId = skineditorData.IntValue;
                 }
             });
         }
@@ -381,28 +367,27 @@ namespace SkinEditor.Helpers
 
         public void OpenPropertyEditor(SkinPropertyItem item)
         {
-            if (item != null && _baseclass != null)
+            if (item == null || Baseclass == null) return;
+
+            var propEditor = new PropertyEditor(Baseclass.SkinInfo);
+
+            if (item.IsDefined)
             {
-                var propEditor = new PropertyEditor(_baseclass.SkinInfo);
+                var selection = Baseclass.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item.Tag && x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag))
+                                ?? Baseclass.SkinInfo.Properties.FirstOrDefault(x => x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag));
+                propEditor.SelectedProperty = selection;
+            }
+            else
+            {
+                var newProp = new XmlProperty { SkinTag = item.Tag, MediaPortalTags = new ObservableCollection<XmlMediaPortalTag> { new XmlMediaPortalTag { Tag = item.Tag } } };
+                Baseclass.SkinInfo.Properties.Add(newProp);
+                propEditor.SelectedProperty = newProp;
+            }
+            new EditorDialog(propEditor, false).ShowDialog();
 
-                if (item.IsDefined)
-                {
-                    var selection = _baseclass.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item.Tag && x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag))
-                                 ?? _baseclass.SkinInfo.Properties.FirstOrDefault(x => x.MediaPortalTags.Select(m => m.Tag).Contains(item.Tag));
-                    propEditor.SelectedProperty = selection;
-                }
-                else
-                {
-                    var newProp = new XmlProperty { SkinTag = item.Tag, MediaPortalTags = new ObservableCollection<XmlMediaPortalTag> { new XmlMediaPortalTag { Tag = item.Tag } } };
-                    _baseclass.SkinInfo.Properties.Add(newProp);
-                    propEditor.SelectedProperty = newProp;
-                }
-                new EditorDialog(propEditor, false).ShowDialog();
-
-                foreach (var property in PropertyData)
-                {
-                    if (PropertyTagCache != null) property.IsDefined = PropertyTagCache.Contains(property.Tag);
-                }
+            foreach (var property in PropertyData.Where(property => PropertyTagCache != null))
+            {
+                property.IsDefined = PropertyTagCache.Contains(property.Tag);
             }
         }
 

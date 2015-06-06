@@ -1,6 +1,5 @@
 ﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
 using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
 
@@ -9,10 +8,10 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class AnimationEditor : UserControl, ITypeEditor
+    public partial class AnimationEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public AnimationEditor()
         {
@@ -54,11 +53,11 @@ namespace GUISkinFramework.Editors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            AnimationEditorDialog editor = new AnimationEditorDialog(_Item.Instance);
-            editor.SetItems((_Item.Value as ObservableCollection<XmlAnimation>) ?? new ObservableCollection<XmlAnimation>());
+            var editor = new AnimationEditorDialog(_item.Instance);
+            editor.SetItems((_item.Value as ObservableCollection<XmlAnimation>) ?? new ObservableCollection<XmlAnimation>());
             if (editor.ShowDialog() == true)
             {
-                _Item.Value = editor.GetItems();
+                _item.Value = editor.GetItems();
             }
             ActionInfo = GetText();
             ActionToolTip = GetToolTipText();
@@ -66,13 +65,13 @@ namespace GUISkinFramework.Editors
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
+            _item = propertyItem;
             ActionInfo = GetText();
             ActionToolTip = GetToolTipText();
             return this;
         }
 
-        private string GetText()
+        private static string GetText()
         {
             //if (_Item != null && _Item.Value != null)
             //{
@@ -84,7 +83,7 @@ namespace GUISkinFramework.Editors
             return "(Empty)";
         }
 
-        private string GetToolTipText()
+        private static string GetToolTipText()
         {
            
             //if (_Item != null && _Item.Value is IList && (_Item.Value as IList).Count > 0)

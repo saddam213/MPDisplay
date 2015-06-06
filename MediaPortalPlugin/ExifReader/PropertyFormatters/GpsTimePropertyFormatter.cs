@@ -33,12 +33,8 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         {
             var values = exifValue.Values.Cast<Rational32>();
             var rational32S = values as IList<Rational32> ?? values.ToList();
-            if (rational32S.Count() != 3)
-            {
-                return String.Empty;
-            }
-
-            return String.Format("{0}:{1}:{2}", (int)(double)rational32S.ElementAt(0), (int)(double)rational32S.ElementAt(1), (int)(double)rational32S.ElementAt(2));
+            return rational32S.Count() != 3 ? String.Empty : String.Format("{0}:{1}:{2}", (int)(double)rational32S.ElementAt(0), 
+                (int)(double)rational32S.ElementAt(1), (int)(double)rational32S.ElementAt(2));
         }
     }
 }

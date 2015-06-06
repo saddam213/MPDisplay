@@ -275,19 +275,9 @@ namespace GUISkinFramework.Skin
 
         public virtual void ApplyStyle(XmlStyleCollection style)
         {
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
         }
-
-
-
-
-
-
-
-
-
-      
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)

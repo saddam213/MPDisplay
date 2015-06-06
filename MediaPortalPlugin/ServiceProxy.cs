@@ -249,7 +249,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendPropertyMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIPropertyMessage property = ((APIPropertyMessage)(inValues[0]));
+            var property = ((APIPropertyMessage)(inValues[0]));
             return BeginSendPropertyMessage(property, callback, asyncState);
         }
 
@@ -261,11 +261,10 @@ namespace MediaPortalPlugin
 
         private void OnSendPropertyMessageCompleted(object state)
         {
-            if ((SendPropertyMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                SendPropertyMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendPropertyMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendPropertyMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendPropertyMessageAsync(APIPropertyMessage property)
@@ -310,7 +309,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendListMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIListMessage listData = ((APIListMessage)(inValues[0]));
+            var listData = ((APIListMessage)(inValues[0]));
             return BeginSendListMessage(listData, callback, asyncState);
         }
 
@@ -322,11 +321,10 @@ namespace MediaPortalPlugin
 
         private void OnSendListMessageCompleted(object state)
         {
-            if ((SendListMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                SendListMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendListMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendListMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendListMessageAsync(APIListMessage listData)
@@ -371,7 +369,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendInfoMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIInfoMessage msg = ((APIInfoMessage)(inValues[0]));
+            var msg = ((APIInfoMessage)(inValues[0]));
             return BeginSendInfoMessage(msg, callback, asyncState);
         }
 
@@ -383,11 +381,10 @@ namespace MediaPortalPlugin
 
         private void OnSendInfoMessageCompleted(object state)
         {
-            if ((SendInfoMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                SendInfoMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendInfoMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendInfoMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendInfoMessageAsync(APIInfoMessage msg)
@@ -432,7 +429,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendDataMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIDataMessage msg = ((APIDataMessage)(inValues[0]));
+            var msg = ((APIDataMessage)(inValues[0]));
             return BeginSendDataMessage(msg, callback, asyncState);
         }
 
@@ -444,11 +441,10 @@ namespace MediaPortalPlugin
 
         private void OnSendDataMessageCompleted(object state)
         {
-            if ((SendDataMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                SendDataMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendDataMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendDataMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendDataMessageAsync(APIDataMessage msg)
@@ -493,7 +489,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendMediaPortalMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIMediaPortalMessage msg = ((APIMediaPortalMessage)(inValues[0]));
+            var msg = ((APIMediaPortalMessage)(inValues[0]));
             return BeginSendMediaPortalMessage(msg, callback, asyncState);
         }
 
@@ -505,11 +501,10 @@ namespace MediaPortalPlugin
 
         private void OnSendMediaPortalMessageCompleted(object state)
         {
-            if ((SendMediaPortalMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                SendMediaPortalMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendMediaPortalMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendMediaPortalMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendMediaPortalMessageAsync(APIMediaPortalMessage msg)
@@ -554,7 +549,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendTvServerMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APITVServerMessage msg = ((APITVServerMessage)(inValues[0]));
+            var msg = ((APITVServerMessage)(inValues[0]));
             return BeginSendTVServerMessage(msg, callback, asyncState);
         }
 
@@ -566,11 +561,10 @@ namespace MediaPortalPlugin
 
         private void OnSendTvServerMessageCompleted(object state)
         {
-            if ((SendTvServerMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                SendTvServerMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendTvServerMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendTvServerMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendTvServerMessageAsync(APITVServerMessage msg)
@@ -615,24 +609,23 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginConnect(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIConnection name = ((APIConnection)(inValues[0]));
+            var name = ((APIConnection)(inValues[0]));
             return BeginConnect(name, callback, asyncState);
         }
 
         private object[] OnEndConnect(IAsyncResult result)
         {
-            List<APIConnection> retVal = EndConnect(result);
+            var retVal = EndConnect(result);
             return new object[] {
                 retVal};
         }
 
         private void OnConnectCompleted(object state)
         {
-            if ((ConnectCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                ConnectCompleted(this, new ConnectCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
-            }
+            if ((ConnectCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            ConnectCompleted(this, new ConnectCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
         }
 
         public void ConnectAsync(APIConnection name)
@@ -688,11 +681,10 @@ namespace MediaPortalPlugin
 
         private void OnDisconnectCompleted(object state)
         {
-            if ((DisconnectCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                DisconnectCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((DisconnectCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            DisconnectCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void DisconnectAsync()

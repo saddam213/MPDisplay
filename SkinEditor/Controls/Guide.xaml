@@ -1,9 +1,11 @@
-﻿<UserControl x:Class="SkinEditor.Controls.Guide"
+﻿<!-- ReSharper disable Xaml.RedundantAttachedProperty -->
+<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
+<UserControl x:Class="SkinEditor.Controls.Guide"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-	    	  xmlns:local="clr-namespace:SkinEditor.Controls"
+	    	 xmlns:local="clr-namespace:SkinEditor.Controls"
 			 xmlns:commonControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d" 
 			 x:Name="UI"

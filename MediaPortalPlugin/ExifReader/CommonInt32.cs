@@ -17,19 +17,19 @@ namespace MediaPortalPlugin.ExifReader
         /// Integer value
         /// </summary>
         [FieldOffset(0)]
-        private int integer;
+        private readonly int integer;
 
         /// <summary>
         /// Unsigned integer value
         /// </summary>
         [FieldOffset(0)]
-        private uint uinteger;
+        private readonly uint uinteger;
 
         /// <summary>
         /// True if this is a signed value
         /// </summary>
         [FieldOffset(4)]
-        private bool isSigned;
+        private readonly bool isSigned;
 
         /// <summary>
         /// Initializes a new instance of the CommonInt32 struct

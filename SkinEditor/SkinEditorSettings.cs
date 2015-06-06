@@ -81,7 +81,7 @@ namespace SkinEditor
 
         public void Save(string settingsFile)
         {
-            SerializationHelper.Serialize<SkinEditorSettings>(this, settingsFile);
+            SerializationHelper.Serialize(this, settingsFile);
         }
 
        
@@ -126,7 +126,7 @@ namespace SkinEditor
         public override void InitializeSettings()
         {
             base.InitializeSettings();
-            RecentSkins = new ObservableCollection<string>(RecentSkins.Where(f => File.Exists(f)).Take(10));
+            RecentSkins = new ObservableCollection<string>(RecentSkins.Where(File.Exists).Take(10));
         }
 
         public void AddToRecentList(string skinInfoFile)

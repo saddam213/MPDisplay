@@ -117,15 +117,13 @@ namespace GUIConfig
                 AddImageSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
             }
 
-            if (RegistrySettings.InstallType != MPDisplayInstallType.Plugin)
-            {
-                _log.Message(LogLevel.Info, "Adding MPDisplay section.");
-                Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
-                _log.Message(LogLevel.Info, "Adding Skin section.");
-                Views.Add(new SkinSettingsView { DataObject = MPDisplaySettings.GUISettings });
-                MPDisplaySettings.GUISettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
-                MPDisplaySettings.GUISettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
-            }
+            if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin) return;
+            _log.Message(LogLevel.Info, "Adding MPDisplay section.");
+            Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
+            _log.Message(LogLevel.Info, "Adding Skin section.");
+            Views.Add(new SkinSettingsView { DataObject = MPDisplaySettings.GUISettings });
+            MPDisplaySettings.GUISettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
+            MPDisplaySettings.GUISettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
         }
 
         /// <summary>
@@ -165,8 +163,8 @@ namespace GUIConfig
             {
                 view.SaveChanges();
             }
-            SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
-            SettingsManager.Save<AddImageSettings>(AddImageSettings, Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            SettingsManager.Save(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
+            SettingsManager.Save(AddImageSettings, Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
             _hasChanges = false;
         }
 

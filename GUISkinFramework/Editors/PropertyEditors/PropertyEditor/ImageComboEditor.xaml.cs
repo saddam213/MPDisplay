@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
 using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
 
@@ -9,10 +8,10 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class ImageComboEditor : UserControl, ITypeEditor
+    public partial class ImageComboEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public ImageComboEditor()
         {
@@ -21,7 +20,7 @@ namespace GUISkinFramework.Editors
 
 
         public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(string), typeof(ImageComboEditor),
-                                                                                      new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnValueChanged)));
+                                                 new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValueChanged));
 
     
         public string Value
@@ -33,8 +32,7 @@ namespace GUISkinFramework.Editors
         private static void OnValueChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var _this = d as ImageComboEditor;
-            string value = e.NewValue as string;
-            if (_this.SelectedImage == null)
+            if (_this != null && _this.SelectedImage == null)
             {
               //  _this.SelectedImage = SkinInfo.Images.FirstOrDefault(i => i.XmlName.Equals(value, StringComparison.OrdinalIgnoreCase));
             }
@@ -57,25 +55,24 @@ namespace GUISkinFramework.Editors
 
         // Using a DependencyProperty as the backing store for SelectedImage.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedImageProperty =
-            DependencyProperty.Register("SelectedImage", typeof(XmlImageFile), typeof(ImageComboEditor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnSelectedImageChanged)));
+            DependencyProperty.Register("SelectedImage", typeof(XmlImageFile), typeof(ImageComboEditor), new FrameworkPropertyMetadata(null, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedImageChanged));
 
         private static void OnSelectedImageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var _this = d as ImageComboEditor;
             var xmlImage = e.NewValue as XmlImageFile;
-            if (_this != null && (xmlImage != null && !xmlImage.DisplayName.Equals(_this.Value)))
-            {
-                _this.Value = xmlImage.DisplayName;
-                _this._Item.Value = _this.Value;
-            }
+            if (_this == null || (xmlImage == null || xmlImage.DisplayName.Equals(_this.Value))) return;
+
+            _this.Value = xmlImage.DisplayName;
+            _this._item.Value = _this.Value;
         }
 
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
-            Value = _Item.Value as string;
-            SkinInfo = _Item.PropertyGrid.Tag as XmlSkinInfo;
+            _item = propertyItem;
+            Value = _item.Value as string;
+            SkinInfo = _item.PropertyGrid.Tag as XmlSkinInfo;
             return this;
         }
 

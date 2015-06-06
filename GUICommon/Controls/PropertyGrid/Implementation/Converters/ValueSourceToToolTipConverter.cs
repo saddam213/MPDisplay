@@ -11,8 +11,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            BaseValueSource bvs = (BaseValueSource)value;
-            string toolTip = "Advanced Properties";
+            var bvs = (BaseValueSource)value;
+            var toolTip = "Advanced Properties";
 
             switch (bvs)
             {

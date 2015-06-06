@@ -12,8 +12,8 @@ namespace MPDisplay.Common.BindingConverters
             if (value == null || parameter == null)
                 return false;
 
-            string checkValue = value.ToString();
-            string targetValue = parameter.ToString();
+            var checkValue = value.ToString();
+            var targetValue = parameter.ToString();
             return checkValue.Equals(targetValue,
                      StringComparison.InvariantCultureIgnoreCase);
         }
@@ -24,12 +24,9 @@ namespace MPDisplay.Common.BindingConverters
             if (value == null || parameter == null)
                 return null;
 
-            bool useValue = (bool)value;
-            string targetValue = parameter.ToString();
-            if (useValue)
-                return Enum.Parse(targetType, targetValue);
-
-            return null;
+            var useValue = (bool)value;
+            var targetValue = parameter.ToString();
+            return useValue ? Enum.Parse(targetType, targetValue) : null;
         }
     }   
 

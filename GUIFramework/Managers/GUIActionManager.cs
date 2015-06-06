@@ -91,16 +91,15 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static T GetParam1As<T>(this XmlAction action, T defaultValue) where T : IConvertible
         {
-            if (action != null && action.Param1 != null)
+            if (action == null || action.Param1 == null) return defaultValue;
+
+            try
             {
-                try
-                {
-                  return (T)Convert.ChangeType(action.Param1, typeof(T));
-                }
-                catch
-                {
-                    // ignored
-                }
+                return (T)Convert.ChangeType(action.Param1, typeof(T));
+            }
+            catch
+            {
+                // ignored
             }
             return defaultValue;
         }
@@ -114,16 +113,15 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static T GetParam2As<T>(this XmlAction action, T defaultValue) where T : IConvertible
         {
-            if (action != null && action.Param1 != null)
+            if (action == null || action.Param1 == null) return defaultValue;
+
+            try
             {
-                try
-                {
-                    return (T)Convert.ChangeType(action.Param1, typeof(T));
-                }
-                catch
-                {
-                    // ignored
-                }
+                return (T)Convert.ChangeType(action.Param1, typeof(T));
+            }
+            catch
+            {
+                // ignored
             }
             return defaultValue;
         }

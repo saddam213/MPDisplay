@@ -16,32 +16,18 @@ namespace MediaPortalPlugin.Plugins
       
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                var playerManager = ReflectionHelper.GetFieldValue(PluginWindow, "playerManager");
-                if (playerManager != null)
-                {
-                    var players = ReflectionHelper.GetFieldValue<IDictionary>(playerManager, "players", null);
-                    if (players != null)
-                    {
-                        return players.Values.Cast<object>().Any(item => ReflectionHelper.GetPropertyValue(item, "CurrentFile", string.Empty) == filename);
-                    }
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            var playerManager = ReflectionHelper.GetFieldValue(PluginWindow, "playerManager");
+            if (playerManager == null) return false;
+            var players = ReflectionHelper.GetFieldValue<IDictionary>(playerManager, "players", null);
+            return players != null && players.Values.Cast<object>().Any(item => ReflectionHelper.GetPropertyValue(item, "CurrentFile", string.Empty) == filename);
         }
 
         public override APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {
-            if (item != null)
-            {
-                var image = ImageHelper.CreateImage(item.IconImage);
-                if (!image.IsEmpty)
-                {
-                    return image;
-                }
-            }
-            return base.GetListItemImage1(item, layout);
+            if (item == null) return base.GetListItemImage1(null, layout);
+            var image = ImageHelper.CreateImage(item.IconImage);
+            return !image.IsEmpty ? image : base.GetListItemImage1(item, layout);
         }
 
         public override APIPlaybackType PlayType

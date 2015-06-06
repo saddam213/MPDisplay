@@ -27,7 +27,7 @@ namespace Common.Helpers
             var asGb = Math.Round((double)value / OneGb, decimalPlaces);
             var asMb = Math.Round((double)value / OneMb, decimalPlaces);
             var asKb = Math.Round((double)value / OneKb, decimalPlaces);
-            string chosenValue = asTb > 1 ? string.Format("{0}Tb", asTb)
+            var chosenValue = asTb > 1 ? string.Format("{0}Tb", asTb)
                 : asGb > 1 ? string.Format("{0}Gb", asGb)
                 : asMb > 1 ? string.Format("{0}Mb", asMb)
                 : asKb > 1 ? string.Format("{0}Kb", asKb)
@@ -72,11 +72,7 @@ namespace Common.Helpers
             lock (dictionary)
             {
                 TV exists;
-                if (dictionary.TryGetValue(key, out exists))
-                {
-                    return exists;
-                }
-                return defaultValue;
+                return dictionary.TryGetValue(key, out exists) ? exists : defaultValue;
             }
         }
 

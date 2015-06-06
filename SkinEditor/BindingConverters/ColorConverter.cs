@@ -10,30 +10,29 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string)
-            {
-                try
-                {
-                    var convertFromString = ColorConverter.ConvertFromString(value.ToString());
-                    if (convertFromString != null)
-                    {
-                        var color = (Color)convertFromString;
-                        if (targetType == typeof(Brush))
-                        {
-                            return new SolidColorBrush(color);
-                        }
-                        return color;
-                    }
-                }
-                catch
-                {
-                    // ignored
-                }
+            if (!(value is string)) return Colors.Transparent;
 
-                if (targetType == typeof(Brush))
+            try
+            {
+                var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                if (convertFromString != null)
                 {
-                    return new SolidColorBrush(Colors.Transparent);
+                    var color = (Color)convertFromString;
+                    if (targetType == typeof(Brush))
+                    {
+                        return new SolidColorBrush(color);
+                    }
+                    return color;
                 }
+            }
+            catch
+            {
+                // ignored
+            }
+
+            if (targetType == typeof(Brush))
+            {
+                return new SolidColorBrush(Colors.Transparent);
             }
             return Colors.Transparent;
         }

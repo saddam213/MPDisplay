@@ -36,7 +36,7 @@ namespace MessageServer
                 if (settings != null)
                 {
                     Uri uri;
-                    string connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                    var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
                     if (Uri.TryCreate(connectionString, UriKind.RelativeOrAbsolute, out uri))
                     {
                         _log.Message(LogLevel.Info, "[OnStart] - Connection settings loaded, Connection: {0}", connectionString);
@@ -48,10 +48,7 @@ namespace MessageServer
                         _mpDisplayHost.Open();
                         return;
                     }
-                    else
-                    {
-                        _log.Message(LogLevel.Error, "[OnStart] - Failed to create connection Uri, Uri: {0}", connectionString);
-                    }
+                    _log.Message(LogLevel.Error, "[OnStart] - Failed to create connection Uri, Uri: {0}", connectionString);
                 }
             }
             catch (Exception ex)
@@ -67,16 +64,14 @@ namespace MessageServer
         protected override void OnStop()
         {
             _log.Message(LogLevel.Info, "[OnStop] - Stopping MPDisplay server...");
-            if (_mpDisplayHost != null)
+            if (_mpDisplayHost == null) return;
+            try
             {
-                try
-                {
-                    _mpDisplayHost.Close();
-                }
-                catch
-                {
-                    // ignored
-                }
+                _mpDisplayHost.Close();
+            }
+            catch
+            {
+                // ignored
             }
         }
 
@@ -95,10 +90,7 @@ namespace MessageServer
                 _log.Message(LogLevel.Info, "[GetConnectionSettings] - Sucessfully loaded settings file '{0}'", settingsFilename);
                 return settings.PluginSettings.ConnectionSettings;
             }
-            else
-            {
-                _log.Message(LogLevel.Error, "[GetConnectionSettings] - Failed to load settings file '{0}'", settingsFilename);
-            }
+            _log.Message(LogLevel.Error, "[GetConnectionSettings] - Failed to load settings file '{0}'", settingsFilename);
             return null;
         }
     }

@@ -45,7 +45,7 @@ namespace MessageFramework.Messages
     public enum APIWindowMessageType
     {
         WindowId,
-        FocusedControlId,
+        FocusedControlId
     }
 
     public class APIPlayerMessage
@@ -62,13 +62,8 @@ namespace MessageFramework.Messages
                 return false;
             }
 
-            if (PlayerPluginType == msg.PlayerPluginType && PlaybackType == msg.PlaybackType 
-                && PlaybackState == msg.PlaybackState && PlayerFullScreen == msg.PlayerFullScreen)
-            {
-                return true;
-            }
-            return false;
-
+            return PlayerPluginType == msg.PlayerPluginType && PlaybackType == msg.PlaybackType 
+                   && PlaybackState == msg.PlaybackState && PlayerFullScreen == msg.PlayerFullScreen;
         }
     }
 

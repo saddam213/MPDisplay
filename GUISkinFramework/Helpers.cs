@@ -19,17 +19,13 @@ namespace GUISkinFramework
             }
             catch (Exception)
             {
-            
+                // ignored
             }
         }
 
         public static List<string> GetFiles(string folder, string ext)
         {
-            if (Directory.Exists(folder))
-            {
-                return Directory.GetFiles(folder, ext, SearchOption.TopDirectoryOnly).ToList();
-            }
-            return new List<string>();
+            return Directory.Exists(folder) ? Directory.GetFiles(folder, ext, SearchOption.TopDirectoryOnly).ToList() : new List<string>();
         }
 
         public static void TryDelete(string folder)
@@ -40,18 +36,14 @@ namespace GUISkinFramework
             }
             catch (Exception)
             {
-              
+                // ignored
             }
         }
 
         public static string FolderBrowserDialog()
         {
             var dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.SelectedPath;
-            }
-            return string.Empty;
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : string.Empty;
         }
     }
 

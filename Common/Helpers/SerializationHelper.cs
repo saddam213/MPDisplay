@@ -20,11 +20,11 @@ namespace Common.Helpers
             try
             {
                 //Create our own namespaces for the output
-                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                var ns = new XmlSerializerNamespaces();
                 ns.Add("x", "http://www.w3.org/2001/XMLSchema-instance");
 
-                XmlSerializer mySerializer = new XmlSerializer(typeof(T));
-                using (StreamWriter myWriter = new StreamWriter(filename))
+                var mySerializer = new XmlSerializer(typeof(T));
+                using (var myWriter = new StreamWriter(filename))
                 {
                     mySerializer.Serialize(myWriter, obj, ns);
                    
@@ -48,8 +48,8 @@ namespace Common.Helpers
         {
             try
             {
-                XmlSerializer mySerializer = new XmlSerializer(typeof(T));
-                using (FileStream fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+                var mySerializer = new XmlSerializer(typeof(T));
+                using (var fileStream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
                 {
                     var obj = (T)mySerializer.Deserialize(fileStream);
               
@@ -75,11 +75,11 @@ namespace Common.Helpers
             try
             {
                 //Create our own namespaces for the output
-                XmlSerializerNamespaces ns = new XmlSerializerNamespaces();
+                var ns = new XmlSerializerNamespaces();
                 ns.Add("x", "http://www.w3.org/2001/XMLSchema-instance");
 
-                XmlSerializer mySerializer = new XmlSerializer(typeof(T));
-                using (MemoryStream myWriter = new MemoryStream())
+                var mySerializer = new XmlSerializer(typeof(T));
+                using (var myWriter = new MemoryStream())
                 {
                     mySerializer.Serialize(myWriter, obj, ns);
                     myWriter.Seek(0, SeekOrigin.Begin);

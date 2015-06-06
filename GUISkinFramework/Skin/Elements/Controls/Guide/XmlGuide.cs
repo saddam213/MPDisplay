@@ -18,8 +18,8 @@ namespace GUISkinFramework.Skin
         private int _guideItemHeight;
         private int _timelineHeight;
         private string _guideItemMargin = "0,0,0,0";
-        private int _createDialogId = 0;
-        private int _cancelDialogId = 0;
+        private int _createDialogId;
+        private int _cancelDialogId;
 
         public XmlGuide()
         {
@@ -129,9 +129,9 @@ namespace GUISkinFramework.Skin
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlGuideStyle>(ControlStyle);
-            ChannelStyle = style.GetControlStyle<XmlGuideChannelStyle>(ChannelStyle);
-            ProgramStyle = style.GetControlStyle<XmlGuideProgramStyle>(ProgramStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
+            ChannelStyle = style.GetControlStyle(ChannelStyle);
+            ProgramStyle = style.GetControlStyle(ProgramStyle);
         }
     }
 }

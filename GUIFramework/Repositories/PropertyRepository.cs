@@ -139,16 +139,14 @@ namespace GUIFramework.Repositories
         /// <param name="propertyMessage">The property message.</param>
         public void AddProperty(APIPropertyMessage propertyMessage)
         {
-            if (propertyMessage != null)
-            {
-                _log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); 
- 
-                if (_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage))
-                {
-                _log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); 
-                   NotifyPropertyChanged(propertyMessage.SkinTag);
-                }
-            }
+            if (propertyMessage == null) return;
+
+            _log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label );
+
+            if (!_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage)) return;
+
+            _log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); 
+            NotifyPropertyChanged(propertyMessage.SkinTag);
         }
 
         public void AddProperty(string tag, double tagValue)
@@ -183,23 +181,21 @@ namespace GUIFramework.Repositories
 
         public void DeregisterProperty(GUIControl control, string propertyString)
         {
-            if (HasProperties(propertyString))
+            if (!HasProperties(propertyString)) return;
+
+            foreach (var item in GetPropertiesFromXmlString(propertyString))
             {
-                foreach (var item in GetPropertiesFromXmlString(propertyString))
-                {
-                    _propertyService.Deregister(item, control);
-                }
+                _propertyService.Deregister(item, control);
             }
         }
 
         public void RegisterProperty(GUIControl control, string propertyString)
         {
-            if (HasProperties(propertyString))
+            if (!HasProperties(propertyString)) return;
+
+            foreach (var property in GetPropertiesFromXmlString(propertyString))
             {
-                foreach (var property in GetPropertiesFromXmlString(propertyString))
-                {
-                    _propertyService.Register(property, control.OnPropertyChanged);
-                }
+                _propertyService.Register(property, control.OnPropertyChanged);
             }
         }
 
@@ -207,7 +203,7 @@ namespace GUIFramework.Repositories
         {
             return Task.Factory.StartNew(() =>
             {
-                string returnValue = string.Empty;
+                var returnValue = string.Empty;
                 if (!string.IsNullOrEmpty(xmlstring))
                 {
                     var parts = xmlstring.Contains("+") ? xmlstring.Split('+').ToList() : new List<string> { xmlstring };
@@ -247,11 +243,8 @@ namespace GUIFramework.Repositories
                       {
                           return GetPropertyImageValue(xmlstring);
                       }
-                      else
-                      {
-                          string filename = GetControlLabelValue(xmlstring, null).Result;
-                                return SkinInfo.GetImageValue(filename);
-                      }
+                      var filename = GetControlLabelValue(xmlstring, null).Result;
+                      return SkinInfo.GetImageValue(filename);
                   }
                   return null;
               });
@@ -274,35 +267,25 @@ namespace GUIFramework.Repositories
 
         public List<APIPropertyMessage> GetControlHostProperties(IControlHost controlHost)
         {
-            if (controlHost != null)
+            if (controlHost == null) return new List<APIPropertyMessage>();
+
+            var skinTags = new List<string>();
+            foreach (var control in controlHost.Controls.GetControls())
             {
-                var skinTags = new List<string>();
-                foreach (var control in controlHost.Controls.GetControls())
+                if (control.RegisteredProperties == null || !control.RegisteredProperties.Any()) continue;
+
+                foreach (var property in control.RegisteredProperties.Where(property => property != null && !string.IsNullOrEmpty(property.SkinTag) && !skinTags.Contains(property.SkinTag)))
                 {
-                    if (control.RegisteredProperties != null && control.RegisteredProperties.Any())
-                    {
-                        foreach (var property in control.RegisteredProperties)
-                        {
-                            if (property != null && !string.IsNullOrEmpty(property.SkinTag) && !skinTags.Contains(property.SkinTag))
-                            {
-                                skinTags.Add(property.SkinTag);
-                            }
-                        }
-                    }
+                    skinTags.Add(property.SkinTag);
                 }
-                return _skinProperties.Where(p => p != null && skinTags.Contains(p.SkinTag)).ToList();
             }
-            return new List<APIPropertyMessage>();
+            return _skinProperties.Where(p => p != null && skinTags.Contains(p.SkinTag)).ToList();
         }
 
         private string GetPropertyLabelValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            if (result != null)
-            {
-                return result.Label;
-            }
-            return string.Empty;
+            return result != null ? result.Label : string.Empty;
         }
 
         private byte[] GetPropertyImageValue(string tag)
@@ -318,19 +301,15 @@ namespace GUIFramework.Repositories
         private double GetPropertyNumberValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            if (result != null)
-            {
-                return result.Number;
-            }
-            return 0;
+            return result != null ? result.Number : 0;
         }
 
-        private bool HasProperties(string xmlString)
+        private static bool HasProperties(string xmlString)
         {
             return !string.IsNullOrEmpty(xmlString) && xmlString.Contains("#");
         }
 
-        private IEnumerable<string> GetPropertiesFromXmlString(string xmlString)
+        private static IEnumerable<string> GetPropertiesFromXmlString(string xmlString)
         {
             if (xmlString.Contains("+"))
             {
@@ -350,20 +329,16 @@ namespace GUIFramework.Repositories
         private List<APIPropertyMessage> GetSkinProperties()
         {
             var properties = new List<APIPropertyMessage>();
-            if (SkinInfo != null)
+            if (SkinInfo == null) return properties;
+
+            foreach (var xmlProperty in SkinInfo.Properties.Where(xmlProperty => properties.All(x => x.SkinTag != xmlProperty.SkinTag)))
             {
-                foreach (var xmlProperty in SkinInfo.Properties)
+                properties.Add(new APIPropertyMessage
                 {
-                    if (properties.All(x => x.SkinTag != xmlProperty.SkinTag))
-                    {
-                        properties.Add(new APIPropertyMessage
-                        {
-                            SkinTag = xmlProperty.SkinTag,
-                            Tags = xmlProperty.MediaPortalTags.Select(x => x.Tag).ToList(),
-                            PropertyType = xmlProperty.PropertyType.ToAPIType()
-                        });
-                    }
-                }
+                    SkinTag = xmlProperty.SkinTag,
+                    Tags = xmlProperty.MediaPortalTags.Select(x => x.Tag).ToList(),
+                    PropertyType = xmlProperty.PropertyType.ToAPIType()
+                });
             }
             return properties;
         }
@@ -382,13 +357,12 @@ namespace GUIFramework.Repositories
 
         private void StartSystemInfoMonitoring()
         {
-            if (Settings.IsSystemInfoEnabled)
-            {
-                _systemInfo = new SystemStatusInfo {TagPrefix = "MPD"};
-                _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
-                _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
-                _systemInfo.StartMonitoring();
-            }
+            if (!Settings.IsSystemInfoEnabled) return;
+
+            _systemInfo = new SystemStatusInfo {TagPrefix = "MPD"};
+            _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
+            _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
+            _systemInfo.StartMonitoring();
         }
 
         private void StopSystemInfoMonitoring()

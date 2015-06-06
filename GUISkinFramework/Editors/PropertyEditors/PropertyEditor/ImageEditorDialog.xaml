@@ -2,7 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     x:Class="GUISkinFramework.Editors.ImageEditorDialog"
-		xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
+		xmlns:componentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
 		xmlns:imageEditor="clr-namespace:GUISkinFramework.Editors"
 		Title="LabelEditorDialog" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" x:Name="UI" Height="378.667" Width="662" >
 	<Window.Resources>
@@ -12,7 +12,7 @@
 			</CollectionViewSource.GroupDescriptions>
 
 			<CollectionViewSource.SortDescriptions>
-				<ComponentModel:SortDescription Direction="Ascending" PropertyName="SkinTag"/>
+				<componentModel:SortDescription Direction="Ascending" PropertyName="SkinTag"/>
 			</CollectionViewSource.SortDescriptions>
 
 		</CollectionViewSource>

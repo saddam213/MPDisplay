@@ -85,18 +85,16 @@ namespace MediaPortalPlugin.InfoManagers
         /// </summary>
         private void StopEqThread()
         {
-            if (_isEqRunning)
-            {
-                _log.Message(LogLevel.Info, "[EQManager]-[StopEQThread] - Stopping equalizer data thread.");
-                _eqThread = null;
-                _isEqRunning = false;
-            }
+            if (!_isEqRunning) return;
+            _log.Message(LogLevel.Info, "[EQManager]-[StopEQThread] - Stopping equalizer data thread.");
+            _eqThread = null;
+            _isEqRunning = false;
         }
 
         // set the flags as follows:
         // get individual fft for 2 channels, else combined fft
         // get data according to sampling freq of the channel
-        private int GetBassGetDataFlags(int freq, int chans)
+        private static int GetBassGetDataFlags(int freq, int chans)
         {
             int flags;
 
@@ -132,83 +130,77 @@ namespace MediaPortalPlugin.InfoManagers
         {
             try
             {
-                if (g_Player.Playing)
+                if (!g_Player.Playing) return;
+                if (g_Player.CurrentAudioStream == 0 || g_Player.CurrentAudioStream == -1) return;
+                lock (_eqFftData)
                 {
-                    if (g_Player.CurrentAudioStream != 0 && g_Player.CurrentAudioStream != -1)
+                    var lines = 16;                        // number of spectrum lines
+                    // indices in fft data for the frequency slots
+                    // please note: if # lines is changed indices need to be recalculated!
+                    int[] lineIndex = { 1, 2, 3, 4, 5, 8, 12, 18, 28, 42, 64, 97, 147, 223, 338, 500, 511 };
+                    int[] lineIndex2 = { 2, 4, 6, 8, 10, 16, 24, 36, 56, 84, 128, 194, 294, 446, 676, 1000, 1022 };
+                    const int eqMultiplier = 255;
+                    var length = _eqDataLength * 2;         // pass values for 2 channels
+                    var eqData = new byte[length];
+
+                    int channel;
+                    int chans;
+                    if (BassWasapi.BASS_WASAPI_IsStarted())
                     {
-                        lock (_eqFftData)
+                        var wasapiInfo = BassWasapi.BASS_WASAPI_GetInfo();
+                        chans = wasapiInfo.chans;
+                        channel = BassWasapi.BASS_WASAPI_GetData(_eqFftData, GetBassGetDataFlags(wasapiInfo.freq, chans));
+                    }
+                    else
+                    {
+                        var bassInfo = Bass.BASS_ChannelGetInfo(g_Player.CurrentAudioStream);
+                        chans = bassInfo.chans;
+                        channel = Bass.BASS_ChannelGetData(g_Player.CurrentAudioStream, _eqFftData, GetBassGetDataFlags(bassInfo.freq, chans ));
+                    }
+
+                    if (channel <= 0) return;
+                    if (_eqDataLength < lines) lines = _eqDataLength;                 // EQ requests less lines than available
+                    //compute the spectrum data for 2 channels
+                    float peak;
+                    int index;
+                    int eqIndex;
+                    int innerIndex;
+                    if (chans == 2)
+                    {
+                        for (index = 0; index < lines; index++)
                         {
-                            int lines = 16;                        // number of spectrum lines
-                            // indices in fft data for the frequency slots
-                            // please note: if # lines is changed indices need to be recalculated!
-                            int[] lineIndex = { 1, 2, 3, 4, 5, 8, 12, 18, 28, 42, 64, 97, 147, 223, 338, 500, 511 };
-                            int[] lineIndex2 = { 2, 4, 6, 8, 10, 16, 24, 36, 56, 84, 128, 194, 294, 446, 676, 1000, 1022 };
-                            const int eqMultiplier = 255;
-                            var length = _eqDataLength * 2;         // pass values for 2 channels
-                            byte[] eqData = new byte[length];
-
-                            int channel;
-                            int chans;
-                            if (BassWasapi.BASS_WASAPI_IsStarted())
+                            peak = 0;                                                   // determine peak in band range
+                            float peak2 = 0;
+                            eqIndex = 2 * index;
+                            for (innerIndex = lineIndex2[index]; innerIndex < lineIndex2[index + 1]; innerIndex += 2)
                             {
-                                    var wasapiInfo = BassWasapi.BASS_WASAPI_GetInfo();
-                                    chans = wasapiInfo.chans;
-                                    channel = BassWasapi.BASS_WASAPI_GetData(_eqFftData, GetBassGetDataFlags(wasapiInfo.freq, chans));
+                                if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
+                                if (peak2 < _eqFftData[innerIndex+1]) peak2 = _eqFftData[innerIndex+1];
                             }
-                            else
-                            {
-                                var bassInfo = Bass.BASS_ChannelGetInfo(g_Player.CurrentAudioStream);
-                                chans = bassInfo.chans;
-                                channel = Bass.BASS_ChannelGetData(g_Player.CurrentAudioStream, _eqFftData, GetBassGetDataFlags(bassInfo.freq, chans ));
-                            }
-
-                            if (channel > 0)
-                            {
-                                if (_eqDataLength < lines) lines = _eqDataLength;                 // EQ requests less lines than available
-                                //compute the spectrum data for 2 channels
-                                float peak;
-                                int index;
-                                int eqIndex;
-                                int innerIndex;
-                                if (chans == 2)
-                                {
-                                   for (index = 0; index < lines; index++)
-                                    {
-                                        peak = 0;                                                   // determine peak in band range
-                                        float peak2 = 0;
-                                        eqIndex = 2 * index;
-                                        for (innerIndex = lineIndex2[index]; innerIndex < lineIndex2[index + 1]; innerIndex += 2)
-                                        {
-                                            if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
-                                            if (peak2 < _eqFftData[innerIndex+1]) peak2 = _eqFftData[innerIndex+1];
-                                        }
-                                        eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak) * 2) * eqMultiplier, 1));
-                                        eqData[eqIndex + 1] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak2) * 2) * eqMultiplier, 1));
-                                    }
-                                }
-                                else
-                                {
-                                    for (index = 0; index < lines; index++)
-                                    {
-                                        peak = 0;                               // determine peak in band range
-                                        eqIndex = 2 * index;
-                                        for (innerIndex = lineIndex[index]; innerIndex < lineIndex[index + 1]; innerIndex++)
-                                        {
-                                            if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
-                                        }
-                                        eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak) * 2) * eqMultiplier, 1));
-                                        eqData[eqIndex + 1] = eqData[eqIndex];
-                                    }
-                                             
-                                 }
-                                for (index = lines*2; index < length; index++)                // pad with 0 in case mare lines were requested
-                                {
-                                    eqData[index] = 0;
-                                }
-                               MessageService.Instance.SendDataMessage(new APIDataMessage { DataType = APIDataMessageType.EQData, ByteArray = eqData });
-                            }
+                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak) * 2) * eqMultiplier, 1));
+                            eqData[eqIndex + 1] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak2) * 2) * eqMultiplier, 1));
                         }
                     }
+                    else
+                    {
+                        for (index = 0; index < lines; index++)
+                        {
+                            peak = 0;                               // determine peak in band range
+                            eqIndex = 2 * index;
+                            for (innerIndex = lineIndex[index]; innerIndex < lineIndex[index + 1]; innerIndex++)
+                            {
+                                if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
+                            }
+                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak) * 2) * eqMultiplier, 1));
+                            eqData[eqIndex + 1] = eqData[eqIndex];
+                        }
+                                             
+                    }
+                    for (index = lines*2; index < length; index++)                // pad with 0 in case mare lines were requested
+                    {
+                        eqData[index] = 0;
+                    }
+                    MessageService.Instance.SendDataMessage(new APIDataMessage { DataType = APIDataMessageType.EQData, ByteArray = eqData });
                 }
             }
             catch (Exception ex)

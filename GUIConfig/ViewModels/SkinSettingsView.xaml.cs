@@ -14,7 +14,7 @@ namespace GUIConfig.ViewModels
     /// <summary>
     /// Interaction logic for BasicSettingsView.xaml
     /// </summary>
-    public partial class SkinSettingsView : ViewModelBase
+    public partial class SkinSettingsView
     {
         #region Fields
 
@@ -60,7 +60,7 @@ namespace GUIConfig.ViewModels
         public SkinInfo SelectedSkin
         {
             get { return _selectedSkin; }
-            set { _selectedSkin = value; NotifyPropertyChanged("SelectedSkin"); }
+            set { _selectedSkin = value; NotifyPropertyChanged(); }
         }
 
         /// <summary>
@@ -76,22 +76,6 @@ namespace GUIConfig.ViewModels
         #region Methods
 
         /// <summary>
-        /// Called when model tab opens.
-        /// </summary>
-        public override void OnModelOpen()
-        {
-            base.OnModelOpen();
-        }
-
-        /// <summary>
-        /// Called when model tab closes.
-        /// </summary>
-        public override void OnModelClose()
-        {
-            base.OnModelClose();
-        }
-
-        /// <summary>
         /// Saves the changes.
         /// </summary>
         public override void SaveChanges()
@@ -103,7 +87,7 @@ namespace GUIConfig.ViewModels
                 {
                     option.PreviewImage = option.PreviewImage.Replace(skin.SkinImageFolder, "");
                 }
-                SerializationHelper.Serialize<SkinInfo>(skin, skin.SkinInfoPath);
+                SerializationHelper.Serialize(skin, skin.SkinInfoPath);
             }
         }
 
@@ -111,7 +95,7 @@ namespace GUIConfig.ViewModels
         /// Determines whether this instance [can launch skin editor].
         /// </summary>
         /// <returns></returns>
-        private bool CanLaunchSkinEditor()
+        private static bool CanLaunchSkinEditor()
         {
             return File.Exists(RegistrySettings.SkinEditorExePath);
         }
@@ -135,27 +119,26 @@ namespace GUIConfig.ViewModels
             {
                 _skins.Clear();
                 var skinXmls = Directory.GetFiles(RegistrySettings.MPDisplaySkinFolder, "SkinInfo.xml", SearchOption.AllDirectories);
-                if (skinXmls.Any())
-                {
-                    foreach (var skinXml in skinXmls)
-                    {
-                        var skin = SerializationHelper.Deserialize<SkinInfo>(skinXml);
-                        if (skin != null)
-                        {
-                            _log.Message(LogLevel.Info, "Sucessfully loaded SkinInfo.Xml, Skin: {0}", skin.SkinName);
-                            skin.SkinFolderPath = Path.GetDirectoryName(skinXml);
-                            foreach (var option in skin.SkinOptions)
-                            {
-                                option.PreviewImage = skin.SkinImageFolder + option.PreviewImage;
-                            }
-                            _skins.Add(skin);
-                        }
-                        else
-                        {
-                            _log.Message(LogLevel.Error, "Failed to load SkinInfo.Xml, File: {0}", skinXml);
-                        }
+                if (!skinXmls.Any()) return;
 
+                foreach (var skinXml in skinXmls)
+                {
+                    var skin = SerializationHelper.Deserialize<SkinInfo>(skinXml);
+                    if (skin != null)
+                    {
+                        _log.Message(LogLevel.Info, "Sucessfully loaded SkinInfo.Xml, Skin: {0}", skin.SkinName);
+                        skin.SkinFolderPath = Path.GetDirectoryName(skinXml);
+                        foreach (var option in skin.SkinOptions)
+                        {
+                            option.PreviewImage = skin.SkinImageFolder + option.PreviewImage;
+                        }
+                        _skins.Add(skin);
                     }
+                    else
+                    {
+                        _log.Message(LogLevel.Error, "Failed to load SkinInfo.Xml, File: {0}", skinXml);
+                    }
+
                 }
             }
             else

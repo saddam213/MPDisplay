@@ -58,12 +58,12 @@ namespace SkinEditor
             SkinOpenRecent(App.StartupSkinInfoFilename);
         }
 
-        private void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
+        private static void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
           
         }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
            
         }
@@ -100,15 +100,14 @@ namespace SkinEditor
 
         private void LoadViews()
         {
-            if (EditorViews.Count == 0)
-            {
-                EditorViews.Add(new SkinEditorView( _connectionHelper){ EditorSettings = Settings.SkinEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
-                EditorViews.Add(new StyleEditorView { EditorSettings = Settings.StyleEditorViewSettings });
-                EditorViews.Add(new ImageEditorView { EditorSettings = Settings.ImageEditorViewSettings });
-                EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
-                EditorViews.Add(new InfoEditorView(_connectionHelper) { EditorSettings = Settings.InfoEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
-                EditorViews.Add(new TestEditorView());
-            }
+            if (EditorViews.Count != 0) return;
+
+            EditorViews.Add(new SkinEditorView( _connectionHelper){ EditorSettings = Settings.SkinEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
+            EditorViews.Add(new StyleEditorView { EditorSettings = Settings.StyleEditorViewSettings });
+            EditorViews.Add(new ImageEditorView { EditorSettings = Settings.ImageEditorViewSettings });
+            EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
+            EditorViews.Add(new InfoEditorView(_connectionHelper) { EditorSettings = Settings.InfoEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
+            EditorViews.Add(new TestEditorView());
         }
 
         private void LoadSkin(XmlSkinInfo skinInfo)
@@ -118,8 +117,7 @@ namespace SkinEditor
             foreach (var editorView in EditorViews)
             {
                 editorView.SkinInfo = skinInfo;
-            }
-            
+            }  
         }
 
         private void ClearPendingChanges()
@@ -132,19 +130,19 @@ namespace SkinEditor
 
         private bool SavePendingChanges()
         {
-            if (HasPendingChanges)
+            if (!HasPendingChanges) return true;
+
+            var result = MessageBox.Show(string.Format("There are unsaved changes in the current skin{0}{0}Would you like to save changes now?",
+                Environment.NewLine), "Save Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            switch (result)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format("There are unsaved changes in the current skin{0}{0}Would you like to save changes now?", Environment.NewLine), "Save Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-                switch (result)
-                {
-                    case MessageBoxResult.Cancel:
-                        return false;
-                    case MessageBoxResult.No:
-                        return true;
-                    case MessageBoxResult.Yes:
-                        SkinSave();
-                        return true;
-                }
+                case MessageBoxResult.Cancel:
+                    return false;
+                case MessageBoxResult.No:
+                    return true;
+                case MessageBoxResult.Yes:
+                    SkinSave();
+                    return true;
             }
             return true;
         }
@@ -185,18 +183,16 @@ namespace SkinEditor
         {
             try
             {
-                if (SavePendingChanges())
-                {
-                    ClearPendingChanges();
-                    var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
-                    if (newSkinDialog.ShowDialog() == true)
-                    {
-                        Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
-                        CurrentSkinInfo = newSkinDialog.NewSkinInfo;
-                        Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                        LoadSkin(CurrentSkinInfo);
-                    }
-                }
+                if (!SavePendingChanges()) return;
+
+                ClearPendingChanges();
+                var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
+                if (newSkinDialog.ShowDialog() != true) return;
+
+                Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
+                CurrentSkinInfo = newSkinDialog.NewSkinInfo;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                LoadSkin(CurrentSkinInfo);
             }
             catch (Exception ex)
             {
@@ -208,24 +204,21 @@ namespace SkinEditor
         {
             try
             {
-                if (SavePendingChanges())
-                {
-                    ClearPendingChanges();
-                    var skinInfoFile = FileSystemHelper.OpenFileDialog(Settings.GlobalSettings.LastSkinDirectory, "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
-                    if (!string.IsNullOrEmpty(skinInfoFile))
-                    {
-                        var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(skinInfoFile);
-                        if (skinInfo == null) return;
+                if (!SavePendingChanges()) return;
 
-                        skinInfo.SkinFolderPath = Path.GetDirectoryName(skinInfoFile);
-                        var folderPath = skinInfo.SkinFolderPath;
-                        if( folderPath != null)
-                        Settings.GlobalSettings.LastSkinDirectory = Directory.GetParent(folderPath).FullName;
-                        CurrentSkinInfo = skinInfo;
-                        Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                        LoadSkin(CurrentSkinInfo);
-                    }
-                }
+                ClearPendingChanges();
+                var skinInfoFile = FileSystemHelper.OpenFileDialog(Settings.GlobalSettings.LastSkinDirectory, "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
+                if (string.IsNullOrEmpty(skinInfoFile)) return;
+
+                var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(skinInfoFile);
+                if (skinInfo == null) return;
+
+                skinInfo.SkinFolderPath = Path.GetDirectoryName(skinInfoFile);
+                var folderPath = skinInfo.SkinFolderPath;
+                if( folderPath != null) Settings.GlobalSettings.LastSkinDirectory = Directory.GetParent(folderPath).FullName;
+                CurrentSkinInfo = skinInfo;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                LoadSkin(CurrentSkinInfo);
             }
             catch (Exception ex)
             {
@@ -237,11 +230,10 @@ namespace SkinEditor
         {
             try
             {
-                if (CurrentSkinInfo != null)
-                {
-                    CurrentSkinInfo.SaveSkin();
-                    ClearPendingChanges();
-                }
+                if (CurrentSkinInfo == null) return;
+
+                CurrentSkinInfo.SaveSkin();
+                ClearPendingChanges();
             }
             catch (Exception ex)
             {
@@ -277,40 +269,35 @@ namespace SkinEditor
 
         private void SkinOpenRecent(string recentSkin)
         {
-            if (!string.IsNullOrEmpty(recentSkin) && File.Exists(recentSkin))
+            if (string.IsNullOrEmpty(recentSkin) || !File.Exists(recentSkin)) return;
+
+            if (CurrentSkinInfo != null && CurrentSkinInfo.SkinInfoPath.Equals(recentSkin)) return;
+
+            if (!SavePendingChanges()) return;
+
+            ClearPendingChanges();
+            try
             {
-                if (CurrentSkinInfo == null || !CurrentSkinInfo.SkinInfoPath.Equals(recentSkin))
-                {
-                    if (SavePendingChanges())
-                    {
-                        ClearPendingChanges();
-                        try
-                        {
-                            var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(recentSkin);
-                            if (skinInfo != null)
-                            {
-                                skinInfo.SkinFolderPath = Path.GetDirectoryName(recentSkin);
-                                CurrentSkinInfo = skinInfo;
-                                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                                LoadSkin(CurrentSkinInfo);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                           MessageBox.Show(string.Format("An exception occured opening recent skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
-                        }
-                    }
-                }
+                var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(recentSkin);
+                if (skinInfo == null) return;
+
+                skinInfo.SkinFolderPath = Path.GetDirectoryName(recentSkin);
+                CurrentSkinInfo = skinInfo;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                LoadSkin(CurrentSkinInfo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("An exception occured opening recent skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
             }
         }
 
         private void SkinEditorExit()
         {
-            if (SavePendingChanges())
-            {
-                ClearPendingChanges();
-                Close();
-            }
+            if (!SavePendingChanges()) return;
+
+            ClearPendingChanges();
+            Close();
         }
 
 

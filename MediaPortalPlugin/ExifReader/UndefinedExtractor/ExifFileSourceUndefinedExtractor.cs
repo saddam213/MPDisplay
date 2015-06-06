@@ -19,7 +19,7 @@ namespace MediaPortalPlugin.ExifReader.UndefinedExtractor
         /// <returns>The Exif Value</returns>
         public IExifValue GetExifValue(byte[] value, int length)
         {
-            string fileSource = value.FirstOrDefault() == 3 ? "DSC" : "Reserved";
+            var fileSource = value.FirstOrDefault() == 3 ? "DSC" : "Reserved";
             return new ExifValue<string>(new[] { fileSource });
         }
     }

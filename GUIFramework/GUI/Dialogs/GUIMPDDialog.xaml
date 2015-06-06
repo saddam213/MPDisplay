@@ -1,4 +1,6 @@
-﻿<!-- ReSharper disable once Xaml.RedundantAttachedProperty -->
+﻿<!-- ReSharper disable Xaml.RedundantAttachedProperty -->
+<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
 <base:GUIDialog x:Class="GUIFramework.GUI.GUIMPDDialog"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

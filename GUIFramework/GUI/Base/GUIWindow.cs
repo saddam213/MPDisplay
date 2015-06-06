@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Common.Log;
@@ -35,6 +36,7 @@ namespace GUIFramework.GUI
         public XmlWindow BaseXml
         {
             get { return _baseXml; }
+            // ReSharper disable once RedundantArgumentDefaultValue
             set { _baseXml = value; NotifyPropertyChanged("BaseXml"); } 
         }
 
@@ -76,16 +78,13 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         public bool FirstOpen
         {
-            get { if (_firstOpen)
-                {
-                    _firstOpen = false;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-           }       
+            get
+            {
+                if (!_firstOpen) return false;
+
+                _firstOpen = false;
+                return true;
+            }
         }
 
         /// <summary>
@@ -93,13 +92,12 @@ namespace GUIFramework.GUI
         /// </summary>
         public override void CreateControls()
         {
-            foreach (var xmlControl in BaseXml.Controls)
+            foreach (var control in BaseXml.Controls.Select(xmlControl => GUIElementFactory.CreateControl(Id, xmlControl)))
             {
-                var control = GUIElementFactory.CreateControl(Id, xmlControl);
                 control.ParentId = Id;
                 Controls.Add(control);
             }
-         }
+        }
 
         /// <summary>
         /// Opens the window

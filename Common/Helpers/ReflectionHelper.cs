@@ -115,7 +115,7 @@ namespace Common.Helpers
             {
                 if (obj != null)
                 {
-                    PropertyInfo prop = obj.GetType().GetProperty(property);
+                    var prop = obj.GetType().GetProperty(property);
                     if (prop != null ) return (T)(prop.GetValue(obj, index));
                 }
             }
@@ -138,11 +138,9 @@ namespace Common.Helpers
         {
             try
             {
-                if (obj != null)
-                {
-                    PropertyInfo prop = obj.GetType().GetProperty(property);
-                    if (prop != null ) prop.SetValue(obj, value);
-                }
+                if (obj == null) return;
+                var prop = obj.GetType().GetProperty(property);
+                if (prop != null ) prop.SetValue(obj, value);
             }
             catch (Exception ex)
             {
@@ -178,7 +176,7 @@ namespace Common.Helpers
             {
                 if (obj != null)
                 {
-                    PropertyInfo prop = obj.GetType().GetProperty(property);
+                    var prop = obj.GetType().GetProperty(property);
                     if (prop != null) return (T)(prop.GetValue(obj, index));
                 }
             }
@@ -221,7 +219,7 @@ namespace Common.Helpers
             {
                 if (obj != null)
                 {
-                    FieldInfo fieldinfo = obj.GetType().GetField(field, bindingFlags);
+                    var fieldinfo = obj.GetType().GetField(field, bindingFlags);
                     if (fieldinfo != null) return (T)(fieldinfo.GetValue(obj));
                 }
             }
@@ -257,7 +255,7 @@ namespace Common.Helpers
         {
             try
             {
-                FieldInfo fieldinfo = obj.GetType().GetField(field);
+                var fieldinfo = obj.GetType().GetField(field);
                 if (fieldinfo != null) return (T)(fieldinfo.GetValue(null));
             }
             catch (Exception ex)
@@ -297,7 +295,7 @@ namespace Common.Helpers
             {
                 if (!string.IsNullOrEmpty(property))
                 {
-                    object returnValue = obj;
+                    var returnValue = obj;
                     if (property.Contains('.'))
                     {
                         var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
@@ -330,24 +328,15 @@ namespace Common.Helpers
         {
             try
             {
-
                 if (!string.IsNullOrEmpty(property))
                 {
-                    object returnValue = obj;
-                    if (property.Contains('.'))
-                    {
-                        var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                    var returnValue = obj;
+                    if (!property.Contains('.')) return obj.GetType().GetProperty(property);
+                    var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
 
-                        returnValue = path.Where(prop => prop != path.Last()).Aggregate(returnValue, (current, prop) => GetPropertyValue<object>(current, prop, null));
+                    returnValue = path.Where(prop => prop != path.Last()).Aggregate(returnValue, (current, prop) => GetPropertyValue<object>(current, prop, null));
 
-                        if (returnValue != null)
-                        {
-                            return returnValue.GetType().GetProperty(path.Last());
-                        }
-                    }
-
-
-                    return obj.GetType().GetProperty(property);
+                    return returnValue != null ? returnValue.GetType().GetProperty(path.Last()) : obj.GetType().GetProperty(property);
                 }
             }
             catch (Exception ex)
@@ -367,7 +356,7 @@ namespace Common.Helpers
             return _FindStringValues(obj, new List<object>());
         }
 
-        private static IEnumerable<string> _FindStringValues(object obj, IList<object> visitedObjects)
+        private static IEnumerable<string> _FindStringValues(object obj, ICollection<object> visitedObjects)
         {
             if (obj == null)
                 yield break;
@@ -379,7 +368,7 @@ namespace Common.Helpers
             if (!(obj is string))
                 visitedObjects.Add(obj);
 
-            Type type = obj.GetType();
+            var type = obj.GetType();
 
             if (type == typeof(string))
             {
@@ -390,28 +379,26 @@ namespace Common.Helpers
             if (typeof(IEnumerable).IsAssignableFrom(type))
             {
                 var array = obj as IEnumerable;
-                if (array != null)
-                    foreach (var item in array)
-                        foreach (var str in _FindStringValues(item, visitedObjects))
-                            yield return str;
+                if (array == null) yield break;
+                foreach (var item in array)
+                    foreach (var str in _FindStringValues(item, visitedObjects))
+                        yield return str;
 
                 yield break;
             }
 
-            if (type.IsClass)
+            if (!type.IsClass) yield break;
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            foreach (var field in fields)
             {
-                FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                foreach (FieldInfo field in fields)
-                {
-                    object item = field.GetValue(obj);
+                var item = field.GetValue(obj);
 
-                    if (item == null)
-                        continue;
+                if (item == null)
+                    continue;
 
-
-                    foreach (var str in _FindStringValues(item, visitedObjects))
-                        yield return str;
-                }
+                foreach (var str in _FindStringValues(item, visitedObjects))
+                    yield return str;
             }
         }
     }

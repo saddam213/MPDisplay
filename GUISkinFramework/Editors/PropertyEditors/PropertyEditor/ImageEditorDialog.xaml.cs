@@ -3,23 +3,22 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 using GUISkinFramework.Skin;
-using MPDisplay.Common.Controls;
 
 namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
     /// </summary>
-    public partial class ImageEditorDialog : Window, INotifyPropertyChanged
+    public partial class ImageEditorDialog : INotifyPropertyChanged
     {
         private object _instance;
         private string _currentLabel = string.Empty;
-        private ObservableCollection<AutoCompleteEntry> _autoCompleteList = new ObservableCollection<AutoCompleteEntry>();
-
+ 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisibleConditionEditorDialog"/> class.
         /// </summary>
         /// <param name="instance">The instance.</param>
+        /// <param name="skinInfo">The current skin XML</param>
         public ImageEditorDialog(object instance, XmlSkinInfo skinInfo)
         {
             Owner = Application.Current.MainWindow;
@@ -176,7 +175,7 @@ namespace GUISkinFramework.Editors
                         continue;
                     }
 
-                    else if (item.StartsWith("#"))
+                    if (item.StartsWith("#"))
                     {
                         var prop = SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item);
                         if (prop != null)
@@ -261,7 +260,7 @@ namespace GUISkinFramework.Editors
         {
             if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= (LabelItems.Count - 1))
             {
-                int index = SelectedLabelItemIndex;
+                var index = SelectedLabelItemIndex;
                 if (LabelItems.ElementAtOrDefault(index) == "+")
                 {
                     return;
@@ -286,7 +285,7 @@ namespace GUISkinFramework.Editors
 
         private void Button_ImageEdit_Click(object sender, RoutedEventArgs e)
         {
-            new EditorDialog(new ImagePicker() { Width = 700, Height = 600 , SkinInfo = SkinInfo}, false).ShowDialog();
+            new EditorDialog(new ImagePicker { Width = 700, Height = 600 , SkinInfo = SkinInfo}, false).ShowDialog();
         }
 
         private void Button_PropertyEdit_Click(object sender, RoutedEventArgs e)

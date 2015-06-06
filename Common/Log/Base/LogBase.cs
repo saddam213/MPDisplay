@@ -52,7 +52,7 @@ namespace Common.Log
             while (true)
             {
                 _waiting.Set();
-                if (ManualResetEvent.WaitAny(new WaitHandle[] { _hasNewItems, _terminate }) == 1)
+                if (WaitHandle.WaitAny(new WaitHandle[] { _hasNewItems, _terminate }) == 1)
                 {
                     return;
                 }
@@ -78,27 +78,23 @@ namespace Common.Log
         }
 
 
-
-
         /// <summary>
         /// Queues the log message.
         /// </summary>
+        /// <param name="level">The log level</param>
         /// <param name="message">The message.</param>
         public void QueueLogMessage(LogLevel level, string message)
         {
-            if (_logLevel == LogLevel.None)
+            if (_logLevel == LogLevel.None || level < _logLevel)
             {
                 return;
             }
 
-            if (level >= _logLevel)
+            lock (_queue)
             {
-                lock (_queue)
-                {
-                    _queue.Enqueue(() => LogQueuedMessage(message));
-                }
-                _hasNewItems.Set();
+                _queue.Enqueue(() => LogQueuedMessage(message));
             }
+            _hasNewItems.Set();
         }
 
         /// <summary>

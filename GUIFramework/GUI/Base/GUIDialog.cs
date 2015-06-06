@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Common.Log;
@@ -16,7 +17,7 @@ namespace GUIFramework.GUI
 
         private XmlDialog _baseXml;
         protected Log Log = LoggingManager.GetLog(typeof(GUIDialog));
-        private bool _closeOnWindowChanged = false; 
+        private bool _closeOnWindowChanged; 
 
         #endregion
 
@@ -43,7 +44,7 @@ namespace GUIFramework.GUI
         public XmlDialog BaseXml
         {
             get { return _baseXml; }
-            set { _baseXml = value; NotifyPropertyChanged("BaseXml"); }
+            set { _baseXml = value; NotifyPropertyChanged(); }
         }
 
         /// <summary>
@@ -55,6 +56,7 @@ namespace GUIFramework.GUI
         public bool CloseOnWindowChanged
         {
             get { return _closeOnWindowChanged; }
+            set { _closeOnWindowChanged = value; NotifyPropertyChanged(); }
         }
 
         /// <summary>
@@ -79,9 +81,11 @@ namespace GUIFramework.GUI
         {
             BaseXml = skinXml;
             Id = BaseXml.Id;
+            CloseOnWindowChanged = false;
             VisibleCondition = new GUIVisibleCondition(this);
-            Animations = new AnimationCollection(this, BaseXml.Animations, condition => OnAnimationStarted(condition), condition => OnAnimationCompleted(condition));
+            Animations = new AnimationCollection(this, BaseXml.Animations, OnAnimationStarted, OnAnimationCompleted);
             CreateControls();
+            // ReSharper disable once ExplicitCallerInfoArgument
             NotifyPropertyChanged("Controls");
         }
 
@@ -90,9 +94,8 @@ namespace GUIFramework.GUI
         /// </summary>
         public override void CreateControls()
         {
-            foreach (var xmlControl in BaseXml.Controls)
+            foreach (var control in BaseXml.Controls.Select(xmlControl => GUIElementFactory.CreateControl(Id, xmlControl)))
             {
-                var control = GUIElementFactory.CreateControl(Id, xmlControl);
                 control.ParentId = Id;
                 Controls.Add(control);
             }

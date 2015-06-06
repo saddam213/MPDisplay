@@ -18,14 +18,8 @@ namespace MediaPortalPlugin.Plugins
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                if (playtype == APIPlaybackType.IsRadio && filename.StartsWith("http"))
-                {
-                    return true;
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            return playtype == APIPlaybackType.IsRadio && filename.StartsWith("http");
         }
     }
 }

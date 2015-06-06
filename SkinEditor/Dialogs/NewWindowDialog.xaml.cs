@@ -133,7 +133,7 @@ namespace SkinEditor.Dialogs
                 Height = SkinInfo.SkinHeight ,
                 Width = SkinInfo.SkinWidth ,
                 Animations = new ObservableCollection<XmlAnimation>(),
-                Controls = new ObservableCollection<XmlControl>(),
+                Controls = new ObservableCollection<XmlControl>()
             };
         }
 
@@ -151,7 +151,7 @@ namespace SkinEditor.Dialogs
                 Height = 300,
                 Width = 500,
                 Animations = new ObservableCollection<XmlAnimation>(),
-                Controls = new ObservableCollection<XmlControl>(),
+                Controls = new ObservableCollection<XmlControl>()
             };
         }
 

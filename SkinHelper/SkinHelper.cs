@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using System.Windows.Forms;
 using Common.Helpers;
 using Common.Log;
@@ -24,11 +23,6 @@ namespace SkinHelper
         #endregion
 
         #region IPlugin Implementation
-
-        public SkinHelper()
-        {
-        
-        }
 
         public string Author()
         {
@@ -85,11 +79,13 @@ namespace SkinHelper
 
         }
 
+        internal Timer DialogTimer;
+
         public void Start()
         {
             if (Directory.Exists(RegistrySettings.ProgramDataPath))
             {
-                string logdir = RegistrySettings.ProgramDataPath + @"Logs\SkinHelper";
+                var logdir = RegistrySettings.ProgramDataPath + @"Logs\SkinHelper";
                 if (!Directory.Exists(logdir))
                 {
                     Directory.CreateDirectory(logdir);
@@ -103,14 +99,15 @@ namespace SkinHelper
             }
             else
             {
-                MessageBox.Show("Could Not Locate MPDisplay Data Path '" + RegistrySettings.ProgramDataPath + "'" + Environment.NewLine + "If Problem Persists Please Reinstall MPDisplay++", "Install Error", MessageBoxButtons.OK);
+                MessageBox.Show(@"Could Not Locate MPDisplay Data Path '" + RegistrySettings.ProgramDataPath + @"'" + Environment.NewLine + @"If Problem Persists Please Reinstall MPDisplay++",
+                    @"Install Error", MessageBoxButtons.OK);
                 Stop();
                 return;
             }
-            GUIPropertyManager.OnPropertyChanged += new GUIPropertyManager.OnPropertyChangedHandler(GUIPropertyManager_OnPropertyChanged);
-            GUIWindowManager.OnActivateWindow += new GUIWindowManager.WindowActivationHandler(GUIWindowManager_OnActivateWindow);
-            GUIWindowManager.OnNewAction += new OnActionHandler(GUIWindowManager_OnNewAction);
-            _dialogTimer = new Timer(new TimerCallback(ProcessDialogThread), null, 1000, 250);
+            GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
+            GUIWindowManager.OnActivateWindow += GUIWindowManager_OnActivateWindow;
+            GUIWindowManager.OnNewAction += GUIWindowManager_OnNewAction;
+            DialogTimer = new Timer(ProcessDialogThread, null, 1000, 250);
         }
 
         #endregion
@@ -119,12 +116,6 @@ namespace SkinHelper
 
         private int _lastFocusedControl = -1;
         private object _syncObject = new object();
-        //private Common.Logging.Log ActionLog;
-        //private Common.Logging.Log PropertyLog;
-        //private Common.Logging.Log ListItemLog;
-        //private Common.Logging.Log DialogLog;
-        //private Common.Logging.Log WindowLog;
-
 
         void GUIWindowManager_OnNewAction(Action action)
         {
@@ -134,14 +125,17 @@ namespace SkinHelper
                 {
                     try
                     {
-                        int id = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindowEx).GetFocusControlId();
+                        var id = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindowEx).GetFocusControlId();
                         if (id != _lastFocusedControl)
                         {
                             _lastFocusedControl = id;
                             LoggingManager.GetLog(typeof(SkinHelper), "Window").Message(LogLevel.Info, "-[FocusedControl] - ControlId: {0}", _lastFocusedControl);
                         }
                     }
-                    catch { }
+                    catch
+                    {
+                        // ignored
+                    }
                 }
 
                 LoggingManager.GetLog(typeof(SkinHelper), "Action").Message(LogLevel.Debug, "-[Action] - ActionId: {0}", action.wID);
@@ -160,137 +154,128 @@ namespace SkinHelper
         {
             lock (_syncObject)
             {
-                if (tag != null && !tag.StartsWith("#SkinInfo."))
+                if (tag == null || tag.StartsWith("#SkinInfo.")) return;
+                LoggingManager.GetLog(typeof(SkinHelper), "Property").Message(LogLevel.Debug, "-[Property] - Tag: {0}, TagValue: {1}", tag, tagValue);
+                if (tag.Equals("#currentmodule") && GUIWindowManager.IsRouted)
                 {
-                    LoggingManager.GetLog(typeof(SkinHelper), "Property").Message(LogLevel.Debug, "-[Property] - Tag: {0}, TagValue: {1}", tag, tagValue);
-                    if (tag.Equals("#currentmodule") && GUIWindowManager.IsRouted)
-                    {
-                        LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Debug, "-[Dialog] - DialogId: {0}", GUIWindowManager.RoutedWindow);
-                    }
+                    LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Debug, "-[Dialog] - DialogId: {0}", GUIWindowManager.RoutedWindow);
+                }
 
-                    if (tag.Equals("#selectedindex"))
-                    {
-                        GetListItemInfo();
-                    }
+                if (tag.Equals("#selectedindex"))
+                {
+                    GetListItemInfo();
+                }
 
-                    if (tag.Equals("#highlightedbutton") && !string.IsNullOrEmpty(tagValue))
-                    {
-                        GetButtonMenuItemInfo();
-                    }
+                if (tag.Equals("#highlightedbutton") && !string.IsNullOrEmpty(tagValue))
+                {
+                    GetButtonMenuItemInfo();
                 }
             }
         }
 
-        private void GetButtonMenuItemInfo()
+        private static void GetButtonMenuItemInfo()
         {
             try
             {
                 var currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindowEx);
-                if (currentWindow != null)
+                if (currentWindow == null) return;
+
+                var focusedControl = currentWindow.GetControl(currentWindow.GetFocusControlId());
+                if (focusedControl != null && (focusedControl.GetType() == typeof(GUIButtonControl) || focusedControl.GetType() == typeof(GUICheckButton) 
+                                               || focusedControl.GetType() == typeof(GUIMenuButton) || focusedControl.GetType() == typeof(GUISelectButtonControl)
+                                               || focusedControl.GetType() == typeof(GUISortButtonControl) || focusedControl.GetType() == typeof(GUISpinButton) || focusedControl.GetType() == typeof(GUIUpDownButton)))
+                    // || focusedControl.GetType() == typeof(GUIToggleButtonControl) || focusedControl.GetType() == typeof(GUIUpDownButton)))
                 {
-                    var focusedControl = currentWindow.GetControl(currentWindow.GetFocusControlId());
-                    if (focusedControl != null && (focusedControl.GetType() == typeof(GUIButtonControl) || focusedControl.GetType() == typeof(GUICheckButton) 
-                        || focusedControl.GetType() == typeof(GUIMenuButton) || focusedControl.GetType() == typeof(GUISelectButtonControl)
-                        || focusedControl.GetType() == typeof(GUISortButtonControl) || focusedControl.GetType() == typeof(GUISpinButton) || focusedControl.GetType() == typeof(GUIUpDownButton)))
-                       // || focusedControl.GetType() == typeof(GUIToggleButtonControl) || focusedControl.GetType() == typeof(GUIUpDownButton)))
-                    {
-                        RefectButton(focusedControl);
-                    }
+                    RefectButton(focusedControl);
                 }
             }
-            catch 
+            catch
             {
+                // ignored
             }
         }
 
-        private void GetListItemInfo()
+        private static void GetListItemInfo()
         {
             try
             {
                 var currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindowEx);
-                if (currentWindow != null)
+                if (currentWindow == null) return;
+
+                var focusedControl = currentWindow.GetControl(currentWindow.GetFocusControlId());
+                if (focusedControl == null) return;
+
+                if (focusedControl.GetType() == typeof(GUIFacadeControl))
                 {
-                    var focusedControl = currentWindow.GetControl(currentWindow.GetFocusControlId());
-                    if (focusedControl != null)
+                    var listItems = GetFacadeListItems(focusedControl as GUIFacadeControl);
+                    if (listItems != null && listItems.Count > 1)
                     {
-                        if (focusedControl.GetType() == typeof(GUIFacadeControl))
-                        {
-                            var listItems = GetFacadeListItems(focusedControl as GUIFacadeControl);
-                            if (listItems != null && listItems.Count > 1)
-                            {
-                                RefectListItem(listItems[1]);
-                            }
-                        }
-                        else if (focusedControl.GetType() == typeof(GUIListControl))
-                        {
-                            var listItems = (focusedControl as GUIListControl).ListItems;
-                            if (listItems != null && listItems.Count > 1)
-                            {
-                                RefectListItem(listItems[1]);
-                            }
-                        }
-                        else if (focusedControl.GetType() == typeof(GUIPlayListItemListControl))
-                        {
-                            var listItems = (focusedControl as GUIPlayListItemListControl).ListItems;
-                            if (listItems != null && listItems.Count > 1)
-                            {
-                                RefectListItem(listItems[1]);
-                            }
-                        }
+                        RefectListItem(listItems[1]);
+                    }
+                }
+                else if (focusedControl.GetType() == typeof(GUIListControl))
+                {
+                    var guiListControl = focusedControl as GUIListControl;
+                    if (guiListControl == null) return;
+
+                    var listItems = guiListControl.ListItems;
+                    if (listItems != null && listItems.Count > 1)
+                    {
+                        RefectListItem(listItems[1]);
+                    }
+                }
+                else if (focusedControl.GetType() == typeof(GUIPlayListItemListControl))
+                {
+                    var guiPlayListItemListControl = focusedControl as GUIPlayListItemListControl;
+                    if (guiPlayListItemListControl == null) return;
+
+                    var listItems = guiPlayListItemListControl.ListItems;
+                    if (listItems != null && listItems.Count > 1)
+                    {
+                        RefectListItem(listItems[1]);
                     }
                 }
             }
-            catch 
+            catch
             {
-
+                // ignored
             }
         }
-
-
-
-
-
-
-
-
 
         /// <summary>
         /// Gets the correct items form the facades layout type
         /// </summary>
         /// <param name="facade">The current facade</param>
         /// <returns>The listitems from the facade</returns>
-        private List<GUIListItem> GetFacadeListItems(GUIFacadeControl facade)
+        private static List<GUIListItem> GetFacadeListItems(GUIFacadeControl facade)
         {
-            if (facade != null)
+            if (facade == null) return new List<GUIListItem>();
+
+            switch (facade.CurrentLayout)
             {
-                switch (facade.CurrentLayout)
-                {
-                    case GUIFacadeControl.Layout.AlbumView:
-                        return facade.AlbumListLayout.ListItems;
-                    case GUIFacadeControl.Layout.CoverFlow:
-                        return facade.FilmstripLayout.ListItems;
-                    case GUIFacadeControl.Layout.Filmstrip:
-                        return facade.FilmstripLayout.ListItems;
-                    case GUIFacadeControl.Layout.LargeIcons:
-                        return facade.ThumbnailLayout.ListItems;
-                    case GUIFacadeControl.Layout.List:
-                        return facade.ListLayout.ListItems;
-                    case GUIFacadeControl.Layout.Playlist:
-                        return facade.PlayListLayout.ListItems;
-                    case GUIFacadeControl.Layout.SmallIcons:
-                        return facade.ThumbnailLayout.ListItems;
-                    default:
-                        return null;
-                }
+                case GUIFacadeControl.Layout.AlbumView:
+                    return facade.AlbumListLayout.ListItems;
+                case GUIFacadeControl.Layout.CoverFlow:
+                    return facade.FilmstripLayout.ListItems;
+                case GUIFacadeControl.Layout.Filmstrip:
+                    return facade.FilmstripLayout.ListItems;
+                case GUIFacadeControl.Layout.LargeIcons:
+                    return facade.ThumbnailLayout.ListItems;
+                case GUIFacadeControl.Layout.List:
+                    return facade.ListLayout.ListItems;
+                case GUIFacadeControl.Layout.Playlist:
+                    return facade.PlayListLayout.ListItems;
+                case GUIFacadeControl.Layout.SmallIcons:
+                    return facade.ThumbnailLayout.ListItems;
+                default:
+                    return null;
             }
-            return new List<GUIListItem>();
         }
 
-        private bool _isWorking = false;
+        private bool _isWorking;
         private bool _isDialogVisible;
         private GUIWindow _currentDialog;
         private int _currentDialogId = -1;
-        private Timer _dialogTimer;
 
         /// <summary>
         /// Processes the dialog thread.
@@ -300,29 +285,27 @@ namespace SkinHelper
         {
             try
             {
-                if (!_isWorking)
+                if (_isWorking) return;
+                _isWorking = true;
+                if ((GUIWindowManager.IsRouted && !_isDialogVisible) || (GUIWindowManager.IsRouted && _isDialogVisible && _currentDialogId != GUIWindowManager.RoutedWindow))
                 {
-                    _isWorking = true;
-                    if ((GUIWindowManager.IsRouted && !_isDialogVisible) || (GUIWindowManager.IsRouted && _isDialogVisible && _currentDialogId != GUIWindowManager.RoutedWindow))
+                    _currentDialog = GUIWindowManager.GetWindow(GUIWindowManager.RoutedWindow);
+                    if (_currentDialog != null)
                     {
-                        _currentDialog = GUIWindowManager.GetWindow(GUIWindowManager.RoutedWindow);
-                        if (_currentDialog != null)
-                        {
-                            _isDialogVisible = true;
-                            _currentDialogId = GUIWindowManager.RoutedWindow;
-                            SendDialogProperties();
-                        }
+                        _isDialogVisible = true;
+                        _currentDialogId = GUIWindowManager.RoutedWindow;
+                        SendDialogProperties();
                     }
-                    else if (!GUIWindowManager.IsRouted && _isDialogVisible)
-                    {
-                        _isDialogVisible = false;
-                    }
-                    _isWorking = false;
                 }
+                else if (!GUIWindowManager.IsRouted && _isDialogVisible)
+                {
+                    _isDialogVisible = false;
+                }
+                _isWorking = false;
             }
-            catch 
+            catch
             {
-               
+                // ignored
             }
         }
 
@@ -334,109 +317,107 @@ namespace SkinHelper
         {
             try
             {
-                if (_currentDialog != null)
+                if (_currentDialog == null) return;
+                foreach (var item in _currentDialog.Children)
                 {
-                    foreach (var item in _currentDialog.Children)
+                    try
                     {
-                        try
+                        if (item.GetType() == typeof(GUIImage))
                         {
-                            if (item.GetType() == typeof(GUIImage))
+                            var image = item as GUIImage;
+                            if (image != null)
                             {
-                                var image = item as GUIImage;
-                                if (image != null)
-                                {
-                                    LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info, string.Format("[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Image{0}, TagValue: {1}", item.GetID, image.FileName));
-                                }
-                            }
-                            else
-                            {
-                                if (item != null)
-                                {
-                                    var label = ReflectionHelper.GetPropertyValue<string>(item, "Label", null);
-                                    if (!string.IsNullOrEmpty(label))
-                                    {
-                                        LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info, string.Format("[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Label{0}, TagValue: {1}", item.GetID, label));
-                                    }
-                                }
+                                LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info, string.Format("[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Image{0}, TagValue: {1}", item.GetID, image.FileName));
                             }
                         }
-                        catch 
+                        else
                         {
-                           
+                            var label = ReflectionHelper.GetPropertyValue<string>(item, "Label", null);
+                            if (!string.IsNullOrEmpty(label))
+                            {
+                                LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info, string.Format("[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Label{0}, TagValue: {1}", item.GetID, label));
+                            }
                         }
+                    }
+                    catch
+                    {
+                        // ignored
                     }
                 }
             }
-            catch 
+            catch
             {
-              
+                // ignored
             }
         }
 
 
-        private void RefectListItem(GUIListItem listItem)
+        private static void RefectListItem(GUIListItem listItem)
         {
             try
             {
-                if (listItem != null)
+                if (listItem == null) return;
+
+                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail]{0}", Environment.NewLine);
+                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail] - Plugin: {0}", GUIWindowManager.ActiveWindow);
+                foreach (var property in listItem.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
                 {
-                    LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail]{0}", Environment.NewLine);
-                    LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail] - Plugin: {0}", GUIWindowManager.ActiveWindow);
-                    foreach (var property in listItem.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
+                    try
+                    {
+                        LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail] - PropertyName: {0}, PropertyValue: {1}", property.Name, property.GetValue(listItem, null));
+                    }
+                    catch (Exception)
+                    {
+                        // ignored
+                    }
+                }
+
+                if (listItem.TVTag != null)
+                {
+                    foreach (var property in listItem.TVTag.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
                     {
                         try
                         {
-                            LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail] - PropertyName: {0}, PropertyValue: {1}", property.Name, property.GetValue(listItem, null));
+                            LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail] - PropertyName: {0}, PropertyValue: {1}", property.Name, property.GetValue(listItem.TVTag, null));
                         }
-                        catch (Exception)
+                        catch
                         {
-
-                        }
-
-                    }
-
-                    if (listItem.TVTag != null)
-                    {
-                        foreach (var property in listItem.TVTag.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
-                        {
-                            try
-                            {
-                                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail] - PropertyName: {0}, PropertyValue: {1}", property.Name, property.GetValue(listItem.TVTag, null));
-                            }
-                            catch { }
+                            // ignored
                         }
                     }
-                    LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail]{0}", Environment.NewLine);
                 }
+                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[ListItemDetail]{0}", Environment.NewLine);
             }
-            catch 
+            catch
             {
-
+                // ignored
             }
         }
 
-        private void RefectButton(GUIControl control)
+        private static void RefectButton(GUIControl control)
         {
             try
             {
-                if (control != null)
-                {
-                    LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]{0}", Environment.NewLine);
-                    LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail] - Plugin: {0}, ControlId: {1}", GUIWindowManager.ActiveWindow, control.GetID);
-                    foreach (var property in control.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
-                    {
-                        try
-                        {
-                            LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]-[{0}] - PropertyName: {1}, PropertyValue: {2}", control.Type, property.Name, property.GetValue(control, null));
-                        }
-                        catch { }
-                    }
-                    LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]{0}", Environment.NewLine);
-                }
-            }
-            catch 
-            {
+                if (control == null) return;
 
+                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]{0}", Environment.NewLine);
+                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail] - Plugin: {0}, ControlId: {1}", GUIWindowManager.ActiveWindow, control.GetID);
+                foreach (var property in control.GetType().GetProperties().Where(p => p.PropertyType == typeof(string)))
+                {
+                    try
+                    {
+                        LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]-[{0}] - PropertyName: {1}, PropertyValue: {2}", control.Type, property.Name, property.GetValue(control, null));
+                    }
+                    catch
+                    {
+                        // ignored
+                    }
+                }
+                LoggingManager.GetLog(typeof(SkinHelper), "ListItem").Message(LogLevel.Warn, "[MenuButtonDetail]{0}", Environment.NewLine);
+            }
+            catch
+            {
+                // ignored
             }
         }
 

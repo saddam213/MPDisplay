@@ -344,19 +344,19 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            GlossBrush = style.GetStyle<XmlBrush>(GlossBrush);
-            ShadeBrush = style.GetStyle<XmlBrush>(ShadeBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
-            TimelineBackground = style.GetStyle<XmlBrush>(TimelineBackground);
-            TimelineBorderBrush = style.GetStyle<XmlBrush>(TimelineBorderBrush);
-            TimelineMarkerBrush = style.GetStyle<XmlBrush>(TimelineMarkerBrush);
-            TimelineFontBrush = style.GetStyle<XmlBrush>(TimelineFontBrush);
-            TimelineItemBorderBrush = style.GetStyle<XmlBrush>(TimelineItemBorderBrush);
-            ChannelListBackgroundBrush = style.GetStyle<XmlBrush>(ChannelListBackgroundBrush);
-            ChannelListBorderBrush = style.GetStyle<XmlBrush>(ChannelListBorderBrush);
-            ProgramListBackgroundBrush = style.GetStyle<XmlBrush>(ProgramListBackgroundBrush);
-            ProgramListBorderBrush = style.GetStyle<XmlBrush>(ProgramListBorderBrush);
+            GlossBrush = style.GetStyle(GlossBrush);
+            ShadeBrush = style.GetStyle(ShadeBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
+            TimelineBackground = style.GetStyle(TimelineBackground);
+            TimelineBorderBrush = style.GetStyle(TimelineBorderBrush);
+            TimelineMarkerBrush = style.GetStyle(TimelineMarkerBrush);
+            TimelineFontBrush = style.GetStyle(TimelineFontBrush);
+            TimelineItemBorderBrush = style.GetStyle(TimelineItemBorderBrush);
+            ChannelListBackgroundBrush = style.GetStyle(ChannelListBackgroundBrush);
+            ChannelListBorderBrush = style.GetStyle(ChannelListBorderBrush);
+            ProgramListBackgroundBrush = style.GetStyle(ProgramListBackgroundBrush);
+            ProgramListBorderBrush = style.GetStyle(ProgramListBorderBrush);
         }
     }
 

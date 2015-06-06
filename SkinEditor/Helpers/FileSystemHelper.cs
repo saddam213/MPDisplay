@@ -13,11 +13,7 @@ namespace SkinEditor.Helpers
         public static string OpenFolderDialog(string startDirectory)
         {
             var dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.SelectedPath;
-            }
-            return string.Empty;
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : string.Empty;
         }
 
         /// <summary>
@@ -36,11 +32,7 @@ namespace SkinEditor.Helpers
                 ShowReadOnly = true,
                 InitialDirectory = startDirectory
             };
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.FileName;
-            }
-            return string.Empty;
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : string.Empty;
         }
 
         public static void TryDelete(string file)
@@ -92,13 +84,11 @@ namespace SkinEditor.Helpers
 
         public static IEnumerable<string> GetFiles(string dir, string extensions)
         {
-            if (Directory.Exists(dir))
-            {
-                foreach (var item in Directory.GetFiles(dir, extensions))
-                {
-                    yield return item;
-                }
+            if (!Directory.Exists(dir)) yield break;
 
+            foreach (var item in Directory.GetFiles(dir, extensions))
+            {
+                yield return item;
             }
         }
 
@@ -128,10 +118,7 @@ namespace SkinEditor.Helpers
             //check for empty/null file path:
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrWhiteSpace(filePath))
             {
-                if (!AllowEmptyPath)
-                    return new ValidationResult(false, string.Format("The {0} may not be empty.",Message));
-                else
-                    return new ValidationResult(true, null);
+                return !AllowEmptyPath ? new ValidationResult(false, string.Format("The {0} may not be empty.",Message)) : new ValidationResult(true, null);
             }
 
             if (IsFileNameOnly)
@@ -158,7 +145,7 @@ namespace SkinEditor.Helpers
                 //check the filename (if one can be isolated out):
                 try
                 {
-                    string fileName = Path.GetFileName(filePath);
+                    var fileName = Path.GetFileName(filePath);
                     if (Path.GetInvalidFileNameChars().Any(x => fileName.Contains(x)))
                         throw new ArgumentException(string.Format("The characters {0} are not permitted in a {1}.", GetPrinatbleInvalidChars(Path.GetInvalidFileNameChars()), Message));
                 }
@@ -185,9 +172,9 @@ namespace SkinEditor.Helpers
         public bool IsFilePathOnly { get; set; }
         
 
-        private string GetPrinatbleInvalidChars(char[] chars)
+        private static string GetPrinatbleInvalidChars(IEnumerable<char> chars)
         {
-            string invalidChars = string.Join("", chars.Where(x => !Char.IsWhiteSpace(x)));
+            var invalidChars = string.Join("", chars.Where(x => !Char.IsWhiteSpace(x)));
             return invalidChars;
         }
     }

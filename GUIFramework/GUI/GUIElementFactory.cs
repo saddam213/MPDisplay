@@ -28,13 +28,12 @@ namespace GUIFramework.GUI
         {
             get
             {
-                if (_xmlControlTypeMap == null)
-                {
-                    _xmlControlTypeMap = new Dictionary<Type, Type>(
-                        Assembly.GetExecutingAssembly().GetTypes().Where(t => ( t.BaseType == typeof(GUIControl) || t.BaseType == typeof(GUIDraggableListView)))
-                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType, value => value.UnderlyingSystemType));
-                }
-                return _xmlControlTypeMap;
+                return _xmlControlTypeMap ?? (_xmlControlTypeMap = new Dictionary<Type, Type>(
+                    Assembly.GetExecutingAssembly()
+                        .GetTypes()
+                        .Where(t => (t.BaseType == typeof (GUIControl) || t.BaseType == typeof (GUIDraggableListView)))
+                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType,
+                            value => value.UnderlyingSystemType)));
             }
         }
 
@@ -45,13 +44,10 @@ namespace GUIFramework.GUI
         {
             get
             {
-                if (_xmlWindowTypeMap == null)
-                {
-                    _xmlWindowTypeMap = new Dictionary<Type, Type>(
-                        Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof(GUIWindow))
-                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType, value => value.UnderlyingSystemType));
-                }
-                return _xmlWindowTypeMap;
+                return _xmlWindowTypeMap ?? (_xmlWindowTypeMap = new Dictionary<Type, Type>(
+                    Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof (GUIWindow))
+                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType,
+                            value => value.UnderlyingSystemType)));
             }
         }
 
@@ -62,13 +58,10 @@ namespace GUIFramework.GUI
         {
             get
             {
-                if (_xmlDialogTypeMap == null)
-                {
-                    _xmlDialogTypeMap = new Dictionary<Type, Type>(
-                        Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof(GUIDialog))
-                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType, value => value.UnderlyingSystemType));
-                }
-                return _xmlDialogTypeMap;
+                return _xmlDialogTypeMap ?? (_xmlDialogTypeMap = new Dictionary<Type, Type>(
+                    Assembly.GetExecutingAssembly().GetTypes().Where(t => t.BaseType == typeof (GUIDialog))
+                        .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType,
+                            value => value.UnderlyingSystemType)));
             }
         } 
 
@@ -85,13 +78,11 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         public static GUIControl CreateControl<T>(int windowId, T skinXml) where T : XmlControl
         {
-            if (XmlControlTypeMap.ContainsKey(skinXml.GetType()))
-            {
-                var control = (GUIControl)Activator.CreateInstance(XmlControlTypeMap[skinXml.GetType()]);
-                control.Initialize(windowId, skinXml);
-                return control;
-            }
-            return null;
+            if (!XmlControlTypeMap.ContainsKey(skinXml.GetType())) return null;
+
+            var control = (GUIControl)Activator.CreateInstance(XmlControlTypeMap[skinXml.GetType()]);
+            control.Initialize(windowId, skinXml);
+            return control;
         }
 
         /// <summary>
@@ -102,13 +93,11 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         public static GUIWindow CreateWindow<T>(T skinXml) where T : XmlWindow
         {
-            if (XmlWindowTypeMap.ContainsKey(skinXml.GetType()))
-            {
-                var window = (GUIWindow)Activator.CreateInstance(XmlWindowTypeMap[skinXml.GetType()]);
-                window.Initialize(skinXml);
-                return window;
-            }
-            return null;
+            if (!XmlWindowTypeMap.ContainsKey(skinXml.GetType())) return null;
+
+            var window = (GUIWindow)Activator.CreateInstance(XmlWindowTypeMap[skinXml.GetType()]);
+            window.Initialize(skinXml);
+            return window;
         }
 
         /// <summary>
@@ -119,13 +108,11 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         public static GUIDialog CreateDialog<T>(T skinXml) where T : XmlDialog
         {
-            if (XmlDialogTypeMap.ContainsKey(skinXml.GetType()))
-            {
-                var dialog = (GUIDialog)Activator.CreateInstance(XmlDialogTypeMap[skinXml.GetType()]);
-                dialog.Initialize(skinXml);
-                return dialog;
-            }
-            return null;
+            if (!XmlDialogTypeMap.ContainsKey(skinXml.GetType())) return null;
+
+            var dialog = (GUIDialog)Activator.CreateInstance(XmlDialogTypeMap[skinXml.GetType()]);
+            dialog.Initialize(skinXml);
+            return dialog;
         } 
 
         #endregion

@@ -51,7 +51,7 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            FontBrush = style.GetStyle<XmlBrush>(FontBrush);
+            FontBrush = style.GetStyle(FontBrush);
         }
     }
 

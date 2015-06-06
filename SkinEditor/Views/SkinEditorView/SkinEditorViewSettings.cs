@@ -30,15 +30,13 @@ namespace SkinEditor.Views
         public override void InitializeSettings()
         {
             base.InitializeSettings();
-            if (File.Exists(Environment.CurrentDirectory + "\\DesignerStyle.xml"))
-            {
-                var styleCollection = SerializationHelper.Deserialize<XmlStyleCollection>(Environment.CurrentDirectory + "\\DesignerStyle.xml");
-                if (styleCollection != null)
-                {
-                   DesignerStyle = styleCollection;
-                   DesignerStyle.InitializeStyleCollection();
-                }
-            }
+            if (!File.Exists(Environment.CurrentDirectory + "\\DesignerStyle.xml")) return;
+
+            var styleCollection = SerializationHelper.Deserialize<XmlStyleCollection>(Environment.CurrentDirectory + "\\DesignerStyle.xml");
+            if (styleCollection == null) return;
+
+            DesignerStyle = styleCollection;
+            DesignerStyle.InitializeStyleCollection();
         }
 
 

@@ -9,7 +9,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            int childLevel = (int)value;
+            var childLevel = (int)value;
             return new Thickness(childLevel * 15, 0, 0, 0);
         }
 

@@ -11,7 +11,7 @@ namespace GUISkinFramework.Converters
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool visible = (bool)value;
+            var visible = (bool)value;
             if (parameter is string && parameter.ToString() == "!")
             {
                 return visible ? Visibility.Collapsed : Visibility.Visible;
@@ -21,10 +21,10 @@ namespace GUISkinFramework.Converters
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            Visibility visible = (Visibility)value;
+            var visible = (Visibility)value;
             if (parameter is string && parameter.ToString() == "!")
             {
-                return !(visible == Visibility.Visible);
+                return visible != Visibility.Visible;
             }
             return visible == Visibility.Visible;
         }

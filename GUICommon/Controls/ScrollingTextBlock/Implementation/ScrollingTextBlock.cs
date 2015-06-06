@@ -92,87 +92,82 @@ namespace MPDisplay.Common.Controls
 
         private void SetText(string text)
         {
-            if (_mainTextBlock != null)
+            if (_mainTextBlock == null) return;
+
+            _mainTextBlock.BeginAnimation(Canvas.LeftProperty, null);
+            _mainTextBlock.BeginAnimation(Canvas.TopProperty, null);
+            _mainTextBlock.Width = Width;
+            _mainTextBlock.Height = Height;
+            if (IsScrollingEnabled)
             {
-                _mainTextBlock.BeginAnimation(Canvas.LeftProperty, null);
-                _mainTextBlock.BeginAnimation(Canvas.TopProperty, null);
-                _mainTextBlock.Width = Width;
-                _mainTextBlock.Height = Height;
-                if (IsScrollingEnabled)
+                if (!IsVertical)
                 {
-                    if (!IsVertical)
-                    {
                        
-                        var textWidth = GetTextWidth(text);
-                        if (textWidth > Width)
-                        {
-                            IsScrolling = true;
-                            _mainTextBlock.Width = double.NaN;
-                            _mainTextBlock.TextAlignment = TextAlignment.Left;
-                            _mainTextBlock.Text = GetScrollingText();
-                            var textLength = GetScrollingLength();
-                            var animation = new DoubleAnimation(0.0, -textLength,
-                                new Duration(TimeSpan.FromSeconds((textLength/5))))
-                            {
-                                SpeedRatio = ScrollSpeed,
-                                BeginTime = TimeSpan.FromSeconds(ScrollDelay),
-                                FillBehavior = FillBehavior.Stop,
-                                RepeatBehavior = RepeatBehavior.Forever
-                            };
-                            if (!IsWrapEnabled)
-                            {
-                                animation.RepeatBehavior = new RepeatBehavior(1);
-                                animation.Completed += (s, e) => { SetText(Text); };
-                            }
-                            _mainTextBlock.BeginAnimation(Canvas.LeftProperty, animation);
-                            return;
-                        }
-                    }
-                    else
+                    var textWidth = GetTextWidth(text);
+                    if (textWidth > Width)
                     {
-                     
-                        var textHeight = GetTextHeight(text);
-                        if (textHeight > Height)
+                        IsScrolling = true;
+                        _mainTextBlock.Width = double.NaN;
+                        _mainTextBlock.TextAlignment = TextAlignment.Left;
+                        _mainTextBlock.Text = GetScrollingText();
+                        var textLength = GetScrollingLength();
+                        var animation = new DoubleAnimation(0.0, -textLength,
+                            new Duration(TimeSpan.FromSeconds((textLength/5))))
                         {
-                            IsScrolling = true;
-                            _mainTextBlock.Height = double.NaN;
-                            _mainTextBlock.TextAlignment = TextAlignment;
-                            _mainTextBlock.Text = GetScrollingText();
-                            var textLength = GetScrollingLength();
-                            var animation = new DoubleAnimation(0.0, -textLength,
-                                new Duration(TimeSpan.FromSeconds((textLength/5))))
-                            {
-                                SpeedRatio = ScrollSpeed,
-                                BeginTime = TimeSpan.FromSeconds(ScrollDelay),
-                                FillBehavior = FillBehavior.Stop,
-                                RepeatBehavior = RepeatBehavior.Forever
-                            };
-                            if (!IsWrapEnabled)
-                            {
-                                animation.RepeatBehavior = new RepeatBehavior(1);
-                                animation.Completed += (s, e) => { SetText(Text); };
-                            }
-                            _mainTextBlock.BeginAnimation(Canvas.TopProperty, animation);
-                            return;
+                            SpeedRatio = ScrollSpeed,
+                            BeginTime = TimeSpan.FromSeconds(ScrollDelay),
+                            FillBehavior = FillBehavior.Stop,
+                            RepeatBehavior = RepeatBehavior.Forever
+                        };
+                        if (!IsWrapEnabled)
+                        {
+                            animation.RepeatBehavior = new RepeatBehavior(1);
+                            animation.Completed += (s, e) => { SetText(Text); };
                         }
+                        _mainTextBlock.BeginAnimation(Canvas.LeftProperty, animation);
+                        return;
                     }
                 }
-              
-                _mainTextBlock.TextAlignment = TextAlignment;
-                _mainTextBlock.Text = Text;
-                IsScrolling = false;
+                else
+                {
+                     
+                    var textHeight = GetTextHeight(text);
+                    if (textHeight > Height)
+                    {
+                        IsScrolling = true;
+                        _mainTextBlock.Height = double.NaN;
+                        _mainTextBlock.TextAlignment = TextAlignment;
+                        _mainTextBlock.Text = GetScrollingText();
+                        var textLength = GetScrollingLength();
+                        var animation = new DoubleAnimation(0.0, -textLength,
+                            new Duration(TimeSpan.FromSeconds((textLength/5))))
+                        {
+                            SpeedRatio = ScrollSpeed,
+                            BeginTime = TimeSpan.FromSeconds(ScrollDelay),
+                            FillBehavior = FillBehavior.Stop,
+                            RepeatBehavior = RepeatBehavior.Forever
+                        };
+                        if (!IsWrapEnabled)
+                        {
+                            animation.RepeatBehavior = new RepeatBehavior(1);
+                            animation.Completed += (s, e) => { SetText(Text); };
+                        }
+                        _mainTextBlock.BeginAnimation(Canvas.TopProperty, animation);
+                        return;
+                    }
+                }
             }
+              
+            _mainTextBlock.TextAlignment = TextAlignment;
+            _mainTextBlock.Text = Text;
+            IsScrolling = false;
         }
 
         private string GetScrollingText()
         {
             if (IsWrapEnabled)
             {
-                if (IsVertical)
-                {
-                    return string.Concat(Text, Environment.NewLine, ScrollSeperator, Environment.NewLine, Text);
-                }
-                return string.Concat(Text, ScrollSeperator, Text);
+                return IsVertical ? string.Concat(Text, Environment.NewLine, ScrollSeperator, Environment.NewLine, Text) : string.Concat(Text, ScrollSeperator, Text);
             }
             return Text;
         }
@@ -181,41 +176,31 @@ namespace MPDisplay.Common.Controls
         {
             if (IsWrapEnabled)
             {
-                if (IsVertical)
-                {
-                    return GetTextHeight(string.Concat(Text, Environment.NewLine, ScrollSeperator));
-                }
-                return GetTextWidth(Text + ScrollSeperator);
+                return IsVertical ? GetTextHeight(string.Concat(Text, Environment.NewLine, ScrollSeperator)) : GetTextWidth(Text + ScrollSeperator);
             }
 
-            if (IsVertical)
-            {
-                return GetTextHeight(Text);
-            }
-
-            return GetTextWidth(Text);
+            return IsVertical ? GetTextHeight(Text) : GetTextWidth(Text);
         }
 
      
 
         private void Reset()
         {
-            if (_isReady)
+            if (!_isReady) return;
+
+            _mainTextBlock.TextAlignment = TextAlignment;
+            _mainTextBlock.MaxWidth = double.PositiveInfinity;
+            _measureLabel.MaxWidth = double.PositiveInfinity;
+            _mainTextBlock.TextWrapping = TextWrapping.NoWrap;
+            _measureLabel.TextWrapping = TextWrapping.NoWrap;
+            if (IsVertical)
             {
-                _mainTextBlock.TextAlignment = TextAlignment;
-                _mainTextBlock.MaxWidth = double.PositiveInfinity;
-                _measureLabel.MaxWidth = double.PositiveInfinity;
-                _mainTextBlock.TextWrapping = TextWrapping.NoWrap;
-                _measureLabel.TextWrapping = TextWrapping.NoWrap;
-                if (IsVertical)
-                {
-                    _mainTextBlock.TextWrapping = TextWrapping.Wrap;
-                    _measureLabel.TextWrapping = TextWrapping.Wrap;
-                    _mainTextBlock.MaxWidth = ActualWidth;
-                    _measureLabel.MaxWidth = ActualWidth;
-                }
-                SetText(Text);
+                _mainTextBlock.TextWrapping = TextWrapping.Wrap;
+                _measureLabel.TextWrapping = TextWrapping.Wrap;
+                _mainTextBlock.MaxWidth = ActualWidth;
+                _measureLabel.MaxWidth = ActualWidth;
             }
+            SetText(Text);
         }
 
         private double GetTextWidth(string text)
@@ -223,8 +208,8 @@ namespace MPDisplay.Common.Controls
             try
             {
                 _measureLabel.Text = text;
-                double value = 0.0;
-                Dispatcher.Invoke((Action)delegate { value = _measureLabel.ActualWidth; }, DispatcherPriority.Background);
+                var value = 0.0;
+                Dispatcher.Invoke(delegate { value = _measureLabel.ActualWidth; }, DispatcherPriority.Background);
                 return value;
             }
             catch
@@ -239,8 +224,8 @@ namespace MPDisplay.Common.Controls
             try
             {
                 _measureLabel.Text = text;
-                double value = 0.0;
-                Dispatcher.Invoke((Action)delegate { value = _measureLabel.ActualHeight; }, DispatcherPriority.Background);
+                var value = 0.0;
+                Dispatcher.Invoke(delegate { value = _measureLabel.ActualHeight; }, DispatcherPriority.Background);
                 return value;
             }
             catch

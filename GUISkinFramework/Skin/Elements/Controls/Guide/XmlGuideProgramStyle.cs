@@ -15,12 +15,12 @@ namespace GUISkinFramework.Skin
 
         private string _borderThickness = "0,0,0,0";
         private string _borderCornerRadius = "0,0,0,0";
-        private XmlBrush _glossBrush = null;
-        private XmlBrush _shadeBrush = null;
-        private XmlBrush _noFocusBrush = null;
-        private XmlBrush _noFocusBorderBrush = null;
-        private XmlBrush _focusBrush = null;
-        private XmlBrush _focusBorderBrush = null;
+        private XmlBrush _glossBrush;
+        private XmlBrush _shadeBrush;
+        private XmlBrush _noFocusBrush;
+        private XmlBrush _noFocusBorderBrush;
+        private XmlBrush _focusBrush;
+        private XmlBrush _focusBorderBrush;
         private XmlBrush _focusFontBrush;
         private XmlBrush _noFocusFontBrush;
         private string _fontType = "Microsoft Sans Serif";
@@ -243,20 +243,20 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            GlossBrush = style.GetStyle<XmlBrush>(GlossBrush);
-            ShadeBrush = style.GetStyle<XmlBrush>(ShadeBrush);
-            NoFocusBrush = style.GetStyle<XmlBrush>(NoFocusBrush);
-            NoFocusBorderBrush = style.GetStyle<XmlBrush>(NoFocusBorderBrush);
-            FocusBrush = style.GetStyle<XmlBrush>(FocusBrush);
-            FocusBorderBrush = style.GetStyle<XmlBrush>(FocusBorderBrush);
-            FocusFontBrush = style.GetStyle<XmlBrush>(FocusFontBrush);
-            NoFocusFontBrush = style.GetStyle<XmlBrush>(NoFocusFontBrush);
-            RecordingBrush = style.GetStyle<XmlBrush>(RecordingBrush);
-            RecordingBorderBrush = style.GetStyle<XmlBrush>(RecordingBorderBrush);
-            RecordingFontBrush = style.GetStyle<XmlBrush>(RecordingFontBrush);
-            OnNowBrush = style.GetStyle<XmlBrush>(OnNowBrush);
-            OnNowBorderBrush = style.GetStyle<XmlBrush>(OnNowBorderBrush);
-            OnNowFontBrush = style.GetStyle<XmlBrush>(OnNowFontBrush);
+            GlossBrush = style.GetStyle(GlossBrush);
+            ShadeBrush = style.GetStyle(ShadeBrush);
+            NoFocusBrush = style.GetStyle(NoFocusBrush);
+            NoFocusBorderBrush = style.GetStyle(NoFocusBorderBrush);
+            FocusBrush = style.GetStyle(FocusBrush);
+            FocusBorderBrush = style.GetStyle(FocusBorderBrush);
+            FocusFontBrush = style.GetStyle(FocusFontBrush);
+            NoFocusFontBrush = style.GetStyle(NoFocusFontBrush);
+            RecordingBrush = style.GetStyle(RecordingBrush);
+            RecordingBorderBrush = style.GetStyle(RecordingBorderBrush);
+            RecordingFontBrush = style.GetStyle(RecordingFontBrush);
+            OnNowBrush = style.GetStyle(OnNowBrush);
+            OnNowBorderBrush = style.GetStyle(OnNowBorderBrush);
+            OnNowFontBrush = style.GetStyle(OnNowFontBrush);
         }
 
       

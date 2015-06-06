@@ -50,7 +50,7 @@ namespace MessageFramework.Messages
         ActionId,
         WindowId,
         DialogId,
-        FocusedControlId,
+        FocusedControlId
     }
 
 }

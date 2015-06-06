@@ -9,7 +9,6 @@ namespace MPDisplay.Common.Controls
     {
         private Control _chrome;
         private VisualCollection _visuals;
-        private ContentControl _designerItem;
 
         protected override int VisualChildrenCount
         {
@@ -19,15 +18,12 @@ namespace MPDisplay.Common.Controls
             }
         }
 
-        public SizeAdorner(ContentControl designerItem)
+        public SizeAdorner(UIElement designerItem)
             : base(designerItem)
         {
             SnapsToDevicePixels = true;
-            _designerItem = designerItem;
-            _chrome = new Control();
-            _chrome.DataContext = designerItem;
-            _visuals = new VisualCollection(this);
-            _visuals.Add(_chrome);
+            _chrome = new Control {DataContext = designerItem};
+            _visuals = new VisualCollection(this) {_chrome};
         }
 
         protected override Visual GetVisualChild(int index)

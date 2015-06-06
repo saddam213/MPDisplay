@@ -13,7 +13,7 @@ namespace MPDisplay.Common.Controls.Core
 
         public static string GetColorName(this Color color)
         {
-            string colorName = KnownColors.Where(kvp => kvp.Value.Equals(color)).Select(kvp => kvp.Key).FirstOrDefault();
+            var colorName = KnownColors.Where(kvp => kvp.Value.Equals(color)).Select(kvp => kvp.Key).FirstOrDefault();
 
             if (String.IsNullOrEmpty(colorName))
                 colorName = color.ToString();
@@ -158,9 +158,9 @@ namespace MPDisplay.Common.Controls.Core
         /// <returns></returns>
         public static List<Color> GenerateHsvSpectrum()
         {
-            List<Color> colorsList = new List<Color>(8);
+            var colorsList = new List<Color>(8);
 
-            for (int i = 0; i < 29; i++)
+            for (var i = 0; i < 29; i++)
             {
                 colorsList.Add(ConvertHsvToRgb(i * 12, 1, 1));
             }

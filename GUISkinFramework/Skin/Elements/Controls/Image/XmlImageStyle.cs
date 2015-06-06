@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Windows;
 using System.ComponentModel;
+using System.Windows;
 using System.Xml.Serialization;
 using GUISkinFramework.Editors;
 using MPDisplay.Common.Controls.PropertyGrid;
@@ -80,8 +80,8 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
         }
    
     }

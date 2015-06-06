@@ -34,17 +34,10 @@ namespace GUIFramework.GUI
 
         #region Constructor
 
-        /// <summary>
-        /// Initializes a new instance of the ListBox3D class.
-        /// </summary>
-        public GUIDraggableListView() : base()
-        {
-
-        }
-
         #endregion
 
         #region Control Base
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Called when [window open].
         /// </summary>
@@ -53,6 +46,7 @@ namespace GUIFramework.GUI
             base.OnWindowOpen();
          }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Creates the control.
         /// </summary>
@@ -61,6 +55,7 @@ namespace GUIFramework.GUI
             base.CreateControl();
        }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Registers the info data.
         /// </summary>
@@ -69,6 +64,7 @@ namespace GUIFramework.GUI
             base.OnRegisterInfoData();
         }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Deregisters the info data.
         /// </summary>
@@ -77,6 +73,7 @@ namespace GUIFramework.GUI
             base.OnDeregisterInfoData();
        }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Updates the info data.
         /// </summary>
@@ -85,6 +82,7 @@ namespace GUIFramework.GUI
             base.UpdateInfoData();
         }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Clears the info data.
         /// </summary>
@@ -134,8 +132,8 @@ namespace GUIFramework.GUI
                         _storyboard.Pause(this);
                     }
                     // Save the current horizontal and vertical offset
-                    double tempHorizontalOffset = ScrollViewer.HorizontalOffset;
-                    double tempVerticalOffset = ScrollViewer.VerticalOffset;
+                    var tempHorizontalOffset = ScrollViewer.HorizontalOffset;
+                    var tempVerticalOffset = ScrollViewer.VerticalOffset;
                     // Clear out the value provided by the animation
                     BeginAnimation(ScrollViewerHorizontalOffsetProperty, null);
                     // Set the current horizontal offset back
@@ -201,7 +199,7 @@ namespace GUIFramework.GUI
                         Cursor = Cursors.Arrow;
                 }
                 // Calculate the delta from mouseDownPoint
-                Point delta = new Point(_mouseDownPoint.X - _mouseCurrentPoint.X,
+                var delta = new Point(_mouseDownPoint.X - _mouseCurrentPoint.X,
                     _mouseDownPoint.Y - _mouseCurrentPoint.Y);
 
                 // If scrolling reaches either edge, save this as a new starting point
@@ -393,8 +391,8 @@ namespace GUIFramework.GUI
 
                         _storyboard = new Storyboard();
 
-                        DoubleAnimation horizontalScrollAnimation = new DoubleAnimation();
-                        DoubleAnimation verticalScrollAnimation = new DoubleAnimation();
+                        var horizontalScrollAnimation = new DoubleAnimation();
+                        var verticalScrollAnimation = new DoubleAnimation();
 
                         horizontalScrollAnimation.From = ScrollViewer.HorizontalOffset;
                         verticalScrollAnimation.From = ScrollViewer.VerticalOffset;
@@ -443,8 +441,8 @@ namespace GUIFramework.GUI
                     {
                         _storyboard = new Storyboard();
 
-                        DoubleAnimation horizontalScrollAnimation = new DoubleAnimation();
-                        DoubleAnimation verticalScrollAnimation = new DoubleAnimation();
+                        var horizontalScrollAnimation = new DoubleAnimation();
+                        var verticalScrollAnimation = new DoubleAnimation();
 
                         horizontalScrollAnimation.From = ScrollViewer.HorizontalOffset;
                         horizontalScrollAnimation.DecelerationRatio = 1.0;
@@ -627,16 +625,15 @@ namespace GUIFramework.GUI
             // DEBUG
             //System.Diagnostics.Trace.WriteLine("draggableListView_MouseButtonDown: mouse ClickCount: " + e.ClickCount);
 
-            if (ScrollViewer != null)
+            if (ScrollViewer == null) return;
+
+            // Sync selected Item(s)
+            if (MayBeOutOfSync)
             {
-                // Sync selected Item(s)
-                if (MayBeOutOfSync)
-                {
-                    MayBeOutOfSync = false;
-                }
-                // Reset mouse double click to false
-                IsMouseDoubleClick = false;
+                MayBeOutOfSync = false;
             }
+            // Reset mouse double click to false
+            IsMouseDoubleClick = false;
         }
 
         /// <summary>
@@ -675,15 +672,14 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         private static void HorizontalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            GUIDraggableListView gl = (GUIDraggableListView)d;
-            if (gl.ScrollViewer != null)
+            var gl = (GUIDraggableListView)d;
+            if (gl.ScrollViewer == null) return;
+
+            if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl.ScrollViewer.ScrollableWidth)
             {
-                if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl.ScrollViewer.ScrollableWidth)
-                {
-                    gl.ScrollViewer.ScrollToHorizontalOffset((double)e.NewValue);
-                    // DEBUG
-                    //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: HorizontalOffset =" + (double)e.NewValue);
-                }
+                gl.ScrollViewer.ScrollToHorizontalOffset((double)e.NewValue);
+                // DEBUG
+                //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: HorizontalOffset =" + (double)e.NewValue);
             }
         }
 
@@ -694,15 +690,14 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         private static void VerticalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            GUIDraggableListView gl = (GUIDraggableListView)d;
-            if (gl.ScrollViewer != null)
+            var gl = (GUIDraggableListView)d;
+            if (gl.ScrollViewer == null) return;
+
+            if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl.ScrollViewer.ScrollableHeight)
             {
-                if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl.ScrollViewer.ScrollableHeight)
-                {
-                    gl.ScrollViewer.ScrollToVerticalOffset((double)e.NewValue);
-                    // DEBUG
-                    //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: VerticalOffset =" + (double)e.NewValue);
-                }
+                gl.ScrollViewer.ScrollToVerticalOffset((double)e.NewValue);
+                // DEBUG
+                //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: VerticalOffset =" + (double)e.NewValue);
             }
         }
 
@@ -794,10 +789,7 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         private bool IsMouseActualOver(Point p)
         {
-            if (p.X >= 0 && p.X < ActualWidth && p.Y >= 0 && p.Y < ActualHeight)
-                return true;
-            else
-                return false;
+            return p.X >= 0 && p.X < ActualWidth && p.Y >= 0 && p.Y < ActualHeight;
         }
 
         #endregion Private Functions

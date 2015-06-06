@@ -36,29 +36,22 @@ namespace GUIFramework.Repositories
         {
             lock (_repository)
             {
-            if (key != null)
-            {
+                if (key == null) return false;
+
                 TV exists;
                 if (!_repository.TryGetValue(key, out exists))
                 {
                   
-                        _repository.Add(key, value);
+                    _repository.Add(key, value);
                  
                     return true;
                 }
-                else
-                {
-                    if (_valueEquals == null || !_valueEquals(value, exists))
-                    {
-                     
-                            _repository[key] = value;
+                if (_valueEquals != null && _valueEquals(value, exists)) return false;
+
+                _repository[key] = value;
                       
-                        return true;
-                    }
-                }
+                return true;
             }
-            return false;
-        }
         }
 
         public TV GetValue(TK key)
@@ -74,11 +67,7 @@ namespace GUIFramework.Repositories
             lock (_repository)
             {
                 TV exists;
-                if (_repository.TryGetValue(key, out exists))
-                {
-                    return exists;
-                }
-                return defaultValue;
+                return _repository.TryGetValue(key, out exists) ? exists : defaultValue;
             }
         }
 

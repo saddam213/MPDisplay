@@ -31,7 +31,7 @@ namespace MPDisplay.Common.Controls.Core
 
         private static void OnIsSelectedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            SelectorItem selectorItem = o as SelectorItem;
+            var selectorItem = o as SelectorItem;
             if (selectorItem != null)
                 selectorItem.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
         }

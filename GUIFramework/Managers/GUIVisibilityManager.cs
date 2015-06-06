@@ -124,25 +124,21 @@ namespace GUIFramework.Managers
         /// <param name="control">The control.</param>
         public static void UpdateControlVisibility(GUIControl control)
         {
-            if (control != null)
+            if (control == null) return;
+
+            lock (_controlVisibilityMap)
             {
+                if (!_controlVisibilityMap.ContainsKey(control.ParentId)) return;
+
+                if (!_controlVisibilityMap[control.ParentId].ContainsKey(control.Id)) return;
+
+                if (_controlVisibilityMap[control.ParentId][control.Id] == control.IsControlVisible) return;
+
                 lock (_controlVisibilityMap)
                 {
-                    if (_controlVisibilityMap.ContainsKey(control.ParentId))
-                    {
-                        if (_controlVisibilityMap[control.ParentId].ContainsKey(control.Id))
-                        {
-                            if (_controlVisibilityMap[control.ParentId][control.Id] != control.IsControlVisible)
-                            {
-                                lock (_controlVisibilityMap)
-                                {
-                                    _controlVisibilityMap[control.ParentId][control.Id] = control.IsControlVisible;
-                                }
-                                NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-                            }
-                        }
-                    }
+                    _controlVisibilityMap[control.ParentId][control.Id] = control.IsControlVisible;
                 }
+                NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
             }
         }
 
@@ -215,7 +211,7 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static bool IsPluginEnabled(string pluginName)
         {
-            return InfoRepository.Instance.EnabledPluginMap.Any(plugin => plugin.ToLower() == pluginName.ToLower());
+            return InfoRepository.Instance.EnabledPluginMap.Any(plugin => String.Equals(plugin, pluginName, StringComparison.CurrentCultureIgnoreCase));
         }
 
         /// <summary>
@@ -337,13 +333,12 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static Func<bool> GetVisibleCondition(int windowId)
         {
-            if (_visibleConditionModule != null)
+            if (_visibleConditionModule == null) return null;
+
+            var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}", windowId));
+            if (method != null)
             {
-                var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}", windowId));
-                if (method != null)
-                {
-                    return () => (bool)method.Invoke(_visibleConditionModule, null);
-                }
+                return () => (bool)method.Invoke(_visibleConditionModule, null);
             }
             return null;
         }
@@ -356,13 +351,12 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static Func<bool> GetVisibleCondition(int windowId, int controlId)
         {
-            if (_visibleConditionModule != null)
+            if (_visibleConditionModule == null) return null;
+
+            var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}C{1}", windowId, controlId));
+            if (method != null)
             {
-                var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}C{1}", windowId, controlId));
-                if (method != null)
-                {
-                    return () => (bool)method.Invoke(_visibleConditionModule, null);
-                }
+                return () => (bool)method.Invoke(_visibleConditionModule, null);
             }
             return null;
         }
@@ -374,7 +368,7 @@ namespace GUIFramework.Managers
         public static void CreateVisibleConditions(IEnumerable<IXmlControlHost> elements)
         {
             const string methodTemplate = MethodTemplate;
-            string visibleCode = ClassTemplate;
+            var visibleCode = ClassTemplate;
             var xmlControlHosts = elements as IList<IXmlControlHost> ?? elements.ToList();
             foreach (var controlHost in xmlControlHosts)
             {
@@ -410,59 +404,57 @@ namespace GUIFramework.Managers
             compilerParams.ReferencedAssemblies.AddRange(references);
             var codeProvider = new CSharpCodeProvider();
 
-            CompilerResults compileResults = codeProvider.CompileAssemblyFromSource(compilerParams, visibleCode);
+            var compileResults = codeProvider.CompileAssemblyFromSource(compilerParams, visibleCode);
             if (compileResults.Errors.HasErrors)
             {
                 try
                 {
-                    CompilerError error = compileResults.Errors[0];
-                    List<string> lines = visibleCode.Replace("\r", "").Split('\n').ToList();
-                    if (lines.Any() && lines.Count > error.Line)
+                    var error = compileResults.Errors[0];
+                    var lines = visibleCode.Replace("\r", "").Split('\n').ToList();
+
+                    if (!lines.Any() || lines.Count <= error.Line) return;
+
+                    var errorLine = lines[error.Line - 3];
+                    if (errorLine.Contains("public static bool ShouldBeVisible"))
                     {
-                        var errorLine = lines[error.Line - 3];
-                        if (errorLine.Contains("public static bool ShouldBeVisible"))
+                        errorLine = errorLine.Replace("public static bool ShouldBeVisible", "").Replace("()","").Trim();
+                        var xmlControlHosts = elements as IList<IXmlControlHost> ?? elements.ToList();
+                        if (errorLine.Contains('C'))
                         {
-                            errorLine = errorLine.Replace("public static bool ShouldBeVisible", "").Replace("()","").Trim();
-                            var xmlControlHosts = elements as IList<IXmlControlHost> ?? elements.ToList();
-                            if (errorLine.Contains('C'))
+                            var details = errorLine.Split(new[] { 'W', 'C' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+                            var window = xmlControlHosts.FirstOrDefault(w => w.Id == details[0]);
+                            if (window != null)
                             {
-                                int[] details = errorLine.Split(new[] { 'W', 'C' }, StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-                                var window = xmlControlHosts.FirstOrDefault(w => w.Id == details[0]);
-                                if (window != null)
-                                {
-                                    var control = window.Controls.GetControls().FirstOrDefault(c => c.Id == details[1]);
-                                    var controltext = control != null ? string.Format( "{0} ({1})", control.Name, control.Id) : "<control is null>";
-                                    _log.Message(LogLevel.Error, "An error occured creating control VisibleCondition, Error: {0}, Window: {1} ({2}), Control: {3}", error.ErrorText, window.Name, window.Id, controltext);
-                                }
-                                _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
+                                var control = window.Controls.GetControls().FirstOrDefault(c => c.Id == details[1]);
+                                var controltext = control != null ? string.Format( "{0} ({1})", control.Name, control.Id) : "<control is null>";
+                                _log.Message(LogLevel.Error, "An error occured creating control VisibleCondition, Error: {0}, Window: {1} ({2}), Control: {3}", error.ErrorText, window.Name, window.Id, controltext);
                             }
-                            else
-                            {
-                                int details = int.Parse(errorLine.Replace("W", "").Trim());
-                                var window = xmlControlHosts.FirstOrDefault(w => w.Id == details);
-                                var windowtext = window != null ? string.Format("{0} ({1})", window.Name, window.Id) : "<window is null>";
-                                _log.Message(LogLevel.Error, "An error occured creating window VisibleCondition, Error: {0}, Window: {1}", error.ErrorText, windowtext);
-                                _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
-                            }
-
-                            for (int i = 0; i < MethodTemplate.Replace("\r", "").Split('\n').Count(); i++)
-                            {
-                                lines.RemoveAt(error.Line - 3);
-                            }
-
-                            if (lines.Count > 15)
-                            {
-                                string newCode = string.Join(Environment.NewLine, lines.ToArray());
-                                CompileString(xmlControlHosts, newCode);
-                            }
+                            _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                         }
                         else
                         {
-                            _log.Message(LogLevel.Error, "An error occured loading VisibleConditions, Error: {0}", error.ErrorText);
+                            var details = int.Parse(errorLine.Replace("W", "").Trim());
+                            var window = xmlControlHosts.FirstOrDefault(w => w.Id == details);
+                            var windowtext = window != null ? string.Format("{0} ({1})", window.Name, window.Id) : "<window is null>";
+                            _log.Message(LogLevel.Error, "An error occured creating window VisibleCondition, Error: {0}, Window: {1}", error.ErrorText, windowtext);
                             _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                         }
+
+                        for (var i = 0; i < MethodTemplate.Replace("\r", "").Split('\n').Count(); i++)
+                        {
+                            lines.RemoveAt(error.Line - 3);
+                        }
+
+                        if (lines.Count <= 15) return;
+
+                        var newCode = string.Join(Environment.NewLine, lines.ToArray());
+                        CompileString(xmlControlHosts, newCode);
                     }
-                  
+                    else
+                    {
+                        _log.Message(LogLevel.Error, "An error occured loading VisibleConditions, Error: {0}", error.ErrorText);
+                        _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
+                    }
                 }
                 catch (Exception ex)
                 {
@@ -488,7 +480,7 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         private static string CreateVisibleControlConditionString(XmlControl control, int parentId)
         {
-            string xmlVisibleString = control.VisibleCondition.Replace("++", "&&");
+            var xmlVisibleString = control.VisibleCondition.Replace("++", "&&");
 
             if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
             {
@@ -538,7 +530,7 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         private static string CreateVisibleWindowConditionString(IXmlControlHost controlHost)
         {
-            string  xmlVisibleString = controlHost.VisibleCondition.Replace("++", "&&");
+            var  xmlVisibleString = controlHost.VisibleCondition.Replace("++", "&&");
             if (xmlVisibleString.Contains("IsSkinOptionEnabled("))
             {
                 xmlVisibleString = Regex.Replace(xmlVisibleString, @"IsSkinOptionEnabled\(([^)]*)\)", @"GUIVisibilityManager.IsSkinOptionEnabled(""$1"")");

@@ -17,7 +17,7 @@
 		</CollectionViewSource>
 
 
-		<CollectionViewSource x:Key="languageEntries" x:Name="languageList" Source="{Binding SkinInfo.Language.LanguageEntries, ElementName=UI}">
+		<CollectionViewSource x:Key="languageEntries" Source="{Binding SkinInfo.Language.LanguageEntries, ElementName=UI}">
 			<CollectionViewSource.SortDescriptions>
 				<componentModel:SortDescription Direction="Ascending" PropertyName="SkinTag" />
 			</CollectionViewSource.SortDescriptions>

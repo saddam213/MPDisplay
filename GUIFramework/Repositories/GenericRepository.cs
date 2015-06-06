@@ -85,34 +85,31 @@ namespace GUIFramework.Repositories
 
         public void AddDataMessage(APIDataMessage message)
         {
-            if (message != null)
+            if (message == null) return;
+
+            switch (message.DataType)
             {
-                switch (message.DataType)
-                {
-                    case APIDataMessageType.KeepAlive:
-                        break;
-                    case APIDataMessageType.EQData:
-                        DataService.NotifyListeners(GenericDataMessageType.EQData, message.ByteArray);
-                        break;
-                    case APIDataMessageType.MPActionId:
-                        DataService.NotifyListeners(GenericDataMessageType.MPActionId, message.IntValue);
-                        break;
-                }
+                case APIDataMessageType.KeepAlive:
+                    break;
+                case APIDataMessageType.EQData:
+                    DataService.NotifyListeners(GenericDataMessageType.EQData, message.ByteArray);
+                    break;
+                case APIDataMessageType.MPActionId:
+                    DataService.NotifyListeners(GenericDataMessageType.MPActionId, message.IntValue);
+                    break;
             }
         }
 
-   
 
         public int GetMaxEQSize(IControlHost controlHost)
         {
-            if (controlHost != null)
+            if (controlHost == null) return -1;
+
+            var eqs = controlHost.Controls.GetControls().OfType<GUIEqualizer>();
+            var guiEqualizers = eqs as IList<GUIEqualizer> ?? eqs.ToList();
+            if (guiEqualizers.Any())
             {
-                var eqs = controlHost.Controls.GetControls().OfType<GUIEqualizer>();
-                var guiEqualizers = eqs as IList<GUIEqualizer> ?? eqs.ToList();
-                if (guiEqualizers.Any())
-                {
-                    return guiEqualizers.Max(e => e.EQDataLength);
-                }
+                return guiEqualizers.Max(e => e.EQDataLength);
             }
             return -1;
         }

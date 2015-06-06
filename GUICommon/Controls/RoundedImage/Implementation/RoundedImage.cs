@@ -31,18 +31,16 @@ namespace MPDisplay.Common.Controls
             _clipRect.RadiusX = _clipRect.RadiusY = CornerRadius;
             _clipRect.Rect = new Rect(new Size( ActualWidth, ActualHeight));
             Clip = _clipRect;
-            if (sizeInfo != null)
-            {
-                base.OnRenderSizeChanged(sizeInfo);        
-            }
+            base.OnRenderSizeChanged(sizeInfo);        
         }
 
-        //TODO: This seems a bit shit,
         protected override void OnPropertyChanged(DependencyPropertyChangedEventArgs e)
         {
             if (e.Property.Name == "Source" || e.Property.Name == "CornerRadius" || e.Property.Name == "Stretch" || e.Property.Name == "Margin")
             {
-                OnRenderSizeChanged(null);
+                _clipRect.RadiusX = _clipRect.RadiusY = CornerRadius;
+                _clipRect.Rect = new Rect(new Size(ActualWidth, ActualHeight));
+                Clip = _clipRect;
             }
             base.OnPropertyChanged(e);
         }

@@ -117,15 +117,11 @@ namespace GUIFramework.Repositories
             get { return _currentEnabledPluginMap; }
             set
             {
-                if (_currentEnabledPluginMap != null && value != null)
-                {
-                    if (!_currentEnabledPluginMap.SequenceEqual(value))
-                    {
-                        _currentEnabledPluginMap = value;
-                        NotifiyValueChanged(InfoMessageType.EnabledPluginMap, value);
-                        GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-                    }
-                }
+                if (_currentEnabledPluginMap == null || value == null) return;
+                if (_currentEnabledPluginMap.SequenceEqual(value)) return;
+                _currentEnabledPluginMap = value;
+                NotifiyValueChanged(InfoMessageType.EnabledPluginMap, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
             }
         }
 
@@ -137,12 +133,10 @@ namespace GUIFramework.Repositories
             get { return _playerType; }
             set
             {
-                if (_playerType != value)
-                {
-                    _playerType = value;
-                    NotifiyValueChanged(InfoMessageType.PlayerType, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
-                }
+                if (_playerType == value) return;
+                _playerType = value;
+                NotifiyValueChanged(InfoMessageType.PlayerType, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
             }
         }
 
@@ -151,12 +145,10 @@ namespace GUIFramework.Repositories
             get { return _playbackType; }
             set
             {
-                if (_playbackType != value)
-                {
-                    _playbackType = value;
-                    NotifiyValueChanged(InfoMessageType.PlaybackType, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
-                }
+                if (_playbackType == value) return;
+                _playbackType = value;
+                NotifiyValueChanged(InfoMessageType.PlaybackType, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
             }
         }
 
@@ -165,11 +157,9 @@ namespace GUIFramework.Repositories
             get { return _playbackState; }
             set
             {
-                if (_playbackState != value)
-                {
-                    _playbackState = value;
-                    NotifiyValueChanged(InfoMessageType.PlaybackState, value);
-                }
+                if (_playbackState == value) return;
+                _playbackState = value;
+                NotifiyValueChanged(InfoMessageType.PlaybackState, value);
             }
         }
 
@@ -184,12 +174,10 @@ namespace GUIFramework.Repositories
             get { return _isTvRecording; }
             set
             {
-                if (_isTvRecording != value)
-                {
-                    _isTvRecording = value;
-                    NotifiyValueChanged(InfoMessageType.IsTvRecording, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-                }
+                if (_isTvRecording == value) return;
+                _isTvRecording = value;
+                NotifiyValueChanged(InfoMessageType.IsTvRecording, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
             }
         }
 
@@ -204,12 +192,10 @@ namespace GUIFramework.Repositories
             get { return _isFullscreenVideo; }
             set
             {
-                if (_isFullscreenVideo != value)
-                {
-                    _isFullscreenVideo = value;
-                    NotifiyValueChanged(InfoMessageType.IsFullscreenMedia, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-                }
+                if (_isFullscreenVideo == value) return;
+                _isFullscreenVideo = value;
+                NotifiyValueChanged(InfoMessageType.IsFullscreenMedia, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
             }
         }
 
@@ -218,11 +204,9 @@ namespace GUIFramework.Repositories
             get { return _isFullscreenMusic; }
             set
             {
-                if (_isFullscreenMusic != value)
-                {
-                    _isFullscreenMusic = value;
-                    NotifiyValueChanged(InfoMessageType.IsFullscreenMedia, value);
-                }
+                if (_isFullscreenMusic == value) return;
+                _isFullscreenMusic = value;
+                NotifiyValueChanged(InfoMessageType.IsFullscreenMedia, value);
             }
         }
 
@@ -234,12 +218,10 @@ namespace GUIFramework.Repositories
             get { return _mediaPortalWindowId; }
             set
             {
-                if (_mediaPortalWindowId != value) 
-                {
-                    _mediaPortalWindowId = value;
-                    NotifiyValueChanged(InfoMessageType.WindowId, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
-                }
+                if (_mediaPortalWindowId == value) return;
+                _mediaPortalWindowId = value;
+                NotifiyValueChanged(InfoMessageType.WindowId, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
             }
         }
 
@@ -251,12 +233,9 @@ namespace GUIFramework.Repositories
             get { return _mediaPortalDialogId; }
             set
             {
-                if (_mediaPortalDialogId != value)
-                {
-                    _mediaPortalDialogId = value;
-                    NotifiyValueChanged(InfoMessageType.DialogId, value);
-
-                }
+                if (_mediaPortalDialogId == value) return;
+                _mediaPortalDialogId = value;
+                NotifiyValueChanged(InfoMessageType.DialogId, value);
             }
         }
 
@@ -268,12 +247,10 @@ namespace GUIFramework.Repositories
             get { return _previousWindowId; }
             set
             {
-                if (_previousWindowId != value)
-                {
-                    _previousWindowId = value;
-                    NotifiyValueChanged(InfoMessageType.PreviousWindowId, value);
-                    GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
-                }
+                if (_previousWindowId == value) return;
+                _previousWindowId = value;
+                NotifiyValueChanged(InfoMessageType.PreviousWindowId, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.GlobalVisibilityChanged);
             }
         }
 
@@ -285,12 +262,10 @@ namespace GUIFramework.Repositories
             get { return _focusedWindowControlId; }
             set
             {
-                if (_focusedWindowControlId != value)
-                {
-                    _focusedWindowControlId = value;
-                    NotifiyValueChanged(InfoMessageType.FocusedWindowControlId, value);
-                   GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
-                }
+                if (_focusedWindowControlId == value) return;
+                _focusedWindowControlId = value;
+                NotifiyValueChanged(InfoMessageType.FocusedWindowControlId, value);
+                GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
             }
         }
 
@@ -303,11 +278,9 @@ namespace GUIFramework.Repositories
             get { return _focusedProgramId; }
             set
             {
-                if (_focusedProgramId != value)
-                {
-                    _focusedProgramId = value;
-                    if( _focusedProgramId > 0 && _focusedChannelId > 0 ) NotifiyValueChanged(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
-                 }
+                if (_focusedProgramId == value) return;
+                _focusedProgramId = value;
+                if( _focusedProgramId > 0 && _focusedChannelId > 0 ) NotifiyValueChanged(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
             }
         }
         /// <summary>
@@ -318,11 +291,9 @@ namespace GUIFramework.Repositories
             get { return _focusedChannelId; }
             set
             {
-                if (_focusedChannelId != value)
-                {
-                    _focusedChannelId = value;
-                    if (_focusedProgramId > 0 && _focusedChannelId > 0) NotifiyValueChanged(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
-                }
+                if (_focusedChannelId == value) return;
+                _focusedChannelId = value;
+                if (_focusedProgramId > 0 && _focusedChannelId > 0) NotifiyValueChanged(InfoMessageType.FocusedTVGuideId, _focusedProgramId, _focusedChannelId);
             }
         }
 
@@ -335,11 +306,9 @@ namespace GUIFramework.Repositories
             get { return _focusedDialogControlId; }
             set
             {
-                if (_focusedDialogControlId != value)
-                {
-                    _focusedDialogControlId = value;
-                    NotifiyValueChanged(InfoMessageType.FocusedDialogControlId, value);
-                }
+                if (_focusedDialogControlId == value) return;
+                _focusedDialogControlId = value;
+                NotifiyValueChanged(InfoMessageType.FocusedDialogControlId, value);
             }
         }
 
@@ -349,11 +318,9 @@ namespace GUIFramework.Repositories
             get { return _isMPDisplayConnected; }
             set
             {
-                if (_isMPDisplayConnected != value)
-                {
-                    _isMPDisplayConnected = value;
-                    NotifiyValueChanged(InfoMessageType.IsMPDisplayConnected, value);
-                }
+                if (_isMPDisplayConnected == value) return;
+                _isMPDisplayConnected = value;
+                NotifiyValueChanged(InfoMessageType.IsMPDisplayConnected, value);
             }
         }
 
@@ -362,11 +329,9 @@ namespace GUIFramework.Repositories
             get { return _isMediaPortalConnected; }
             set
             {
-                if (_isMediaPortalConnected != value)
-                {
-                    _isMediaPortalConnected = value;
-                    NotifiyValueChanged(InfoMessageType.IsMediaPortalConnected, value);
-                }
+                if (_isMediaPortalConnected == value) return;
+                _isMediaPortalConnected = value;
+                NotifiyValueChanged(InfoMessageType.IsMediaPortalConnected, value);
             }
         }
 
@@ -375,11 +340,9 @@ namespace GUIFramework.Repositories
             get { return _isTVServerConnected; }
             set
             {
-                if (_isTVServerConnected != value)
-                {
-                    _isTVServerConnected = value;
-                    NotifiyValueChanged(InfoMessageType.IsTVServerConnected, value);
-                }
+                if (_isTVServerConnected == value) return;
+                _isTVServerConnected = value;
+                NotifiyValueChanged(InfoMessageType.IsTVServerConnected, value);
             }
         }
 
@@ -389,11 +352,7 @@ namespace GUIFramework.Repositories
         public bool IsSkinOptionEnabled(string option)
         {
             var skinOption = SkinInfo.SkinOptions.FirstOrDefault(o => o.Name == option);
-            if (skinOption != null)
-            {
-                return skinOption.IsEnabled;
-            }
-            return false;
+            return skinOption != null && skinOption.IsEnabled;
         }
 
 
@@ -410,43 +369,40 @@ namespace GUIFramework.Repositories
 
         public void AddInfo(APIInfoMessage message)
         {
-            if (message != null)
+            if (message == null) return;
+
+            if (message.MessageType == APIInfoMessageType.WindowMessage)
             {
-                if (message.MessageType == APIInfoMessageType.WindowMessage)
-                {
-                    AddWindowMessage(message.WindowMessage);
-                }
+                AddWindowMessage(message.WindowMessage);
+            }
 
-                if (message.MessageType == APIInfoMessageType.DialogMessage)
-                {
-                    AddDialogMessage(message.DialogMessage);
-                }
+            if (message.MessageType == APIInfoMessageType.DialogMessage)
+            {
+                AddDialogMessage(message.DialogMessage);
+            }
 
-                if (message.MessageType == APIInfoMessageType.PlayerMessage)
-                {
-                    AddPlayerMessage(message.PlayerMessage);
-                }
+            if (message.MessageType == APIInfoMessageType.PlayerMessage)
+            {
+                AddPlayerMessage(message.PlayerMessage);
             }
         }
 
         private void AddPlayerMessage(APIPlayerMessage message)
         {
-            if (message != null)
-            {
-                PlayerType = message.PlayerPluginType;
-                PlaybackType = message.PlaybackType;
-                PlaybackState = message.PlaybackState;
-                IsFullscreenVideo = message.PlaybackType.IsVideo() && message.PlayerFullScreen;
-                IsFullscreenMusic = message.PlaybackType.IsMusic() && message.PlayerFullScreen;
-            }
+            if (message == null) return;PlayerType = message.PlayerPluginType;
+            PlaybackType = message.PlaybackType;
+            PlaybackState = message.PlaybackState;
+            IsFullscreenVideo = message.PlaybackType.IsVideo() && message.PlayerFullScreen;
+            IsFullscreenMusic = message.PlaybackType.IsMusic() && message.PlayerFullScreen;
         }
 
         private void AddWindowMessage(APIWindowMessage message)
         {
-            if (message != null)
+            if (message == null) return;
+
+            switch (message.MessageType)
             {
-                if (message.MessageType == APIWindowMessageType.WindowId)
-                {
+                case APIWindowMessageType.WindowId:
                     WindowId = message.WindowId;
                
                     FocusedWindowControlId = -1;
@@ -456,10 +412,9 @@ namespace GUIFramework.Repositories
                     {
                         EnabledPluginMap = message.EnabledPlugins;
                     }
+                    break;
 
-                }
-                else if (message.MessageType == APIWindowMessageType.FocusedControlId)
-                {
+                case APIWindowMessageType.FocusedControlId:
                     FocusedWindowControlId = message.FocusedControlId;
 
                     FocusedChannelId = -1;
@@ -471,28 +426,27 @@ namespace GUIFramework.Repositories
                         FocusedProgramId = message.ProgramId;
                         FocusedChannelId = message.ChannelId;
                     }
-                }
+                    break;
             }
         }
 
         private void AddDialogMessage(APIDialogMessage message)
         {
-            if (message != null)
+            if (message == null) return;
+
+            switch (message.MessageType)
             {
-                if (message.MessageType == APIDialogMessageType.DialogId)
-                {
+                case APIDialogMessageType.DialogId:
                     DialogId = message.DialogId;
                     FocusedDialogControlId = -1;
                     FocusedDialogControlId = message.FocusedControlId;
-                }
-                else if (message.MessageType == APIDialogMessageType.FocusedControlId)
-                {
+                    break;
+
+                case APIDialogMessageType.FocusedControlId:
                     FocusedDialogControlId = message.FocusedControlId;
-                }
+                    break;
             }
         }
-
-
     }
 
     public enum InfoMessageType
@@ -512,6 +466,6 @@ namespace GUIFramework.Repositories
         IsMediaPortalConnected,
         IsTVServerConnected,
         SendListItem,
-        IsFullscreenMedia,
+        IsFullscreenMedia
     }
 }

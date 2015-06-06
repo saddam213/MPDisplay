@@ -27,7 +27,7 @@ namespace MediaPortalPlugin.ExifReader
         public ExifReaderCustomTypeDescriptor(ICustomTypeDescriptor parent, object instance)
             : base(parent)
         {
-            ExifReader exifReader = (ExifReader)instance;
+            var exifReader = (ExifReader)instance;
             _customFields.AddRange(exifReader.GetExifProperties().Select(ep => new ExifPropertyPropertyDescriptor(ep)));
         }
 

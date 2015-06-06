@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of exposure value names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _exposureProgramNameMap = new Dictionary<ushort, string>()
+        private Dictionary<ushort, string> _exposureProgramNameMap = new Dictionary<ushort, string>
         {
             { 0, "Not defined" },
             { 1, "Manual" },

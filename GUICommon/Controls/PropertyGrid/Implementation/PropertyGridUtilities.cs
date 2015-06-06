@@ -17,14 +17,14 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         internal static PropertyItemCollection GetAlphabetizedProperties(List<PropertyItem> propertyItems)
         {
-            PropertyItemCollection propertyCollection = new PropertyItemCollection(propertyItems);
+            var propertyCollection = new PropertyItemCollection(propertyItems);
             propertyCollection.SortBy("DisplayName", ListSortDirection.Ascending);
             return propertyCollection;
         }
 
         internal static PropertyItemCollection GetCategorizedProperties(List<PropertyItem> propertyItems)
         {
-            PropertyItemCollection propertyCollection = new PropertyItemCollection(propertyItems);
+            var propertyCollection = new PropertyItemCollection(propertyItems);
             propertyCollection.GroupBy("Category");
             propertyCollection.SortBy("CategoryOrder", ListSortDirection.Ascending);
             propertyCollection.SortBy("PropertyOrder", ListSortDirection.Ascending);
@@ -37,8 +37,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             PropertyDescriptorCollection descriptors;
 
-            TypeConverter tc = TypeDescriptor.GetConverter(instance);
-            if (tc == null || !tc.GetPropertiesSupported())
+            var tc = TypeDescriptor.GetConverter(instance);
+            if (!tc.GetPropertiesSupported())
             {
                 var descriptor = instance as ICustomTypeDescriptor;
                 descriptors = descriptor != null ? descriptor.GetProperties() : TypeDescriptor.GetProperties(instance.GetType());
@@ -53,14 +53,14 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         internal static PropertyItem CreatePropertyItem(PropertyDescriptor property, object instance, PropertyGrid grid, string bindingPath, int level)
         {
-            PropertyItem item = CreatePropertyItem(property, instance, grid, bindingPath);
+            var item = CreatePropertyItem(property, instance, grid, bindingPath);
             item.Level = level;
             return item;
         }
 
         internal static PropertyItem CreatePropertyItem(PropertyDescriptor property, object instance, PropertyGrid grid, string bindingPath)
         {
-            PropertyItem propertyItem = new PropertyItem(instance, property, grid, bindingPath);
+            var propertyItem = new PropertyItem(instance, property, grid, bindingPath);
 
             var binding = new Binding(bindingPath)
             {
@@ -82,10 +82,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             //now look for a custom editor based on editor definitions
 
             //guess we have to use the default editor
-            FrameworkElement editor = (GetAttibuteEditor(propertyItem) ??
-                                       GetCustomEditor(propertyItem, editorDefinitions)) ??
-                                      CreateDefaultEditor(propertyItem);
-
+            var editor = (GetAttibuteEditor(propertyItem) ?? GetCustomEditor(propertyItem, editorDefinitions)) ?? CreateDefaultEditor(propertyItem);
 
             return editor;
         }
@@ -99,16 +96,13 @@ namespace MPDisplay.Common.Controls.PropertyGrid
                 editor = new ItemsSourceAttributeEditor(itemsSourceAttribute).ResolveEditor(propertyItem);
 
             var editorAttribute = GetAttribute<EditorAttribute>(propertyItem.PropertyDescriptor);
-            if (editorAttribute != null)
-            {
-                Type type = Type.GetType(editorAttribute.EditorTypeName);
-                if (type != null)
-                {
-                    var instance = Activator.CreateInstance(type);
-                    if (instance is ITypeEditor)
-                        editor = (instance as ITypeEditor).ResolveEditor(propertyItem);
-                }
-            }
+            if (editorAttribute == null) return editor;
+
+            var type = Type.GetType(editorAttribute.EditorTypeName);
+            if (type == null) return editor;
+
+            var instance = Activator.CreateInstance(type);
+            if (instance is ITypeEditor) editor = (instance as ITypeEditor).ResolveEditor(propertyItem);
 
             return editor;
         }
@@ -118,16 +112,14 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             FrameworkElement editor = null;
 
             //check for custom editor
-            if (customTypeEditors.Count > 0)
-            {
-                //first check if the custom editor is type based
-                EditorDefinition customEditor = customTypeEditors[propertyItem.PropertyType] ??
-                                                customTypeEditors[propertyItem.Name];
+            if (customTypeEditors.Count <= 0) return null;
 
-                if (customEditor == null) return null;
-                if (customEditor.EditorTemplate != null)
-                    editor = customEditor.EditorTemplate.LoadContent() as FrameworkElement;
-            }
+            //first check if the custom editor is type based
+            var customEditor = customTypeEditors[propertyItem.PropertyType] ?? customTypeEditors[propertyItem.Name];
+
+            if (customEditor == null) return null;
+            if (customEditor.EditorTemplate != null)
+                editor = customEditor.EditorTemplate.LoadContent() as FrameworkElement;
 
             return editor;
         }

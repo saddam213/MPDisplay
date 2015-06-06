@@ -21,11 +21,11 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for ImagePicker.xaml
     /// </summary>
-    public partial class ImagePicker : UserControl, INotifyPropertyChanged
+    public partial class ImagePicker : INotifyPropertyChanged
     {
-        private List<string> _allowedsExtensions = new List<string>(new string[] { ".BMP", ".JPG", ".GIF", ".PNG" });
-        private string _imageFilter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG";
-        private FileSystemWatcher _imageWatcher = null;
+        private List<string> _allowedsExtensions = new List<string>(new[] { ".BMP", ".JPG", ".GIF", ".PNG" });
+        private const string ImageFilter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG";
+        private FileSystemWatcher _imageWatcher;
         private ObservableCollection<ImageFile> _imageFiles = new ObservableCollection<ImageFile>();
         private ObservableCollection<object> _folderMenu = new ObservableCollection<object>();
         private ObservableCollection<object> _imageMenu = new ObservableCollection<object>();
@@ -34,7 +34,7 @@ namespace GUISkinFramework.Editors
         public ImagePicker()
         {
             InitializeComponent();
-            CreateContextMenu();      
+            CreateContextMenu();
         }
 
 
@@ -46,17 +46,16 @@ namespace GUISkinFramework.Editors
 
         // Using a DependencyProperty as the backing store for SkinInfo.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SkinInfoProperty =
-            DependencyProperty.Register("SkinInfo", typeof(XmlSkinInfo), typeof(ImagePicker)
-            , new PropertyMetadata(new XmlSkinInfo(), new PropertyChangedCallback(OnSkinInfoChanged)));
+            DependencyProperty.Register("SkinInfo", typeof(XmlSkinInfo), typeof(ImagePicker), new PropertyMetadata(new XmlSkinInfo(), OnSkinInfoChanged));
 
         private static void OnSkinInfoChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var _this = d as ImagePicker;
-            if (_this != null)
-            {
-                _this.GetFolderImages((e.NewValue as XmlSkinInfo).SkinImageFolder);
-                _this.CreateFileWatcher();
-            }
+            if (_this == null) return;
+
+            var xmlSkinInfo = e.NewValue as XmlSkinInfo;
+            if (xmlSkinInfo != null) _this.GetFolderImages(xmlSkinInfo.SkinImageFolder);
+            _this.CreateFileWatcher();
         }
 
 
@@ -69,27 +68,27 @@ namespace GUISkinFramework.Editors
         // Using a DependencyProperty as the backing store for SelectedXmlImage.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SelectedXmlImageProperty =
             DependencyProperty.Register("SelectedXmlImage", typeof(XmlImageFile), typeof(ImagePicker)
-            , new PropertyMetadata(new XmlImageFile(), new PropertyChangedCallback(OnSelectedXmlImageChanged)));
+            , new PropertyMetadata(new XmlImageFile(), OnSelectedXmlImageChanged));
 
         private static void OnSelectedXmlImageChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue != null)
+            if (e.NewValue == null) return;
+
+            var xmlImage = e.NewValue as XmlImageFile;
+            var _this = d as ImagePicker;
+
+            if (xmlImage != null)
             {
-                var xmlImage = e.NewValue as XmlImageFile;
-                var _this = d as ImagePicker;
-
-                if (xmlImage != null)
-                {
-                    _this.GetFolderImages(Path.GetDirectoryName(xmlImage.FileName));
-                }
-
-                var image = _this.ImageFiles.Where(f => !f.IsFolder).FirstOrDefault(f => f.File.FullName == xmlImage.FileName);
-                if (image != null)
-                {
-                    _this.GetFolderImages(image.Directory.FullName);
-                    _this.SelectedImage = _this.ImageFiles.FirstOrDefault(f => f.FileName == image.FileName);
-                }
+                if (_this != null) _this.GetFolderImages(Path.GetDirectoryName(xmlImage.FileName));
             }
+
+            if (_this == null) return;
+            var image = _this.ImageFiles.Where(f => !f.IsFolder).FirstOrDefault(f => xmlImage != null && f.File.FullName == xmlImage.FileName);
+
+            if (image == null) return;
+
+            _this.GetFolderImages(image.Directory.FullName);
+            _this.SelectedImage = _this.ImageFiles.FirstOrDefault(f => f.FileName == image.FileName);
         }
 
 
@@ -99,9 +98,6 @@ namespace GUISkinFramework.Editors
             get { return _imageFiles; }
             set { _imageFiles = value; }
         }
-
-
-
 
         public ImageFile SelectedImage
         {
@@ -115,15 +111,13 @@ namespace GUISkinFramework.Editors
             }
         }
 
-
         private void SetXmlImage(ImageFile image)
         {
-            if (image != null && !image.IsFolder)
+            if (image == null || image.IsFolder) return;
+
+            if (SelectedXmlImage == null || SelectedImage.FileName != SelectedXmlImage.FileName)
             {
-                if (SelectedXmlImage == null || SelectedImage.FileName != SelectedXmlImage.FileName)
-                {
-                    SelectedXmlImage = SkinInfo.Images.FirstOrDefault(f => f.FileName == SelectedImage.FileName);
-                }
+                SelectedXmlImage = SkinInfo.Images.FirstOrDefault(f => f.FileName == SelectedImage.FileName);
             }
         }
 
@@ -160,52 +154,44 @@ namespace GUISkinFramework.Editors
 
         public string GetDirectoryPath(string dir)
         {
-            if (Directory.Exists(dir))
-            {
-                return new DirectoryInfo(dir).FullName.Trim('\\');
-            }
-            return string.Empty;
+            return Directory.Exists(dir) ? new DirectoryInfo(dir).FullName.Trim('\\') : string.Empty;
         }
 
         private void GetFolderImages(string path)
         {
             _imageFiles.Clear();
-            if (Directory.Exists(path))
+            if (!Directory.Exists(path)) return;
+
+            if (!IsParentFolder(path))
             {
-                if (!IsParentFolder(path))
-                {
-                    _imageFiles.Add(new ImageFile() { IsBack = true, Directory = new DirectoryInfo(GetDirectoryPath(path)), IsFolder = true });
-                }
-                foreach (var subFolder in Directory.GetDirectories(path))
-                {
-                    _imageFiles.Add(new ImageFile() { Directory = new DirectoryInfo(subFolder), IsFolder = true });
-                }
-                foreach (string imageFile in Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly))
-                {
-                    if (_allowedsExtensions.Contains(Path.GetExtension(imageFile).ToUpper()))
-                    {
-                        _imageFiles.Add(new ImageFile() { Directory = new DirectoryInfo(path), File = new FileInfo(imageFile) });
-                    }
-                }
-                _currentFolder = GetDirectoryPath( path);
+                _imageFiles.Add(new ImageFile { IsBack = true, Directory = new DirectoryInfo(GetDirectoryPath(path)), IsFolder = true });
             }
+            foreach (var subFolder in Directory.GetDirectories(path))
+            {
+                _imageFiles.Add(new ImageFile { Directory = new DirectoryInfo(subFolder), IsFolder = true });
+            }
+            foreach (var imageFile in Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly))
+            {
+                var extension = Path.GetExtension(imageFile);
+                if (extension != null && _allowedsExtensions.Contains(extension.ToUpper()))
+                {
+                    _imageFiles.Add(new ImageFile { Directory = new DirectoryInfo(path), File = new FileInfo(imageFile) });
+                }
+            }
+            _currentFolder = GetDirectoryPath( path);
         }
 
         private void ListBox_DoubleClick(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left)
+            if (e.ChangedButton != MouseButton.Left) return;
+            if (SelectedImage == null || !SelectedImage.IsFolder) return;
+            if (SelectedImage.IsBack && !IsParentFolder(SelectedImage.Directory.FullName))
             {
-                if (SelectedImage != null && SelectedImage.IsFolder)
-                {
-                    if (SelectedImage.IsBack && !IsParentFolder(SelectedImage.Directory.FullName))
-                    {
-                        GetFolderImages(SelectedImage.Directory.Parent.FullName);
-                        return;
-                    }
-
-                    GetFolderImages(SelectedImage.Directory.FullName);
-                }
+                if (SelectedImage.Directory.Parent != null) GetFolderImages(SelectedImage.Directory.Parent.FullName);
+                return;
             }
+
+            GetFolderImages(SelectedImage.Directory.FullName);
         }
 
         public void CreateFileWatcher()
@@ -215,21 +201,21 @@ namespace GUISkinFramework.Editors
                 _imageWatcher.Dispose();
             }
 
-            if (Directory.Exists(SkinInfo.SkinImageFolder))
+            if (!Directory.Exists(SkinInfo.SkinImageFolder)) return;
+            _imageWatcher = new FileSystemWatcher(SkinInfo.SkinImageFolder)
             {
-                _imageWatcher = new FileSystemWatcher(SkinInfo.SkinImageFolder);
-                _imageWatcher.EnableRaisingEvents = true;
-                _imageWatcher.IncludeSubdirectories = true;
-                _imageWatcher.Created += (s, e) => ReloadCurrentFolder();
-                _imageWatcher.Deleted += (s, e) => ReloadCurrentFolder();
-                _imageWatcher.Renamed += (s, e) => ReloadCurrentFolder();
-            }
+                EnableRaisingEvents = true,
+                IncludeSubdirectories = true
+            };
+            _imageWatcher.Created += (s, e) => ReloadCurrentFolder();
+            _imageWatcher.Deleted += (s, e) => ReloadCurrentFolder();
+            _imageWatcher.Renamed += (s, e) => ReloadCurrentFolder();
         }
 
         private void ReloadCurrentFolder()
         {
             _imageWatcher.EnableRaisingEvents = false;
-            Dispatcher.Invoke(DispatcherPriority.Background, (Action)delegate()
+            Dispatcher.Invoke(DispatcherPriority.Background, (Action)delegate
             {
                 GetFolderImages(_currentFolder);
                 SkinInfo.ReloadImages();
@@ -254,11 +240,23 @@ namespace GUISkinFramework.Editors
             FolderMenu.Add(CreateContextMenuItem("Delete", "Delete", () => DeleteImage(true)));
         }
 
-        private MenuItem CreateContextMenuItem(string header, string icon, Action handler)
+        private static MenuItem CreateContextMenuItem(string header, string icon, Action handler)
         {
-            var menuItem = new MenuItem();
-            menuItem.Header = header;
-            menuItem.Icon = new Image { Margin = new Thickness(2), Stretch = Stretch.Uniform, Width = 16, Height = 16, Source = new BitmapImage(new Uri(string.Format(@"/GUISkinFramework;component/Images/{0}.png", icon), UriKind.RelativeOrAbsolute)) };
+            var menuItem = new MenuItem
+            {
+                Header = header,
+                Icon =
+                    new Image
+                    {
+                        Margin = new Thickness(2),
+                        Stretch = Stretch.Uniform,
+                        Width = 16,
+                        Height = 16,
+                        Source =
+                            new BitmapImage(new Uri(string.Format(@"/GUISkinFramework;component/Images/{0}.png", icon),
+                                UriKind.RelativeOrAbsolute))
+                    }
+            };
             if (handler != null)
             {
                 menuItem.Click += (s, e) => handler();
@@ -268,29 +266,27 @@ namespace GUISkinFramework.Editors
 
         private void OpenImage(bool isfolder)
         {
-            if (SelectedImage != null)
+            if (SelectedImage == null) return;
+            if (isfolder)
             {
-                if (isfolder)
-                {
-                    Process.Start("explorer.exe", SelectedImage.Directory.FullName);
-                    return;
-                }
-                Process.Start(SelectedImage.File.FullName);
+                Process.Start("explorer.exe", SelectedImage.Directory.FullName);
+                return;
             }
+            Process.Start(SelectedImage.File.FullName);
         }
 
         private void AddImage(bool isfolder)
         {
             if (isfolder)
             {
-                string folder = DirectoryHelpers.FolderBrowserDialog();
+                var folder = DirectoryHelpers.FolderBrowserDialog();
                 if (!string.IsNullOrEmpty(folder))
                 {
                     FileSystem.CopyDirectory(folder, Path.Combine(_currentFolder, new DirectoryInfo(folder).Name), UIOption.AllDialogs, UICancelOption.DoNothing);
                 }
                 return;
             }
-            string file = FileHelpers.OpenFileDialog(SkinInfo.SkinImageFolder, _imageFilter);
+            var file = FileHelpers.OpenFileDialog(SkinInfo.SkinImageFolder, ImageFilter);
             if (!string.IsNullOrEmpty(file))
             {
                 FileHelpers.CopyFile(file, Path.Combine(_currentFolder, Path.GetFileName(file)));
@@ -299,18 +295,17 @@ namespace GUISkinFramework.Editors
 
         private void DeleteImage(bool isfolder)
         {
-            if (SelectedImage != null)
+            if (SelectedImage == null) return;
+            if (MessageBox.Show(
+                string.Format("Are you sure you want to permanently delete this {0}?",
+                    isfolder ? "folder" : "image"), "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) !=
+                MessageBoxResult.Yes) return;
+            if (isfolder)
             {
-                if (MessageBox.Show(string.Format("Are you sure you want to permanently delete this {0}?", isfolder ? "folder" : "image"), "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) == MessageBoxResult.Yes)
-                {
-                    if (isfolder)
-                    {
-                        DirectoryHelpers.TryDelete(SelectedImage.Directory.FullName);
-                        return;
-                    }
-                    FileHelpers.TryDelete(SelectedImage.File.FullName);
-                }
+                DirectoryHelpers.TryDelete(SelectedImage.Directory.FullName);
+                return;
             }
+            FileHelpers.TryDelete(SelectedImage.File.FullName);
         }
 
         #endregion
@@ -332,15 +327,6 @@ namespace GUISkinFramework.Editors
 
     public class ImageFile : INotifyPropertyChanged
     {
-        private string _displayName;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ImageFile"/> class.
-        /// </summary>
-        public ImageFile()
-        {
-        }
-
         /// <summary>
         /// Gets or sets a value indicating whether this instance is back.
         /// </summary>
@@ -366,8 +352,9 @@ namespace GUISkinFramework.Editors
         /// </summary>
         public string DisplayName
         {
-            get { return _displayName = IsBack ? ".." : IsFolder ? Directory.Name : File.Name; }
-            set { _displayName = value; NotifyPropertyChanged("DisplayName"); }
+            get { return IsBack ? ".." : IsFolder ? Directory.Name : File.Name; }
+            // ReSharper disable once ValueParameterNotUsed
+            set { NotifyPropertyChanged("DisplayName"); }
         }
 
         public string ToolTip

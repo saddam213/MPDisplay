@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of SceneCaptureType names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _contrastMap = new Dictionary<ushort, string>()
+        private Dictionary<ushort, string> _contrastMap = new Dictionary<ushort, string>
         {
             { 0, "Normal" },
             { 1, "Soft" },

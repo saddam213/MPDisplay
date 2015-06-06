@@ -7,7 +7,7 @@ namespace Common.Settings
     {
         private ConnectionSettings _connectionSettings = new ConnectionSettings();
         private bool _launchMPDisplayOnStart = true;
-        private bool _restartMPDisplayOnStart = false;
+        private bool _restartMPDisplayOnStart;
         private bool _closeMPDisplayOnExit = true;
         private bool _isSystemInfoEnabled = true;
         private int _listBatchThreshold = 600;

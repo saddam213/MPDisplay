@@ -229,7 +229,7 @@
                                     </Canvas>
                                 </Border>
 
-                                <Border Grid.Row="1" Margin="0,5,0,0">
+                                <Border Grid.Row="1" Grid.Column="0" Margin="0,5,0,0">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="*" />
@@ -242,7 +242,7 @@
                                     </Grid>
                                 </Border>
 
-                                <Border Grid.Column="1" Grid.RowSpan="2" Margin="4,-8,0,0" ClipToBounds="False">
+                                <Border Grid.Column="1" Grid.Row="0" Grid.RowSpan="2" Margin="4,-8,0,0" ClipToBounds="False">
                                     <local:ColorSpectrumSlider x:Name="PART_SpectrumSlider" VerticalAlignment="Stretch" />
                                 </Border>
                             </Grid>
@@ -259,6 +259,7 @@
                                         <ColumnDefinition Width="Auto"/>
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition />
                                     </Grid.ColumnDefinitions>
 
                                     <TextBlock Grid.Row="0" Grid.Column="0" Text="R"

@@ -39,8 +39,8 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
                 return String.Empty;
             }
 
-            double apexValue = (double)rational32S.First();
-            double shutterSpeed = 1 / Math.Pow(2, apexValue);
+            var apexValue = (double)rational32S.First();
+            var shutterSpeed = 1 / Math.Pow(2, apexValue);
 
             return shutterSpeed > 1 ?
                 String.Format("{0} sec.", (int)Math.Round(shutterSpeed)) :

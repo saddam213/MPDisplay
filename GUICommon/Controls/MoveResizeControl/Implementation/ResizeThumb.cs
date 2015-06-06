@@ -31,13 +31,11 @@ namespace MPDisplay.Common.Controls
 
         private int ResizeMoveCalculateSnap(double value)
         {
-            if (IsSnapToGrid && GridSize != 0)
-            {
-                double snap = value % GridSize;
-                snap = (snap <= GridSize / 2.0) ? snap *= -1 : GridSize - snap;
-                return (int)(snap + value);
-            }
-            return (int)value;
+            if (!IsSnapToGrid || GridSize == 0) return (int) value;
+
+            var snap = value % GridSize;
+            snap = (snap <= GridSize / 2.0) ? snap*-1 : GridSize - snap;
+            return (int)(snap + value);
         }
 
 
@@ -48,7 +46,7 @@ namespace MPDisplay.Common.Controls
 
         private void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            Control designerItem = DataContext as Control;
+            var designerItem = DataContext as Control;
 
             if (designerItem != null)
             {

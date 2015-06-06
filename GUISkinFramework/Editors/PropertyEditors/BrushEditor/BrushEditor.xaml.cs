@@ -1,6 +1,5 @@
 ﻿using System.Text;
 using System.Windows;
-using System.Windows.Controls;
 using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
 
@@ -9,10 +8,10 @@ namespace GUISkinFramework.Editors
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class BrushEditor : UserControl, ITypeEditor
+    public partial class BrushEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public BrushEditor()
         {
@@ -52,13 +51,13 @@ namespace GUISkinFramework.Editors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            if (_Item != null)
+            if (_item != null)
             {
-                var brushEditor = new BrushEditorDialog(Value, _Item.PropertyGrid.Tag as XmlSkinInfo);
+                var brushEditor = new BrushEditorDialog(Value, _item.PropertyGrid.Tag as XmlSkinInfo);
                 if (brushEditor.ShowDialog() == true)
                 {
                     Value = brushEditor.NewValue;
-                    _Item.Value = Value;
+                    _item.Value = Value;
                 }
             }
             BrushTypeInfo = GetText();
@@ -67,10 +66,10 @@ namespace GUISkinFramework.Editors
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
-            if (_Item != null)
+            _item = propertyItem;
+            if (_item != null)
             {
-                Value = _Item.Value != null ? _Item.Value as XmlBrush : new XmlBrush();
+                Value = _item.Value != null ? _item.Value as XmlBrush : new XmlBrush();
             }
             BrushTypeInfo = GetText();
             BrushToolTip = GetToolTipText();
@@ -79,87 +78,82 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_Item != null)
+            if (_item == null) return "(Empty)";
+            var brush = _item.Value as XmlBrush;
+            if (brush != null && !string.IsNullOrEmpty(brush.StyleId))
             {
-                if (_Item.Value is XmlBrush && !string.IsNullOrEmpty((_Item.Value as XmlBrush).StyleId))
-                {
-                    return (_Item.Value as XmlBrush).StyleId.ToString();
-                }
+                return brush.StyleId;
+            }
 
-                if (_Item.Value is XmlColorBrush)
-                {
-                    if ((_Item.Value as XmlColorBrush).Color == "Transparent")
-                    {
-                        return "(Empty)";
-                    }
-                    return "(Color)";
-                }
+            if (_item.Value is XmlColorBrush)
+            {
+                return (_item.Value as XmlColorBrush).Color == "Transparent" ? "(Empty)" : "(Color)";
+            }
 
-                if (_Item.Value is XmlGradientBrush)
-                {
-                    return "(Gradient)";
-                }
+            if (_item.Value is XmlGradientBrush)
+            {
+                return "(Gradient)";
+            }
 
-                if (_Item.Value is XmlImageBrush)
-                {
-                    return "(Image)";
-                }
+            if (_item.Value is XmlImageBrush)
+            {
+                return "(Image)";
             }
             return "(Empty)";
         }
 
         private string GetToolTipText()
         {
-            if (_Item != null)
+            if (_item == null) return "(Empty)";
+            var colorBrush = _item.Value as XmlColorBrush;
+            if (colorBrush != null)
             {
-                if (_Item.Value is XmlColorBrush)
+                var brush = colorBrush;
+                var sb = new StringBuilder();
+                if (!string.IsNullOrEmpty(brush.StyleId))
                 {
-                    var brush = _Item.Value as XmlColorBrush;
-                    StringBuilder sb = new StringBuilder();
-                    if (!string.IsNullOrEmpty(brush.StyleId))
-                    {
-                        sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
-                        sb.AppendLine("-----------------------");
-                    }
-                    sb.AppendLine(string.Format("Color: {0}", (_Item.Value as XmlColorBrush).Color));
-                    return sb.ToString();
+                    sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
+                    sb.AppendLine("-----------------------");
                 }
-
-                if (_Item.Value is XmlGradientBrush)
-                {
-                    var brush = _Item.Value as XmlGradientBrush;
-                    StringBuilder sb = new StringBuilder();
-                    if (!string.IsNullOrEmpty(brush.StyleId))
-                    {
-                        sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
-                        sb.AppendLine("-----------------------");
-                    }
-                    sb.AppendLine("Gradient:");
-                    sb.AppendLine(string.Format("Angle: {0}", brush.Angle));
-                  //  sb.AppendLine(string.Format("EndPoint: {0}", brush.EndPoint));
-                    int count = 1;
-                    foreach (var stop in brush.GradientStops)
-                    {
-                        sb.AppendLine(string.Format("Color{0}: {1}, Offset: {2}", count, stop.Color, stop.Offset));
-                        count++;
-                    }
-                    return sb.ToString();
-                }
-
-                if (_Item.Value is XmlImageBrush)
-                {
-                    var brush = _Item.Value as XmlImageBrush;
-                    StringBuilder sb = new StringBuilder();
-                    if (!string.IsNullOrEmpty(brush.StyleId))
-                    {
-                        sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
-                        sb.AppendLine("-----------------------");
-                    }
-                    sb.AppendLine("Image:");
-                    sb.AppendLine(string.Format("Filename: {0}", brush.ImageName));
-                    sb.AppendLine(string.Format("Stretch: {0}", brush.ImageStretch));
-                }
+                sb.AppendLine(string.Format("Color: {0}", colorBrush.Color));
+                return sb.ToString();
             }
+
+            var gradientBrush = _item.Value as XmlGradientBrush;
+            if (gradientBrush != null)
+            {
+                var brush = gradientBrush;
+                var sb = new StringBuilder();
+                if (!string.IsNullOrEmpty(brush.StyleId))
+                {
+                    sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
+                    sb.AppendLine("-----------------------");
+                }
+                sb.AppendLine("Gradient:");
+                sb.AppendLine(string.Format("Angle: {0}", brush.Angle));
+                //  sb.AppendLine(string.Format("EndPoint: {0}", brush.EndPoint));
+                var count = 1;
+                foreach (var stop in brush.GradientStops)
+                {
+                    sb.AppendLine(string.Format("Color{0}: {1}, Offset: {2}", count, stop.Color, stop.Offset));
+                    count++;
+                }
+                return sb.ToString();
+            }
+
+            var imageBrush = _item.Value as XmlImageBrush;
+            if (imageBrush == null) return "(Empty)";
+
+            var brush1 = imageBrush;
+            var sb1 = new StringBuilder();
+            if (!string.IsNullOrEmpty(brush1.StyleId))
+            {
+                sb1.AppendLine(string.Format("Style: {0}", brush1.StyleId));
+                sb1.AppendLine("-----------------------");
+            }
+            sb1.AppendLine("Image:");
+            sb1.AppendLine(string.Format("Filename: {0}", brush1.ImageName));
+            sb1.AppendLine(string.Format("Stretch: {0}", brush1.ImageStretch));
             return "(Empty)";
         }
 

@@ -24,13 +24,12 @@ namespace GUIFramework.GUI
         /// <param name="xmlActions">The XML actions.</param>
         public GUIActionCollection(IEnumerable<XmlAction> xmlActions)
         {
-            if (xmlActions != null)
+            if (xmlActions == null) return;
+
+            foreach (var xmlaction in xmlActions)
             {
-                foreach (var xmlaction in xmlActions)
-                {
-                    var xmlaction1 = xmlaction;
-                    Actions.Add(() => GUIActionManager.ActionService.NotifyListeners(xmlaction1.ActionType, xmlaction1));
-                }
+                var xmlaction1 = xmlaction;
+                Actions.Add(() => GUIActionManager.ActionService.NotifyListeners(xmlaction1.ActionType, xmlaction1));
             }
         }
 

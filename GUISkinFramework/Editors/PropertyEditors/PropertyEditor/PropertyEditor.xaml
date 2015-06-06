@@ -5,7 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:sys="clr-namespace:System;assembly=mscorlib"
 			  xmlns:converters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
-			 xmlns:MPDCommon="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
+			 xmlns:mpdCommon="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
              xmlns:property="clr-namespace:GUISkinFramework.Skin"
 			    xmlns:propertyEditor="clr-namespace:GUISkinFramework.Editors"
 			    mc:Ignorable="d" Name="UI" MinWidth="583" MinHeight="398" Height="594" Width="583">
@@ -44,7 +44,7 @@
 					<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" />
 				</Button>
 			</StackPanel>
-			<ListBox SelectedIndex="0" ItemsSource="{Binding Properties}" SelectedItem="{Binding SelectedProperty}" MPDCommon:ItemsControlExtensions.ScrollItemIntoView="True" IsSynchronizedWithCurrentItem="True" >
+			<ListBox SelectedIndex="0" ItemsSource="{Binding Properties}" SelectedItem="{Binding SelectedProperty}" mpdCommon:ItemsControlExtensions.ScrollItemIntoView="True" IsSynchronizedWithCurrentItem="True" >
 
 				<ListBox.GroupStyle>
 						<GroupStyle>

@@ -17,7 +17,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnCornerRadiusChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnCornerRadiusChanged((CornerRadius)e.OldValue, (CornerRadius)e.NewValue);
         }
@@ -25,7 +25,7 @@ namespace MPDisplay.Common.Controls
         protected virtual void OnCornerRadiusChanged(CornerRadius oldValue, CornerRadius newValue)
         {
             //we always want the InnerBorderRadius to be one less than the CornerRadius
-            CornerRadius newInnerCornerRadius = new CornerRadius(Math.Max(0, newValue.TopLeft - 1), 
+            var newInnerCornerRadius = new CornerRadius(Math.Max(0, newValue.TopLeft - 1), 
                                                                  Math.Max(0, newValue.TopRight - 1), 
                                                                  Math.Max(0, newValue.BottomRight - 1), 
                                                                  Math.Max(0, newValue.BottomLeft - 1));
@@ -37,7 +37,7 @@ namespace MPDisplay.Common.Controls
 
         #region InnerCornerRadius
 
-        public static readonly DependencyProperty InnerCornerRadiusProperty = DependencyProperty.Register("InnerCornerRadius", typeof(CornerRadius), typeof(ButtonChrome), new UIPropertyMetadata(default(CornerRadius), new PropertyChangedCallback(OnInnerCornerRadiusChanged)));
+        public static readonly DependencyProperty InnerCornerRadiusProperty = DependencyProperty.Register("InnerCornerRadius", typeof(CornerRadius), typeof(ButtonChrome), new UIPropertyMetadata(default(CornerRadius), OnInnerCornerRadiusChanged));
         public CornerRadius InnerCornerRadius
         {
             get { return (CornerRadius)GetValue(InnerCornerRadiusProperty); }
@@ -46,7 +46,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnInnerCornerRadiusChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnInnerCornerRadiusChanged((CornerRadius)e.OldValue, (CornerRadius)e.NewValue);
         }
@@ -69,7 +69,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRenderCheckedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnRenderCheckedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -92,7 +92,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRenderEnabledChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnRenderEnabledChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -115,7 +115,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRenderFocusedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnRenderFocusedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -138,7 +138,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRenderMouseOverChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnRenderMouseOverChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -161,7 +161,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRenderNormalChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnRenderNormalChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -184,7 +184,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnRenderPressedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            ButtonChrome buttonChrome = o as ButtonChrome;
+            var buttonChrome = o as ButtonChrome;
             if (buttonChrome != null)
                 buttonChrome.OnRenderPressedChanged((bool)e.OldValue, (bool)e.NewValue);
         }

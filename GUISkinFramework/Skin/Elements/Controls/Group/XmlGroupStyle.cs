@@ -82,10 +82,10 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            GlossBrush = style.GetStyle<XmlBrush>(GlossBrush);
-            ShadeBrush = style.GetStyle<XmlBrush>(ShadeBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
+            GlossBrush = style.GetStyle(GlossBrush);
+            ShadeBrush = style.GetStyle(ShadeBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
         }
     }
 

@@ -11,7 +11,6 @@ namespace GUIFramework.GUI
         #region Fields
 
         private Func<bool> _condition;
-        private string _xmlString;
 
         #endregion
 
@@ -23,7 +22,7 @@ namespace GUIFramework.GUI
         /// <param name="control">The control.</param>
         public GUIVisibleCondition(GUIControl control)
         {
-            _xmlString = control.BaseXml.VisibleCondition;
+            XmlString = control.BaseXml.VisibleCondition;
             _condition = null;
             _condition = GUIVisibilityManager.GetVisibleCondition(control.ParentId, control.Id);
         }
@@ -34,7 +33,7 @@ namespace GUIFramework.GUI
         /// <param name="window">The window.</param>
         public GUIVisibleCondition(GUIWindow window)
         {
-            _xmlString = window.BaseXml.VisibleCondition;
+            XmlString = window.BaseXml.VisibleCondition;
             _condition = null;
             _condition = GUIVisibilityManager.GetVisibleCondition(window.Id);
         }
@@ -45,7 +44,7 @@ namespace GUIFramework.GUI
         /// <param name="dialog">The dialog.</param>
         public GUIVisibleCondition(GUIDialog dialog)
         {
-            _xmlString = dialog.BaseXml.VisibleCondition;
+            XmlString = dialog.BaseXml.VisibleCondition;
             _condition = null;
             _condition = GUIVisibilityManager.GetVisibleCondition(dialog.Id);
         }
@@ -57,10 +56,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the XML string.
         /// </summary>
-        public string XmlString
-        {
-            get { return _xmlString; }
-        }
+        public string XmlString { get; private set; }
 
         /// <summary>
         /// Gets a value indicating whether has a condition set.
@@ -79,12 +75,8 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         public bool ShouldBeVisible()
         {
-            if (HasCondition)
-            {
-                return _condition();
-            }
-            return true;
-        } 
+            return !HasCondition || _condition();
+        }
 
         #endregion
 

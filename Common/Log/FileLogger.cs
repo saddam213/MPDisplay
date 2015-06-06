@@ -47,7 +47,7 @@ namespace Common.Log
                 }
             }
 
-            using (StreamWriter writer = new StreamWriter(_fullPath, true))
+            using (var writer = new StreamWriter(_fullPath, true))
             {
                 writer.WriteLine(message);
             }
@@ -62,18 +62,16 @@ namespace Common.Log
             try
             {
                 // if any older files exist cycle the file number
-                for (int i = 10; i > 0; i--)
+                for (var i = 10; i > 0; i--)
                 {
-                    string current = string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i);
-                    if (File.Exists(current))
+                    var current = string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i);
+                    if (!File.Exists(current)) continue;
+                    if (i == 10)
                     {
-                        if (i == 10)
-                        {
-                            File.Delete(current);
-                            continue;
-                        }
-                        File.Move(current, string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i + 1));
+                        File.Delete(current);
+                        continue;
                     }
+                    File.Move(current, string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i + 1));
                 }
 
                 // If the current log exists cycle its number

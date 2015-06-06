@@ -26,12 +26,7 @@ namespace Common.Helpers
 
             var enumerable = second as IList<T> ?? second.ToList();
             var enumerable1 = first as IList<T> ?? first.ToList();
-            if (enumerable.Count() != enumerable1.Count())
-            {
-                return true;
-            }
-
-            return enumerable1.SequenceEqual(enumerable);
+            return enumerable.Count() != enumerable1.Count() || enumerable1.SequenceEqual(enumerable);
         }
 
         /// <summary>
@@ -84,12 +79,7 @@ namespace Common.Helpers
 
             var enumerable = second as IList<T> ?? second.ToList();
             var enumerable1 = first as IList<T> ?? first.ToList();
-            if (enumerable.Count() != enumerable1.Count())
-            {
-                return true;
-            }
-
-            return enumerable1.SequenceEqual(enumerable);
+            return enumerable.Count() != enumerable1.Count() || enumerable1.SequenceEqual(enumerable);
         }
 
         /// <summary>
@@ -134,7 +124,7 @@ namespace Common.Helpers
         /// <returns></returns>
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            HashSet<TKey> seenKeys = new HashSet<TKey>();
+            var seenKeys = new HashSet<TKey>();
             return source.Where(element => seenKeys.Add(keySelector(element)));
         }
     }

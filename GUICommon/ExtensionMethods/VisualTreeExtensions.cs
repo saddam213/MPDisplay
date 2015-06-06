@@ -11,7 +11,7 @@ namespace MPDisplay.Common.ExtensionMethods
     /// Defines an interface that must be implemented to generate the LinqToTree methods
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public interface ILinqTree<T>
+    public interface ILinqTree<out T>
     {
         IEnumerable<T> Children();
 
@@ -33,8 +33,8 @@ namespace MPDisplay.Common.ExtensionMethods
 
         public IEnumerable<DependencyObject> Children()
         {
-            int childrenCount = VisualTreeHelper.GetChildrenCount(_item);
-            for (int i = 0; i < childrenCount; i++)
+            var childrenCount = VisualTreeHelper.GetChildrenCount(_item);
+            for (var i = 0; i < childrenCount; i++)
             {
                 yield return VisualTreeHelper.GetChild(_item, i);
             }
@@ -54,8 +54,7 @@ namespace MPDisplay.Common.ExtensionMethods
         public static DependencyObject FirstVisualChild(this Visual visual)
         {
             if (visual == null) return null;
-            if (VisualTreeHelper.GetChildrenCount(visual) == 0) return null;
-            return VisualTreeHelper.GetChild(visual, 0);
+            return VisualTreeHelper.GetChildrenCount(visual) == 0 ? null : VisualTreeHelper.GetChild(visual, 0);
         }
 
         public static T GetDescendantByType<T>(this Visual element) where T : Visual
@@ -69,13 +68,14 @@ namespace MPDisplay.Common.ExtensionMethods
                 return (T)element;
             }
             Visual foundElement = null;
-            if (element is FrameworkElement)
+            var frameworkElement = element as FrameworkElement;
+            if (frameworkElement != null)
             {
-                (element as FrameworkElement).ApplyTemplate();
+                frameworkElement.ApplyTemplate();
             }
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
             {
-                Visual visual = VisualTreeHelper.GetChild(element, i) as Visual;
+                var visual = VisualTreeHelper.GetChild(element, i) as Visual;
                 foundElement = GetDescendantByType<T>(visual);
                 if (foundElement != null)
                 {
@@ -95,36 +95,31 @@ namespace MPDisplay.Common.ExtensionMethods
             {
                 return (T)element;
             }
-            Visual foundElement = null;
-            if (element is FrameworkElement)
+            var frameworkElement = element as FrameworkElement;
+            if (frameworkElement != null)
             {
-                (element as FrameworkElement).ApplyTemplate();
+                frameworkElement.ApplyTemplate();
             }
-            foundElement = VisualTreeHelper.GetParent(element) as Visual;
-            if (foundElement != null)
-            {
-                return GetAscendantByType<T>(foundElement);
-            }
-            return (T)foundElement;
+            var foundElement = VisualTreeHelper.GetParent(element) as Visual;
+            return foundElement != null ? GetAscendantByType<T>(foundElement) : null;
         }
 
         public static IEnumerable<T> FindVisualChildren<T>(this DependencyObject depObj) where T : DependencyObject
         {
-            if (depObj != null)
-            {
-                for (int i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
-                {
-                    DependencyObject child = VisualTreeHelper.GetChild(depObj, i);
-                    var children = child as T;
-                    if (children != null)
-                    {
-                        yield return children;
-                    }
+            if (depObj == null) yield break;
 
-                    foreach (T childOfChild in FindVisualChildren<T>(child))
-                    {
-                        yield return childOfChild;
-                    }
+            for (var i = 0; i < VisualTreeHelper.GetChildrenCount(depObj); i++)
+            {
+                var child = VisualTreeHelper.GetChild(depObj, i);
+                var children = child as T;
+                if (children != null)
+                {
+                    yield return children;
+                }
+
+                foreach (var childOfChild in FindVisualChildren<T>(child))
+                {
+                    yield return childOfChild;
                 }
             }
         }
@@ -205,10 +200,7 @@ namespace MPDisplay.Common.ExtensionMethods
         public static IEnumerable<DependencyObject> Elements(this DependencyObject item)
         {
             ILinqTree<DependencyObject> adapter = new VisualTreeAdapter(item);
-            foreach (var child in adapter.Children())
-            {
-                yield return child;
-            }
+            return adapter.Children();
         }
 
         /// <summary>
@@ -233,7 +225,7 @@ namespace MPDisplay.Common.ExtensionMethods
         {
             if (item.Ancestors().FirstOrDefault() == null)
                 yield break;
-            bool afterSelf = false;
+            var afterSelf = false;
             foreach (var child in item.Ancestors().First().Elements())
             {
                 if (afterSelf)
@@ -262,7 +254,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> Descendants<T>(this DependencyObject item)
         {
-            return item.Descendants().Where(i => i is T).Cast<DependencyObject>();
+            return item.Descendants().Where(i => i is T);
         }
 
 
@@ -273,7 +265,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> ElementsBeforeSelf<T>(this DependencyObject item)
         {
-            return item.ElementsBeforeSelf().Where(i => i is T).Cast<DependencyObject>();
+            return item.ElementsBeforeSelf().Where(i => i is T);
         }
 
         /// <summary>
@@ -282,7 +274,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> ElementsAfterSelf<T>(this DependencyObject item)
         {
-            return item.ElementsAfterSelf().Where(i => i is T).Cast<DependencyObject>();
+            return item.ElementsAfterSelf().Where(i => i is T);
         }
 
         /// <summary>
@@ -291,7 +283,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> DescendantsAndSelf<T>(this DependencyObject item)
         {
-            return item.DescendantsAndSelf().Where(i => i is T).Cast<DependencyObject>();
+            return item.DescendantsAndSelf().Where(i => i is T);
         }
 
         /// <summary>
@@ -299,7 +291,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> Ancestors<T>(this DependencyObject item)
         {
-            return item.Ancestors().Where(i => i is T).Cast<DependencyObject>();
+            return item.Ancestors().Where(i => i is T);
         }
 
         /// <summary>
@@ -308,7 +300,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> AncestorsAndSelf<T>(this DependencyObject item)
         {
-            return item.AncestorsAndSelf().Where(i => i is T).Cast<DependencyObject>();
+            return item.AncestorsAndSelf().Where(i => i is T);
         }
 
         /// <summary>
@@ -316,7 +308,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> Elements<T>(this DependencyObject item)
         {
-            return item.Elements().Where(i => i is T).Cast<DependencyObject>();
+            return item.Elements().Where(i => i is T);
         }
 
         /// <summary>
@@ -325,7 +317,7 @@ namespace MPDisplay.Common.ExtensionMethods
         /// </summary>
         public static IEnumerable<DependencyObject> ElementsAndSelf<T>(this DependencyObject item)
         {
-            return item.ElementsAndSelf().Where(i => i is T).Cast<DependencyObject>();
+            return item.ElementsAndSelf().Where(i => i is T);
         }
 
     }
@@ -341,13 +333,7 @@ namespace MPDisplay.Common.ExtensionMethods
         private static IEnumerable<DependencyObject> DrillDown(this IEnumerable<DependencyObject> items,
             Func<DependencyObject, IEnumerable<DependencyObject>> function)
         {
-            foreach (var item in items)
-            {
-                foreach (var itemChild in function(item))
-                {
-                    yield return itemChild;
-                }
-            }
+            return items.SelectMany(function);
         }
 
 
@@ -359,13 +345,15 @@ namespace MPDisplay.Common.ExtensionMethods
             Func<DependencyObject, IEnumerable<DependencyObject>> function)
             where T : DependencyObject
         {
+            // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var item in items)
             {
                 foreach (var itemChild in function(item))
                 {
-                    if (itemChild is T)
+                    var down = itemChild as T;
+                    if (down != null)
                     {
-                        yield return (T)itemChild;
+                        yield return down;
                     }
                 }
             }

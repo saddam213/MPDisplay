@@ -37,7 +37,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
                 return String.Empty;
             }
 
-            double val = (double)rational32S.ElementAt(0) + (double)rational32S.ElementAt(1)/60 + (double)rational32S.ElementAt(2)/3600;
+            var val = (double)rational32S.ElementAt(0) + (double)rational32S.ElementAt(1)/60 + (double)rational32S.ElementAt(2)/3600;
             return val.ToString("F6", CultureInfo.InvariantCulture);
         }
     }

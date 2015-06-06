@@ -16,12 +16,12 @@ namespace GUISkinFramework.Skin
         private int _medRangeValue = 200;
         private int _bandCount = 20;
         private int _bandSpacing = 1;
-        private int _eqchannel = 0;
+        private int _eqchannel;
         private int _bandBorderSize = 1;
         private int _bandCornerRadius = 2;
         private int _falloffSpeed = 10;
         private int _fallOffHeight = 3;
-        private bool _showDummyData = false;
+        private bool _showDummyData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlEqualizer"/> class.
@@ -168,7 +168,7 @@ namespace GUISkinFramework.Skin
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlEqualizerStyle>(ControlStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
         }
     }
 

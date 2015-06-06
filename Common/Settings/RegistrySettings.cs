@@ -122,16 +122,14 @@ namespace Common.Settings
         {
             get
             {
-                if (_installType == MPDisplayInstallType.None)
+                if (_installType != MPDisplayInstallType.None) return _installType;
+                try
                 {
-                    try
-                    {
-                        _installType = (MPDisplayInstallType)Enum.Parse(typeof(MPDisplayInstallType), GetRegistryValue("InstallType"));
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                    _installType = (MPDisplayInstallType)Enum.Parse(typeof(MPDisplayInstallType), GetRegistryValue("InstallType"));
+                }
+                catch
+                {
+                    // ignored
                 }
                 return _installType;
             }
@@ -145,25 +143,18 @@ namespace Common.Settings
         {
             get
             {
-                if (_logLevel == LogLevel.None)
+                if (_logLevel != LogLevel.None) return _logLevel;
+                try
                 {
-                    try
-                    {
-                        _logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), GetRegistryValue("LogLevel"));
-                    }
-                    catch
-                    {
-                        // ignored
-                    }
+                    _logLevel = (LogLevel)Enum.Parse(typeof(LogLevel), GetRegistryValue("LogLevel"));
+                }
+                catch
+                {
+                    // ignored
                 }
                 return _logLevel;
             }
         }
-
-
-      
-
-
 
         #endregion
 

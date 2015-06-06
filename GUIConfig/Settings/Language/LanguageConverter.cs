@@ -8,7 +8,7 @@ namespace GUIConfig.Settings
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string key = parameter != null ? parameter.ToString() : string.Empty;
+            var key = parameter != null ? parameter.ToString() : string.Empty;
             return LanguageHelper.GetLanguageValue(key);
         }
 

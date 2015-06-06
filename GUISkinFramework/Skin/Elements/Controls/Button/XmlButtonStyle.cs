@@ -19,12 +19,12 @@ namespace GUISkinFramework.Skin
 
         private string _borderThickness = "0,0,0,0";
         private string _borderCornerRadius = "0,0,0,0";
-        private XmlBrush _glossBrush = null;
-        private XmlBrush _shadeBrush = null;
-        private XmlBrush _noFocusBrush = null;
-        private XmlBrush _noFocusBorderBrush = null;
-        private XmlBrush _focusBrush = null;
-        private XmlBrush _focusBorderBrush = null;
+        private XmlBrush _glossBrush;
+        private XmlBrush _shadeBrush;
+        private XmlBrush _noFocusBrush;
+        private XmlBrush _noFocusBorderBrush;
+        private XmlBrush _focusBrush;
+        private XmlBrush _focusBorderBrush;
         private XmlBrush _focusFontBrush;
         private XmlBrush _noFocusFontBrush; 
         private string _fontType = "Microsoft Sans Serif";
@@ -33,7 +33,7 @@ namespace GUISkinFramework.Skin
         private HorizontalAlignment _labelHorizontalAlignment = HorizontalAlignment.Center;
         private VerticalAlignment _labelVerticalAlignment =  VerticalAlignment.Center;
         private string _imageMargin = "0,0,0,0";
-        private int _imageCornerRadius = 0;
+        private int _imageCornerRadius;
         private Stretch _imageStretch = Stretch.Uniform;
         private string _labelMargin = "0,0,0,0";
         private VerticalAlignment _imageVerticalAlignment =  VerticalAlignment.Center;
@@ -273,14 +273,14 @@ namespace GUISkinFramework.Skin
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            GlossBrush = style.GetStyle<XmlBrush>(GlossBrush);
-            ShadeBrush = style.GetStyle<XmlBrush>(ShadeBrush);
-            NoFocusBrush = style.GetStyle<XmlBrush>(NoFocusBrush);
-            NoFocusBorderBrush = style.GetStyle<XmlBrush>(NoFocusBorderBrush);
-            FocusBrush = style.GetStyle<XmlBrush>(FocusBrush);
-            FocusBorderBrush = style.GetStyle<XmlBrush>(FocusBorderBrush);
-            FocusFontBrush = style.GetStyle<XmlBrush>(FocusFontBrush);
-            NoFocusFontBrush = style.GetStyle<XmlBrush>(NoFocusFontBrush);
+            GlossBrush = style.GetStyle(GlossBrush);
+            ShadeBrush = style.GetStyle(ShadeBrush);
+            NoFocusBrush = style.GetStyle(NoFocusBrush);
+            NoFocusBorderBrush = style.GetStyle(NoFocusBorderBrush);
+            FocusBrush = style.GetStyle(FocusBrush);
+            FocusBorderBrush = style.GetStyle(FocusBorderBrush);
+            FocusFontBrush = style.GetStyle(FocusFontBrush);
+            NoFocusFontBrush = style.GetStyle(NoFocusFontBrush);
         }
 
 

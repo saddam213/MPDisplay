@@ -20,12 +20,6 @@ namespace GUISkinFramework.Skin
         private string _name;
         private int _id;
         private string _description;
-        //private int _pos3DX;
-        //private int _pos3DY;
-        //private int _pos3DZ;
-        //private int _center3DX;
-        //private int _center3DY;
-        //private int _center3DZ;
         private XmlBrush _backgroundBrush;
         private int _defaultMediaPortalFocusedControlId;
 
@@ -50,7 +44,6 @@ namespace GUISkinFramework.Skin
 
 
         public bool IsDefault { get; set; }
-
     
 
       //  [XmlIgnore]
@@ -210,7 +203,7 @@ namespace GUISkinFramework.Skin
 
         public virtual void ApplyStyle(XmlStyleCollection style)
         {
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

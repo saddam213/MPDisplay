@@ -40,8 +40,7 @@
 		<ListBox SelectedIndex="-1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource images}}" SelectedValuePath="XmlName" SelectedValue="{Binding ImageName,Mode=TwoWay}" 
 		ScrollViewer.HorizontalScrollBarVisibility="Disabled" extensions:ItemsControlExtensions.ScrollItemIntoView="True" >
 			<ListBox.Resources>
-				<SolidColorBrush x:Key="HighlightBrush" Color="DeepSkyBlue"/>
-			
+
 			</ListBox.Resources>
 				<ListBox.GroupStyle>
 				<GroupStyle>

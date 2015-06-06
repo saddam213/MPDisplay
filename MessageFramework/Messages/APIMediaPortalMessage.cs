@@ -24,7 +24,7 @@ namespace MessageFramework.Messages
     {
         ActionMessage,
         WindowInfoMessage,
-        DialogInfoMessage,
+        DialogInfoMessage
     }
 
     public class APIWindowInfoMessage
@@ -48,7 +48,7 @@ namespace MessageFramework.Messages
         MediaPortalWindow,
         WindowListAction,
         DialogListAction,
-        GuideAction,
+        GuideAction
     }
 
     public class APIGuideAction
@@ -72,20 +72,15 @@ namespace MessageFramework.Messages
 
         public bool IsEqual(APIListAction action)
         {
-            if (action == null || this == null)
+            if (action == null)
             {
-                return this == null && action == null;
+                return false;
             }
 
-            if (ActionType == action.ActionType
-                && ItemListType == action.ItemListType
-                && ItemText == action.ItemText
-                && ItemIndex == action.ItemIndex)
-            {
-                return true;
-            }
-
-            return false;
+            return ActionType == action.ActionType
+                   && ItemListType == action.ItemListType
+                   && ItemText == action.ItemText
+                   && ItemIndex == action.ItemIndex;
         }
 
     }

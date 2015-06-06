@@ -28,12 +28,9 @@ namespace GUIConfig.Settings
 
             //http://tools.ietf.org/html/rfc952
             //See the above link for the list of valid host names.
-            if (!Regex.IsMatch(hostName, @"^[A-Za-z0-9.-]+$"))
-            {
-                return new ValidationResult(false, "Hostname is not valid. Valid chars are A-Z, a-z, 0-9, (.) and (-). See http://tools.ietf.org/html/rfc952 for further details");
-            }
-
-            return new ValidationResult(true, null);
+            return !Regex.IsMatch(hostName, @"^[A-Za-z0-9.-]+$") ? 
+                new ValidationResult(false, "Hostname is not valid. Valid chars are A-Z, a-z, 0-9, (.) and (-). See http://tools.ietf.org/html/rfc952 for further details") :
+                new ValidationResult(true, null);
         }
     }
 }

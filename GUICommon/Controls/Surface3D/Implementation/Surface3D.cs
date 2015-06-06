@@ -15,7 +15,7 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// The 3D scene used to render the control.
         /// </summary>
-        public Viewport3D _viewport;
+        public Viewport3D Viewport;
 
         /// <summary>
         /// The camera, which determines the view of the scene.
@@ -25,7 +25,7 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// The ContentPresenter used to display content on the front.
         /// </summary>
-        public Border _content;
+        private Border _content;
 
       //  public Viewbox _frontViewbox;
 
@@ -34,12 +34,12 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// The model used to display content on the front.
         /// </summary>
-        protected Viewport2DVisual3D _frontModel;
+        protected Viewport2DVisual3D FrontModel;
 
         /// <summary>
         /// The model used to display content on the back.
         /// </summary>
-        protected Viewport2DVisual3D _backModel;
+        protected Viewport2DVisual3D BackModel;
 
         /// <summary>
         /// The 3D scale transform, used to keep the content at the right size.
@@ -88,17 +88,17 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D _axisX = new Vector3D(1, 0, 0);
+        static private readonly Vector3D AxisX = new Vector3D(1, 0, 0);
 
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D _axisY = new Vector3D(0, 1, 0);
+        static private readonly Vector3D AxisY = new Vector3D(0, 1, 0);
 
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D _axisZ = new Vector3D(0, 0, 1);
+        static private readonly Vector3D AxisZ = new Vector3D(0, 0, 1);
 
         #endregion
 
@@ -129,13 +129,14 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// When overridden in a derived class, is invoked whenever application code or internal processes call <see cref="M:System.Windows.FrameworkElement.ApplyTemplate"/>.
         /// </summary>
+        // ReSharper disable once FunctionComplexityOverflow
         public override void OnApplyTemplate()
         {
-            _viewport = GetTemplateChild("PART_Viewport") as Viewport3D;
+            Viewport = GetTemplateChild("PART_Viewport") as Viewport3D;
             _camera = GetTemplateChild("PART_Camera") as PerspectiveCamera;
             _content = GetTemplateChild("PART_FrontContent") as Border;
-            _frontModel = GetTemplateChild("PART_FrontModel") as Viewport2DVisual3D;
-            _backModel = GetTemplateChild("PART_BackModel") as Viewport2DVisual3D;
+            FrontModel = GetTemplateChild("PART_FrontModel") as Viewport2DVisual3D;
+            BackModel = GetTemplateChild("PART_BackModel") as Viewport2DVisual3D;
             _scale = GetTemplateChild("PART_Scale") as ScaleTransform3D;
             _rotate = GetTemplateChild("PART_Rotate") as RotateTransform3D;
             _quaternion = GetTemplateChild("PART_Quaternion") as QuaternionRotation3D;
@@ -145,7 +146,7 @@ namespace MPDisplay.Common.Controls.Surface3D
            // _frontViewbox = GetTemplateChild("PART_FrontViewbox") as Viewbox;
 
             SizeChanged += (sender, e) => UpdateBounds();
-            _content.SizeChanged += (sender, e) => UpdateBounds();
+            if (_content != null) _content.SizeChanged += (sender, e) => UpdateBounds();
             UpdateBounds();
             UpdateRotation();
             UpdateLights();
@@ -244,7 +245,11 @@ namespace MPDisplay.Common.Controls.Surface3D
             "RotationCenterX",
             typeof(double),
             typeof(Surface3D),
-            new PropertyMetadata(0.0, (sender, e) => (sender as Surface3D).UpdateRotationCenter()));
+            new PropertyMetadata(0.0, (sender, e) =>
+            {
+                if (sender == null) throw new ArgumentNullException("sender");
+                ((Surface3D) sender).UpdateRotationCenter();
+            }));
 
         #endregion
 
@@ -267,7 +272,7 @@ namespace MPDisplay.Common.Controls.Surface3D
             "RotationCenterY",
             typeof(double),
             typeof(Surface3D),
-            new PropertyMetadata(0.0, (sender, e) => (sender as Surface3D).UpdateRotationCenter()));
+            new PropertyMetadata(0.0, (sender, e) => ((Surface3D) sender).UpdateRotationCenter()));
 
         #endregion
 
@@ -290,7 +295,7 @@ namespace MPDisplay.Common.Controls.Surface3D
             "RotationCenterZ",
             typeof(double),
             typeof(Surface3D),
-            new PropertyMetadata(0.0, (sender, e) => (sender as Surface3D).UpdateRotationCenter()));
+            new PropertyMetadata(0.0, (sender, e) => ((Surface3D) sender).UpdateRotationCenter()));
 
         #endregion
 
@@ -336,7 +341,7 @@ namespace MPDisplay.Common.Controls.Surface3D
             "UseLights",
             typeof(bool),
             typeof(Surface3D),
-            new PropertyMetadata(true, (sender, e) => (sender as Surface3D).UpdateLights()));
+            new PropertyMetadata(true, (sender, e) => ((Surface3D) sender).UpdateLights()));
 
         #endregion
 
@@ -376,8 +381,8 @@ namespace MPDisplay.Common.Controls.Surface3D
                 return;
             }
 
-            double fovInRadians = FieldOfView * (Math.PI / 180);
-            double z = _bounds.Width / Math.Tan(fovInRadians / 2) / 2;
+            var fovInRadians = FieldOfView * (Math.PI / 180);
+            var z = _bounds.Width / Math.Tan(fovInRadians / 2) / 2;
             _camera.Position = new Point3D(_bounds.Width / 2, _bounds.Height / 2, z);
             _camera.FieldOfView = FieldOfView;
             _scale.ScaleX = _bounds.Width;
@@ -389,14 +394,14 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// </summary>
         public virtual void UpdateRotation()
         {
-            if (_frontModel == null || _bounds == Rect.Empty)
+            if (FrontModel == null || _bounds == Rect.Empty)
             {
                 return;
             }
 
           
             // Determine if we're showing the backside.
-            bool isBackShowing = IsBackShowingRotation(RotationX, RotationY, RotationZ);
+            var isBackShowing = IsBackShowingRotation(RotationX, RotationY, RotationZ);
 
             // Update the rotation of the 3D model.
             UpdateQuaternion();
@@ -406,13 +411,13 @@ namespace MPDisplay.Common.Controls.Surface3D
                 // Decide which visual to be showing.
                 if (isBackShowing)
                 {
-                    _frontModel.Visual = null;
-                    _backModel.Visual = _content;
+                    FrontModel.Visual = null;
+                    BackModel.Visual = _content;
                 }
                 else
                 {
-                    _backModel.Visual = null;
-                    _frontModel.Visual = _content;
+                    BackModel.Visual = null;
+                    FrontModel.Visual = _content;
                 }
 
                 UpdateRotationCenter();
@@ -432,9 +437,9 @@ namespace MPDisplay.Common.Controls.Surface3D
                 return;
             }
 
-            Quaternion qx = new Quaternion(_axisX, RotationX);
-            Quaternion qy = new Quaternion(_axisY, RotationY);
-            Quaternion qz = new Quaternion(_axisZ, RotationZ);
+            var qx = new Quaternion(AxisX, RotationX);
+            var qy = new Quaternion(AxisY, RotationY);
+            var qz = new Quaternion(AxisZ, RotationZ);
             _quaternion.Quaternion = qx * qy * qz;
         }
 
@@ -458,14 +463,14 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// </summary>
         private void UpdateLights()
         {
-            if (_viewport == null)
+            if (Viewport == null)
             {
                 return;
             }
 
-            _viewport.Children.Remove(_ambientLights);
-            _viewport.Children.Remove(_directionalLights);
-            _viewport.Children.Insert(0, UseLights ? _directionalLights : _ambientLights);
+            Viewport.Children.Remove(_ambientLights);
+            Viewport.Children.Remove(_directionalLights);
+            Viewport.Children.Insert(0, UseLights ? _directionalLights : _ambientLights);
         }
 
      
@@ -480,12 +485,12 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// </returns>
         private static bool IsBackShowingRotation(double x, double y, double z)
         {
-            Matrix3D rotMatrix = new Matrix3D();
+            var rotMatrix = new Matrix3D();
             rotMatrix.Rotate(new Quaternion(new Vector3D(1, 0, 0), x));
             rotMatrix.Rotate(new Quaternion(new Vector3D(0, 1, 0) * rotMatrix, y));
             rotMatrix.Rotate(new Quaternion(new Vector3D(0, 0, 1) * rotMatrix, z));
 
-            Vector3D transformZ = rotMatrix.Transform(new Vector3D(0, 0, 1));
+            var transformZ = rotMatrix.Transform(new Vector3D(0, 0, 1));
             return Vector3D.DotProduct(new Vector3D(0, 0, 1), transformZ) < 0;
         }
 

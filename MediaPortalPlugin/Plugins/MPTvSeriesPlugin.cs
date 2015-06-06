@@ -20,19 +20,11 @@ namespace MediaPortalPlugin.Plugins
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                var selectedSeries = ReflectionHelper.GetStaticField(PluginWindow, "m_SelectedEpisode", null);
-                if (selectedSeries != null)
-                {
-                    var episodeFilename = ReflectionHelper.GetPropertyValue<object>(selectedSeries, "Item", null, new object[] { "EpisodeFilename" });
-                    if (episodeFilename != null)
-                    {
-                        return filename.Equals(episodeFilename.ToString(), StringComparison.OrdinalIgnoreCase);
-                    }
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            var selectedSeries = ReflectionHelper.GetStaticField(PluginWindow, "m_SelectedEpisode", null);
+            if (selectedSeries == null) return false;
+            var episodeFilename = ReflectionHelper.GetPropertyValue<object>(selectedSeries, "Item", null, new object[] { "EpisodeFilename" });
+            return episodeFilename != null && filename.Equals(episodeFilename.ToString(), StringComparison.OrdinalIgnoreCase);
         }
 
         public override bool MustResendListOnLayoutChange()
@@ -47,11 +39,11 @@ namespace MediaPortalPlugin.Plugins
 
         public override APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {
-            string filename = string.Empty;
+            var filename = string.Empty;
             if (Settings != null && item != null)
             {
                 var view = ReflectionHelper.GetStaticField<object>(PluginWindow, "CurrentViewLevel", null);
-                bool isSeason = view != null && view.ToString() == "Season";
+                var isSeason = view != null && view.ToString() == "Season";
 
                 switch (layout)
                 {
@@ -75,11 +67,8 @@ namespace MediaPortalPlugin.Plugins
             }
 
             var image = ImageHelper.CreateImage(filename);
-            if (!image.IsEmpty)
-            {
-                return image;
-            }
-            return base.GetListItemImage1(item, layout);
+
+            return !image.IsEmpty ? image : base.GetListItemImage1(item, layout);
         }
     }
 }
