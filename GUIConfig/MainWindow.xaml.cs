@@ -4,11 +4,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Forms;
 using Common.Log;
 using Common.Settings;
 using GUIConfig.Dialogs;
 using GUIConfig.ViewModels;
 using GUIConfig.Settings;
+using GUIConfig.SupportInfo;
+using MessageBox = System.Windows.MessageBox;
 
 namespace GUIConfig
 {
@@ -198,6 +201,46 @@ namespace GUIConfig
         {
             _hasChanges = false;
             Close();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the Button_SupportInfo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void Button_SupportFile_Click(object sender, RoutedEventArgs e)
+        {
+            var path = FileNamePicker();
+            if (string.IsNullOrEmpty(path)) return;
+
+            var supportInfoFile = new SupportInfoFile();
+            supportInfoFile.AddItem(new SupportInfoItem {FileName = "systeminfo.txt",Type = SupportInfoItemType.SystemInfo});
+            supportInfoFile.AddItem(new SupportInfoItem { Folder = "MPD Config", ItemPath = RegistrySettings.ProgramDataPath, Type = SupportInfoItemType.DataFile });
+            supportInfoFile.AddItem(new SupportInfoItem { Folder = "MPD Logs", ItemPath = RegistrySettings.ProgramDataPath + "Logs", Type = SupportInfoItemType.DataFile });
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "assemblyinfo.txt", ItemPath = RegistrySettings.MPDisplayPath, Type = SupportInfoItemType.AssemblyInfo });
+
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "assemblyinfo.txt", ItemPath = RegistrySettings.MPDPluginPath, Type = SupportInfoItemType.AssemblyInfo });
+
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "mpdregistry.txt", ItemPath = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MPDisplay", Type = SupportInfoItemType.RegistryKey});
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "mpdregistry.txt", ItemPath = @"HKEY_LOCAL_MACHINE\SOFTWARE\MPDisplay", Type = SupportInfoItemType.RegistryKey});
+            supportInfoFile.CreateZipFile(path);
+        }
+
+        /// <summary>
+        /// Launches a file name picker.
+        /// </summary>
+        private static string FileNamePicker()
+        {
+            var dlg = new SaveFileDialog
+            {
+                FileName = "MPD_SupportInfo.zip",
+                DefaultExt = "zip",
+                Filter = @"Zip files (*.zip)|*.zip",
+                CheckFileExists = false,
+                CheckPathExists = true
+            };
+            var result = dlg.ShowDialog();
+            return result == System.Windows.Forms.DialogResult.OK ? dlg.FileName : string.Empty;
         }
 
         #endregion

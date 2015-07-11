@@ -199,10 +199,25 @@ namespace MediaPortalPlugin.InfoManagers
             if (tag.Equals("#facadeview.layout"))
             {
                 SendFacadeLayout();
-                if (WindowManager.Instance.CurrentPlugin != null)
+                if (WindowManager.Instance.CurrentPlugin != null && !GUIWindowManager.IsSwitchingToNewWindow)
                 {
                     if (WindowManager.Instance.CurrentPlugin.MustResendListOnLayoutChange())
                     {
+                           var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
+                            if (currentFacade != null)
+                            {
+                                var currentCount = -1;
+                                var timeout = DateTime.Now.AddSeconds(10);
+                                while (!GUIWindowManager.IsSwitchingToNewWindow && (currentCount <= 0 || currentCount != GetCount(currentFacade)))
+                                {
+                                    _log.Message(LogLevel.Debug, "List not ready, Waiting 250ms");
+                                    currentCount = GetCount(currentFacade);
+                                    Thread.Sleep(250);
+                                    if (DateTime.Now <= timeout) continue;
+                                    _log.Message(LogLevel.Debug, "List still not ready, TIMEOUT");
+                                    break;
+                                }
+                        }
                         SendFacadeList();
                     }
                 }            
@@ -353,7 +368,7 @@ namespace MediaPortalPlugin.InfoManagers
         {
             var currentFacade = (_facadeControls.FirstOrDefault(f => f.Focus) ??
                                  _facadeControls.FirstOrDefault(f => f.Count > 0)) ?? _facadeControls.FirstOrDefault();
-
+ 
             if (currentFacade == null) return;
             var layout = GetApiListLayout(currentFacade);
             SendList(APIListType.List, layout, GetApiListItems(currentFacade, layout));
@@ -566,7 +581,7 @@ namespace MediaPortalPlugin.InfoManagers
                 }
                 index++;
             }
-            if (!string.IsNullOrEmpty(label))
+            if (label != null)
             {
                 SendSelectedItem(APIListType.GroupMenu, label, index);
             }
@@ -684,7 +699,7 @@ namespace MediaPortalPlugin.InfoManagers
                     label = (item as GUICheckButton).Label;
                 }
 
-                if (string.IsNullOrEmpty(label)) continue;
+                if (label == null) continue;
                 returnValue.Add(new APIListItem { Index = index, Label = label });
                 index++;
             }

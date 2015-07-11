@@ -4,7 +4,6 @@
     {
         private int _port = 44444;
         private string _ipAddress = "localhost";
-        private string _connectionName = "MPDisplay";
         private int _resumeDelay = 5000;
 
         public int Port
@@ -17,12 +16,6 @@
         {
             get { return _ipAddress; }
             set { _ipAddress = value; NotifyPropertyChanged("IpAddress"); }
-        }
-
-        public string ConnectionName
-        {
-            get { return _connectionName; }
-            set { _connectionName = value; NotifyPropertyChanged("ConnectionName"); }
         }
 
         public int ResumeDelay

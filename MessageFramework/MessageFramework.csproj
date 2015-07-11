@@ -58,7 +58,6 @@
     <Compile Include="Messages\APIMediaPortalMessage.cs" />
     <Compile Include="DataObjects\APIMessageType.cs" />
     <Compile Include="Messages\APIPropertyMessage.cs" />
-    <Compile Include="Messages\APITVServerMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

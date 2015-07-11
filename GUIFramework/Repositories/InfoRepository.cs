@@ -61,7 +61,6 @@ namespace GUIFramework.Repositories
         private int _focusedWindowControlId = -1;
         private int _focusedProgramId = -1;
         private int _focusedChannelId = -1;
-        private bool _isTVServerConnected;
         private bool _isMediaPortalConnected;
         private bool _isMPDisplayConnected;
         private bool _isFullscreenMusic;
@@ -332,17 +331,6 @@ namespace GUIFramework.Repositories
                 if (_isMediaPortalConnected == value) return;
                 _isMediaPortalConnected = value;
                 NotifiyValueChanged(InfoMessageType.IsMediaPortalConnected, value);
-            }
-        }
-
-        public bool IsTVServerConnected
-        {
-            get { return _isTVServerConnected; }
-            set
-            {
-                if (_isTVServerConnected == value) return;
-                _isTVServerConnected = value;
-                NotifiyValueChanged(InfoMessageType.IsTVServerConnected, value);
             }
         }
 

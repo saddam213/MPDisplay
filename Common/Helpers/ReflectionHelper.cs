@@ -380,9 +380,8 @@ namespace Common.Helpers
             {
                 var array = obj as IEnumerable;
                 if (array == null) yield break;
-                foreach (var item in array)
-                    foreach (var str in _FindStringValues(item, visitedObjects))
-                        yield return str;
+                foreach (var str in array.Cast<object>().SelectMany(item => _FindStringValues(item, visitedObjects)))
+                    yield return str;
 
                 yield break;
             }
@@ -390,6 +389,7 @@ namespace Common.Helpers
             if (!type.IsClass) yield break;
 
             var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var field in fields)
             {
                 var item = field.GetValue(obj);

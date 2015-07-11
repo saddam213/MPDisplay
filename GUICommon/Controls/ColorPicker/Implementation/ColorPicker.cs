@@ -349,6 +349,7 @@ namespace MPDisplay.Common.Controls
         {
             var standardColors = new ObservableCollection<ColorItem>();
 
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var item in ColorUtilities.KnownColors)
             {
                 if (String.Equals(item.Key, "Transparent")) continue;

@@ -305,59 +305,68 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void SendWindowMessage()
         {
-            if (CurrentWindow == null || !MessageService.Instance.IsMpDisplayConnected) return;
+            if (CurrentWindow == null) return;
 
-            _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}" , CurrentWindow.GetID, CurrentWindow.GetFocusControlId());
-            MessageService.Instance.SendInfoMessage(new APIInfoMessage
+            if (MessageService.Instance.IsMpDisplayConnected)
             {
-                MessageType = APIInfoMessageType.WindowMessage,
-                WindowMessage = new APIWindowMessage
+                _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}" , CurrentWindow.GetID, CurrentWindow.GetFocusControlId());
+                MessageService.Instance.SendInfoMessage(new APIInfoMessage
                 {
-                    WindowId = CurrentWindow.GetID,
-                    FocusedControlId = CurrentWindow.GetFocusControlId(),
-                    EnabledPlugins = _enabledlugins
-                }
-            });
+                    MessageType = APIInfoMessageType.WindowMessage,
+                    WindowMessage = new APIWindowMessage
+                    {
+                        WindowId = CurrentWindow.GetID,
+                        FocusedControlId = CurrentWindow.GetFocusControlId(),
+                        EnabledPlugins = _enabledlugins
+                    }
+                });
+                
+            }
 
-            SendEditorData(APISkinEditorDataType.WindowId, CurrentWindow.GetID);
+            if (MessageService.Instance.IsSkinEditorConnected) SendEditorData(APISkinEditorDataType.WindowId, CurrentWindow.GetID);
         }
 
         private void SendFocusedControlMessage(int controlId)
         {
-            if (CurrentWindow == null || !MessageService.Instance.IsMpDisplayConnected) return;
+            if (CurrentWindow == null ) return;
 
-            var channelId = -1;
-            var programId = -1;
+                var focusId = CurrentWindowFocusedControlId;
 
-            var focusId = CurrentWindowFocusedControlId;
-            if (controlId >= 0) focusId = controlId;
-
-            // If control is a TVGuide item send also programId and channelId
-            if ((CurrentWindow.GetID == 600 || CurrentWindow.GetID == 604) && focusId >= 50000)
+            if (MessageService.Instance.IsMpDisplayConnected)
             {
-                var item = CurrentWindow.GetControl(focusId);
-                var program = item.Data;
-                channelId = ReflectionHelper.GetPropertyValue(program, "IdChannel", -1);
-                programId = ReflectionHelper.GetPropertyValue(program, "IdProgram", -1);
+                var channelId = -1;
+                var programId = -1;
+
+                if (controlId >= 0) focusId = controlId;
+
+                // If control is a TVGuide item send also programId and channelId
+                if ((CurrentWindow.GetID == 600 || CurrentWindow.GetID == 604) && focusId >= 50000)
+                {
+                    var item = CurrentWindow.GetControl(focusId);
+                    var program = item.Data;
+                    channelId = ReflectionHelper.GetPropertyValue(program, "IdChannel", -1);
+                    programId = ReflectionHelper.GetPropertyValue(program, "IdProgram", -1);
+                }
+
+                if (focusId == _previousFocusedControlId && programId <= 0) return;
+
+                _previousFocusedControlId = focusId;
+                _log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
+                MessageService.Instance.SendInfoMessage(new APIInfoMessage
+                {
+                    MessageType = APIInfoMessageType.WindowMessage,
+                    WindowMessage = new APIWindowMessage
+                    {
+                        MessageType = APIWindowMessageType.FocusedControlId,
+                        FocusedControlId = focusId,
+                        ProgramId = programId,
+                        ChannelId = channelId
+                    }
+                });
+                
             }
 
-            if (focusId == _previousFocusedControlId && programId <= 0) return;
-
-            _previousFocusedControlId = focusId;
-            _log.Message(LogLevel.Debug, "[SendFocusedControlId] - FocusedControlId: {0}", focusId);
-            MessageService.Instance.SendInfoMessage(new APIInfoMessage
-            {
-                MessageType = APIInfoMessageType.WindowMessage,
-                WindowMessage = new APIWindowMessage
-                {
-                    MessageType = APIWindowMessageType.FocusedControlId,
-                    FocusedControlId = focusId,
-                    ProgramId = programId,
-                    ChannelId = channelId
-                }
-            });
-
-            SendEditorData(APISkinEditorDataType.FocusedControlId, focusId);
+            if (MessageService.Instance.IsSkinEditorConnected) SendEditorData(APISkinEditorDataType.FocusedControlId, focusId);
         }
 
        

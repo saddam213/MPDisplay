@@ -253,15 +253,6 @@ namespace GUIFramework.Managers
         }
 
         /// <summary>
-        /// Determines whether [is tv server connected].
-        /// </summary>
-        /// <returns></returns>
-        public static bool IsTVServerConnected()
-        {
-            return InfoRepository.Instance.IsTVServerConnected;
-        }
-
-        /// <summary>
         /// Determines whether [is mp display connected].
         /// </summary>
         /// <returns></returns>

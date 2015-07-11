@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Threading;
 using Common.Helpers;
+using Common.Log;
 using GUIFramework;
 using GUISkinFramework.Editors;
 using GUISkinFramework.Skin;
@@ -39,6 +40,8 @@ namespace SkinEditor.Helpers
         private List<string> _propertyTagCache;
 
         private InfoEditorViewSettings _settings;
+
+        private Log _log = LoggingManager.GetLog(typeof(ConnectionHelper));
 
         public ConnectionHelper()
         {
@@ -119,7 +122,7 @@ namespace SkinEditor.Helpers
         {
 
             _serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", _settings.IpAddress, _settings.Port));
-            // Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", serverEndpoint);
+            _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", _serverEndpoint);
             _serverBinding = ConnectHelper.GetServerBinding();
 
             var site = new InstanceContext(this);
@@ -131,14 +134,14 @@ namespace SkinEditor.Helpers
             _messageBroker = new MessageClient(site, _serverBinding, _serverEndpoint);
             _messageBroker.InnerChannel.Faulted += Channel_Faulted;
 
-            _connection = new APIConnection("SkinEditor");
+           _connection = new APIConnection(ConnectionType.SkinEditor);
 
             await ConnectToService();
         }
 
         private void Channel_Faulted(object sender, EventArgs e)
         {
-            // Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
+            _log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
             Disconnect();
         }
 
@@ -153,19 +156,19 @@ namespace SkinEditor.Helpers
                 try
                 {
 
-                    // Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
+                    _log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
                     var result = await _messageBroker.ConnectAsync(_connection);
                     if (result != null && result.Any())
                     {
-                        // Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
+                        _log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                         IsConnected = true;
-                        IsMediaPortalConnected = result.Any(x => x.ConnectionName.Equals("MediaPortalPlugin"));
+                        IsMediaPortalConnected = result.Any(x => x.ConnectionType.Equals(ConnectionType.MediaPortalPlugin));
                         _lastKeepAlive = DateTime.Now;
                     }
                 }
-                catch
+                catch( Exception ex)
                 {
-                    // Log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", ex.Message);
+                    _log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", ex.Message);
                 }
             }
         }
@@ -182,7 +185,7 @@ namespace SkinEditor.Helpers
 
             try
             {
-                //  Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
+                _log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
                 return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
             }
             catch
@@ -200,16 +203,15 @@ namespace SkinEditor.Helpers
         {
             if (connection == null) return;
 
-            if (connection.ConnectionName.Equals("SkinEditor"))
+            if (connection.ConnectionType.Equals(ConnectionType.SkinEditor))
             {
                 IsConnected = true;
             }
 
-            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-            {
-                // Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
-                IsMediaPortalConnected = true;
-            }
+            if (!connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin)) return;
+
+            _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
+            IsMediaPortalConnected = true;
         }
 
         /// <summary>
@@ -220,16 +222,15 @@ namespace SkinEditor.Helpers
         {
             if (connection == null) return;
 
-            if (connection.ConnectionName.Equals("SkinEditor"))
+            if (connection.ConnectionType.Equals(ConnectionType.SkinEditor))
             {
                 Disconnect();
             }
 
-            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-            {
-                // Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
-                IsMediaPortalConnected = false;
-            }
+            if (!connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin)) return;
+
+            _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
+            IsMediaPortalConnected = false;
         }
         /// <summary>
         /// Starts the second timer.
@@ -280,7 +281,7 @@ namespace SkinEditor.Helpers
 
                 if (DateTime.Now > _lastKeepAlive.AddSeconds(30))
                 {
-                    //  Log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
+                    _log.Message(LogLevel.Verbose, "[KeepAlive] - Sending KeepAlive message.");
                     await SendKeepAliveMessage();
                 }
             }
@@ -335,6 +336,8 @@ namespace SkinEditor.Helpers
                             return;
                         }
                         PropertyData.Add(new SkinPropertyItem { Tag = property[0], Value = property[1], IsDefined = PropertyTagCache.Contains(property[0]) });
+                        _log.Message(LogLevel.Verbose, "[SkinEditor Message Received] - Property Tag <{0}> Value <{1}>.", property[0], property[1]);
+
                     }
                 }
 
@@ -344,23 +347,26 @@ namespace SkinEditor.Helpers
                     foreach (var item in skineditorData.ListItemData.Where(x => x != null && x.Count() == 2).ToArray())
                     {
                         ListItemData.Add(new SkinPropertyItem { Tag = item[0], Value = item[1] });
+                        _log.Message(LogLevel.Verbose, "[SkinEditor Message Received] - List Item Tag <{0}> Value <{1}>.", item[0], item[1]);
                     }
                 }
 
                 if (skineditorData.DataType == APISkinEditorDataType.WindowId)
                 {
                     WindowId = skineditorData.IntValue;
+                    _log.Message(LogLevel.Verbose, "[SkinEditor Message Received] - Window ID <{0}>.", skineditorData.IntValue);
                 }
 
                 if (skineditorData.DataType == APISkinEditorDataType.DialogId)
                 {
                     DialogId = skineditorData.IntValue;
+                    _log.Message(LogLevel.Verbose, "[SkinEditor Message Received] - Dialog ID <{0}>.", skineditorData.IntValue);
                 }
 
-                if (skineditorData.DataType == APISkinEditorDataType.FocusedControlId)
-                {
-                    FocusedControlId = skineditorData.IntValue;
-                }
+                if (skineditorData.DataType != APISkinEditorDataType.FocusedControlId) return;
+
+                FocusedControlId = skineditorData.IntValue;
+                _log.Message(LogLevel.Verbose, "[SkinEditor Message Received] - Focussed Control ID <{0}>.", skineditorData.IntValue);
             });
         }
 
@@ -392,7 +398,6 @@ namespace SkinEditor.Helpers
         }
 
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message) { }
-        public void ReceiveTVServerMessage(APITVServerMessage message) { }
         public void ReceiveAPIPropertyMessage(APIPropertyMessage message) { }
         public void ReceiveAPIListMessage(APIListMessage message) { }
         public void ReceiveAPIInfoMessage(APIInfoMessage message) { }

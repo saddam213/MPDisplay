@@ -819,13 +819,16 @@ namespace SkinEditor.Views
         // set recursivly the DesignerVisibility property of all parents of control
         private void SetParentControlsVisible(XmlControl control, bool value)
         {
-            if (control == null) return;
+            while (true)
+            {
+                if (control == null) return;
 
-            var control2 = GetControlParent(control);
-            if (!(control2 is XmlGroup)) return;
+                var control2 = GetControlParent(control);
+                if (!(control2 is XmlGroup)) return;
 
-            (control2 as XmlGroup).DesignerVisible = value;
-            SetParentControlsVisible((control2 as XmlGroup), value);
+                (control2 as XmlGroup).DesignerVisible = value;
+                control = (control2 as XmlGroup);
+            }
         }
 
         // get recursively the property DesignerVisible.

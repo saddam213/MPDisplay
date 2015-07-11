@@ -124,7 +124,9 @@ namespace MediaPortalPlugin.InfoManagers
             if (_suspended) return;
 
             ThreadPool.QueueUserWorkItem(o => ProcessProperty(tag, tagValue));
+            // ReSharper disable once ImplicitlyCapturedClosure
             ThreadPool.QueueUserWorkItem(o => ProcessAddProperty(_addImageSettings.AddImagePropertySettings.Where(x => x.PathExists && x.MPProperties.Contains(tag)).ToList()));
+            // ReSharper disable once ImplicitlyCapturedClosure
             ThreadPool.QueueUserWorkItem(o => GetPictureInfo(tag));
         }
 
@@ -161,7 +163,7 @@ namespace MediaPortalPlugin.InfoManagers
 
             if (MessageService.Instance.IsSkinEditorConnected)
             {
-                if (!string.IsNullOrEmpty(tag) && !string.IsNullOrEmpty(tagValue))
+                if (!string.IsNullOrEmpty(tag) && tagValue != null)
                 {
                     MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
                     {
@@ -244,7 +246,7 @@ namespace MediaPortalPlugin.InfoManagers
         private static void SendNumberProperty(string tag, string tagValue)
         {
             double value;
-            if (!string.IsNullOrEmpty(tagValue) && double.TryParse(tagValue, out value))
+            if (tagValue != null && double.TryParse(tagValue, out value))
             {
                 MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
                 {
@@ -418,7 +420,7 @@ namespace MediaPortalPlugin.InfoManagers
 
             if (!MessageService.Instance.IsSkinEditorConnected) return;
 
-            if (!string.IsNullOrEmpty(tag) && !string.IsNullOrEmpty(tagvalue))
+            if (!string.IsNullOrEmpty(tag) && tagvalue != null)
             {
                 MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
                 {

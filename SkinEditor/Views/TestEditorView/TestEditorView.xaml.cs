@@ -36,7 +36,6 @@ namespace SkinEditor.Views
             {
                 ConnectionSettings = new ConnectionSettings
                 {
-                    ConnectionName = "MPDisplay1",
                     Port = 44444,
                     IpAddress = "localhost"
                 }

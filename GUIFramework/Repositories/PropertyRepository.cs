@@ -209,11 +209,13 @@ namespace GUIFramework.Repositories
                     var parts = xmlstring.Contains("+") ? xmlstring.Split('+').ToList() : new List<string> { xmlstring };
                     foreach (var part in parts)
                     {
+                        // ReSharper disable once InvertIf
                         if (part.StartsWith("@"))
                         {
                             returnValue += SkinInfo.GetLanguageValue(part);
                             continue;
                         }
+                        // ReSharper disable once InvertIf
                         if (part.StartsWith("#"))
                         {
                             if (string.IsNullOrEmpty(format))
@@ -270,6 +272,7 @@ namespace GUIFramework.Repositories
             if (controlHost == null) return new List<APIPropertyMessage>();
 
             var skinTags = new List<string>();
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var control in controlHost.Controls.GetControls())
             {
                 if (control.RegisteredProperties == null || !control.RegisteredProperties.Any()) continue;

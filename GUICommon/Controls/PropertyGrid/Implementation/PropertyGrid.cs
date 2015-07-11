@@ -484,10 +484,10 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         /// </summary>
         public void Update()
         {
-            foreach (var item in Properties)
+            foreach (var bindingExpressionBase in Properties.Select(item => BindingOperations.GetBindingExpressionBase(item, PropertyItem.ValueProperty))
+                .Where(bindingExpressionBase => bindingExpressionBase != null))
             {
-                var bindingExpressionBase = BindingOperations.GetBindingExpressionBase(item, PropertyItem.ValueProperty);
-                if (bindingExpressionBase != null) bindingExpressionBase.UpdateTarget();
+                bindingExpressionBase.UpdateTarget();
             }
         }
 

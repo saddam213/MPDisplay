@@ -55,14 +55,6 @@ namespace MediaPortalPlugin
 
         void EndSendMediaPortalMessage(IAsyncResult result);
 
-        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendTVServerMessage")]
-        void SendTVServerMessage(APITVServerMessage msg);
-
-        [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendTVServerMessage")]
-        IAsyncResult BeginSendTVServerMessage(APITVServerMessage msg, AsyncCallback callback, object asyncState);
-
-        void EndSendTVServerMessage(IAsyncResult result);
-
         [OperationContract(Action = "http://tempuri.org/IMessage/Connect", ReplyAction = "http://tempuri.org/IMessage/ConnectResponse")]
         List<APIConnection> Connect(APIConnection name);
 
@@ -98,9 +90,6 @@ namespace MediaPortalPlugin
         [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveMediaPortalMessage")]
         void ReceiveMediaPortalMessage(APIMediaPortalMessage message);
      
-        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveTVServerMessage")]
-        void ReceiveTVServerMessage(APITVServerMessage message);
-
         [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/SessionConnected")]
         void SessionConnected(APIConnection connection);
 
@@ -171,12 +160,6 @@ namespace MediaPortalPlugin
 
         private SendOrPostCallback _onSendMediaPortalMessageCompletedDelegate;
 
-        private BeginOperationDelegate _onBeginSendTvServerMessageDelegate;
-
-        private EndOperationDelegate _onEndSendTvServerMessageDelegate;
-
-        private SendOrPostCallback _onSendTvServerMessageCompletedDelegate;
-
         private BeginOperationDelegate _onBeginConnectDelegate;
 
         private EndOperationDelegate _onEndConnectDelegate;
@@ -223,8 +206,6 @@ namespace MediaPortalPlugin
         public event EventHandler<AsyncCompletedEventArgs> SendDataMessageCompleted;
 
         public event EventHandler<AsyncCompletedEventArgs> SendMediaPortalMessageCompleted;
-
-        public event EventHandler<AsyncCompletedEventArgs> SendTvServerMessageCompleted;
 
         public event EventHandler<ConnectCompletedEventArgs> ConnectCompleted;
 
@@ -530,65 +511,6 @@ namespace MediaPortalPlugin
                     msg}, _onEndSendMediaPortalMessageDelegate, _onSendMediaPortalMessageCompletedDelegate, userState);
         }
 
-        public void SendTVServerMessage(APITVServerMessage msg)
-        {
-            Channel.SendTVServerMessage(msg);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public IAsyncResult BeginSendTVServerMessage(APITVServerMessage msg, AsyncCallback callback, object asyncState)
-        {
-            return Channel.BeginSendTVServerMessage(msg, callback, asyncState);
-        }
-
-        [EditorBrowsable(EditorBrowsableState.Advanced)]
-        public void EndSendTVServerMessage(IAsyncResult result)
-        {
-            Channel.EndSendTVServerMessage(result);
-        }
-
-        private IAsyncResult OnBeginSendTvServerMessage(object[] inValues, AsyncCallback callback, object asyncState)
-        {
-            var msg = ((APITVServerMessage)(inValues[0]));
-            return BeginSendTVServerMessage(msg, callback, asyncState);
-        }
-
-        private object[] OnEndSendTvServerMessage(IAsyncResult result)
-        {
-            EndSendTVServerMessage(result);
-            return null;
-        }
-
-        private void OnSendTvServerMessageCompleted(object state)
-        {
-            if ((SendTvServerMessageCompleted == null)) return;
-
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
-            SendTvServerMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-        }
-
-        public void SendTvServerMessageAsync(APITVServerMessage msg)
-        {
-            SendTvServerMessageAsync(msg, null);
-        }
-
-        public void SendTvServerMessageAsync(APITVServerMessage msg, object userState)
-        {
-            if ((_onBeginSendTvServerMessageDelegate == null))
-            {
-                _onBeginSendTvServerMessageDelegate = OnBeginSendTvServerMessage;
-            }
-            if ((_onEndSendTvServerMessageDelegate == null))
-            {
-                _onEndSendTvServerMessageDelegate = OnEndSendTvServerMessage;
-            }
-            if ((_onSendTvServerMessageCompletedDelegate == null))
-            {
-                _onSendTvServerMessageCompletedDelegate = OnSendTvServerMessageCompleted;
-            }
-            InvokeAsync(_onBeginSendTvServerMessageDelegate, new object[] {
-                    msg}, _onEndSendTvServerMessageDelegate, _onSendTvServerMessageCompletedDelegate, userState);
-        }
 
         public List<APIConnection> Connect(APIConnection name)
         {

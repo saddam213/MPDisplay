@@ -198,7 +198,7 @@ namespace MediaPortalPlugin.InfoManagers
                     if (!_buttonControls.Contains(control))
                     {
                         var label = ReflectionHelper.GetPropertyValue<string>(control, "Label", null);
-                        if (!string.IsNullOrEmpty(label))
+                        if (label != null)
                         {
                             var tag = string.Format("#Dialog.Label{0}", control.GetID);
                             PropertyManager.Instance.SendLabelProperty(tag, label);
@@ -208,7 +208,7 @@ namespace MediaPortalPlugin.InfoManagers
                     if (!(control is GUIImage)) continue;
 
                     var imagepath = ReflectionHelper.GetPropertyValue<string>(control, "FileName", null);
-                    if (string.IsNullOrEmpty(imagepath)) continue;
+                    if (imagepath == null) continue;
 
                     var tag1 = string.Format("#Dialog.Image{0}", control.GetID);
                     PropertyManager.Instance.SendImageProperty(tag1, imagepath);

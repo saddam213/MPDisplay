@@ -205,7 +205,13 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>The GCD for the two numbers</returns>
         private static int EuclidGCD(int x, int y)
         {
-            return y == 0 ? x : EuclidGCD(y, x % y);
+            while (true)
+            {
+                if (y == 0) return x;
+                var x1 = x;
+                x = y;
+                y = x1%y;
+            }
         }
 
         /// <summary>
@@ -216,7 +222,13 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>The GCD for the two numbers</returns>
         private static uint EuclidGCD(uint x, uint y)
         {
-            return y == 0 ? x : EuclidGCD(y, x % y);
+            while (true)
+            {
+                if (y == 0) return x;
+                var x1 = x;
+                x = y;
+                y = x1%y;
+            }
         }
     }
 }

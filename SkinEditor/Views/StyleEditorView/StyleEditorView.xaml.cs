@@ -114,6 +114,7 @@ namespace SkinEditor.Views
                 return;
             }
 
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var styleCollection in SkinInfo.Styles.Values)
             {
                 var style = styleCollection.BrushStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedBrushStyle.StyleId));
@@ -604,6 +605,7 @@ namespace SkinEditor.Views
                 return;
             }
 
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var styleCollection in SkinInfo.Styles.Values)
             {
                 var style = styleCollection.ControlStyles.FirstOrDefault(s => s.StyleId.Equals(SelectedControlStyle.StyleId));

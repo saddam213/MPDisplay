@@ -401,8 +401,24 @@ namespace GUIFramework
 
             if (InfoRepository.Instance.IsMediaPortalConnected && !IsUserInteracting)
             {
-                _currentMPDWindowId = -1;
-                _lastUserInteraction = DateTime.MinValue;
+                if (_currentMPDWindowId != -1)                      // if an MPD Window is open
+                {                                                   // check if auto-close is off or on
+                    var xmlMpdWindow = _currentWindow.BaseXml as XmlMPDWindow;
+                    if (xmlMpdWindow != null)
+                    {
+                        if (xmlMpdWindow.AutoCloseWindow)           // only close if autoclose is on
+                        {
+                            _currentMPDWindowId = -1;
+                            _lastUserInteraction = DateTime.MinValue;
+                            
+                        }
+                    }
+                }
+                else
+                {                                                   // all other windows (MP) always auto-close
+                    _currentMPDWindowId = -1;
+                    _lastUserInteraction = DateTime.MinValue;
+                }
             }
 
 
@@ -758,7 +774,7 @@ namespace GUIFramework
             _messageBroker = new MessageClient(site, _serverBinding, _serverEndpoint);
             _messageBroker.InnerChannel.Faulted += Channel_Faulted;
 
-            _connection = new APIConnection(settings.ConnectionName);
+            _connection = new APIConnection(ConnectionType.MPDisplay);
             await ConnectToService();
         }
 
@@ -780,9 +796,8 @@ namespace GUIFramework
                     if (result != null && result.Any())
                     {
                         _log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
-                        InfoRepository.Instance.IsMPDisplayConnected = true;
-                        InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionName.Equals("MediaPortalPlugin"));
-                        InfoRepository.Instance.IsTVServerConnected = result.Any(x => x.ConnectionName.Equals("TVServerPlugin"));
+                        InfoRepository.Instance.IsMPDisplayConnected = result.Any(x => x.ConnectionType.Equals(ConnectionType.MPDisplay));
+                        InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionType.Equals(ConnectionType.MediaPortalPlugin));
                         _lastKeepAlive = DateTime.Now;
                     }
                 }
@@ -809,7 +824,6 @@ namespace GUIFramework
         {
             InfoRepository.Instance.IsMPDisplayConnected = false;
             InfoRepository.Instance.IsMediaPortalConnected = false;
-            InfoRepository.Instance.IsTVServerConnected = false;
             if (_messageBroker == null) return Task.FromResult<object>(null);
 
             try
@@ -828,43 +842,29 @@ namespace GUIFramework
         {
             if (connection == null) return;
 
-            if (connection.ConnectionName.Equals(Settings.ConnectionSettings.ConnectionName))
+            if (connection.ConnectionName.Equals(_connection.ConnectionName))
             {
                 InfoRepository.Instance.IsMPDisplayConnected = true;
             }
 
-            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-            {
-                _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
-                InfoRepository.Instance.IsMediaPortalConnected = true;
-            }
-
-            if (!connection.ConnectionName.Equals("TVServerPlugin")) return;
-
-            _log.Message(LogLevel.Info, "[Session] - TVServerPlugin connected to network.");
-            InfoRepository.Instance.IsTVServerConnected = true;
+            if (!connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin)) return;
+            _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
+            InfoRepository.Instance.IsMediaPortalConnected = true;
         }
 
         public void SessionDisconnected(APIConnection connection)
         {
             if (connection == null) return;
 
-            if (connection.ConnectionName.Equals(Settings.ConnectionSettings.ConnectionName))
+            if (connection.ConnectionName.Equals(_connection.ConnectionName))
             {
                 Disconnect();
             }
 
-            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-            {
-                _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
-                ClearRepositories(false);
-                InfoRepository.Instance.IsMediaPortalConnected = false;
-            }
-
-            if (!connection.ConnectionName.Equals("TVServerPlugin")) return;
-
-            _log.Message(LogLevel.Info, "[Session] - TVServerPlugin disconnected from network.");
-            InfoRepository.Instance.IsTVServerConnected = false;
+            if (!connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin)) return;
+            _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
+            ClearRepositories(false);
+            InfoRepository.Instance.IsMediaPortalConnected = false;
         }
 
         private Task SendMediaPortalAction(XmlAction action)
@@ -1065,11 +1065,6 @@ namespace GUIFramework
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
             //  Repository<APIMediaPortalMessage>.Instance.Add(message);
-        }
-
-        public void ReceiveTVServerMessage(APITVServerMessage message)
-        {
-            // Repository<APITVServerMessage>.Instance.Add(message);
         }
 
         #endregion

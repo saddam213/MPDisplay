@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.ServiceModel;
@@ -30,6 +31,12 @@ namespace MediaPortalPlugin
         {
             _log = LoggingManager.GetLog(typeof(MessageService));
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+
+            IsMpDisplayConnected = false;
+            IsSkinEditorConnected = false;
+            _connections[ConnectionType.SkinEditor] = 0;
+            _connections[ConnectionType.MPDisplay] = 0;
+
         }
 
         /// <summary>
@@ -61,7 +68,8 @@ namespace MediaPortalPlugin
         private Log _log;
         private Timer _keepAlive;
         private bool _isDisconnecting;
-        private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2); 
+        private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2);
+        private Dictionary<ConnectionType, int> _connections = new Dictionary<ConnectionType, int>();
 
         #endregion
 
@@ -124,8 +132,8 @@ namespace MediaPortalPlugin
                 _messageClient.SendInfoMessageCompleted += _messageClient_SendMessageCompleted;
                 _messageClient.SendDataMessageCompleted += _messageClient_SendMessageCompleted;
                 _messageClient.SendPropertyMessageCompleted += _messageClient_SendMessageCompleted;
-            
-                _connection = new APIConnection("MediaPortalPlugin");
+
+                _connection = new APIConnection(ConnectionType.MediaPortalPlugin);
                 ConnectToService();
             }
             catch (Exception ex)
@@ -220,8 +228,9 @@ namespace MediaPortalPlugin
                 _lastKeepAlive = DateTime.Now;
                 _log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                 IsConnected = true;
-                IsMpDisplayConnected = e.Result.Any(x => !x.ConnectionName.Equals("MediaPortalPlugin") && !x.ConnectionName.Equals("SkinEditor"));
-                IsSkinEditorConnected = e.Result.Any(x => x.ConnectionName.Equals("SkinEditor"));
+                IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
+                IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
+
                 if (IsMpDisplayConnected)
                 {
                     WindowManager.Instance.SendFullUpdate();
@@ -249,8 +258,12 @@ namespace MediaPortalPlugin
         public void Disconnect()
         {
             IsConnected = false;
+
             IsMpDisplayConnected = false;
             IsSkinEditorConnected = false;
+            _connections[ConnectionType.SkinEditor] = 0;
+            _connections[ConnectionType.MPDisplay] = 0;
+
             if (_messageClient == null) return;
 
             try
@@ -273,17 +286,16 @@ namespace MediaPortalPlugin
         {
             if (connection == null) return;
 
-            if (connection.ConnectionName.Equals("SkinEditor"))
+            if (connection.ConnectionType.Equals(ConnectionType.SkinEditor) || connection.ConnectionType.Equals(ConnectionType.MPDisplay))
             {
-                _log.Message(LogLevel.Info, "[Session] - SkinEditor connected to network.");
-                IsSkinEditorConnected = true;
+                _connections[connection.ConnectionType]++;
+                IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
+                IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
+                _log.Message(LogLevel.Info, "[Session] - Instance connected to network. ConnectionName: {0} Active connections: {1}",
+                    connection.ConnectionName, _connections[connection.ConnectionType]);
             }
-            else if (!connection.ConnectionName.Equals("MediaPortalPlugin"))
-            {
-                _log.Message(LogLevel.Info, "[Session] - MPDisplay instance connected to network. ConnectionName: {0}", connection.ConnectionName);
-                IsMpDisplayConnected = true;
-                WindowManager.Instance.SendFullUpdate();
-            }
+
+            if (connection.ConnectionType.Equals(ConnectionType.MPDisplay)) WindowManager.Instance.SendFullUpdate();
         }
 
         /// <summary>
@@ -294,20 +306,18 @@ namespace MediaPortalPlugin
         {
             if (connection == null) return;
 
-            if (connection.ConnectionName.Equals("MediaPortalPlugin"))
+            if (connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin))
             {
                 Reconnect();
             }
-            else if (connection.ConnectionName.Equals("SkinEditor"))
+            else if (connection.ConnectionType.Equals(ConnectionType.SkinEditor) || connection.ConnectionType.Equals(ConnectionType.MPDisplay))
             {
-                _log.Message(LogLevel.Info, "[Session] - SkinEditor disconnected from network.");
-                IsSkinEditorConnected = false;
-            }
-            else
-            {
-                _log.Message(LogLevel.Info, "[Session] - MPDisplay instance disconnected from network. ConnectionName: {0}", connection.ConnectionName);
-                IsMpDisplayConnected = false;
-            }
+                _connections[connection.ConnectionType]--;
+                _log.Message(LogLevel.Info, "[Session] - Instance disconnected from network: ConnectionName: {0}. Active connections: {1}",
+                   connection.ConnectionName, _connections[connection.ConnectionType]);
+                IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
+                IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
+           }
         }
 
         /// <summary>
@@ -475,7 +485,6 @@ namespace MediaPortalPlugin
             }
         }
 
-        public void ReceiveTVServerMessage(APITVServerMessage message) { }
         public void ReceiveAPIPropertyMessage(APIPropertyMessage message) { }
         public void ReceiveAPIListMessage(APIListMessage message) { }
         public void ReceiveAPIInfoMessage(APIInfoMessage message) { }

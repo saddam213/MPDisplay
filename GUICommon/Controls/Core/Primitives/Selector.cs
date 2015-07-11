@@ -273,11 +273,8 @@ namespace MPDisplay.Common.Controls.Core
             if (!String.IsNullOrEmpty(SelectedValue))
             {
                 var values = SelectedValue.Split(new[] { Delimiter }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (var value in values)
+                foreach (var item in values.Select(ResolveItemByValue).Where(item => item != null))
                 {
-                    var item = ResolveItemByValue(value);
-
-                    if (item == null) continue;
                     SelectedItems.Add(item);
 
                     //now try to select it in the list
@@ -306,6 +303,7 @@ namespace MPDisplay.Common.Controls.Core
 
             if (ItemsSource != null)
             {
+                // ReSharper disable once LoopCanBePartlyConvertedToQuery
                 foreach (var item in ItemsSource)
                 {
                     var selectorItem = ItemContainerGenerator.ContainerFromItem(item) as SelectorItem;
@@ -325,6 +323,7 @@ namespace MPDisplay.Common.Controls.Core
 
             if (ItemsSource == null) return value;
 
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var item in ItemsSource)
             {
                 var property = item.GetType().GetProperty(ValueMemberPath);

@@ -170,6 +170,7 @@ namespace GUISkinFramework.Editors
             {
                 _imageFiles.Add(new ImageFile { Directory = new DirectoryInfo(subFolder), IsFolder = true });
             }
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var imageFile in Directory.GetFiles(path, "*.*", SearchOption.TopDirectoryOnly))
             {
                 var extension = Path.GetExtension(imageFile);

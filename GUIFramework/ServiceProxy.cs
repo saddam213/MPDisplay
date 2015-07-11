@@ -44,12 +44,6 @@ namespace GUIFramework
         [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendMediaPortalMessage")]
         Task SendMediaPortalMessageAsync(APIMediaPortalMessage msg);
 
-        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendTVServerMessage")]
-        void SendTVServerMessage(APITVServerMessage msg);
-
-        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendTVServerMessage")]
-        Task SendTVServerMessageAsync(APITVServerMessage msg);
-
         [OperationContract(Action = "http://tempuri.org/IMessage/Connect", ReplyAction = "http://tempuri.org/IMessage/ConnectResponse")]
         List<APIConnection> Connect(APIConnection name);
 
@@ -81,9 +75,6 @@ namespace GUIFramework
 
         [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveMediaPortalMessage")]
         void ReceiveMediaPortalMessage(APIMediaPortalMessage message);
-
-        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveTVServerMessage")]
-        void ReceiveTVServerMessage(APITVServerMessage message);
 
         [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/SessionConnected")]
         void SessionConnected(APIConnection connection);
@@ -175,16 +166,6 @@ namespace GUIFramework
         public Task SendMediaPortalMessageAsync(APIMediaPortalMessage msg)
         {
             return Channel.SendMediaPortalMessageAsync(msg);
-        }
-
-        public void SendTVServerMessage(APITVServerMessage msg)
-        {
-            Channel.SendTVServerMessage(msg);
-        }
-
-        public Task SendTVServerMessageAsync(APITVServerMessage msg)
-        {
-            return Channel.SendTVServerMessageAsync(msg);
         }
 
         public List<APIConnection> Connect(APIConnection name)

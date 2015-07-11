@@ -19,8 +19,10 @@ namespace Common.Settings
         private static string _programDataPath;
         private static MPDisplayInstallType _installType = MPDisplayInstallType.None;
         private static string _mpdServerExePath;
+        private static string _mpdisplayPath;
         private static string _mpdisplayConfigExePath;
         private static string _mpdisplayExePath;
+        private static string _mpdPluginPath;
         private static string _skinEditorExePath;
         private static LogLevel _logLevel = LogLevel.None;
 
@@ -81,6 +83,14 @@ namespace Common.Settings
             get { return _mpdisplayExePath ?? (_mpdisplayExePath = GetRegistryValue("MPDisplayExePath")); }
         }
 
+       /// <summary>
+        /// Gets the MP display exe path.
+        /// </summary>
+        public static string MPDisplayPath
+        {
+            get { return _mpdisplayPath ?? (_mpdisplayPath = GetRegistryValue("MPDisplayPath")); }
+        }
+
         /// <summary>
         /// Gets the MP display config exe path.
         /// </summary>
@@ -92,11 +102,19 @@ namespace Common.Settings
         }
 
         /// <summary>
-        /// Gets the MPD server exe path. SkinEditrorExePath
+        /// Gets the MPD server exe path. 
         /// </summary>
         public static string MPDServerExePath
         {
             get { return _mpdServerExePath ?? (_mpdServerExePath = GetRegistryValue("MPDServerExePath")); }
+        }
+
+        /// <summary>
+        /// Gets the MPD plugin path. 
+        /// </summary>
+        public static string MPDPluginPath
+        {
+            get { return _mpdPluginPath ?? (_mpdPluginPath = GetRegistryValue("MPDPluginPath")); }
         }
 
         /// <summary>

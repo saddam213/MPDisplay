@@ -101,60 +101,6 @@ namespace GUISkinFramework.Skin
             set { _description = value; NotifyPropertyChanged("Description"); }
         }
         
-        //[DefaultValue(0)]
-        //[PropertyOrder(25)]
-        //[EditorCategory("Layout", 2)]
-        //public int Pos3DX
-        //{
-        //    get { return _pos3DX; }
-        //    set { _pos3DX = value; NotifyPropertyChanged("Pos3DX"); }
-        //}
-
-        //[DefaultValue(0)]
-        //[PropertyOrder(26)]
-        //[EditorCategory("Layout", 2)]
-        //public int Pos3DY
-        //{
-        //    get { return _pos3DY; }
-        //    set { _pos3DY = value; NotifyPropertyChanged("Pos3DY"); }
-        //}
-
-        //[DefaultValue(0)]
-        //[PropertyOrder(27)]
-        //[EditorCategory("Layout", 2)]
-        //public int Pos3DZ
-        //{
-        //    get { return _pos3DZ; }
-        //    set { _pos3DZ = value; NotifyPropertyChanged("Pos3DZ"); }
-        //}
-
-        //[DefaultValue(0)]
-        //[PropertyOrder(28)]
-        //[EditorCategory("Layout", 2)]
-        //public int Center3DX
-        //{
-        //    get { return _center3DX; }
-        //    set { _center3DX = value; NotifyPropertyChanged("Center3DX"); }
-        //}
-
-        //[DefaultValue(0)]
-        //[PropertyOrder(29)]
-        //[EditorCategory("Layout", 2)]
-        //public int Center3DY
-        //{
-        //    get { return _center3DY; }
-        //    set { _center3DY = value; NotifyPropertyChanged("Center3DY"); }
-        //}
-
-        //[DefaultValue(0)]
-        //[PropertyOrder(30)]
-        //[EditorCategory("Layout", 2)]
-        //public int Center3DZ
-        //{
-        //    get { return _center3DZ; }
-        //    set { _center3DZ = value; NotifyPropertyChanged("Center3DZ"); }
-        //}
-
         [PropertyOrder(62)]
         [EditorCategory("Appearance", 3)]
         // [DefaultValue(XmlBrushStyle.Default)]
@@ -164,11 +110,6 @@ namespace GUISkinFramework.Skin
             get { return _backgroundBrush; }
             set { _backgroundBrush = value; NotifyPropertyChanged("BackgroundBrush"); }
         }
-
-
-
-      
-
 
         [XmlArray(ElementName = "WindowAnimations")]
         [Editor(typeof(AnimationEditor), typeof(ITypeEditor))]

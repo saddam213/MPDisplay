@@ -67,6 +67,7 @@ namespace MPDisplay.Common.Controls
                 comboBox.Items.Clear();
                 if (_currentWord.Length >= _searchThreshold)
                 {
+                    // ReSharper disable once LoopCanBePartlyConvertedToQuery
                     foreach (var entry in AutoCompletionList)
                     {
                         if (!entry.KeywordStrings.Any(word => word.StartsWith(_currentWord, StringComparison.CurrentCultureIgnoreCase)))

@@ -2,7 +2,7 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "1.0.0_D2"
+!define VERSION "1.0.0_D3"
 !define BUILD_FOLDER "C:\Entwicklung\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"
@@ -110,7 +110,7 @@ LangString DESC_SECTION_FirewallException  ${LANG_ENGLISH} "Configure Firewall"
 
 LangString DESC_UnInstall_Full ${LANG_ENGLISH} "There is 3rd party skins installed, Would you like to remove these also?"
 
-LangString DESC_LanguageFile ${LANG_ENGLISH} "Language_en"
+LangString DESC_LanguageFile ${LANG_ENGLISH} "English"
 LangString DESC_MediaPortalPlugin ${LANG_ENGLISH} "MediaPortal Plugin/Server Only$\n$\nUse This Option If Your TouchScreen/Display Is On A Different PC"
 LangString DESC_MPDisplayGUI ${LANG_ENGLISH} "MPDisplay++ TouchScreen/Display Application Only$\n$\nUse This Option If You Are Installing MPDisplay++ On A Different PC To Mediaportal"
 LangString DESC_FullInstall ${LANG_ENGLISH} "MPDisplay++ Full Installation$\n$\nUse This Option If Your TouchScreen/Display Is Attached To Your MediaPortal HTPC"
@@ -152,7 +152,7 @@ LangString DESC_SECTION_FirewallException  ${LANG_GERMAN} "Konfiguriere Firewall
 
 LangString DESC_UnInstall_Full ${LANG_GERMAN} "Es sind noch weitere Skins installiert. Sollen diese ebenfalls entfernt werden?"
 
-LangString DESC_LanguageFile ${LANG_GERMAN} "Language_de"
+LangString DESC_LanguageFile ${LANG_GERMAN} "Deutsch"
 LangString DESC_MediaPortalPlugin ${LANG_GERMAN} "nur MediaPortal Plugin/Server$\n$\nVerwende diese Option, wenn Dein Touchscreen/Monitor sich auf einem anderen Computer befindet."
 LangString DESC_MPDisplayGUI ${LANG_GERMAN} "nur MPDisplay++ TouchScreen/Display Anwendung$\n$\nVerwende diese Option wenn Du MPD++ auf einem andere Computer ohne MediaPortal installieren willst."
 LangString DESC_FullInstall ${LANG_GERMAN} "MPDisplay++ Komplettinstallation$\n$\nVerwende diese Option wenn Dein Touchscreen/Monitor direkt an Deinem MediaPortal HTPC angeschlossen ist."
@@ -194,7 +194,7 @@ LangString DESC_SECTION_FirewallException  ${LANG_DUTCH} "Configure Firewall"
 
 LangString DESC_UnInstall_Full ${LANG_DUTCH} "There is 3rd party skins installed, Would you like to remove these also?"
 
-LangString DESC_LanguageFile ${LANG_DUTCH} "Language_nl"
+LangString DESC_LanguageFile ${LANG_DUTCH} "Nederlands"
 LangString DESC_MediaPortalPlugin ${LANG_DUTCH} "MediaPortal Plugin/Server Only$\n$\nUse This Option If Your TouchScreen/Display Is On A Different PC"
 LangString DESC_MPDisplayGUI ${LANG_DUTCH} "MPDisplay++ TouchScreen/Display Application Only$\n$\nUse This Option If You Are Installing MPDisplay++ On A Different PC To Mediaportal"
 LangString DESC_FullInstall ${LANG_DUTCH} "MPDisplay++ Full Installation$\n$\nUse This Option If Your TouchScreen/Display Is Attached To Your MediaPortal HTPC"
@@ -237,7 +237,7 @@ LangString DESC_SECTION_FirewallException ${LANG_FRENCH} "configurer un pare-"
 
 LangString DESC_UnInstall_Full ${LANG_FRENCH} "There is 3rd party skins installed, Would you like to remove these also?"
 
-LangString DESC_LanguageFile ${LANG_FRENCH} "Language_fr"
+LangString DESC_LanguageFile ${LANG_FRENCH} "Francais"
 LangString DESC_MediaPortalPlugin ${LANG_FRENCH} "que le plugin MediaPortal/serveur$\n$\nUtilisez cette option si votre écran / moniteur est sur ??un autre ordinateur."
 LangString DESC_MPDisplayGUI ${LANG_FRENCH} "seulement MPDisplay++ à écran tactile/affichage de l'application$\n$\nUtilisez cette option si vous souhaitez installer MPD++ sur un autre ordinateur sans Media Portal."
 LangString DESC_FullInstall ${LANG_FRENCH} "MPDisplay + + installation complète$\n$\nUtilisez cette option si votre écran/moniteur directement à votre MediaPortal HTPC est connecté."
@@ -280,7 +280,7 @@ LangString DESC_SECTION_FirewallException ${LANG_ITALIAN} "Configura Firewall"
 
 LangString DESC_UnInstall_Full ${LANG_ITALIAN} "There is 3rd party skins installed, Would you like to remove these also?"
 
-LangString DESC_LanguageFile ${LANG_ITALIAN} "Language_it"
+LangString DESC_LanguageFile ${LANG_ITALIAN} "Italiano"
 LangString DESC_MediaPortalPlugin ${LANG_ITALIAN} "Solo Plugin/Server MediaPortal$\n$\nScegli quest'opzione se il tuo TouchScreen/Display è su un altro PC."
 LangString DESC_MPDisplayGUI ${LANG_ITALIAN} "Solo applicazione TouchScreen/Display di MPDisplay++$\n$\nScegli questa opzione se stai installando MPDisplay++ su un PC diverso da quello dove è installato MediaPortal."
 LangString DESC_FullInstall ${LANG_ITALIAN} "Installazione completa di MPDisplay++$\n$\nScegli questa opzione se il tuo TouchScreen/Display è collegato al tuo HTPC MediaPortal."
@@ -310,7 +310,7 @@ LangString MSGUAC_Error ${LANG_ITALIAN} "Impossibile ottenere privilegi amminist
 
 
 # Function to Elevate UAC to Admin #
-!macro Check_UAC InsatllType
+!macro Check_UAC InstallType
 	uac_tryagain:
 	!insertmacro UAC_RunElevated
 	${Switch} $0
@@ -354,7 +354,6 @@ Function WelcomePagePre
    !insertmacro Check_UAC "Installer"
    
   !insertmacro MUI_LANGDLL_DISPLAY
-
 
 
     ${If} ${AtLeastWinVista}
@@ -444,12 +443,13 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 			File "${BUILD_FOLDER}\Server\*.*"
 			File "${BUILD_FOLDER}\Config\*.*"
 			
-    # Install User Data		
-	SetOutPath "${PROGRAM_DATA}"
-		CreateDirectory "${PROGRAM_DATA}"
-	# Set Access On Data Folder so we can edit files	
-    AccessControl::GrantOnFile \
-    "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
+       # Install User Data
+       SetOutPath "${PROGRAM_DATA}"
+       CreateDirectory "${PROGRAM_DATA}"
+    
+       # Set Access On Data Folder so we can edit files
+       AccessControl::GrantOnFile \
+       "${PROGRAM_DATA}" "(S-1-5-32-545)" "FullAccess"
     
         SetOverwrite off
      	File /r "${BUILD_FOLDER}\Data\MPDisplay.xml"
@@ -466,29 +466,28 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
 
 	# Install skinEditor data Files
 	SetOutPath "${PROGRAM_DATA}SkinEditor\"
-		CreateDirectory "${PROGRAM_DATA}SkinEditor"
-			File /r "${BUILD_FOLDER}\Data\SkinEditor\*.*"
+	CreateDirectory "${PROGRAM_DATA}SkinEditor"
+	File /r "${BUILD_FOLDER}\Data\SkinEditor\*.*"
     
-   		# Find MediaPortal InstallPath
-    ReadRegDWORD $0 ${REG_HKLM} "${REG_MEDIAPORTAL_PATH}" InstallPath
-    ${IF} $0 == ''
+   	# Find MediaPortal InstallPath
+        ReadRegDWORD $0 ${REG_HKLM} "${REG_MEDIAPORTAL_PATH}" InstallPath
+        ${IF} $0 == ''
 	    ; If MediaPortal Path Not Found, Show Folder Picker Dislog So User Can Select MediaPortal Path
 		nsDialogs::SelectFolderDialog "$(MSGMediaPortalNotFound)" $PROGRAMFILES
 	    Pop $0
 		${GetParent} $0 $1
 	    # Install Plugin
-	     SetOutPath "$1\MediaPortal\Plugins\Process"
-			File "${BUILD_FOLDER}\Plugin\*.dll"
-		 WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDPluginPath" "$1\MediaPortal\Plugins\Process"	
+	        SetOutPath "$1\MediaPortal\Plugins\Process"
+		File "${BUILD_FOLDER}\Plugin\*.dll"
+		WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDPluginPath" "$1\MediaPortal\Plugins\Process"
 	
-    ${Else}  
+        ${Else}
 		SetOutPath "$0\Plugins\Process"
-			File "${BUILD_FOLDER}\Plugin\*.dll"
+		File "${BUILD_FOLDER}\Plugin\*.dll"
 		WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDPluginPath" "$0\Plugins\Process"	
 	${EndIf}
 			  
 	# Write Registry Entries
-        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
@@ -496,8 +495,17 @@ Section "$(DESC_SECTION_FullInstall)" FullInstall
         WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
         WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Full"
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
-	 
+        
+    	ReadRegDWORD $2 ${REG_HKLM} "${REG_APP_PATH}" "LogLevel"
+	${If} $2 == ''
+              WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
+	${EndIf}
+
+    	ReadRegDWORD $2 ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile"
+	${If} $2 == ''
+              WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
+	${EndIf}
+
 	# Install And Start Service
 	ReInstallService:
 	nsSCM::Install "MPDisplayServer" "MPDisplayServer" 16 2 "$INSTDIR\MPDisplayServer.exe" "" "" "" ""
@@ -564,14 +572,22 @@ Section /o "$(DESC_SECTION_MediaPortalPlugin)" MediaPortalPlugin
 	${EndIf}
 	
   	# Write Registry Entries
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath" "$INSTDIR\MPDisplayServer.exe"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Plugin"
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
-	
+        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "Plugin"
+        
+    	ReadRegDWORD $2 ${REG_HKLM} "${REG_APP_PATH}" "LogLevel"
+	${If} $2 == ''
+              WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
+	${EndIf}
+
+     	ReadRegDWORD $2 ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile"
+	${If} $2 == ''
+              WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
+	${EndIf}
+
 	# Install And Start Service
 	ReInstallService:
 	nsSCM::Install "MPDisplayServer" "MPDisplayServer" 16 2 "$INSTDIR\MPDisplayServer.exe" "" "" "" ""
@@ -617,24 +633,32 @@ Section /o "$(DESC_SECTION_MPDisplayGUI)" MPDisplayGUI
   		
 	# Install Language Files
 	SetOutPath "${PROGRAM_DATA}Language\"
-		CreateDirectory "${PROGRAM_DATA}Language"
-			File /r "${BUILD_FOLDER}\Data\Language\*.*"
+	CreateDirectory "${PROGRAM_DATA}Language"
+	File /r "${BUILD_FOLDER}\Data\Language\*.*"
 
 	# Install skinEditor data Files
 	SetOutPath "${PROGRAM_DATA}SkinEditor\"
-		CreateDirectory "${PROGRAM_DATA}SkinEditor"
-			File /r "${BUILD_FOLDER}\Data\SkinEditor\*.*"
+	CreateDirectory "${PROGRAM_DATA}SkinEditor"
+	File /r "${BUILD_FOLDER}\Data\SkinEditor\*.*"
 	
 	# Write Registry Entries
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath" "$INSTDIR"	
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath" "$INSTDIR\${MAIN_APP_EXE}"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath" "$INSTDIR\MPDisplayConfig.exe"
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor.exe"
+        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath" "$INSTDIR\SkinEditor.exe"
 	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "ProgramDataPath" "${PROGRAM_DATA}"
-    WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "GUI"
-	WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
+        WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "InstallType" "GUI"
+    
+    	ReadRegDWORD $2 ${REG_HKLM} "${REG_APP_PATH}" "LogLevel"
+	${If} $2 == ''
+              WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LogLevel" "${LOGLEVEL}"
+	${EndIf}
 	
+    	ReadRegDWORD $2 ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile"
+	${If} $2 == ''
+              WriteRegStr ${REG_HKLM} "${REG_APP_PATH}" "LanguageFile" "$(DESC_LanguageFile)"
+	${EndIf}
+
 SectionEnd
 ##-------------------------------------------------------------------------------------------------##
 ##-------------------------------------------------------------------------------------------------##
@@ -650,14 +674,14 @@ Section "$(DESC_SECTION_DesktopShortcutInstall)" DesktopShortcutInstall
   ${If} ${SectionIsSelected} ${MediaPortalPlugin}
   #do nothing
   ${Else}
-    SetShellVarContext current	
-		CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\MPDisplay.exe"
-		CreateShortCut "$DESKTOP\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
-		CreateDirectory "$SMPROGRAMS\${APP_NAME}"
-		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\MPDisplay.exe"
-		CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
+        SetShellVarContext current
+	CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\MPDisplay.exe"
+	CreateShortCut "$DESKTOP\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
+	CreateDirectory "$SMPROGRAMS\${APP_NAME}"
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\MPDisplay.exe"
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}Config.lnk" "$INSTDIR\MPDisplayConfig.exe"
         CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}SkinEditor.lnk" "$INSTDIR\SkinEditor.exe"
-		CreateShortCut "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\Uninstall.lnk" "$INSTDIR\${UNINSTALLER_EXE_NAME}"
 	SetShellVarContext all	
   ${EndIf}
 SectionEnd
@@ -674,11 +698,11 @@ SectionEnd
 Section "$(DESC_SECTION_FirewallException)" FirewallException
  SectionIn 1
   ${If} ${SectionIsSelected} ${FullInstall}
-    SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
+        SimpleFC::AdvAddRule "MPDisplayServer (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
 	SimpleFC::AdvAddRule "MPDisplayServer (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplayServer.exe" "" "MPDisplayServer" "" "" "" ""
   ${EndIf}
   ${If} ${SectionIsSelected} ${MPDisplayGUI}
-    SimpleFC::AdvAddRule "MPDisplay++ (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplay.exe" "" "MPDisplay++" "" "" "" ""
+        SimpleFC::AdvAddRule "MPDisplay++ (TCP In)" "Allows incoming requests." "6" "1" "1" "7" "1" "$INSTDIR\MPDisplay.exe" "" "MPDisplay++" "" "" "" ""
 	SimpleFC::AdvAddRule "MPDisplay++ (TCP Out)" "Allows outgoing requests." "6" "2" "1" "7" "1" "$INSTDIR\MPDisplay.exe" "" "MPDisplay++" "" "" "" ""
   ${EndIf}
   ${If} ${SectionIsSelected} ${MediaPortalPlugin}
@@ -706,27 +730,27 @@ Function .onSelChange
 	IntOp $R1 $R1 & ${SF_SELECTED}
 	IntOp $R2 $R2 & ${SF_SELECTED}
 	${If} $R0 == ${SF_SELECTED}
-		!insertmacro ClearSectionFlag ${MPDisplayGUI} ${SF_RO}
-		!insertmacro UnSelectSection ${MPDisplayGUI}
-		!insertmacro SetSectionFlag ${MPDisplayGUI} ${SF_RO}
-	    !insertmacro ClearSectionFlag ${MediaPortalPlugin} ${SF_RO}
-		!insertmacro UnSelectSection ${MediaPortalPlugin}
-		!insertmacro SetSectionFlag ${MediaPortalPlugin} ${SF_RO}
-	    !insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
+	      !insertmacro ClearSectionFlag ${MPDisplayGUI} ${SF_RO}
+	      !insertmacro UnSelectSection ${MPDisplayGUI}
+	      !insertmacro SetSectionFlag ${MPDisplayGUI} ${SF_RO}
+	      !insertmacro ClearSectionFlag ${MediaPortalPlugin} ${SF_RO}
+	      !insertmacro UnSelectSection ${MediaPortalPlugin}
+	      !insertmacro SetSectionFlag ${MediaPortalPlugin} ${SF_RO}
+	      !insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
 	${EndIf}
 	${If} $R0 != ${SF_SELECTED}
-		!insertmacro ClearSectionFlag ${MPDisplayGUI} ${SF_RO}
-		!insertmacro ClearSectionFlag ${MediaPortalPlugin} ${SF_RO}	
+	      !insertmacro ClearSectionFlag ${MPDisplayGUI} ${SF_RO}
+	      !insertmacro ClearSectionFlag ${MediaPortalPlugin} ${SF_RO}
 	${EndIf}
 	${If} $R1 == ${SF_SELECTED}
-		!insertmacro UnSelectSection ${MediaPortalPlugin}
-		!insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
+	      !insertmacro UnSelectSection ${MediaPortalPlugin}
+	      !insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
 	${EndIf}  
 	${If} $R2 == ${SF_SELECTED}
-	    !insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
-		!insertmacro UnSelectSection ${DesktopShortcutInstall}
-		!insertmacro SetSectionFlag ${DesktopShortcutInstall} ${SF_RO}
-		!insertmacro UnSelectSection ${MPDisplayGUI}
+	      !insertmacro ClearSectionFlag ${DesktopShortcutInstall} ${SF_RO}
+	      !insertmacro UnSelectSection ${DesktopShortcutInstall}
+	      !insertmacro SetSectionFlag ${DesktopShortcutInstall} ${SF_RO}
+	      !insertmacro UnSelectSection ${MPDisplayGUI}
 	${EndIf}
 FunctionEnd
 
@@ -854,19 +878,33 @@ Section Uninstall
 		# Ask if the user wants to remove all 3rd party skins.
 		${If} ${FileExists} "$0\Skin\*.*"
 	          MessageBox MB_YESNO|MB_ICONQUESTION "$(DESC_UnInstall_Full)" IDYES BackupYes IDNO BackupNo
-				  BackupYes:
-						RmDir /r "$0\Skin"
-				  BackupNo:
+			BackupYes:
+				RmDir /r "$0\Skin"
+			BackupNo:
 		${EndIf}	
 		
+		# Delete files and keys that also need to be removed on re-install
+		
+                Delete "$0\AdvancedPluginSettings.xml"
+                
+                DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "KeepSettings"
+	        DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayPath"
+	        DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayExePath"
+	        DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "MPDisplayConfigExePath"
+	        DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "MPDServerExePath"
+                DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "SkinEditorExePath"
+                DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "MPDPluginPath"
+                DeleteRegValue ${REG_HKLM} "${REG_APP_PATH}" "MPDPluginPath"
+                
+                # Keep certain user config files and language reg key
+                
 		${If} $3 != 1
                       Delete "$0\MPDisplay.xml"
-                      Delete "$0\AdvancedPluginSettings.xml"
                       Delete "$0\AddImageSettings.xml"
 	              RmDir "$0"
+		      DeleteRegKey ${REG_HKLM} "${REG_APP_PATH}"
 	        ${EndIf}
 	        
-		DeleteRegKey ${REG_HKLM} "${REG_APP_PATH}" 
 		DeleteRegKey ${REG_HKLM} "${REG_UNINSTALL_PATH}" 
 	 
 SectionEnd

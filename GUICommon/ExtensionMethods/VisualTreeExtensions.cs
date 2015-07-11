@@ -101,6 +101,7 @@ namespace MPDisplay.Common.ExtensionMethods
                 frameworkElement.ApplyTemplate();
             }
             var foundElement = VisualTreeHelper.GetParent(element) as Visual;
+            // ReSharper disable once TailRecursiveCall
             return foundElement != null ? GetAscendantByType<T>(foundElement) : null;
         }
 
@@ -210,10 +211,8 @@ namespace MPDisplay.Common.ExtensionMethods
         {
             if (item.Ancestors().FirstOrDefault() == null)
                 yield break;
-            foreach (var child in item.Ancestors().First().Elements())
+            foreach (var child in item.Ancestors().First().Elements().TakeWhile(child => !child.Equals(item)))
             {
-                if (child.Equals(item))
-                    break;
                 yield return child;
             }
         }
@@ -348,13 +347,9 @@ namespace MPDisplay.Common.ExtensionMethods
             // ReSharper disable once LoopCanBeConvertedToQuery
             foreach (var item in items)
             {
-                foreach (var itemChild in function(item))
+                foreach (var down in function(item).OfType<T>())
                 {
-                    var down = itemChild as T;
-                    if (down != null)
-                    {
-                        yield return down;
-                    }
+                    yield return down;
                 }
             }
         }

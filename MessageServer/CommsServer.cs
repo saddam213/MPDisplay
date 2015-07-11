@@ -32,10 +32,6 @@ namespace MessageServer
         [OperationContract(IsOneWay = true, IsInitiating = false, IsTerminating = false)]
         Task SendMediaPortalMessage(APIMediaPortalMessage msg);
 
-        [OperationContract(IsOneWay = true, IsInitiating = false, IsTerminating = false)]
-        Task SendTVServerMessage(APITVServerMessage msg);
-
-
         [OperationContract(IsOneWay = false, IsInitiating = true, IsTerminating = false)]
         Task<List<APIConnection>> Connect(APIConnection name);
         
@@ -87,13 +83,6 @@ namespace MessageServer
         Task ReceiveMediaPortalMessage(APIMediaPortalMessage message);
 
         /// <summary>
-        /// Receives the MP display message.
-        /// </summary>
-        /// <param name="message">The message.</param>
-        [OperationContract(IsOneWay = true)]
-        Task ReceiveTVServerMessage(APITVServerMessage message);
-
-        /// <summary>
         /// Users the connected.
         /// </summary>
         /// <param name="connection">The connection.</param>
@@ -121,8 +110,7 @@ namespace MessageServer
         ReceiveAPIDataMessage,
 
         ReceiveMediaPortalMessage,
-        ReceiveTVServerMessage,
-
+ 
         SessionConnected,
         SessionDisconnected 
     };
@@ -379,7 +367,12 @@ namespace MessageServer
                 {
                     _log.Message(LogLevel.Debug, "[SendMediaPortalMessage] - Sending message to MediaPortal plugin, Sender: {0}, MessageType: {1}"
                         , _apiConnection.ConnectionName, mediaPortalMessage.MessageType);
-                    await BroadcastMessage("MediaPortalPlugin", new MessageEventArgs(MessageType.ReceiveMediaPortalMessage, _apiConnection, mediaPortalMessage));
+                    var mediaportalplugin = ConnectionManager.GetConnections().Find(x => x.ConnectionType == ConnectionType.MediaPortalPlugin);
+                    if (mediaportalplugin != null)
+                    {
+                         await BroadcastMessage(mediaportalplugin.ConnectionName, new MessageEventArgs(MessageType.ReceiveMediaPortalMessage, _apiConnection, mediaPortalMessage));
+                       
+                    }
                 }
             }
             catch (Exception ex)
@@ -387,28 +380,6 @@ namespace MessageServer
                 _log.Exception("[SendMediaPortalMessage] - An exception occured sending message.", ex);
             }
         }
-
-        /// <summary>
-        /// Sends to MediaPortal.
-        /// </summary>
-        /// <param name="tvServerMessage">The TVServer message.</param>
-        public async Task SendTVServerMessage(APITVServerMessage tvServerMessage)
-        {
-            try
-            {
-                if (_apiConnection != null && tvServerMessage != null)
-                {
-                    _log.Message(LogLevel.Debug, "[SendTVServerMessage] - Sending message to TVServer plugin, Sender: {0}", _apiConnection.ConnectionName);
-                    await BroadcastMessage("TVServerPlugin", new MessageEventArgs(MessageType.ReceiveTVServerMessage, _apiConnection, tvServerMessage));
-                }
-            }
-            catch (Exception ex)
-            {
-                _log.Exception("[SendTVServerMessage] - An exception occured sending message.", ex);
-            }
-        }
-
-   
 
         #endregion
 
@@ -440,9 +411,6 @@ namespace MessageServer
                         break;
                     case MessageType.ReceiveMediaPortalMessage:
                         _messageCallback.ReceiveMediaPortalMessage(e.Data as APIMediaPortalMessage);
-                        break;
-                    case MessageType.ReceiveTVServerMessage:
-                        _messageCallback.ReceiveTVServerMessage(e.Data as APITVServerMessage);
                         break;
                     case MessageType.SessionConnected:
                         _messageCallback.SessionConnected(e.Connection);
