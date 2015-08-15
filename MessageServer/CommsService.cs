@@ -69,9 +69,9 @@ namespace MessageServer
             {
                 _mpDisplayHost.Close();
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[OnStop] - An exception occured stopping MPDisplay server. Exception: {0}",  ex);
             }
         }
 

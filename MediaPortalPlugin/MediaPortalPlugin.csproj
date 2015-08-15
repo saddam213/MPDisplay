@@ -93,7 +93,6 @@
     <Compile Include="ExifReader\ExifPropertyPropertyDescriptor.cs" />
     <Compile Include="ExifReader\ExifReader.cs" />
     <Compile Include="ExifReader\ExifReaderCustomTypeDescriptor.cs" />
-    <Compile Include="ExifReader\ExifReaderException.cs" />
     <Compile Include="ExifReader\ExifReaderTypeDescriptionProvider.cs" />
     <Compile Include="ExifReader\ExifValue.cs" />
     <Compile Include="ExifReader\ExifValueCreator.cs" />

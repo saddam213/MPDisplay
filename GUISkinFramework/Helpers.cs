@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using Common.Log;
 
 namespace GUISkinFramework
 {
     public  static class DirectoryHelpers
     {
+        static Log _log = LoggingManager.GetLog(typeof(DirectoryHelpers));
+
         public static void CreateIfNotExists(string folder)
         {
             try
@@ -17,9 +20,10 @@ namespace GUISkinFramework
                     Directory.CreateDirectory(folder);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, string.Format("Error creating folder <{0}>, exception: {1}", folder, ex));
+
             }
         }
 
@@ -34,9 +38,9 @@ namespace GUISkinFramework
             {
                 Directory.Delete(folder, true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, string.Format("Error deleting folder <{0}>, exception: {1}", folder, ex));
             }
         }
 
@@ -45,7 +49,5 @@ namespace GUISkinFramework
             var dialog = new FolderBrowserDialog();
             return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : string.Empty;
         }
-    }
-
-  
+    } 
 }

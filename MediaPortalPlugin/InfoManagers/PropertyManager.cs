@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -132,6 +133,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         private void ProcessProperty(string tag, string tagValue)
         {
+            if (string.IsNullOrWhiteSpace(tag)) return;
+
             if (_registeredProperties.Contains(tag) && !_addImageSettings.AddImagePropertySettings.Any(x => x.MPDSkinTag.Equals(tag)) && !_pictureTags.ContainsKey(tag))
             {
                 try
@@ -155,9 +158,9 @@ namespace MediaPortalPlugin.InfoManagers
                         }
                     }
                 }
-                catch
+                catch( Exception ex)
                 {
-                    // ignored
+                    _log.Message(LogLevel.Error, "[ProcessProperty] - An exception occured processing property <{0}> with value <{1}>. Exception: {2}", tag, tagValue, ex.Message);
                 }
             }
 
@@ -173,7 +176,7 @@ namespace MediaPortalPlugin.InfoManagers
                }
             }
 
-            if( tag != null && _pictureTags.ContainsKey(tag)) SendPictureTag(tag, _pictureTags[tag]);
+            if( _pictureTags.ContainsKey(tag)) SendPictureTag(tag, _pictureTags[tag]);
         }
 
         // send the additional images (ClearArt etc.)
@@ -196,9 +199,9 @@ namespace MediaPortalPlugin.InfoManagers
                     {
                         imageFound[p.MPDSkinTag] = SendAddImage(p, false);
                     }
-                    catch
+                    catch( Exception ex)
                     {
-                        // ignored
+                        _log.Message(LogLevel.Error, "[ProcessAddProperty] - An exception occured processing property <{0}>. Exception: {1}", p.MPDSkinTag, ex.Message);
                     }
                 }
 
@@ -224,7 +227,7 @@ namespace MediaPortalPlugin.InfoManagers
             {
                 SkinTag = tag,
                 PropertyType = APIPropertyType.Label,
-                Label = tagValue
+                Label = tagValue ?? string.Empty
             });
 
 
@@ -353,28 +356,39 @@ namespace MediaPortalPlugin.InfoManagers
             _exifproperties = null;
             _pictureThumbPath = null;
 
+            Thread.Sleep(500);
+
             var slidelist = ReflectionHelper.GetFieldValue<List<string>>(WindowManager.Instance.CurrentWindow, "_slideList", null, BindingFlags.Instance | BindingFlags.Public);
             if (slidelist == null || !slidelist.Any()) return;
 
             var slideindex = ReflectionHelper.GetFieldValue(WindowManager.Instance.CurrentWindow, "_currentSlideIndex", 0, BindingFlags.Instance | BindingFlags.Public);
-            var filename = slidelist[slideindex];
+
+            var filename = string.Empty;
+            if (slideindex >= 0 && slideindex < slidelist.Count)
+            {
+                filename = slidelist[slideindex];
+            }
             if (string.IsNullOrEmpty(filename) || !File.Exists(filename)) return;
 
-            var exifreader = new ExifReader.ExifReader(filename);
-            _exifproperties = exifreader.GetExifProperties().ToList();
+             var exifreader = new ExifReader.ExifReader(filename);
+
+            _exifproperties = exifreader.GetExifProperties() != null ? exifreader.GetExifProperties().ToList() : null;
             _pictureThumbPath = Utils.IsVideo(filename) ? Utils.GetVideosLargeThumbPathname(filename) : Utils.GetPicturesLargeThumbPathname(filename);
 
             foreach (var t in _pictureTags)
             {
                 SendPictureTag(t.Key, t.Value);
-            }
-        }
+            }          
+
+         }
 
         private void SendPictureTag(string tag, PropertyTagId exiftag)
         {
             string tagvalue;
             var sendimage = false;
 
+            if (WindowManager.Instance.CurrentWindow == null || WindowManager.Instance.CurrentWindow.GetID != 2007) return;
+            
             switch (tag)
             {
                 case "#Picture.Slideshow.Thumb":

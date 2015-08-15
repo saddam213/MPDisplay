@@ -145,7 +145,6 @@ namespace GUIFramework.Repositories
 
             if (!_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage)) return;
 
-            _log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); 
             NotifyPropertyChanged(propertyMessage.SkinTag);
         }
 

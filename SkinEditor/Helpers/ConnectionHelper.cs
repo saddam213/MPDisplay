@@ -188,9 +188,9 @@ namespace SkinEditor.Helpers
                 _log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
                 return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[Disconnect] - An exception occured when disconnecting. Exception: {0}", ex);
             }
             return Task.FromResult<object>(null);
         }
@@ -300,9 +300,9 @@ namespace SkinEditor.Helpers
                     return _messageBroker.SendDataMessageAsync(new APIDataMessage { DataType = APIDataMessageType.KeepAlive });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[SendKeepAliveMessage] - An exception occured sending keep alive message. Exception: {0}", ex);
             }
             return Task.FromResult<object>(null);
         }

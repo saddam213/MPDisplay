@@ -116,8 +116,8 @@ namespace GUIFramework.Repositories
             get { return _currentEnabledPluginMap; }
             set
             {
-                if (_currentEnabledPluginMap == null || value == null) return;
-                if (_currentEnabledPluginMap.SequenceEqual(value)) return;
+                if (value == null) return;
+                if (_currentEnabledPluginMap != null && _currentEnabledPluginMap.SequenceEqual(value)) return;
                 _currentEnabledPluginMap = value;
                 NotifiyValueChanged(InfoMessageType.EnabledPluginMap, value);
                 GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
@@ -377,7 +377,8 @@ namespace GUIFramework.Repositories
 
         private void AddPlayerMessage(APIPlayerMessage message)
         {
-            if (message == null) return;PlayerType = message.PlayerPluginType;
+            if (message == null) return;
+            PlayerType = message.PlayerPluginType;
             PlaybackType = message.PlaybackType;
             PlaybackState = message.PlaybackState;
             IsFullscreenVideo = message.PlaybackType.IsVideo() && message.PlayerFullScreen;

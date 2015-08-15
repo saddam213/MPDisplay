@@ -126,10 +126,10 @@ namespace Common.MessengerService
             if (_messageToActionsMap.TryGetParameterTypes(message, out registeredParameters))
             {
                 if (registeredParameters == null && (parameters != null && parameters.Any()))
-                    throw new TargetParameterCountException(string.Format("parameters not expected."));
+                    throw new TargetParameterCountException("parameters not expected.");
 
                 if (registeredParameters != null && (parameters == null || parameters.Count() != registeredParameters.Count()))
-                    throw new TargetParameterCountException(string.Format("parameter count mismatch"));
+                    throw new TargetParameterCountException("parameter count mismatch");
                
             }
 

@@ -4,6 +4,7 @@
 
 using System;
 using System.Drawing.Imaging;
+using Common.Log;
 
 namespace MediaPortalPlugin.ExifReader
 {
@@ -89,14 +90,13 @@ namespace MediaPortalPlugin.ExifReader
                 {
                     return _hasCustomFormatter || !_isUnknown ?
                         _propertyFormatter.DisplayName :
-                        String.Format("{0} #{1}", _propertyFormatter.DisplayName, _propertyItem.Id);
+                        string.Format("{0} #{1}", _propertyFormatter.DisplayName, _propertyItem.Id);
                 }
                 catch (Exception ex)
                 {
-                    throw new InvalidOperationException(
-                        "An ExifReaderException was caught. See InnerException for more details",
-                        GetExifReaderException(ex));
+                    LogException( "Error getting ExifPropertyName", ex);
                 }
+                return string.Empty;
             }
         }        
 
@@ -167,10 +167,9 @@ namespace MediaPortalPlugin.ExifReader
             }
             catch (Exception ex)
             {
-                throw new InvalidOperationException(
-                    "An ExifReaderException was caught. See InnerException for more details",
-                    GetExifReaderException(ex));
+                LogException("Error getting formatted string", ex);
             }
+            return string.Empty;
         }
 
         /// <summary>
@@ -191,28 +190,22 @@ namespace MediaPortalPlugin.ExifReader
                         ExifValueCreator.CreateUndefined(ExifTag, _propertyItem.Value, _propertyItem.Len) :
                         ExifValueCreator.Create(ExifDatatype, _propertyItem.Value, _propertyItem.Len);
             }
-            catch (ExifReaderException ex)
-            {
-                throw new InvalidOperationException(
-                    "An ExifReaderException was caught. See InnerException for more details",
-                    ex);
-            }
             catch (Exception ex)
             {
-                throw new InvalidOperationException(
-                    "An ExifReaderException was caught. See InnerException for more details",
-                    new ExifReaderException(ex, _propertyFormatter, null));
+                LogException("Error in InitializeExifValue", ex);
             }
+            return null;
         }
 
         /// <summary>
         /// Returns an ExifReaderException set with the current property formatter
         /// </summary>
+        /// <param name="text">Text to be inserted for the exception</param>
         /// <param name="ex">Inner exception object</param>
         /// <returns>The ExifReaderException object</returns>
-        private ExifReaderException GetExifReaderException(Exception ex)
+        private static void LogException(string text, Exception ex)
         {
-            return new ExifReaderException(ex, _propertyFormatter, null);
+            LoggingManager.GetLog(typeof(ExifProperty)).Message(LogLevel.Error, "{0}: {1}.", text, ex);
         }
     }
 }

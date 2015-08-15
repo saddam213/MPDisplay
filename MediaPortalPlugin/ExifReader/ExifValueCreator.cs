@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Text;
+using Common.Log;
 
 namespace MediaPortalPlugin.ExifReader
 {
@@ -52,8 +53,9 @@ namespace MediaPortalPlugin.ExifReader
             }
             catch (Exception ex)
             {
-                throw new ExifReaderException(ex);
+                LogException("Error in Create", ex);
             }
+            return null;
         }
 
         /// <summary>
@@ -73,8 +75,9 @@ namespace MediaPortalPlugin.ExifReader
             }
             catch (Exception ex)
             {
-                throw new ExifReaderException(ex, extractor);
+                LogException("Error in CreateUndefined", ex);
             }
+            return null;
         }
 
         /// <summary>
@@ -200,6 +203,17 @@ namespace MediaPortalPlugin.ExifReader
             }
 
             return new ExifValue<T>(data);
-        }        
+        }
+        /// <summary>
+        /// Returns an ExifReaderException set with the current property formatter
+        /// </summary>
+        /// <param name="text">Text to be inserted for the exception</param>
+        /// <param name="ex">Inner exception object</param>
+        /// <returns>The ExifReaderException object</returns>
+        private static void LogException(string text, Exception ex)
+        {
+            LoggingManager.GetLog(typeof(ExifValueCreator)).Message(LogLevel.Error, "{0}: {1}.", text, ex);
+        }
+
     }
 }

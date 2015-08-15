@@ -348,6 +348,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         private static int GetCount(GUIFacadeControl facade)
         {
+            if (facade == null) return -1;
+
             try
             {
                 var count = 0;
@@ -357,9 +359,9 @@ namespace MediaPortalPlugin.InfoManagers
                     });
                  return count == 0 ? -1 : count;
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                // ignored
+                _log.Exception("[GetCount] - An exception occured getting count for GUIFacadeControl {0}", ex, facade.ToString());
             }
             return -1;
         }
@@ -450,9 +452,9 @@ namespace MediaPortalPlugin.InfoManagers
                     ListItemData = data
                 });
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[SendSkinEditorData] - An exception occured sendind data for GUIListItem <{0}>. Exception: {1}", item, ex.Message);
             }
         }
 

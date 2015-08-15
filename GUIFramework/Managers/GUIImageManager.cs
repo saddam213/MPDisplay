@@ -61,31 +61,31 @@ namespace GUIFramework.Managers
         }
 
         /// <summary>
-        /// Gets a BitmapImage from tshe specified filename.
+        /// Gets a BitmapImage from the specified filename.
         /// </summary>
         /// <param name="filename">The filename or URL.</param>
         /// <returns></returns>
         public static BitmapImage GetImage(string filename)
         {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(filename) && ( (FileHelpers.IsURL(filename) && FileHelpers.ExistsURL(filename)) || File.Exists(filename)))
+               try
                 {
-                    var bmImage = new BitmapImage();
-                    bmImage.BeginInit();
-                    bmImage.CacheOption = BitmapCacheOption.OnLoad;
-                    bmImage.UriSource = new Uri(filename);
-                    bmImage.EndInit();
-                    if( bmImage.CanFreeze) bmImage.Freeze();                 
-                    return bmImage;
+                    if (!string.IsNullOrWhiteSpace(filename) && ( (FileHelpers.IsURL(filename) && FileHelpers.ExistsURL(filename)) || File.Exists(filename)))
+                    {
+                        var bmImage = new BitmapImage();
+                        bmImage.BeginInit();
+                        bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bmImage.UriSource = new Uri(filename);
+                        bmImage.EndInit();
+                        if( bmImage.CanFreeze) bmImage.Freeze();     
+                        return bmImage;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                _log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
-            }
-            return new BitmapImage();
-        }
+                catch (Exception ex)
+                {
+                    _log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                }
+                return new BitmapImage();     
+         }
 
         /// <summary>
         /// Gets a BitmapImage from a set of image bytes.

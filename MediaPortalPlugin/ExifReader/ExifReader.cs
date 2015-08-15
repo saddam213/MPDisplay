@@ -8,6 +8,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Drawing;
 using System.IO;
+using Common.Log;
 
 namespace MediaPortalPlugin.ExifReader
 {
@@ -24,11 +25,6 @@ namespace MediaPortalPlugin.ExifReader
         private List<ExifProperty> _exifproperties;
 
         /// <summary>
-        /// The Image object associated with the image file
-        /// </summary>
-        private Image _imageFile;
-
-        /// <summary>
         /// Initializes a new instance of the ExifReader class based on a file path.
         /// </summary>
         /// <param name="imageFileName">Full path to the image file</param>
@@ -36,15 +32,24 @@ namespace MediaPortalPlugin.ExifReader
         {
             try
             {
-                _imageFile = Image.FromFile(imageFileName);
-            }
-            catch (FileNotFoundException ex)
-            {
-                throw new ExifReaderException("The image file was not found. See the inner exception for more details.", ex);
+                if (File.Exists(imageFileName))
+                {
+                    using (var stream = File.Open(imageFileName, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                     var imageFile = Image.FromStream(stream);
+                     InitializeExifProperties(imageFile);
+                     imageFile.Dispose();
+                    }
+                }
+                else
+                {
+                    LoggingManager.GetLog(typeof(ExifReader)).Message(LogLevel.Info, "Image file <{0}> does not exist.", imageFileName);
+                }
             }
             catch (Exception ex)
             {
-                throw new ExifReaderException("The image file could not be read. See the inner exception for more details.", ex);
+                _exifproperties = null;
+                LoggingManager.GetLog(typeof(ExifReader)).Message(LogLevel.Error, "Error initializing for file <{0}>: {1}.", imageFileName, ex);
             }
         }
 
@@ -64,11 +69,6 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>The Exif properties</returns>
         public ReadOnlyCollection<ExifProperty> GetExifProperties()
         {
-            if (_exifproperties == null)
-            {
-                InitializeExifProperties();
-            }
-
             return _exifproperties != null ? _exifproperties.AsReadOnly() : null;
         }
 
@@ -127,11 +127,13 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Initializes the Exif properties for the associated image file
         /// </summary>
-        private void InitializeExifProperties()
+        private void InitializeExifProperties(Image imageFile)
         {
             _exifproperties = new List<ExifProperty>();
 
-            foreach (var propertyItem in _imageFile.PropertyItems)
+            if (imageFile == null) return;
+
+            foreach (var propertyItem in imageFile.PropertyItems)
             {
                 _exifproperties.Add(new ExifProperty(propertyItem, this));
             }

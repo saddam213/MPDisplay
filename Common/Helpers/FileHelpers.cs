@@ -27,12 +27,14 @@ namespace Common.Helpers
                     using (var webClient = new WebClient())
                     {
                         var fileData = webClient.DownloadData(filename);
+                        _log.Message(LogLevel.Verbose, "[ReadBytesFromFile] - Dowloaded data from URL {0}, received <{1}> bytes.", filename, fileData.Length);
+
                         return fileData;
                     }
                 }
                 if (File.Exists(filename))
                 {
-                    using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
                     {
                         var fileData = new byte[fs.Length];
                         fs.Read(fileData, 0, Convert.ToInt32(fs.Length));
@@ -42,7 +44,7 @@ namespace Common.Helpers
             }
             catch(Exception ex)
             {
-                _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File: {0}", ex, filename);
+                _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File or URL: {0}", ex, filename);
             }
             return null;
         }
@@ -51,7 +53,7 @@ namespace Common.Helpers
 		/// Checks if file points to an URL location
 		/// </summary>
 		/// <param name="file">The file.</param>
-		public static bool IsURL(String file)
+		public static bool IsURL(string file)
 		{
 				return file.StartsWith("http");
 		}
@@ -60,20 +62,38 @@ namespace Common.Helpers
 		/// Checks if URL exists on server
 		/// </summary>
 		/// <param name="file">The file.</param>
-		public static bool ExistsURL(String file)
+		public static bool ExistsURL(string file)
 		{
 			var urlCheck = new Uri(file);
 			var request = (HttpWebRequest)WebRequest.Create(urlCheck);					
-			request.Timeout = 1000;
+			request.Timeout = 15000;
+		    request.Method = "HEAD";
 			HttpWebResponse response = null;
 					
 			try
 			{
 				response = (HttpWebResponse)request.GetResponse();
+			    if (response.StatusCode != HttpStatusCode.OK)
+			    {
+                    _log.Message(LogLevel.Warn, "[ExistsURL] - Status for URL {0} not ok, Returned Status is <{1}>", file, response.StatusCode );
+			    }
 				return response.StatusCode == HttpStatusCode.OK;
 			}
-			catch (Exception)
+			catch (WebException we)
 			{
+			    if (response == null)
+			    {
+                    _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, no response received, WebException: {1}", file, we);
+			    }
+			    else
+			    {
+                    _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Status Code <{1}>, WebException: {2}", file, response.StatusCode, we);			        
+			    }
+				return false; 
+			}
+			catch (Exception ex)
+			{
+                _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Exception:{1}", file, ex);
 				return false; 
 			}
 			finally 

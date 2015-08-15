@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Windows;
+using Common.Log;
 using Common.MessengerService;
 using Common.Settings;
 using GUIFramework.GUI;
@@ -18,8 +19,13 @@ namespace GUIFramework.Repositories
     {
         #region Singleton Implementation
 
-        private ListRepository() { }
+        private ListRepository()
+        {
+            _log = LoggingManager.GetLog(typeof(ListRepository));
+        }
+
         private static ListRepository _instance;
+
         public static ListRepository Instance
         {
             get { return _instance ?? (_instance = new ListRepository()); }
@@ -67,6 +73,7 @@ namespace GUIFramework.Repositories
         private DataRepository<XmlListType, List<APIListItem>> _listRepository;
         private DataRepository<XmlListType, APIListAction> _listSelectionRepository;
         private APIListLayout _mediaPortalListLayout;
+        private Log _log;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -179,9 +186,9 @@ namespace GUIFramework.Repositories
                     NotifyListLayoutChanged();
                 }
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, string.Format("Error sending list, BatchId: {0}, Count: {1}, Exception: {2}", message.BatchId, message.BatchCount, ex));
             }
         }
 

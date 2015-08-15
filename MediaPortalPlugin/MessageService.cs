@@ -226,8 +226,11 @@ namespace MediaPortalPlugin
             else
             {
                 _lastKeepAlive = DateTime.Now;
-                _log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                 IsConnected = true;
+                _connections[ConnectionType.MPDisplay] = e.Result.Count(x => x.ConnectionType == ConnectionType.MPDisplay);
+                _connections[ConnectionType.SkinEditor] = e.Result.Count(x => x.ConnectionType == ConnectionType.SkinEditor);
+                _log.Message(LogLevel.Info, "[Connect] - Connection to server successful. Connections: <{0} {1}> <{2} {3}>",
+                    ConnectionType.MPDisplay, _connections[ConnectionType.MPDisplay], ConnectionType.SkinEditor, _connections[ConnectionType.SkinEditor]);
                 IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
                 IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
 
@@ -272,9 +275,9 @@ namespace MediaPortalPlugin
                 _log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
                 _messageClient.Disconnect();
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[Disconnect] - An exception occured when disconnecting. {0}", ex.Message);
             }
         }
 
@@ -358,12 +361,12 @@ namespace MediaPortalPlugin
                 if (!IsMpDisplayConnected) return;
 
                 if (_messageClient == null || property == null) return;
-                _log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}, Label: {2}.", property.SkinTag, property.PropertyType, property.Label); //Test
+                _log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}, Label: {2}.", property.SkinTag, property.PropertyType, property.Label); 
                 _messageClient.SendPropertyMessageAsync(property);
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, "[SendPropertyMessage] - An exception occured sending message.", ex.Message);
+                _log.Message(LogLevel.Error, "[SendPropertyMessage] - An exception occured sending message. {0}", ex.Message);
             }
         }
 
@@ -395,7 +398,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, "[SendListMessage] - An exception occured sending message.", ex.Message);
+                _log.Message(LogLevel.Error, "[SendListMessage] - An exception occured sending message. {0}", ex.Message);
             }
         }
 
@@ -416,7 +419,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, "[SendInfoMessage] - An exception occured sending message.", ex.Message);
+                _log.Message(LogLevel.Error, "[SendInfoMessage] - An exception occured sending message. {0}", ex.Message);
             }
         }
 
@@ -447,7 +450,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, "[SendDataMessage] - An Exception Occured Processing Message", ex.Message);
+                _log.Message(LogLevel.Error, "[SendDataMessage] - An Exception occured Processing Message {0}", ex.Message);
             }
         }
 
@@ -467,7 +470,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                _log.Exception("[KeepAlive] - An Exception Occured sending KeepAlive message", ex);
+                _log.Exception("[KeepAlive] - An Exception occured sending KeepAlive message.", ex);
             }
         }
 
@@ -495,6 +498,8 @@ namespace MediaPortalPlugin
         {
             if (e.Mode == PowerModes.Resume)
             {
+                _log.Message(LogLevel.Info, "[PowerModeChanged] - Resume event");
+
                 ThreadPool.QueueUserWorkItem(o =>
                 {
                     Thread.Sleep(_settings.ResumeDelay);
@@ -502,10 +507,10 @@ namespace MediaPortalPlugin
                 });
             }
 
-            if (e.Mode == PowerModes.Suspend)
-            {
-                Disconnect();
-            }
+            if (e.Mode != PowerModes.Suspend) return;
+
+            _log.Message(LogLevel.Info, "[PowerModeChanged] - Suspend event");
+            Disconnect();
         }
 
 
@@ -526,7 +531,7 @@ namespace MediaPortalPlugin
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, "[SendSkinEditorDataMessage] - An Exception Occured Processing Message", ex.Message);
+                _log.Message(LogLevel.Error, "[SendSkinEditorDataMessage] - An Exception Occured Processing Message. {0}", ex.Message);
             }
         }
       

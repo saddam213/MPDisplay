@@ -1,8 +1,8 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
+using Common.Helpers;
 using GUIFramework.Managers;
 using GUIFramework.Repositories;
 using GUISkinFramework.Skin;
@@ -20,15 +20,8 @@ namespace GUIFramework.GUI
         private BitmapImage _image = new BitmapImage();
         private bool _mapControlsVisible;
 
-        // map related variables
-        private string _location;
-        private int _zoom;
-        private int _defaultZoom;
-        private string _mapType;
-        private double _latitude;
-        private double _longitude;
-        private int _mapHeight;
-        private int _mapWidth;
+        private MapHelper _map;
+
         #endregion
 
         #region Constructor
@@ -38,9 +31,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIImage()
         {
-
             InitializeComponent();
-
         }
 
         #endregion
@@ -85,17 +76,11 @@ namespace GUIFramework.GUI
         {
             base.CreateControl();
             RegisteredProperties = PropertyRepository.GetRegisteredProperties(this, SkinXml.Image);
+
+            if (string.IsNullOrEmpty(SkinXml.MapData)) return;
+
             RegisteredProperties.AddRange(PropertyRepository.GetRegisteredProperties(this, SkinXml.MapData));
-
-            _mapHeight = (SkinXml.Height > 640) ? 640 : SkinXml.Height;
-            _mapWidth = (SkinXml.Width > 640) ? 640 : SkinXml.Width;
-
-            _defaultZoom = SkinXml.DefaultMapZoom;
-            if (_defaultZoom < 0) _defaultZoom = 0;
-            if (_defaultZoom > 21) _defaultZoom = 21;
-            _zoom = _defaultZoom;
-            _mapType = "roadmap";
-
+            _map = new MapHelper(SkinXml.Height, SkinXml.Width, SkinXml.DefaultMapZoom);
         }
 
 
@@ -126,22 +111,22 @@ namespace GUIFramework.GUI
         {
             base.UpdateInfoData();
 
-            if (!string.IsNullOrEmpty(SkinXml.MapData))
+            if (_map != null)
             {
                 var location = await PropertyRepository.GetProperty<string>(SkinXml.MapData, null);
                 if (!string.IsNullOrEmpty(location) && !location.Equals("---"))
                 {
-                    _latitude = 0;
-                    _longitude = 0;
+                    var latitude = 0.0;
+                    var longitude = 0.0;
                     try
                     {
                         var part = location.Split(',');
                         if (part.Count() == 4)
                         {
-                            _latitude = double.Parse(part[1], CultureInfo.InvariantCulture);
-                            _longitude = double.Parse(part[3], CultureInfo.InvariantCulture);
-                            if (part[0].Equals("S")) _latitude = -_latitude;
-                            if (part[2].Equals("W")) _longitude = -_longitude;
+                            latitude = double.Parse(part[1], CultureInfo.InvariantCulture);
+                            longitude = double.Parse(part[3], CultureInfo.InvariantCulture);
+                            if (part[0].Equals("S")) latitude = -latitude;
+                            if (part[2].Equals("W")) longitude = -longitude;
                         }
                     }
                     catch
@@ -149,12 +134,11 @@ namespace GUIFramework.GUI
                         // ignored
                     }
 
-                    if (Math.Abs(_latitude) > 0.0000001 && Math.Abs(_longitude) > 0.0000001)
+                    _map.Latitude = latitude;
+                    _map.Longitude = longitude;
+
+                    if (LoadMapImage())
                     {
-                        _location = _latitude.ToString("F6", CultureInfo.InvariantCulture) + "," +
-                               _longitude.ToString("F6", CultureInfo.InvariantCulture);
-                        _zoom = _defaultZoom;
-                        LoadMapImage();
                         MapControlsVisible = SkinXml.ShowMapControls;
                         return;           
                     }
@@ -181,105 +165,71 @@ namespace GUIFramework.GUI
         #region MapControls
 
         // load the map from Google Maps into Image property
-        private void LoadMapImage()
+        private bool LoadMapImage()
         {
-            if (!(Math.Abs(_latitude) > 0.0000001) || !(Math.Abs(_longitude) > 0.0000001)) return;
+            if (_map == null) return false;
 
-            var location = _latitude.ToString("F6", CultureInfo.InvariantCulture) + "," +
-                           _longitude.ToString("F6", CultureInfo.InvariantCulture);
-            var url = "http://maps.googleapis.com/maps/api/staticmap?center=" + location +
-                      "&size=" + _mapWidth;
-            url += "x" + _mapHeight + "&markers=size:mid%7Ccolor:red%7C";
-            url += _location + "&zoom=" + _zoom;
-            url += "&maptype=" + _mapType + "&sensor=false";
-            if (!string.IsNullOrWhiteSpace(PropertyRepository.Instance.Settings.GoogleApiKey))
-            {
-                url += "&key=" + PropertyRepository.Instance.Settings.GoogleApiKey;
-            }
-            Image = GUIImageManager.GetImage(url);
+            var url = _map.Url;
+            var imageBytes = FileHelpers.ReadBytesFromFile(url);
+            if (imageBytes == null || imageBytes.Length < 10) return false;
+
+            Image = GUIImageManager.GetImage(imageBytes);
+            return true;
         }
 
         private void ZoomInButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_zoom >= 21) return;
+            if (_map == null) return;
 
-            _zoom++;
-            LoadMapImage();
+            if( _map.ZoomIn()) LoadMapImage();
         }
 
         private void ZoomOutButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_zoom <= 0) return;
+            if (_map == null) return;
 
-            _zoom--;
-            LoadMapImage();
+            if( _map.ZoomOut()) LoadMapImage();
         }
 
        private void RoadmapToggleButton_OnClick(object sender, RoutedEventArgs e)
         {
-           if (_mapType.Equals("roadmap")) return;
+          if (_map == null) return;
 
-           _mapType = "roadmap";
-           LoadMapImage();
+          if( _map.ToRoadmap()) LoadMapImage();
         }
 
        private void TerrainToggleButton_OnClick(object sender, RoutedEventArgs e)
         {
-           if (_mapType.Equals("terrain")) return;
+            if (_map == null) return;
 
-           _mapType = "terrain";
-           LoadMapImage();
+            if( _map.ToTerrain()) LoadMapImage();
         }
 
        private void MoveUpButton_OnClick(object sender, RoutedEventArgs e)
        {
-           // Use 88 to avoid values beyond 90 degrees of lat.
-           if (!(_latitude < 88)) return;
+            if (_map == null) return;
 
-           _latitude += ShiftMap();
-           LoadMapImage();
+            if( _map.MoveUp()) LoadMapImage();
        }
 
         private void MoveDownButton_OnClick(object sender, RoutedEventArgs e)
         {
-           // Use 88 to avoid values beyond 90 degrees of lat.
-            if (!(_latitude > -88)) return;
-
-            _latitude -= ShiftMap();
-            LoadMapImage();
+            if (_map == null) return;
+            if( _map.MoveDown()) LoadMapImage();
         }
 
         private void MoveLeftButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!(_longitude > -179)) return;
-
-            _longitude -= ShiftMap();
-            LoadMapImage();
+            if (_map == null) return;
+            if( _map.MoveLeft()) LoadMapImage();
         }
 
         private void MoveRightButton_OnClick(object sender, RoutedEventArgs e)
         {
-            if (!(_longitude < 179)) return;
-
-            _longitude += ShiftMap();
+            if (_map == null) return;
             LoadMapImage();
         }
 
-        private double ShiftMap()
-        {
-            if (_zoom == 15)
-            {
-                return 0.003;
-            }
-            double diff;
-            if (_zoom > 15)
-            {
-                diff = _zoom - 15;
-                return ((15 - diff) * 0.003) / 15;
-            }
-            diff = 15 - _zoom;
-            return ((15 + diff) * 0.003) / 15;
-        }
         #endregion
     }
 }

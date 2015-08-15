@@ -405,7 +405,7 @@ namespace MediaPortalPlugin.InfoManagers
             }
         }
 
-        private static void SendSkinEditorData(GUIListItem item)
+        private void SendSkinEditorData(GUIListItem item)
         {
             if (item == null || !MessageService.Instance.IsSkinEditorConnected) return;
 
@@ -420,13 +420,13 @@ namespace MediaPortalPlugin.InfoManagers
                     ListItemData = data
                 });
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Exception("[SendSkinEditorData] - An exception occured sending data for GUIListItem {0}", ex, item);
             }
         }
 
-        private static void SendSkinEditorData(APIListItem item)
+        private void SendSkinEditorData(APIListItem item)
         {
             if (item == null || !MessageService.Instance.IsSkinEditorConnected) return;
 
@@ -441,9 +441,9 @@ namespace MediaPortalPlugin.InfoManagers
                     ListItemData = data
                 });
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Exception("[SendSkinEditorData] - An exception occured sending data for APIListItem {0}", ex, item);
             }
         }
     }

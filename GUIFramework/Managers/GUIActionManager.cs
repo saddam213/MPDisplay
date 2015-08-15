@@ -1,4 +1,5 @@
 ﻿using System;
+using Common.Log;
 using Common.MessengerService;
 using GUIFramework.GUI;
 using GUISkinFramework.Skin;
@@ -10,6 +11,8 @@ namespace GUIFramework.Managers
     /// </summary>
     public static class GUIActionManager
     {
+        private static Log _log = LoggingManager.GetLog(typeof(GUIActionManager));
+
         private static MessengerService<XmlActionType> _actionService = new MessengerService<XmlActionType>();
 
         /// <summary>
@@ -97,9 +100,9 @@ namespace GUIFramework.Managers
             {
                 return (T)Convert.ChangeType(action.Param1, typeof(T));
             }
-            catch
+            catch(Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[GetParam1As] - An exception getting parameter {0} of type {1}, exception: {2}", action.Param1, typeof(T), ex);
             }
             return defaultValue;
         }
@@ -113,15 +116,15 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static T GetParam2As<T>(this XmlAction action, T defaultValue) where T : IConvertible
         {
-            if (action == null || action.Param1 == null) return defaultValue;
+            if (action == null || action.Param2 == null) return defaultValue;
 
             try
             {
-                return (T)Convert.ChangeType(action.Param1, typeof(T));
+                return (T)Convert.ChangeType(action.Param2, typeof(T));
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, "[GetParam2As] - An exception getting parameter {0} of type {1}, exception: {2}", action.Param2, typeof(T), ex);
             }
             return defaultValue;
         }

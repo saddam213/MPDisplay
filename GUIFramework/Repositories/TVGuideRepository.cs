@@ -245,9 +245,9 @@ namespace GUIFramework.Repositories
                     });
                 }
             }
-            catch
+            catch( Exception ex)
             {
-                // ignored
+                _log.Message(LogLevel.Error, string.Format("Error sending tv guide, BatchId: {0}, Count: {1}, Exception: {2}", message.BatchId, message.BatchCount, ex));
             }
         }
 
