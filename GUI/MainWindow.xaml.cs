@@ -205,15 +205,6 @@ namespace GUI
                 ?? Screen.AllScreens.FirstOrDefault(d => d.Primary);
         }
 
-/*
-        private void SetThreadPriority(string priority)
-        {
-            ThreadPriority option = ThreadPriority.Normal;
-            Enum.TryParse<ThreadPriority>(priority, out option);
-            Thread.CurrentThread.Priority = option;
-        }
-*/
-
         #endregion
 
         #region INotifyPropertyChanged

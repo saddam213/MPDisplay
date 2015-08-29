@@ -49,6 +49,7 @@ namespace GUIFramework
         private int _currentMPDWindowId = -1;
         private DateTime _lastUserInteraction = DateTime.MinValue;
         private DateTime _lastKeepAlive = DateTime.MinValue;
+        private int _exceptionCount;
 
         #endregion
 
@@ -61,6 +62,7 @@ namespace GUIFramework
         {
             SurfaceElements = new ObservableCollection<IControlHost>();
             _processWindow = false;
+            _exceptionCount = 0;
             InitializeComponent(); 
             StartSecondTimer();
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
@@ -399,56 +401,72 @@ namespace GUIFramework
                 return;
             }
 
-            if (InfoRepository.Instance.IsMediaPortalConnected && !IsUserInteracting)
+            try
             {
-                if (_currentMPDWindowId != -1)                      // if an MPD Window is open
-                {                                                   // check if auto-close is off or on
-                    var xmlMpdWindow = _currentWindow.BaseXml as XmlMPDWindow;
-                    if (xmlMpdWindow != null)
-                    {
-                        if (xmlMpdWindow.AutoCloseWindow)           // only close if autoclose is on
+                if (InfoRepository.Instance.IsMediaPortalConnected && !IsUserInteracting)
+                {
+                    if (_currentMPDWindowId != -1)                      // if an MPD Window is open
+                    {                                                   // check if auto-close is off or on
+                        var xmlMpdWindow = _currentWindow.BaseXml as XmlMPDWindow;
+                        if (xmlMpdWindow != null)
                         {
-                            _currentMPDWindowId = -1;
-                            _lastUserInteraction = DateTime.MinValue;
-                            
+                            if (xmlMpdWindow.AutoCloseWindow)           // only close if autoclose is on
+                            {
+                                _currentMPDWindowId = -1;
+                                _lastUserInteraction = DateTime.MinValue;
+
+                            }
                         }
+                    }
+                    else
+                    {                                                   // all other windows (MP) always auto-close
+                        _currentMPDWindowId = -1;
+                        _lastUserInteraction = DateTime.MinValue;
+                    }
+                }
+
+
+                if (_currentMPDWindowId != -1 || !InfoRepository.Instance.IsMediaPortalConnected)
+                {
+                    var newWindow = MPDisplayWindows.GetOrDefault(_currentMPDWindowId);
+                    if (!IsWindowOpen(newWindow))
+                    {
+                        foreach (var dialog in MPDisplayDialogs.Where(d => d.CloseOnWindowChanged && IsDialogOpen(d)))
+                        {
+                            await dialog.DialogClose();
+                        }
+                        AddPreviousWindow(_currentMPDWindowId);
+                        await ChangeWindow(newWindow);
                     }
                 }
                 else
-                {                                                   // all other windows (MP) always auto-close
-                    _currentMPDWindowId = -1;
-                    _lastUserInteraction = DateTime.MinValue;
-                }
-            }
-
-
-            if (_currentMPDWindowId != -1 || !InfoRepository.Instance.IsMediaPortalConnected)
-            {
-                var newWindow = MPDisplayWindows.GetOrDefault(_currentMPDWindowId);
-                if (!IsWindowOpen(newWindow))
                 {
-                    foreach (var dialog in MPDisplayDialogs.Where(d => d.CloseOnWindowChanged && IsDialogOpen(d)))
+                    if (InfoRepository.Instance.PlaybackType != APIPlaybackType.None)
                     {
-                        await dialog.DialogClose();
-                    }
-                    AddPreviousWindow(_currentMPDWindowId);
-                    await ChangeWindow(newWindow);
-                }
-            }
-            else
-            {
-                if (InfoRepository.Instance.PlaybackType != APIPlaybackType.None)
-                {
-                    if (InfoRepository.Instance.IsFullscreenVideo || InfoRepository.Instance.IsFullscreenMusic)
-                    {
-                        await ChangeWindow(PlayerWindows.GetOrDefault());
+                        if (InfoRepository.Instance.IsFullscreenVideo || InfoRepository.Instance.IsFullscreenMusic)
+                        {
+                            await ChangeWindow(PlayerWindows.GetOrDefault());
+                            return;
+                        }
+                        await ChangeWindow(MediaPortalWindows.GetOrDefault());
                         return;
                     }
                     await ChangeWindow(MediaPortalWindows.GetOrDefault());
-                    return;
                 }
-                await ChangeWindow(MediaPortalWindows.GetOrDefault());
+
             }
+            catch (Exception ex)
+            {
+                _exceptionCount++;
+                _log.Exception("[ProcessWindow] - Exception in main window loop, exception count {0}.", ex, _exceptionCount);
+                if (_exceptionCount > 9)
+                {
+                   _log.Message(LogLevel.Error, "[ProcessWindow] - Maximum number of 9 exceptions exceeded, closing down MPD++ now");
+                   _processWindow = false;
+                    ExitMPDisplay();
+                }
+            }
+
         }
 
         /// <summary>
@@ -803,12 +821,10 @@ namespace GUIFramework
                 }
                 catch (Exception ex)
                 {
-                    _log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", ex.Message);
+                    _log.Exception( "[Connect] - Connection to server failed.", ex);
                 }
             }
         }
-
-      
 
         public async Task Reconnect()
         {
@@ -1017,14 +1033,15 @@ namespace GUIFramework
         {
             if (e.Mode == PowerModes.Resume)
             {
-              await Task.Delay(Settings.ConnectionSettings.ResumeDelay);
-              await InitializeServerConnection(Settings.ConnectionSettings);
+                _log.Message(LogLevel.Info, "[PowerModeChanged] - Resume event");
+                await Task.Delay(Settings.ConnectionSettings.ResumeDelay);
+                await InitializeServerConnection(Settings.ConnectionSettings);
             }
 
-            if (e.Mode == PowerModes.Suspend)
-            {
-               await Disconnect();
-            }
+            if (e.Mode != PowerModes.Suspend) return;
+
+            _log.Message(LogLevel.Info, "[PowerModeChanged] - Suspend event");
+            await Disconnect();
         }
 
 
