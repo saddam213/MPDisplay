@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.IO;
-using System.Management;
 using System.Diagnostics;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using System.Threading;
+using Common.Helpers;
+using Common.Log;
 using Microsoft.VisualBasic.Devices;
 
 namespace Common.Status
@@ -15,12 +15,12 @@ namespace Common.Status
     /// </summary>
     public class SystemStatusInfo
     {
-        private Logging.Log Log = Logging.LoggingManager.GetLog(typeof(SystemStatusInfo));
+        private Log.Log _log = LoggingManager.GetLog(typeof(SystemStatusInfo));
         private DateTime _lastFastUpdate = DateTime.MinValue;
         private DateTime _lastMediumUpdate = DateTime.MinValue;
         private DateTime _lastSlowUpdate = DateTime.MinValue;
         private DateTime _lastTimeUpdate = DateTime.MinValue;
-        private System.Threading.Timer _updateTimer;
+        private Timer _updateTimer;
         private PerformanceCounter _cpuCounter;
         private ComputerInfo _computerInfo;
         private string _tagPrefix = "MPD";
@@ -48,7 +48,7 @@ namespace Common.Status
            }
            catch (Exception ex)
            {
-               Log.Message(Logging.LogLevel.Error, "Unable to start CPU performance counter, MPDisplay does not have the required permission/rights{0}{1}", Environment.NewLine, ex.Message);
+               _log.Message(LogLevel.Error, "Unable to start CPU performance counter, MPDisplay does not have the required permission/rights{0}{1}", Environment.NewLine, ex.Message);
            }
         }
 
@@ -59,7 +59,7 @@ namespace Common.Status
         {
             if (_updateTimer == null)
             {
-                _updateTimer = new System.Threading.Timer((o) => OnTimerTick(), null, 250, 250);
+                _updateTimer = new Timer(o => OnTimerTick(), null, 250, 250);
             }
         }
 
@@ -92,27 +92,25 @@ namespace Common.Status
             {
                 _lastMediumUpdate = DateTime.Now;
 
-                double physPercentFree = Math.Round(100 * (double)_computerInfo.AvailablePhysicalMemory / _computerInfo.TotalPhysicalMemory,2);
+                var physPercentFree = Math.Round(100 * (double)_computerInfo.AvailablePhysicalMemory / _computerInfo.TotalPhysicalMemory,2);
                 NotifyTextDataChanged("PhysicalTotal",  ((long)_computerInfo.TotalPhysicalMemory).ToPrettySize(2));
                 NotifyTextDataChanged("PhysicalFree", ((long)_computerInfo.AvailablePhysicalMemory).ToPrettySize(2));
                 NotifyTextDataChanged("PhysicalPercent", string.Format("{0:##0} %", physPercentFree));
                 NotifyNumberDataChanged("PhysicalPercent", physPercentFree);
 
-                double vertPercentFree = Math.Round(100 * (double)_computerInfo.AvailableVirtualMemory / _computerInfo.TotalVirtualMemory,2);
+                var vertPercentFree = Math.Round(100 * (double)_computerInfo.AvailableVirtualMemory / _computerInfo.TotalVirtualMemory,2);
                 NotifyTextDataChanged("VirtualTotal", ((long)_computerInfo.TotalVirtualMemory).ToPrettySize(2));
                 NotifyTextDataChanged("VirtualFree",  ((long)_computerInfo.AvailableVirtualMemory).ToPrettySize(2));
                 NotifyTextDataChanged("VirtualPercent", string.Format("{0:##0} %", vertPercentFree));
                 NotifyNumberDataChanged("VirtualPercent", vertPercentFree);
             }
 
-            if (DateTime.Now > _lastFastUpdate.AddMilliseconds(500))
-            {
-                _lastFastUpdate = DateTime.Now;
-                double value = _cpuCounter != null ? Math.Round(_cpuCounter.NextValue(),2) : 0.0;
-                NotifyTextDataChanged("CPU", string.Format("{0:##0} %", value));
-                NotifyNumberDataChanged("CPU", value);
-                UpdateTime(_lastFastUpdate);
-            }
+            if (DateTime.Now <= _lastFastUpdate.AddMilliseconds(500)) return;
+            _lastFastUpdate = DateTime.Now;
+            var value = _cpuCounter != null ? Math.Round(_cpuCounter.NextValue(),2) : 0.0;
+            NotifyTextDataChanged("CPU", string.Format("{0:##0} %", value));
+            NotifyNumberDataChanged("CPU", value);
+            UpdateTime(_lastFastUpdate);
         }
 
         /// <summary>
@@ -131,20 +129,17 @@ namespace Common.Status
         private void UpdateDriveInfo()
         {
             var allDrives = System.IO.DriveInfo.GetDrives();
-            int num = 0;
-            foreach (var d in allDrives)
+            var num = 0;
+            foreach (var d in allDrives.Where(d => d.IsReady && d.DriveType == DriveType.Fixed))
             {
-                if ( d.IsReady && d.DriveType == DriveType.Fixed)
-                {
-                    NotifyTextDataChanged(string.Format("Drive{0}.Name", num), d.Name);
-                    NotifyTextDataChanged(string.Format("Drive{0}.VolumeLabel", num), d.VolumeLabel);
-                    NotifyTextDataChanged(string.Format("Drive{0}.TotalSpace", num), d.TotalSize.ToPrettySize(2));
-                    NotifyTextDataChanged(string.Format("Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
-                    double percentFree = Math.Round(100 * (double)d.TotalFreeSpace / d.TotalSize,2);
-                    NotifyTextDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree.ToString() + " %");
-                    NotifyNumberDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree);
-                    num++;
-                }
+                NotifyTextDataChanged(string.Format("Drive{0}.Name", num), d.Name);
+                NotifyTextDataChanged(string.Format("Drive{0}.VolumeLabel", num), d.VolumeLabel);
+                NotifyTextDataChanged(string.Format("Drive{0}.TotalSpace", num), d.TotalSize.ToPrettySize(2));
+                NotifyTextDataChanged(string.Format("Drive{0}.FreeSpace", num), d.AvailableFreeSpace.ToPrettySize(2));
+                var percentFree = Math.Round(100 * (double)d.TotalFreeSpace / d.TotalSize,2);
+                NotifyTextDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree.ToString(CultureInfo.InvariantCulture) + " %");
+                NotifyNumberDataChanged(string.Format("Drive{0}.PercentFree", num), percentFree);
+                num++;
             }
         }
 

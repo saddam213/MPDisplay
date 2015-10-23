@@ -2,14 +2,14 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              StartupUri="MainWindow.xaml"
-			  xmlns:System="clr-namespace:System;assembly=mscorlib"
-			 xmlns:language="clr-namespace:GUIConfig.Settings.Language;assembly="
-			  xmlns:common="clr-namespace:Common.Logging;assembly=MPDisplay.Common">
+			  xmlns:system="clr-namespace:System;assembly=mscorlib"
+			 xmlns:language="clr-namespace:GUIConfig.Settings"
+			  xmlns:common="clr-namespace:Common.Log;assembly=MPDisplay.Common">
     <Application.Resources>
         <language:LanguageConverter x:Key="LanguageConverter" />
 		<BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
 
-		<ObjectDataProvider x:Key="LogLevels" MethodName="GetValues" ObjectType="{x:Type System:Enum}">
+		<ObjectDataProvider x:Key="LogLevels" MethodName="GetValues" ObjectType="{x:Type system:Enum}">
 			<ObjectDataProvider.MethodParameters>
 				<x:Type TypeName="common:LogLevel"/>
 			</ObjectDataProvider.MethodParameters>

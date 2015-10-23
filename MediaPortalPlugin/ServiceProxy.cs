@@ -1,192 +1,176 @@
 ﻿using System;
+using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
+using System.Diagnostics;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
-using System.Text;
 using System.Threading;
 using MessageFramework.DataObjects;
+using MessageFramework.Messages;
 
 namespace MediaPortalPlugin
 {
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    [ServiceContractAttribute(ConfigurationName = "IMessage", CallbackContract = typeof(IMessageCallback), SessionMode = SessionMode.Required)]
+    [GeneratedCode("System.ServiceModel", "4.0.0.0")]
+    [ServiceContract(ConfigurationName = "IMessage", CallbackContract = typeof(IMessageCallback), SessionMode = SessionMode.Required)]
     public interface IMessage
     {
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendPropertyMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendPropertyMessage")]
         void SendPropertyMessage(APIPropertyMessage property);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendPropertyMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendPropertyMessage")]
         IAsyncResult BeginSendPropertyMessage(APIPropertyMessage property, AsyncCallback callback, object asyncState);
 
         void EndSendPropertyMessage(IAsyncResult result);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendListMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendListMessage")]
         void SendListMessage(APIListMessage listData);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendListMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendListMessage")]
         IAsyncResult BeginSendListMessage(APIListMessage listData, AsyncCallback callback, object asyncState);
 
         void EndSendListMessage(IAsyncResult result);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendInfoMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendInfoMessage")]
         void SendInfoMessage(APIInfoMessage msg);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendInfoMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendInfoMessage")]
         IAsyncResult BeginSendInfoMessage(APIInfoMessage msg, AsyncCallback callback, object asyncState);
 
         void EndSendInfoMessage(IAsyncResult result);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendDataMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendDataMessage")]
         void SendDataMessage(APIDataMessage msg);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendDataMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendDataMessage")]
         IAsyncResult BeginSendDataMessage(APIDataMessage msg, AsyncCallback callback, object asyncState);
 
         void EndSendDataMessage(IAsyncResult result);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendMediaPortalMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendMediaPortalMessage")]
         void SendMediaPortalMessage(APIMediaPortalMessage msg);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendMediaPortalMessage")]
+        [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendMediaPortalMessage")]
         IAsyncResult BeginSendMediaPortalMessage(APIMediaPortalMessage msg, AsyncCallback callback, object asyncState);
 
         void EndSendMediaPortalMessage(IAsyncResult result);
 
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/SendTVServerMessage")]
-        void SendTVServerMessage(APITVServerMessage msg);
-
-        [OperationContractAttribute(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendTVServerMessage")]
-        IAsyncResult BeginSendTVServerMessage(APITVServerMessage msg, AsyncCallback callback, object asyncState);
-
-        void EndSendTVServerMessage(IAsyncResult result);
-
-        [OperationContractAttribute(Action = "http://tempuri.org/IMessage/Connect", ReplyAction = "http://tempuri.org/IMessage/ConnectResponse")]
+        [OperationContract(Action = "http://tempuri.org/IMessage/Connect", ReplyAction = "http://tempuri.org/IMessage/ConnectResponse")]
         List<APIConnection> Connect(APIConnection name);
 
-        [OperationContractAttribute(AsyncPattern = true, Action = "http://tempuri.org/IMessage/Connect", ReplyAction = "http://tempuri.org/IMessage/ConnectResponse")]
+        [OperationContract(AsyncPattern = true, Action = "http://tempuri.org/IMessage/Connect", ReplyAction = "http://tempuri.org/IMessage/ConnectResponse")]
         IAsyncResult BeginConnect(APIConnection name, AsyncCallback callback, object asyncState);
 
         List<APIConnection> EndConnect(IAsyncResult result);
 
-        [OperationContractAttribute(IsOneWay = true, IsTerminating = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/Disconnect")]
+        [OperationContract(IsOneWay = true, IsTerminating = true, IsInitiating = false, Action = "http://tempuri.org/IMessage/Disconnect")]
         void Disconnect();
 
-        [OperationContractAttribute(IsOneWay = true, IsTerminating = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/Disconnect")]
+        [OperationContract(IsOneWay = true, IsTerminating = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/Disconnect")]
         IAsyncResult BeginDisconnect(AsyncCallback callback, object asyncState);
 
         void EndDisconnect(IAsyncResult result);
     }
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [GeneratedCode("System.ServiceModel", "4.0.0.0")]
     public interface IMessageCallback
     {
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIPropertyMessage")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIPropertyMessage")]
         void ReceiveAPIPropertyMessage(APIPropertyMessage message);
 
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIListMessage")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIListMessage")]
         void ReceiveAPIListMessage(APIListMessage message);
 
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIInfoMessage")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIInfoMessage")]
         void ReceiveAPIInfoMessage(APIInfoMessage message);
 
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIDataMessage")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIDataMessage")]
         void ReceiveAPIDataMessage(APIDataMessage message);
 
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveMediaPortalMessage")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveMediaPortalMessage")]
         void ReceiveMediaPortalMessage(APIMediaPortalMessage message);
      
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveTVServerMessage")]
-        void ReceiveTVServerMessage(APITVServerMessage message);
-
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/SessionConnected")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/SessionConnected")]
         void SessionConnected(APIConnection connection);
 
-        [OperationContractAttribute(IsOneWay = true, Action = "http://tempuri.org/IMessage/SessionDisconnected")]
+        [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/SessionDisconnected")]
         void SessionDisconnected(APIConnection connection);
     }
 
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
+    [GeneratedCode("System.ServiceModel", "4.0.0.0")]
     public interface IMessageChannel : IMessage, IClientChannel
     {
     }
 
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class ConnectCompletedEventArgs : System.ComponentModel.AsyncCompletedEventArgs
+    [DebuggerStepThrough]
+    [GeneratedCode("System.ServiceModel", "4.0.0.0")]
+    public class ConnectCompletedEventArgs : AsyncCompletedEventArgs
     {
 
-        private object[] results;
+        private object[] _results;
 
-        public ConnectCompletedEventArgs(object[] results, System.Exception exception, bool cancelled, object userState) :
+        public ConnectCompletedEventArgs(object[] results, Exception exception, bool cancelled, object userState) :
             base(exception, cancelled, userState)
         {
-            this.results = results;
+            _results = results;
         }
 
         public List<APIConnection> Result
         {
             get
             {
-                base.RaiseExceptionIfNecessary();
-                return ((List<APIConnection>)(this.results[0]));
+                RaiseExceptionIfNecessary();
+                return ((List<APIConnection>)(_results[0]));
             }
         }
     }
 
-    [System.Diagnostics.DebuggerStepThroughAttribute()]
-    [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    public partial class MessageClient : DuplexClientBase<IMessage>, IMessage
+    [DebuggerStepThrough]
+    [GeneratedCode("System.ServiceModel", "4.0.0.0")]
+    public class MessageClient : DuplexClientBase<IMessage>, IMessage
     {
 
-        private BeginOperationDelegate onBeginSendPropertyMessageDelegate;
+        private BeginOperationDelegate _onBeginSendPropertyMessageDelegate;
 
-        private EndOperationDelegate onEndSendPropertyMessageDelegate;
+        private EndOperationDelegate _onEndSendPropertyMessageDelegate;
 
-        private SendOrPostCallback onSendPropertyMessageCompletedDelegate;
+        private SendOrPostCallback _onSendPropertyMessageCompletedDelegate;
 
-        private BeginOperationDelegate onBeginSendListMessageDelegate;
+        private BeginOperationDelegate _onBeginSendListMessageDelegate;
 
-        private EndOperationDelegate onEndSendListMessageDelegate;
+        private EndOperationDelegate _onEndSendListMessageDelegate;
 
-        private SendOrPostCallback onSendListMessageCompletedDelegate;
+        private SendOrPostCallback _onSendListMessageCompletedDelegate;
 
-        private BeginOperationDelegate onBeginSendInfoMessageDelegate;
+        private BeginOperationDelegate _onBeginSendInfoMessageDelegate;
 
-        private EndOperationDelegate onEndSendInfoMessageDelegate;
+        private EndOperationDelegate _onEndSendInfoMessageDelegate;
 
-        private SendOrPostCallback onSendInfoMessageCompletedDelegate;
+        private SendOrPostCallback _onSendInfoMessageCompletedDelegate;
 
-        private BeginOperationDelegate onBeginSendDataMessageDelegate;
+        private BeginOperationDelegate _onBeginSendDataMessageDelegate;
 
-        private EndOperationDelegate onEndSendDataMessageDelegate;
+        private EndOperationDelegate _onEndSendDataMessageDelegate;
 
-        private SendOrPostCallback onSendDataMessageCompletedDelegate;
+        private SendOrPostCallback _onSendDataMessageCompletedDelegate;
 
-        private BeginOperationDelegate onBeginSendMediaPortalMessageDelegate;
+        private BeginOperationDelegate _onBeginSendMediaPortalMessageDelegate;
 
-        private EndOperationDelegate onEndSendMediaPortalMessageDelegate;
+        private EndOperationDelegate _onEndSendMediaPortalMessageDelegate;
 
-        private SendOrPostCallback onSendMediaPortalMessageCompletedDelegate;
+        private SendOrPostCallback _onSendMediaPortalMessageCompletedDelegate;
 
-        private BeginOperationDelegate onBeginSendTVServerMessageDelegate;
+        private BeginOperationDelegate _onBeginConnectDelegate;
 
-        private EndOperationDelegate onEndSendTVServerMessageDelegate;
+        private EndOperationDelegate _onEndConnectDelegate;
 
-        private SendOrPostCallback onSendTVServerMessageCompletedDelegate;
+        private SendOrPostCallback _onConnectCompletedDelegate;
 
-        private BeginOperationDelegate onBeginConnectDelegate;
+        private BeginOperationDelegate _onBeginDisconnectDelegate;
 
-        private EndOperationDelegate onEndConnectDelegate;
+        private EndOperationDelegate _onEndDisconnectDelegate;
 
-        private SendOrPostCallback onConnectCompletedDelegate;
-
-        private BeginOperationDelegate onBeginDisconnectDelegate;
-
-        private EndOperationDelegate onEndDisconnectDelegate;
-
-        private SendOrPostCallback onDisconnectCompletedDelegate;
+        private SendOrPostCallback _onDisconnectCompletedDelegate;
 
         public MessageClient(InstanceContext callbackInstance) :
             base(callbackInstance)
@@ -223,497 +207,428 @@ namespace MediaPortalPlugin
 
         public event EventHandler<AsyncCompletedEventArgs> SendMediaPortalMessageCompleted;
 
-        public event EventHandler<AsyncCompletedEventArgs> SendTVServerMessageCompleted;
-
         public event EventHandler<ConnectCompletedEventArgs> ConnectCompleted;
 
         public event EventHandler<AsyncCompletedEventArgs> DisconnectCompleted;
 
         public void SendPropertyMessage(APIPropertyMessage property)
         {
-            base.Channel.SendPropertyMessage(property);
+            Channel.SendPropertyMessage(property);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginSendPropertyMessage(APIPropertyMessage property, AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginSendPropertyMessage(property, callback, asyncState);
+            return Channel.BeginSendPropertyMessage(property, callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void EndSendPropertyMessage(IAsyncResult result)
         {
-            base.Channel.EndSendPropertyMessage(result);
+            Channel.EndSendPropertyMessage(result);
         }
 
         private IAsyncResult OnBeginSendPropertyMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIPropertyMessage property = ((APIPropertyMessage)(inValues[0]));
-            return this.BeginSendPropertyMessage(property, callback, asyncState);
+            var property = ((APIPropertyMessage)(inValues[0]));
+            return BeginSendPropertyMessage(property, callback, asyncState);
         }
 
         private object[] OnEndSendPropertyMessage(IAsyncResult result)
         {
-            this.EndSendPropertyMessage(result);
+            EndSendPropertyMessage(result);
             return null;
         }
 
         private void OnSendPropertyMessageCompleted(object state)
         {
-            if ((this.SendPropertyMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.SendPropertyMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendPropertyMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendPropertyMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendPropertyMessageAsync(APIPropertyMessage property)
         {
-            this.SendPropertyMessageAsync(property, null);
+            SendPropertyMessageAsync(property, null);
         }
 
         public void SendPropertyMessageAsync(APIPropertyMessage property, object userState)
         {
-            if ((this.onBeginSendPropertyMessageDelegate == null))
+            if ((_onBeginSendPropertyMessageDelegate == null))
             {
-                this.onBeginSendPropertyMessageDelegate = new BeginOperationDelegate(this.OnBeginSendPropertyMessage);
+                _onBeginSendPropertyMessageDelegate = OnBeginSendPropertyMessage;
             }
-            if ((this.onEndSendPropertyMessageDelegate == null))
+            if ((_onEndSendPropertyMessageDelegate == null))
             {
-                this.onEndSendPropertyMessageDelegate = new EndOperationDelegate(this.OnEndSendPropertyMessage);
+                _onEndSendPropertyMessageDelegate = OnEndSendPropertyMessage;
             }
-            if ((this.onSendPropertyMessageCompletedDelegate == null))
+            if ((_onSendPropertyMessageCompletedDelegate == null))
             {
-                this.onSendPropertyMessageCompletedDelegate = new SendOrPostCallback(this.OnSendPropertyMessageCompleted);
+                _onSendPropertyMessageCompletedDelegate = OnSendPropertyMessageCompleted;
             }
-            base.InvokeAsync(this.onBeginSendPropertyMessageDelegate, new object[] {
-                    property}, this.onEndSendPropertyMessageDelegate, this.onSendPropertyMessageCompletedDelegate, userState);
+            InvokeAsync(_onBeginSendPropertyMessageDelegate, new object[] {
+                    property}, _onEndSendPropertyMessageDelegate, _onSendPropertyMessageCompletedDelegate, userState);
         }
 
         public void SendListMessage(APIListMessage listData)
         {
-            base.Channel.SendListMessage(listData);
+            Channel.SendListMessage(listData);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginSendListMessage(APIListMessage listData, AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginSendListMessage(listData, callback, asyncState);
+            return Channel.BeginSendListMessage(listData, callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void EndSendListMessage(IAsyncResult result)
         {
-            base.Channel.EndSendListMessage(result);
+            Channel.EndSendListMessage(result);
         }
 
         private IAsyncResult OnBeginSendListMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIListMessage listData = ((APIListMessage)(inValues[0]));
-            return this.BeginSendListMessage(listData, callback, asyncState);
+            var listData = ((APIListMessage)(inValues[0]));
+            return BeginSendListMessage(listData, callback, asyncState);
         }
 
         private object[] OnEndSendListMessage(IAsyncResult result)
         {
-            this.EndSendListMessage(result);
+            EndSendListMessage(result);
             return null;
         }
 
         private void OnSendListMessageCompleted(object state)
         {
-            if ((this.SendListMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.SendListMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendListMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendListMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendListMessageAsync(APIListMessage listData)
         {
-            this.SendListMessageAsync(listData, null);
+            SendListMessageAsync(listData, null);
         }
 
         public void SendListMessageAsync(APIListMessage listData, object userState)
         {
-            if ((this.onBeginSendListMessageDelegate == null))
+            if ((_onBeginSendListMessageDelegate == null))
             {
-                this.onBeginSendListMessageDelegate = new BeginOperationDelegate(this.OnBeginSendListMessage);
+                _onBeginSendListMessageDelegate = OnBeginSendListMessage;
             }
-            if ((this.onEndSendListMessageDelegate == null))
+            if ((_onEndSendListMessageDelegate == null))
             {
-                this.onEndSendListMessageDelegate = new EndOperationDelegate(this.OnEndSendListMessage);
+                _onEndSendListMessageDelegate = OnEndSendListMessage;
             }
-            if ((this.onSendListMessageCompletedDelegate == null))
+            if ((_onSendListMessageCompletedDelegate == null))
             {
-                this.onSendListMessageCompletedDelegate = new SendOrPostCallback(this.OnSendListMessageCompleted);
+                _onSendListMessageCompletedDelegate = OnSendListMessageCompleted;
             }
-            base.InvokeAsync(this.onBeginSendListMessageDelegate, new object[] {
-                    listData}, this.onEndSendListMessageDelegate, this.onSendListMessageCompletedDelegate, userState);
+            InvokeAsync(_onBeginSendListMessageDelegate, new object[] {
+                    listData}, _onEndSendListMessageDelegate, _onSendListMessageCompletedDelegate, userState);
         }
 
         public void SendInfoMessage(APIInfoMessage msg)
         {
-            base.Channel.SendInfoMessage(msg);
+            Channel.SendInfoMessage(msg);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginSendInfoMessage(APIInfoMessage msg, AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginSendInfoMessage(msg, callback, asyncState);
+            return Channel.BeginSendInfoMessage(msg, callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void EndSendInfoMessage(IAsyncResult result)
         {
-            base.Channel.EndSendInfoMessage(result);
+            Channel.EndSendInfoMessage(result);
         }
 
         private IAsyncResult OnBeginSendInfoMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIInfoMessage msg = ((APIInfoMessage)(inValues[0]));
-            return this.BeginSendInfoMessage(msg, callback, asyncState);
+            var msg = ((APIInfoMessage)(inValues[0]));
+            return BeginSendInfoMessage(msg, callback, asyncState);
         }
 
         private object[] OnEndSendInfoMessage(IAsyncResult result)
         {
-            this.EndSendInfoMessage(result);
+            EndSendInfoMessage(result);
             return null;
         }
 
         private void OnSendInfoMessageCompleted(object state)
         {
-            if ((this.SendInfoMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.SendInfoMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendInfoMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendInfoMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendInfoMessageAsync(APIInfoMessage msg)
         {
-            this.SendInfoMessageAsync(msg, null);
+            SendInfoMessageAsync(msg, null);
         }
 
         public void SendInfoMessageAsync(APIInfoMessage msg, object userState)
         {
-            if ((this.onBeginSendInfoMessageDelegate == null))
+            if ((_onBeginSendInfoMessageDelegate == null))
             {
-                this.onBeginSendInfoMessageDelegate = new BeginOperationDelegate(this.OnBeginSendInfoMessage);
+                _onBeginSendInfoMessageDelegate = OnBeginSendInfoMessage;
             }
-            if ((this.onEndSendInfoMessageDelegate == null))
+            if ((_onEndSendInfoMessageDelegate == null))
             {
-                this.onEndSendInfoMessageDelegate = new EndOperationDelegate(this.OnEndSendInfoMessage);
+                _onEndSendInfoMessageDelegate = OnEndSendInfoMessage;
             }
-            if ((this.onSendInfoMessageCompletedDelegate == null))
+            if ((_onSendInfoMessageCompletedDelegate == null))
             {
-                this.onSendInfoMessageCompletedDelegate = new SendOrPostCallback(this.OnSendInfoMessageCompleted);
+                _onSendInfoMessageCompletedDelegate = OnSendInfoMessageCompleted;
             }
-            base.InvokeAsync(this.onBeginSendInfoMessageDelegate, new object[] {
-                    msg}, this.onEndSendInfoMessageDelegate, this.onSendInfoMessageCompletedDelegate, userState);
+            InvokeAsync(_onBeginSendInfoMessageDelegate, new object[] {
+                    msg}, _onEndSendInfoMessageDelegate, _onSendInfoMessageCompletedDelegate, userState);
         }
 
         public void SendDataMessage(APIDataMessage msg)
         {
-            base.Channel.SendDataMessage(msg);
+            Channel.SendDataMessage(msg);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginSendDataMessage(APIDataMessage msg, AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginSendDataMessage(msg, callback, asyncState);
+            return Channel.BeginSendDataMessage(msg, callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void EndSendDataMessage(IAsyncResult result)
         {
-            base.Channel.EndSendDataMessage(result);
+            Channel.EndSendDataMessage(result);
         }
 
         private IAsyncResult OnBeginSendDataMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIDataMessage msg = ((APIDataMessage)(inValues[0]));
-            return this.BeginSendDataMessage(msg, callback, asyncState);
+            var msg = ((APIDataMessage)(inValues[0]));
+            return BeginSendDataMessage(msg, callback, asyncState);
         }
 
         private object[] OnEndSendDataMessage(IAsyncResult result)
         {
-            this.EndSendDataMessage(result);
+            EndSendDataMessage(result);
             return null;
         }
 
         private void OnSendDataMessageCompleted(object state)
         {
-            if ((this.SendDataMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.SendDataMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendDataMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendDataMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendDataMessageAsync(APIDataMessage msg)
         {
-            this.SendDataMessageAsync(msg, null);
+            SendDataMessageAsync(msg, null);
         }
 
         public void SendDataMessageAsync(APIDataMessage msg, object userState)
         {
-            if ((this.onBeginSendDataMessageDelegate == null))
+            if ((_onBeginSendDataMessageDelegate == null))
             {
-                this.onBeginSendDataMessageDelegate = new BeginOperationDelegate(this.OnBeginSendDataMessage);
+                _onBeginSendDataMessageDelegate = OnBeginSendDataMessage;
             }
-            if ((this.onEndSendDataMessageDelegate == null))
+            if ((_onEndSendDataMessageDelegate == null))
             {
-                this.onEndSendDataMessageDelegate = new EndOperationDelegate(this.OnEndSendDataMessage);
+                _onEndSendDataMessageDelegate = OnEndSendDataMessage;
             }
-            if ((this.onSendDataMessageCompletedDelegate == null))
+            if ((_onSendDataMessageCompletedDelegate == null))
             {
-                this.onSendDataMessageCompletedDelegate = new SendOrPostCallback(this.OnSendDataMessageCompleted);
+                _onSendDataMessageCompletedDelegate = OnSendDataMessageCompleted;
             }
-            base.InvokeAsync(this.onBeginSendDataMessageDelegate, new object[] {
-                    msg}, this.onEndSendDataMessageDelegate, this.onSendDataMessageCompletedDelegate, userState);
+            InvokeAsync(_onBeginSendDataMessageDelegate, new object[] {
+                    msg}, _onEndSendDataMessageDelegate, _onSendDataMessageCompletedDelegate, userState);
         }
 
         public void SendMediaPortalMessage(APIMediaPortalMessage msg)
         {
-            base.Channel.SendMediaPortalMessage(msg);
+            Channel.SendMediaPortalMessage(msg);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginSendMediaPortalMessage(APIMediaPortalMessage msg, AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginSendMediaPortalMessage(msg, callback, asyncState);
+            return Channel.BeginSendMediaPortalMessage(msg, callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void EndSendMediaPortalMessage(IAsyncResult result)
         {
-            base.Channel.EndSendMediaPortalMessage(result);
+            Channel.EndSendMediaPortalMessage(result);
         }
 
         private IAsyncResult OnBeginSendMediaPortalMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIMediaPortalMessage msg = ((APIMediaPortalMessage)(inValues[0]));
-            return this.BeginSendMediaPortalMessage(msg, callback, asyncState);
+            var msg = ((APIMediaPortalMessage)(inValues[0]));
+            return BeginSendMediaPortalMessage(msg, callback, asyncState);
         }
 
         private object[] OnEndSendMediaPortalMessage(IAsyncResult result)
         {
-            this.EndSendMediaPortalMessage(result);
+            EndSendMediaPortalMessage(result);
             return null;
         }
 
         private void OnSendMediaPortalMessageCompleted(object state)
         {
-            if ((this.SendMediaPortalMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.SendMediaPortalMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((SendMediaPortalMessageCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            SendMediaPortalMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void SendMediaPortalMessageAsync(APIMediaPortalMessage msg)
         {
-            this.SendMediaPortalMessageAsync(msg, null);
+            SendMediaPortalMessageAsync(msg, null);
         }
 
         public void SendMediaPortalMessageAsync(APIMediaPortalMessage msg, object userState)
         {
-            if ((this.onBeginSendMediaPortalMessageDelegate == null))
+            if ((_onBeginSendMediaPortalMessageDelegate == null))
             {
-                this.onBeginSendMediaPortalMessageDelegate = new BeginOperationDelegate(this.OnBeginSendMediaPortalMessage);
+                _onBeginSendMediaPortalMessageDelegate = OnBeginSendMediaPortalMessage;
             }
-            if ((this.onEndSendMediaPortalMessageDelegate == null))
+            if ((_onEndSendMediaPortalMessageDelegate == null))
             {
-                this.onEndSendMediaPortalMessageDelegate = new EndOperationDelegate(this.OnEndSendMediaPortalMessage);
+                _onEndSendMediaPortalMessageDelegate = OnEndSendMediaPortalMessage;
             }
-            if ((this.onSendMediaPortalMessageCompletedDelegate == null))
+            if ((_onSendMediaPortalMessageCompletedDelegate == null))
             {
-                this.onSendMediaPortalMessageCompletedDelegate = new SendOrPostCallback(this.OnSendMediaPortalMessageCompleted);
+                _onSendMediaPortalMessageCompletedDelegate = OnSendMediaPortalMessageCompleted;
             }
-            base.InvokeAsync(this.onBeginSendMediaPortalMessageDelegate, new object[] {
-                    msg}, this.onEndSendMediaPortalMessageDelegate, this.onSendMediaPortalMessageCompletedDelegate, userState);
+            InvokeAsync(_onBeginSendMediaPortalMessageDelegate, new object[] {
+                    msg}, _onEndSendMediaPortalMessageDelegate, _onSendMediaPortalMessageCompletedDelegate, userState);
         }
 
-        public void SendTVServerMessage(APITVServerMessage msg)
-        {
-            base.Channel.SendTVServerMessage(msg);
-        }
-
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
-        public IAsyncResult BeginSendTVServerMessage(APITVServerMessage msg, AsyncCallback callback, object asyncState)
-        {
-            return base.Channel.BeginSendTVServerMessage(msg, callback, asyncState);
-        }
-
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
-        public void EndSendTVServerMessage(IAsyncResult result)
-        {
-            base.Channel.EndSendTVServerMessage(result);
-        }
-
-        private IAsyncResult OnBeginSendTVServerMessage(object[] inValues, AsyncCallback callback, object asyncState)
-        {
-            APITVServerMessage msg = ((APITVServerMessage)(inValues[0]));
-            return this.BeginSendTVServerMessage(msg, callback, asyncState);
-        }
-
-        private object[] OnEndSendTVServerMessage(IAsyncResult result)
-        {
-            this.EndSendTVServerMessage(result);
-            return null;
-        }
-
-        private void OnSendTVServerMessageCompleted(object state)
-        {
-            if ((this.SendTVServerMessageCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.SendTVServerMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
-        }
-
-        public void SendTVServerMessageAsync(APITVServerMessage msg)
-        {
-            this.SendTVServerMessageAsync(msg, null);
-        }
-
-        public void SendTVServerMessageAsync(APITVServerMessage msg, object userState)
-        {
-            if ((this.onBeginSendTVServerMessageDelegate == null))
-            {
-                this.onBeginSendTVServerMessageDelegate = new BeginOperationDelegate(this.OnBeginSendTVServerMessage);
-            }
-            if ((this.onEndSendTVServerMessageDelegate == null))
-            {
-                this.onEndSendTVServerMessageDelegate = new EndOperationDelegate(this.OnEndSendTVServerMessage);
-            }
-            if ((this.onSendTVServerMessageCompletedDelegate == null))
-            {
-                this.onSendTVServerMessageCompletedDelegate = new SendOrPostCallback(this.OnSendTVServerMessageCompleted);
-            }
-            base.InvokeAsync(this.onBeginSendTVServerMessageDelegate, new object[] {
-                    msg}, this.onEndSendTVServerMessageDelegate, this.onSendTVServerMessageCompletedDelegate, userState);
-        }
 
         public List<APIConnection> Connect(APIConnection name)
         {
-            return base.Channel.Connect(name);
+            return Channel.Connect(name);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginConnect(APIConnection name, AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginConnect(name, callback, asyncState);
+            return Channel.BeginConnect(name, callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public List<APIConnection> EndConnect(IAsyncResult result)
         {
-            return base.Channel.EndConnect(result);
+            return Channel.EndConnect(result);
         }
 
         private IAsyncResult OnBeginConnect(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            APIConnection name = ((APIConnection)(inValues[0]));
-            return this.BeginConnect(name, callback, asyncState);
+            var name = ((APIConnection)(inValues[0]));
+            return BeginConnect(name, callback, asyncState);
         }
 
         private object[] OnEndConnect(IAsyncResult result)
         {
-            List<APIConnection> retVal = this.EndConnect(result);
+            var retVal = EndConnect(result);
             return new object[] {
                 retVal};
         }
 
         private void OnConnectCompleted(object state)
         {
-            if ((this.ConnectCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.ConnectCompleted(this, new ConnectCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
-            }
+            if ((ConnectCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            ConnectCompleted(this, new ConnectCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
         }
 
         public void ConnectAsync(APIConnection name)
         {
-            this.ConnectAsync(name, null);
+            ConnectAsync(name, null);
         }
 
         public void ConnectAsync(APIConnection name, object userState)
         {
-            if ((this.onBeginConnectDelegate == null))
+            if ((_onBeginConnectDelegate == null))
             {
-                this.onBeginConnectDelegate = new BeginOperationDelegate(this.OnBeginConnect);
+                _onBeginConnectDelegate = OnBeginConnect;
             }
-            if ((this.onEndConnectDelegate == null))
+            if ((_onEndConnectDelegate == null))
             {
-                this.onEndConnectDelegate = new EndOperationDelegate(this.OnEndConnect);
+                _onEndConnectDelegate = OnEndConnect;
             }
-            if ((this.onConnectCompletedDelegate == null))
+            if ((_onConnectCompletedDelegate == null))
             {
-                this.onConnectCompletedDelegate = new SendOrPostCallback(this.OnConnectCompleted);
+                _onConnectCompletedDelegate = OnConnectCompleted;
             }
-            base.InvokeAsync(this.onBeginConnectDelegate, new object[] {
-                    name}, this.onEndConnectDelegate, this.onConnectCompletedDelegate, userState);
+            InvokeAsync(_onBeginConnectDelegate, new object[] {
+                    name}, _onEndConnectDelegate, _onConnectCompletedDelegate, userState);
         }
 
         public void Disconnect()
         {
-            base.Channel.Disconnect();
+            Channel.Disconnect();
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public IAsyncResult BeginDisconnect(AsyncCallback callback, object asyncState)
         {
-            return base.Channel.BeginDisconnect(callback, asyncState);
+            return Channel.BeginDisconnect(callback, asyncState);
         }
 
-        [EditorBrowsableAttribute(EditorBrowsableState.Advanced)]
+        [EditorBrowsable(EditorBrowsableState.Advanced)]
         public void EndDisconnect(IAsyncResult result)
         {
-            base.Channel.EndDisconnect(result);
+            Channel.EndDisconnect(result);
         }
 
         private IAsyncResult OnBeginDisconnect(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            return this.BeginDisconnect(callback, asyncState);
+            return BeginDisconnect(callback, asyncState);
         }
 
         private object[] OnEndDisconnect(IAsyncResult result)
         {
-            this.EndDisconnect(result);
+            EndDisconnect(result);
             return null;
         }
 
         private void OnDisconnectCompleted(object state)
         {
-            if ((this.DisconnectCompleted != null))
-            {
-                InvokeAsyncCompletedEventArgs e = ((InvokeAsyncCompletedEventArgs)(state));
-                this.DisconnectCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
-            }
+            if ((DisconnectCompleted == null)) return;
+
+            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            DisconnectCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
         public void DisconnectAsync()
         {
-            this.DisconnectAsync(null);
+            DisconnectAsync(null);
         }
 
         public void DisconnectAsync(object userState)
         {
-            if ((this.onBeginDisconnectDelegate == null))
+            if ((_onBeginDisconnectDelegate == null))
             {
-                this.onBeginDisconnectDelegate = new BeginOperationDelegate(this.OnBeginDisconnect);
+                _onBeginDisconnectDelegate = OnBeginDisconnect;
             }
-            if ((this.onEndDisconnectDelegate == null))
+            if ((_onEndDisconnectDelegate == null))
             {
-                this.onEndDisconnectDelegate = new EndOperationDelegate(this.OnEndDisconnect);
+                _onEndDisconnectDelegate = OnEndDisconnect;
             }
-            if ((this.onDisconnectCompletedDelegate == null))
+            if ((_onDisconnectCompletedDelegate == null))
             {
-                this.onDisconnectCompletedDelegate = new SendOrPostCallback(this.OnDisconnectCompleted);
+                _onDisconnectCompletedDelegate = OnDisconnectCompleted;
             }
-            base.InvokeAsync(this.onBeginDisconnectDelegate, null, this.onEndDisconnectDelegate, this.onDisconnectCompletedDelegate, userState);
+            InvokeAsync(_onBeginDisconnectDelegate, null, _onEndDisconnectDelegate, _onDisconnectCompletedDelegate, userState);
         }
     }
 }

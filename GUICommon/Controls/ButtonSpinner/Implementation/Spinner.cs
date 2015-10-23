@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Windows.Controls;
 using System.Windows;
+using System.Windows.Controls;
 
 namespace MPDisplay.Common.Controls
 {
@@ -28,9 +28,9 @@ namespace MPDisplay.Common.Controls
         /// <param name="e">Event arguments.</param>
         private static void OnValidSpinDirectionPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            Spinner source = (Spinner)d;
-            ValidSpinDirections oldvalue = (ValidSpinDirections)e.OldValue;
-            ValidSpinDirections newvalue = (ValidSpinDirections)e.NewValue;
+            var source = (Spinner)d;
+            var oldvalue = (ValidSpinDirections)e.OldValue;
+            var newvalue = (ValidSpinDirections)e.NewValue;
             source.OnValidSpinDirectionChanged(oldvalue, newvalue);
         }
 
@@ -42,26 +42,20 @@ namespace MPDisplay.Common.Controls
         public event EventHandler<SpinEventArgs> Spin;
 
         /// <summary>
-        /// Initializes a new instance of the Spinner class.
-        /// </summary>
-        protected Spinner() { }
-
-        /// <summary>
         /// Raises the OnSpin event when spinning is initiated by the end-user.
         /// </summary>
         /// <param name="e">Spin event args.</param>
         protected virtual void OnSpin(SpinEventArgs e)
         {
-            ValidSpinDirections valid = e.Direction == SpinDirection.Increase ? ValidSpinDirections.Increase : ValidSpinDirections.Decrease;
+            var valid = e.Direction == SpinDirection.Increase ? ValidSpinDirections.Increase : ValidSpinDirections.Decrease;
 
             //Only raise the event if spin is allowed.
-            if ((ValidSpinDirection & valid) == valid)
+            if ((ValidSpinDirection & valid) != valid) return;
+
+            var handler = Spin;
+            if (handler != null)
             {
-                EventHandler<SpinEventArgs> handler = Spin;
-                if (handler != null)
-                {
-                    handler(this, e);
-                }
+                handler(this, e);
             }
         }
 

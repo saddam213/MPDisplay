@@ -1,22 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+// ReSharper disable InconsistentNaming
+
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlInclude(typeof(XmlButton))]
@@ -47,7 +38,6 @@ namespace GUISkinFramework.Controls
         private int _pos3DZ;
         private int _pos3DY;
         private int _pos3DX;
-        private string _visibleCondition = string.Empty;
         private ObservableCollection<XmlAnimation> _animations = new ObservableCollection<XmlAnimation>();
         private ObservableCollection<int> _mediaPortalFocusControls = new ObservableCollection<int>();
         private bool _designerVisible = true;

@@ -1,23 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
 using Common.Helpers;
-using GUISkinFramework;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Skin;
+using SkinEditor.Themes;
 
 namespace SkinEditor.Views
 {
     public class SkinEditorViewSettings : EditorViewModelSettings
     {
-        private bool _showGrid = false;
+        private bool _showGrid;
         private int _gridSize = 10;
         private string _gridColor = "Black";
-        private bool _snapToGrid = false;
+        private bool _snapToGrid;
         private string _resizeSizeInfoColor = "Red";
         private string _resizeHiglightColor = "#FF0074FF";
         private bool _dragMoveResize = true;
@@ -34,15 +30,13 @@ namespace SkinEditor.Views
         public override void InitializeSettings()
         {
             base.InitializeSettings();
-            if (File.Exists(Environment.CurrentDirectory + "\\DesignerStyle.xml"))
-            {
-                var styleCollection = SerializationHelper.Deserialize<XmlStyleCollection>(Environment.CurrentDirectory + "\\DesignerStyle.xml");
-                if (styleCollection != null)
-                {
-                   DesignerStyle = styleCollection;
-                   DesignerStyle.InitializeStyleCollection();
-                }
-            }
+            if (!File.Exists(Environment.CurrentDirectory + "\\DesignerStyle.xml")) return;
+
+            var styleCollection = SerializationHelper.Deserialize<XmlStyleCollection>(Environment.CurrentDirectory + "\\DesignerStyle.xml");
+            if (styleCollection == null) return;
+
+            DesignerStyle = styleCollection;
+            DesignerStyle.InitializeStyleCollection();
         }
 
 

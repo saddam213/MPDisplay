@@ -1,16 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using GUISkinFramework.Editor.PropertyEditors;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "Equalizer")]
@@ -22,12 +16,12 @@ namespace GUISkinFramework.Controls
         private int _medRangeValue = 200;
         private int _bandCount = 20;
         private int _bandSpacing = 1;
-        private int _eqchannel = 0;
+        private int _eqchannel;
         private int _bandBorderSize = 1;
         private int _bandCornerRadius = 2;
         private int _falloffSpeed = 10;
         private int _fallOffHeight = 3;
-        private bool _showDummyData = false;
+        private bool _showDummyData;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XmlEqualizer"/> class.
@@ -174,7 +168,7 @@ namespace GUISkinFramework.Controls
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlEqualizerStyle>(ControlStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
         }
     }
 

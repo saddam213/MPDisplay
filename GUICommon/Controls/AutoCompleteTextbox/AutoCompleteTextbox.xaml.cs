@@ -1,29 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace MPDisplay.Common.Controls
 {
     /// <summary>
     /// Interaction logic for AutoCompleteTextbox.xaml
     /// </summary>
-    public partial class AutoCompleteTextbox : UserControl
-     {
+    public partial class AutoCompleteTextbox
+    {
         #region Members
-        private bool insertText;
-        private int searchThreshold = 2;
+        private bool _insertText;
+        private int _searchThreshold = 2;
         private string _currentWord = string.Empty;
 
         #endregion
@@ -42,7 +33,7 @@ namespace MPDisplay.Common.Controls
         public string Text
         {
             get { return (string)GetValue(TextProperty); }
-            set { SetValue(TextProperty, value); insertText = true; }
+            set { SetValue(TextProperty, value); _insertText = true; }
         }
 
         // Using a DependencyProperty as the backing store for Text.  This enables animation, styling, binding, etc...
@@ -65,8 +56,8 @@ namespace MPDisplay.Common.Controls
         
         public int Threshold
         {
-            get { return searchThreshold; }
-            set { searchThreshold = value; }
+            get { return _searchThreshold; }
+            set { _searchThreshold = value; }
         }
 
         private void TextChanged()
@@ -74,20 +65,15 @@ namespace MPDisplay.Common.Controls
             try
             {
                 comboBox.Items.Clear();
-                if (_currentWord.Length >= searchThreshold)
+                if (_currentWord.Length >= _searchThreshold)
                 {
-                    foreach (AutoCompleteEntry entry in AutoCompletionList)
+                    // ReSharper disable once LoopCanBePartlyConvertedToQuery
+                    foreach (var entry in AutoCompletionList)
                     {
-                        foreach (string word in entry.KeywordStrings)
-                        {
-                            if (word.StartsWith(_currentWord, StringComparison.CurrentCultureIgnoreCase))
-                            {
-                                ComboBoxItem cbItem = new ComboBoxItem();
-                                cbItem.Content = entry.ToString();
-                                comboBox.Items.Add(cbItem);
-                                break;
-                            }
-                        }
+                        if (!entry.KeywordStrings.Any(word => word.StartsWith(_currentWord, StringComparison.CurrentCultureIgnoreCase)))
+                            continue;
+                        var cbItem = new ComboBoxItem {Content = entry.ToString()};
+                        comboBox.Items.Add(cbItem);
                     }
                     comboBox.Margin = new Thickness(textbox.GetRectFromCharacterIndex(textbox.Text.Length).X, 0, 0, 0);
                     comboBox.IsDropDownOpen = comboBox.HasItems;
@@ -97,53 +83,52 @@ namespace MPDisplay.Common.Controls
                     comboBox.IsDropDownOpen = false;
                 }
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (null != comboBox.SelectedItem)
-            {
-                insertText = true;
-                ComboBoxItem cbItem = (ComboBoxItem)comboBox.SelectedItem;
-                Text = Text.TrimEnd(_currentWord.ToArray()) + cbItem.Content.ToString();
-                textbox.Focus();
-                textbox.CaretIndex = Text.Length;
-            }
+            if (null == comboBox.SelectedItem) return;
+
+            _insertText = true;
+            var cbItem = (ComboBoxItem)comboBox.SelectedItem;
+            Text = Text.TrimEnd(_currentWord.ToArray()) + cbItem.Content;
+            textbox.Focus();
+            textbox.CaretIndex = Text.Length;
         }
 
         private void textBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (insertText == true)
+            if (_insertText)
             {
-                insertText = false;
+                _insertText = false;
             }
             else
             {
-                _currentWord = new string(Text.Skip(Text.LastIndexOf(" ")).ToArray()).Trim();
+                _currentWord = new string(Text.Skip(Text.LastIndexOf(" ", StringComparison.Ordinal)).ToArray()).Trim();
                 TextChanged();
             }
         }
 
         private void textbox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Down)
+            if (e.Key != Key.Down) return;
+            if (comboBox.IsDropDownOpen)
             {
-                if (comboBox.IsDropDownOpen)
-                {
-                    comboBox.Focus();
-                }
+                comboBox.Focus();
             }
         }
 
         private void comboBox_KeyDown(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Up)
+            if (e.Key != Key.Up) return;
+            var item = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(c => c.IsHighlighted);
+            if (item != null && (comboBox.IsDropDownOpen && comboBox.Items.IndexOf(item) == 0))
             {
-                if (comboBox.IsDropDownOpen && comboBox.Items.IndexOf(comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(c => c.IsHighlighted)) == 0)
-                {
-                    textbox.Focus();
-                }
+                textbox.Focus();
             }
         }
 

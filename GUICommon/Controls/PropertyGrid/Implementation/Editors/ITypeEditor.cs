@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public interface ITypeEditor
     {

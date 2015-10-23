@@ -3,9 +3,9 @@
                     xmlns:extToolkit="clr-namespace:MPDisplay.Common.Controls"
                     xmlns:local="clr-namespace:MPDisplay.Common.Controls.PropertyGrid"
                     xmlns:converters="clr-namespace:MPDisplay.Common.BindingConverters"
-                    xmlns:pgConverters="clr-namespace:MPDisplay.Common.Controls.PropertyGrid.Converters"
-                    xmlns:utilities="clr-namespace:MPDisplay.Common.Controls.Core.Utilities"
-                    xmlns:commands="clr-namespace:MPDisplay.Common.Controls.PropertyGrid.Commands">
+                    xmlns:pgConverters="clr-namespace:MPDisplay.Common.Controls.PropertyGrid"
+                    xmlns:utilities="clr-namespace:MPDisplay.Common.Controls.Core"
+                    xmlns:commands="clr-namespace:MPDisplay.Common.Controls.PropertyGrid">
 
     <!-- =============================================================================== -->
     <!-- PropertyGrid                                                                    -->
@@ -256,6 +256,10 @@
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Expander}">
                     <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition />
+                            <RowDefinition />
+                        </Grid.RowDefinitions>
                         <Border Visibility="Collapsed" Grid.Row="1" x:Name="ExpandSite" Padding="0 0 0 0">
                             <Border BorderThickness="0" Margin="0" Padding="0" VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
                                 <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
@@ -330,11 +334,12 @@
                                 </Grid>
                             </Border>
 
-                            <Border BorderThickness="0.5" BorderBrush="#FFF0F0F0" x:Name="PART_Editor"  Grid.Column="1" Background="Transparent">
+                            <Border BorderThickness="0.5" BorderBrush="#FFF0F0F0" x:Name="PART_Editor" Grid.Row="0"
+                                    Grid.Column="1" Background="Transparent">
                                 <ContentControl Content="{TemplateBinding Editor}" VerticalAlignment="Center" Focusable="False" IsTabStop="False" />
                             </Border>
 
-                            <Expander x:Name="_propertyExpander" Grid.ColumnSpan="2" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{StaticResource PropertyExpanderStyle}" IsEnabled="True">
+                            <Expander x:Name="_propertyExpander" Grid.ColumnSpan="2" Grid.Column="0" Grid.Row="1" IsExpanded="{TemplateBinding IsExpanded}" Style="{StaticResource PropertyExpanderStyle}" IsEnabled="True">
                                 <ItemsControl ItemsSource="{Binding Properties, RelativeSource={RelativeSource TemplatedParent}}" IsTabStop="False" Focusable="False" >
                                     <ItemsControl.ItemsPanel>
                                         <ItemsPanelTemplate>
@@ -464,6 +469,7 @@
                                                                     <Border Background="{TemplateBinding Background}"
                                                                             BorderBrush="{TemplateBinding BorderBrush}"
                                                                             BorderThickness="{TemplateBinding BorderThickness}">
+                                                                        <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
                                                                         <Expander Header="{Binding Name}" Style="{StaticResource ExpanderStyle}" IsExpanded="True">
                                                                             <ItemsPresenter />
                                                                         </Expander>

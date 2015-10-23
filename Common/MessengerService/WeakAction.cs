@@ -1,10 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
-namespace Common
+namespace Common.MessengerService
 {
     /// <summary>
     /// This class is an implementation detail of the MessageToActionsMap class.
@@ -15,8 +13,8 @@ namespace Common
 
         internal readonly Type[] ParameterTypes;
         readonly Type _delegateType;
-        internal readonly MethodInfo _method;
-        internal readonly WeakReference _targetRef;
+        internal readonly MethodInfo Method;
+        internal readonly WeakReference TargetRef;
 
         #endregion
 
@@ -24,46 +22,36 @@ namespace Common
 
         internal WeakAction(object target, MethodInfo method, params Type[] parameterTypes)
         {
-            if (target == null)
-            {
-                _targetRef = null;
-            }
-            else
-            {
-                _targetRef = new WeakReference(target);
-            }
+            TargetRef = target == null ? null : new WeakReference(target);
 
-            _method = method;
+            Method = method;
 
-            this.ParameterTypes = parameterTypes;
+            ParameterTypes = parameterTypes;
 
-            if (parameterTypes == null || parameterTypes.Count() == 0)
+            if (parameterTypes == null || !parameterTypes.Any())
             {
                 _delegateType = typeof(Action);
             }
-            else if (parameterTypes.Count() == 1)
+            else switch (parameterTypes.Count())
             {
-                _delegateType = typeof(Action<>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 2)
-            {
-                _delegateType = typeof(Action<,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 3)
-            {
-                _delegateType = typeof(Action<,,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 4)
-            {
-                _delegateType = typeof(Action<,,,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 5)
-            {
-                _delegateType = typeof(Action<,,,,>).MakeGenericType(parameterTypes);
-            }
-            else if (parameterTypes.Count() == 6)
-            {
-                _delegateType = typeof(Action<,,,,,>).MakeGenericType(parameterTypes);
+                case 1:
+                    _delegateType = typeof(Action<>).MakeGenericType(parameterTypes);
+                    break;
+                case 2:
+                    _delegateType = typeof(Action<,>).MakeGenericType(parameterTypes);
+                    break;
+                case 3:
+                    _delegateType = typeof(Action<,,>).MakeGenericType(parameterTypes);
+                    break;
+                case 4:
+                    _delegateType = typeof(Action<,,,>).MakeGenericType(parameterTypes);
+                    break;
+                case 5:
+                    _delegateType = typeof(Action<,,,,>).MakeGenericType(parameterTypes);
+                    break;
+                case 6:
+                    _delegateType = typeof(Action<,,,,,>).MakeGenericType(parameterTypes);
+                    break;
             }
         }
 
@@ -78,21 +66,19 @@ namespace Common
         internal Delegate CreateAction()
         {
             // Rehydrate into a real Action object, so that the method can be invoked.
-            if (_targetRef == null)
+            if (TargetRef == null)
             {
-                return Delegate.CreateDelegate(_delegateType, _method);
+                return Delegate.CreateDelegate(_delegateType, Method);
             }
-            else
+            try
             {
-                try
-                {
-                    object target = _targetRef.Target;
-                    if (target != null)
-                        return Delegate.CreateDelegate(_delegateType, target, _method);
-                }
-                catch
-                {
-                }
+                var target = TargetRef.Target;
+                if (target != null)
+                    return Delegate.CreateDelegate(_delegateType, target, Method);
+            }
+            catch
+            {
+                // ignored
             }
 
             return null;

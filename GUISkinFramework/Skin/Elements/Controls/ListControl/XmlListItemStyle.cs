@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using GUISkinFramework.Styles;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "ListItemStyle")]
@@ -25,8 +18,8 @@ namespace GUISkinFramework.Controls
 
         private int _height;
         private int _width;
-        private System.Windows.VerticalAlignment _verticalAlignment;
-        private System.Windows.HorizontalAlignment _horizontalAlignment;
+        private VerticalAlignment _verticalAlignment;
+        private HorizontalAlignment _horizontalAlignment;
         private string _itemMargin;
         private int _selectedZoomX = 100;
         private int _selectedZoomY = 100;
@@ -50,17 +43,17 @@ namespace GUISkinFramework.Controls
         private bool _enableLabel2;
         private bool _enableLabel3;
         private bool _enableImage2;
-        private string _Image2Margin = "0,0,0,0";
-        private System.Windows.HorizontalAlignment _Image2HorizontalAlignment;
-        private System.Windows.VerticalAlignment _Image2VerticalAlignment;
-        private Stretch _Image2Stretch;
-        private int _Image2CornerRadius;
+        private string _image2Margin = "0,0,0,0";
+        private HorizontalAlignment _image2HorizontalAlignment;
+        private VerticalAlignment _image2VerticalAlignment;
+        private Stretch _image2Stretch;
+        private int _image2CornerRadius;
         private bool _enableImage3;
-        private string _Image3Margin = "0,0,0,0";
-        private System.Windows.HorizontalAlignment _Image3HorizontalAlignment;
-        private System.Windows.VerticalAlignment _Image3VerticalAlignment;
-        private Stretch _Image3Stretch;
-        private int _Image3CornerRadius;
+        private string _image3Margin = "0,0,0,0";
+        private HorizontalAlignment _image3HorizontalAlignment;
+        private VerticalAlignment _image3VerticalAlignment;
+        private Stretch _image3Stretch;
+        private int _image3CornerRadius;
         private XmlBrush _defaultImage;
         private XmlBrush _defaultImage2;
         private XmlBrush _defaultImage3; 
@@ -367,8 +360,8 @@ namespace GUISkinFramework.Controls
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
         public string Image2Margin
         {
-            get { return _Image2Margin; }
-            set { _Image2Margin = value; NotifyPropertyChanged("Image2Margin"); }
+            get { return _image2Margin; }
+            set { _image2Margin = value; NotifyPropertyChanged("Image2Margin"); }
         }
 
         [PropertyOrder(220)]
@@ -376,8 +369,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(HorizontalAlignment.Center)]
         public HorizontalAlignment Image2HorizontalAlignment
         {
-            get { return _Image2HorizontalAlignment; }
-            set { _Image2HorizontalAlignment = value; NotifyPropertyChanged("Image2HorizontalAlignment"); }
+            get { return _image2HorizontalAlignment; }
+            set { _image2HorizontalAlignment = value; NotifyPropertyChanged("Image2HorizontalAlignment"); }
         }
 
         [PropertyOrder(230)]
@@ -385,8 +378,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(VerticalAlignment.Center)]
         public VerticalAlignment Image2VerticalAlignment
         {
-            get { return _Image2VerticalAlignment; }
-            set { _Image2VerticalAlignment = value; NotifyPropertyChanged("Image2VerticalAlignment"); }
+            get { return _image2VerticalAlignment; }
+            set { _image2VerticalAlignment = value; NotifyPropertyChanged("Image2VerticalAlignment"); }
         }
 
         [PropertyOrder(240)]
@@ -394,8 +387,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(Stretch.Uniform)]
         public Stretch Image2Stretch
         {
-            get { return _Image2Stretch; }
-            set { _Image2Stretch = value; NotifyPropertyChanged("Image2Stretch"); }
+            get { return _image2Stretch; }
+            set { _image2Stretch = value; NotifyPropertyChanged("Image2Stretch"); }
         }
 
         [PropertyOrder(250)]
@@ -403,8 +396,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(0)]
         public int Image2CornerRadius
         {
-            get { return _Image2CornerRadius; }
-            set { _Image2CornerRadius = value; NotifyPropertyChanged("Image2CornerRadius"); }
+            get { return _image2CornerRadius; }
+            set { _image2CornerRadius = value; NotifyPropertyChanged("Image2CornerRadius"); }
         }
 
         #endregion
@@ -437,8 +430,8 @@ namespace GUISkinFramework.Controls
         [Editor(typeof(FourPointValueEditor), typeof(ITypeEditor))]
         public string Image3Margin
         {
-            get { return _Image3Margin; }
-            set { _Image3Margin = value; NotifyPropertyChanged("Image3Margin"); }
+            get { return _image3Margin; }
+            set { _image3Margin = value; NotifyPropertyChanged("Image3Margin"); }
         }
 
         [PropertyOrder(220)]
@@ -446,8 +439,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(HorizontalAlignment.Center)]
         public HorizontalAlignment Image3HorizontalAlignment
         {
-            get { return _Image3HorizontalAlignment; }
-            set { _Image3HorizontalAlignment = value; NotifyPropertyChanged("Image3HorizontalAlignment"); }
+            get { return _image3HorizontalAlignment; }
+            set { _image3HorizontalAlignment = value; NotifyPropertyChanged("Image3HorizontalAlignment"); }
         }
 
         [PropertyOrder(230)]
@@ -455,8 +448,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(VerticalAlignment.Center)]
         public VerticalAlignment Image3VerticalAlignment
         {
-            get { return _Image3VerticalAlignment; }
-            set { _Image3VerticalAlignment = value; NotifyPropertyChanged("Image3VerticalAlignment"); }
+            get { return _image3VerticalAlignment; }
+            set { _image3VerticalAlignment = value; NotifyPropertyChanged("Image3VerticalAlignment"); }
         }
 
         [PropertyOrder(240)]
@@ -464,8 +457,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(Stretch.Uniform)]
         public Stretch Image3Stretch
         {
-            get { return _Image3Stretch; }
-            set { _Image3Stretch = value; NotifyPropertyChanged("Image3Stretch"); }
+            get { return _image3Stretch; }
+            set { _image3Stretch = value; NotifyPropertyChanged("Image3Stretch"); }
         }
 
         [PropertyOrder(250)]
@@ -473,8 +466,8 @@ namespace GUISkinFramework.Controls
         [DefaultValue(0)]
         public int Image3CornerRadius
         {
-            get { return _Image3CornerRadius; }
-            set { _Image3CornerRadius = value; NotifyPropertyChanged("Image3CornerRadius"); }
+            get { return _image3CornerRadius; }
+            set { _image3CornerRadius = value; NotifyPropertyChanged("Image3CornerRadius"); }
         }
 
         #endregion
@@ -482,13 +475,13 @@ namespace GUISkinFramework.Controls
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            Label2FocusFontBrush = style.GetStyle<XmlBrush>(Label2FocusFontBrush);
-            Label2NoFocusFontBrush = style.GetStyle<XmlBrush>(Label2NoFocusFontBrush);
-            Label3FocusFontBrush = style.GetStyle<XmlBrush>(Label3FocusFontBrush);
-            Label3NoFocusFontBrush = style.GetStyle<XmlBrush>(Label3NoFocusFontBrush);
-            DefaultImage = style.GetStyle<XmlBrush>(DefaultImage);
-            DefaultImage2 = style.GetStyle<XmlBrush>(DefaultImage2);
-            DefaultImage3 = style.GetStyle<XmlBrush>(DefaultImage3);
+            Label2FocusFontBrush = style.GetStyle(Label2FocusFontBrush);
+            Label2NoFocusFontBrush = style.GetStyle(Label2NoFocusFontBrush);
+            Label3FocusFontBrush = style.GetStyle(Label3FocusFontBrush);
+            Label3NoFocusFontBrush = style.GetStyle(Label3NoFocusFontBrush);
+            DefaultImage = style.GetStyle(DefaultImage);
+            DefaultImage2 = style.GetStyle(DefaultImage2);
+            DefaultImage3 = style.GetStyle(DefaultImage3);
         }
     }
 }

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Media;
 
 namespace MPDisplay.Common.Controls
 {
@@ -54,8 +56,8 @@ namespace MPDisplay.Common.Controls
         static void OnBusyStyleChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
    
-            LoadingAdorner bd = (LoadingAdorner)d;
-            Style nVal = (Style)e.NewValue;
+            var bd = (LoadingAdorner)d;
+            var nVal = (Style)e.NewValue;
             bd._busyHost.CreateContent = () => new Control { Style = nVal };
         }
         #endregion
@@ -115,7 +117,7 @@ namespace MPDisplay.Common.Controls
             }
         }
 
-        protected override System.Collections.IEnumerator LogicalChildren
+        protected override IEnumerator LogicalChildren
         {
             get
             {
@@ -126,7 +128,7 @@ namespace MPDisplay.Common.Controls
             }
         }
 
-        protected override System.Windows.Media.Visual GetVisualChild(int index)
+        protected override Visual GetVisualChild(int index)
         {
             if (Child != null)
             {
@@ -153,21 +155,19 @@ namespace MPDisplay.Common.Controls
             AddVisualChild(_busyHost);
 
             SetBinding(_busyHost, IsBusyIndicatorShowingProperty, BackgroundVisualHost.IsContentShowingProperty);
-            SetBinding(_busyHost, BusyHorizontalAlignmentProperty, BackgroundVisualHost.HorizontalAlignmentProperty);
-            SetBinding(_busyHost, BusyVerticalAlignmentProperty, BackgroundVisualHost.VerticalAlignmentProperty);
+            SetBinding(_busyHost, BusyHorizontalAlignmentProperty, HorizontalAlignmentProperty);
+            SetBinding(_busyHost, BusyVerticalAlignmentProperty, VerticalAlignmentProperty);
         }
 
         private void SetBinding(DependencyObject obj, DependencyProperty source, DependencyProperty target)
         {
-            Binding b = new Binding();
-            b.Source = this;
-            b.Path = new PropertyPath(source);
+            var b = new Binding {Source = this, Path = new PropertyPath(source)};
             BindingOperations.SetBinding(obj, target, b);
         }
 
         protected override Size MeasureOverride(Size constraint)
         {
-            Size ret = new Size(0, 0);
+            var ret = new Size(0, 0);
             if (Child != null)
             {
                 Child.Measure(constraint);
@@ -181,7 +181,7 @@ namespace MPDisplay.Common.Controls
 
         protected override Size ArrangeOverride(Size arrangeSize)
         {
-            Size ret = new Size(0, 0);
+            var ret = new Size(0, 0);
             if (Child != null)
             {
                 Child.Arrange(new Rect(arrangeSize));

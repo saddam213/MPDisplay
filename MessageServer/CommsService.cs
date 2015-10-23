@@ -2,16 +2,15 @@
 using System.IO;
 using System.ServiceModel;
 using System.ServiceProcess;
-using Microsoft.Win32;
-using Common.Logging;
+using Common.Log;
 using Common.Settings;
 
 namespace MessageServer
 {
     partial class CommsService : ServiceBase
     {
-        private ServiceHost MPDisplayHost;
-        private Log Log;
+        private ServiceHost _mpDisplayHost;
+        private Log _log;
      
 
         /// <summary>
@@ -20,7 +19,7 @@ namespace MessageServer
         public CommsService()
         {
             LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Server", RegistrySettings.LogLevel));
-            Log = LoggingManager.GetLog(typeof(CommsService));
+            _log = LoggingManager.GetLog(typeof(CommsService));
             InitializeComponent();
         }
 
@@ -30,34 +29,31 @@ namespace MessageServer
         /// <param name="args">Data passed by the start command.</param>
         protected override void OnStart(string[] args)
         {
-            Log.Message(LogLevel.Info, "[OnStart] - Starting MPDisplay server...");
+            _log.Message(LogLevel.Info, "[OnStart] - Starting MPDisplay server...");
             try
             {
                 var settings = GetConnectionSettings(RegistrySettings.MPDisplaySettingsFile);
                 if (settings != null)
                 {
-                    Uri uri = null;
-                    string connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                    Uri uri;
+                    var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
                     if (Uri.TryCreate(connectionString, UriKind.RelativeOrAbsolute, out uri))
                     {
-                        Log.Message(LogLevel.Info, "[OnStart] - Connection settings loaded, Connection: {0}", connectionString);
-                        MPDisplayHost = new ServiceHost(typeof(MessageService), uri);
+                        _log.Message(LogLevel.Info, "[OnStart] - Connection settings loaded, Connection: {0}", connectionString);
+                        _mpDisplayHost = new ServiceHost(typeof(MessageService), uri);
 
-                        Log.Message(LogLevel.Info, "[OnStart] - Opening service host..");
-                        MPDisplayHost.Opened += (s, e) => Log.Message(LogLevel.Info, "[ServiceHost] - Service host successfuly opened.");
-                        MPDisplayHost.Closed += (s, e) => Log.Message(LogLevel.Info, "[ServiceHost] - Service host successfuly closed.");
-                        MPDisplayHost.Open();
+                        _log.Message(LogLevel.Info, "[OnStart] - Opening service host..");
+                        _mpDisplayHost.Opened += (s, e) => _log.Message(LogLevel.Info, "[ServiceHost] - Service host successfuly opened.");
+                        _mpDisplayHost.Closed += (s, e) => _log.Message(LogLevel.Info, "[ServiceHost] - Service host successfuly closed.");
+                        _mpDisplayHost.Open();
                         return;
                     }
-                    else
-                    {
-                        Log.Message(LogLevel.Error, "[OnStart] - Failed to create connection Uri, Uri: {0}", connectionString);
-                    }
+                    _log.Message(LogLevel.Error, "[OnStart] - Failed to create connection Uri, Uri: {0}", connectionString);
                 }
             }
             catch (Exception ex)
             {
-                Log.Exception("[OnStart] - An exception occured starting MPDisplay Server", ex);
+                _log.Exception("[OnStart] - An exception occured starting MPDisplay Server", ex);
             }
             Stop();
         }
@@ -67,17 +63,15 @@ namespace MessageServer
         /// </summary>
         protected override void OnStop()
         {
-            Log.Message(LogLevel.Info, "[OnStop] - Stopping MPDisplay server...");
-            if (MPDisplayHost != null)
+            _log.Message(LogLevel.Info, "[OnStop] - Stopping MPDisplay server...");
+            if (_mpDisplayHost == null) return;
+            try
             {
-                try
-                {
-                    MPDisplayHost.Close();
-                }
-                catch
-                {
-
-                }
+                _mpDisplayHost.Close();
+            }
+            catch( Exception ex)
+            {
+                _log.Message(LogLevel.Error, "[OnStop] - An exception occured stopping MPDisplay server. Exception: {0}",  ex);
             }
         }
 
@@ -85,21 +79,18 @@ namespace MessageServer
         {
             if (!File.Exists(settingsFilename))
             {
-                Log.Message(LogLevel.Error, "[GetConnectionSettings] - File '{0}' does not exist, unable to load connection settings", settingsFilename);
+                _log.Message(LogLevel.Error, "[GetConnectionSettings] - File '{0}' does not exist, unable to load connection settings", settingsFilename);
                 return null;
             }
 
-            Log.Message(LogLevel.Info, "[GetConnectionSettings] - Loading settings file '{0}'", settingsFilename);
+            _log.Message(LogLevel.Info, "[GetConnectionSettings] - Loading settings file '{0}'", settingsFilename);
             var settings = SettingsManager.Load<MPDisplaySettings>(settingsFilename);
             if (settings != null && settings.PluginSettings != null && settings.PluginSettings.ConnectionSettings != null)
             {
-                Log.Message(LogLevel.Info, "[GetConnectionSettings] - Sucessfully loaded settings file '{0}'", settingsFilename);
+                _log.Message(LogLevel.Info, "[GetConnectionSettings] - Sucessfully loaded settings file '{0}'", settingsFilename);
                 return settings.PluginSettings.ConnectionSettings;
             }
-            else
-            {
-                Log.Message(LogLevel.Error, "[GetConnectionSettings] - Failed to load settings file '{0}'", settingsFilename);
-            }
+            _log.Message(LogLevel.Error, "[GetConnectionSettings] - Failed to load settings file '{0}'", settingsFilename);
             return null;
         }
     }

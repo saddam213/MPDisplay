@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
+﻿using System.Xml.Serialization;
 
 namespace Common.Settings
 {
@@ -12,17 +8,18 @@ namespace Common.Settings
         private ConnectionSettings _connectionSettings = new ConnectionSettings();
         private string _skinName = "default";
         private string _display = @"\\.\DISPLAY1";
-        private bool _customResolution = false;
+        private bool _customResolution;
         private int _screenWidth = 1280;
         private int _screenHeight = 720;
-        private int _screenOffSetX = 0;
-        private int _screenOffSetY = 0;
-        private bool _desktopMode = false;
+        private int _screenOffSetX;
+        private int _screenOffSetY;
+        private bool _desktopMode;
         private string _priority = "BelowNormal";
         private bool _restartOnError = true;
         private string _cursorStyle = "Arrow";
-        private bool _isSystemInfoEnabled = false;
+        private bool _isSystemInfoEnabled;
         private int _userInteractionDelay = 10;
+        private string _googleApiKey = "";
 
         public string SkinName
         {
@@ -88,6 +85,12 @@ namespace Common.Settings
         {
             get { return _userInteractionDelay; }
             set { _userInteractionDelay = value; NotifyPropertyChanged("UserInteractionDelay"); }
+        }
+
+        public string GoogleApiKey
+        {
+            get { return _googleApiKey;}
+            set { _googleApiKey = value; NotifyPropertyChanged("GoogleApiKey"); }
         }
 
         public ConnectionSettings ConnectionSettings

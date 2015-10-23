@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GUISkinFramework.Skin
+﻿namespace GUISkinFramework.Skin
 {
     public enum XmlListType
     {
@@ -15,7 +9,7 @@ namespace GUISkinFramework.Skin
           MediaPortalDialogList,
         MPDisplaySkins,
         MPDisplayStyles,
-        MPDisplayLanguages,
+        MPDisplayLanguages
       
     }
 }

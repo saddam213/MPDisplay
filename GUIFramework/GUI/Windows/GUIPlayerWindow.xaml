@@ -1,4 +1,6 @@
-﻿<base:GUIWindow x:Class="GUIFramework.GUI.Windows.GUIPlayerWindow"
+﻿<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
+<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
+<base:GUIWindow x:Class="GUIFramework.GUI.GUIPlayerWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 

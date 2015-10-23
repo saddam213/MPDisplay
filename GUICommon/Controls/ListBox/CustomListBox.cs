@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-
-namespace MPDisplay.Common.Controls
+﻿namespace MPDisplay.Common.Controls
 {
-    public class CustomListBox : ListBox
+    public class CustomListBox : System.Windows.Controls.ListBox
     {
     }
 }

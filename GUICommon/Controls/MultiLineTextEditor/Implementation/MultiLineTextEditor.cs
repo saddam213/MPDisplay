@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Controls.Primitives;
+using System.Windows.Input;
 
 namespace MPDisplay.Common.Controls
 {
@@ -41,7 +41,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnIsOpenChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            MultiLineTextEditor multiLineTextEditor = o as MultiLineTextEditor;
+            var multiLineTextEditor = o as MultiLineTextEditor;
             if (multiLineTextEditor != null)
                 multiLineTextEditor.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -72,7 +72,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnTextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            MultiLineTextEditor textEditor = o as MultiLineTextEditor;
+            var textEditor = o as MultiLineTextEditor;
             if (textEditor != null)
                 textEditor.OnTextChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -155,14 +155,13 @@ namespace MPDisplay.Common.Controls
 
         void ResizeThumb_DragDelta(object sender, DragDeltaEventArgs e)
         {
-            double yadjust = DropDownHeight + e.VerticalChange;
-            double xadjust = DropDownWidth + e.HorizontalChange;
+            var yadjust = DropDownHeight + e.VerticalChange;
+            var xadjust = DropDownWidth + e.HorizontalChange;
 
-            if ((xadjust >= 0) && (yadjust >= 0))
-            {
-                DropDownWidth = xadjust;
-                DropDownHeight = yadjust;
-            }
+            if ((!(xadjust >= 0)) || (!(yadjust >= 0))) return;
+
+            DropDownWidth = xadjust;
+            DropDownHeight = yadjust;
         }
 
         #endregion //Event Handlers

@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using MPDisplay.Common.Controls.Core.Utilities;
+using MPDisplay.Common.Controls.Core;
 
 namespace MPDisplay.Common.Controls
 {
@@ -28,7 +27,7 @@ namespace MPDisplay.Common.Controls
 
         #region Dependency Properties
 
-        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color), typeof(ColorSpectrumSlider), new PropertyMetadata(System.Windows.Media.Colors.Transparent));
+        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color), typeof(ColorSpectrumSlider), new PropertyMetadata(Colors.Transparent));
         public Color SelectedColor
         {
             get { return (Color)GetValue(SelectedColorProperty); }
@@ -52,7 +51,7 @@ namespace MPDisplay.Common.Controls
         {
             base.OnValueChanged(oldValue, newValue);
 
-            Color color = ColorUtilities.ConvertHsvToRgb(360 - newValue, 1, 1);
+            var color = ColorUtilities.ConvertHsvToRgb(360 - newValue, 1, 1);
             SelectedColor = color;
         }
 
@@ -62,14 +61,16 @@ namespace MPDisplay.Common.Controls
 
         private void CreateSpectrum()
         {
-            _pickerBrush = new LinearGradientBrush();
-            _pickerBrush.StartPoint = new Point(0.5, 0);
-            _pickerBrush.EndPoint = new Point(0.5, 1);
-            _pickerBrush.ColorInterpolationMode = ColorInterpolationMode.SRgbLinearInterpolation;
+            _pickerBrush = new LinearGradientBrush
+            {
+                StartPoint = new Point(0.5, 0),
+                EndPoint = new Point(0.5, 1),
+                ColorInterpolationMode = ColorInterpolationMode.SRgbLinearInterpolation
+            };
 
-            List<Color> colorsList = ColorUtilities.GenerateHsvSpectrum();
+            var colorsList = ColorUtilities.GenerateHsvSpectrum();
 
-            double stopIncrement = (double)1 / colorsList.Count;
+            var stopIncrement = (double)1 / colorsList.Count;
 
             int i;
             for (i = 0; i < colorsList.Count; i++)

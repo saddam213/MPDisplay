@@ -1,39 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Globalization;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Controls;
-using GUIFramework.Managers;
-using System.Collections.ObjectModel;
-using System.Windows.Controls.Primitives;
-using MPDisplay.Common.Utils;
-using System.ComponentModel;
 using System.Windows.Threading;
-using GUISkinFramework;
-using GUIFramework;
 using Common.Helpers;
-using MPDisplay.Common.ExtensionMethods;
-using Common;
-using System.IO;
 using Common.Settings;
+using GUIFramework.Repositories;
+using GUISkinFramework.Skin;
+using MPDisplay.Common;
+using MPDisplay.Common.ExtensionMethods;
 
 namespace SkinEditor.Controls
 {
     /// <summary>
     /// Interaction logic for GUIButton.xaml
     /// </summary>
-    public partial class Guide : UserControl , INotifyPropertyChanged
+    public partial class Guide : INotifyPropertyChanged
     {
         private ObservableCollection<TvGuideChannel> _channelData = new ObservableCollection<TvGuideChannel>();
         private ScrollViewer _channelScrollViewer;
@@ -68,21 +57,21 @@ namespace SkinEditor.Controls
 
         private static void OnSkinChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue != null)
+            if (e.NewValue == null) return;
+
+            if (_guideData == null)
             {
-                if (GuideData == null)
+                var data = Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\GuideData.xml");
+                if (File.Exists(data))
                 {
-                    var data = System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\GuideData.xml");
-                    if (File.Exists(data))
-                    {
-                        GuideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(data);
-                    }
+                    _guideData = SerializationHelper.Deserialize<List<TvGuideChannel>>(data);
                 }
-                (d as Guide).LoadGuideData(GuideData);
             }
+            var guide = d as Guide;
+            if (guide != null) guide.LoadGuideData(_guideData);
         }
 
-        private static List<TvGuideChannel> GuideData;
+        private static List<TvGuideChannel> _guideData;
 
         public ObservableCollection<TvGuideChannel> ChannelData
         {
@@ -140,8 +129,8 @@ namespace SkinEditor.Controls
         }
         
 
-        private double _timelineLength = 0;
-        private double _timelinePosition = 0;
+        private double _timelineLength;
+        private double _timelinePosition;
         private DateTime _timelineStart;
         private DateTime _timelineEnd;
         private string _timelineInfo;
@@ -209,17 +198,16 @@ namespace SkinEditor.Controls
 
         void BaseXml_PropertyChanged(object sender, PropertyChangedEventArgs e)
         {
-            if (e.PropertyName == "TimelineMultiplier")
+            if (e.PropertyName != "TimelineMultiplier") return;
+
+            NotifyPropertyChanged("TimelineMultiplier");
+            Dispatcher.BeginInvoke((Action)delegate
             {
-                NotifyPropertyChanged("TimelineMultiplier");
-                Dispatcher.BeginInvoke((Action)delegate
-                {
-                    TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-                    TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                    TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
-                    _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-                }, DispatcherPriority.Background);
-            }
+                TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
+                TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+                TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
+                _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+            }, DispatcherPriority.Background);
         }
 
 
@@ -230,75 +218,75 @@ namespace SkinEditor.Controls
 
         private void SetTimeline(IEnumerable<TvGuideChannel> data)
         {
-            if (data != null && data.Any())
+            var tvGuideChannels = data as IList<TvGuideChannel> ?? data.ToList();
+            if (data == null || !tvGuideChannels.Any()) return;
+
+            Timeline.Clear();
+            var allPrograms = tvGuideChannels.SelectMany(channel => channel.Programs);
+            var tvGuidePrograms = allPrograms as IList<TvGuideProgram> ?? allPrograms.ToList();
+            TimelineStart = tvGuidePrograms.Min(p => p.StartTime);
+            TimelineEnd = tvGuidePrograms.Max(p => p.EndTime);
+            TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
+            TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+
+            var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
+            Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
             {
-                Timeline.Clear();
-                var allPrograms = data.SelectMany(c => c.Programs);
-                TimelineStart = allPrograms.Min(p => p.StartTime);
-                TimelineEnd = allPrograms.Max(p => p.EndTime);
-                TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-                TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+                StartTime = begin.AddMinutes(30 * x),
+                EndTime = begin.AddMinutes((30 * x) + 30),
+                Title = begin.AddMinutes(30 * x).ToString("t")
+            }).ToList();
 
-                var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
-                Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
-                {
-                    StartTime = begin.AddMinutes(30 * x),
-                    EndTime = begin.AddMinutes((30 * x) + 30),
-                    Title = begin.AddMinutes(30 * x).ToString("t")
-                }).ToList();
+            TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
 
-                TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
-
-                _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-                _timelineScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
-                markerScrollviewer.ScrollToHorizontalOffset(TimelinePosition);
-            }
+            _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+            _timelineScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
+            markerScrollviewer.ScrollToHorizontalOffset(TimelinePosition);
         }
 
 
         private void ListBox_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            int voffset = (int)e.VerticalOffset;
-            int hoffset = (int)e.HorizontalOffset;
+            var voffset = (int)e.VerticalOffset;
+            var hoffset = (int)e.HorizontalOffset;
 
-            if (sender != timelineListBox)
+            if (!Equals(sender, timelineListBox))
             {
 
-                if (sender == channelListBox && (int)_programScrollViewer.VerticalOffset != voffset)
+                if (Equals(sender, channelListBox) && (int)_programScrollViewer.VerticalOffset != voffset)
                 {
                     _programScrollViewer.ScrollToVerticalOffset(voffset);
                 }
 
-                if (sender == programListBox && (int)_channelScrollViewer.VerticalOffset != voffset)
+                if (Equals(sender, programListBox) && (int)_channelScrollViewer.VerticalOffset != voffset)
                 {
                     _channelScrollViewer.ScrollToVerticalOffset(voffset);
                 }
             }
 
-            if (sender != channelListBox)
-            {
-                if (sender == timelineListBox && (int)_programScrollViewer.HorizontalOffset != hoffset)
-                {
-                    _programScrollViewer.ScrollToHorizontalOffset(hoffset);
-                    markerScrollviewer.ScrollToHorizontalOffset(hoffset);
-                    TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
-                }
+            if (Equals(sender, channelListBox)) return;
 
-                if (sender == programListBox && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
-                {
-                    _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
-                    markerScrollviewer.ScrollToHorizontalOffset(hoffset);
-                    TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
-                }
+            if (Equals(sender, timelineListBox) && (int)_programScrollViewer.HorizontalOffset != hoffset)
+            {
+                _programScrollViewer.ScrollToHorizontalOffset(hoffset);
+                markerScrollviewer.ScrollToHorizontalOffset(hoffset);
+                TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
             }
+
+            if (!Equals(sender, programListBox) || (int) _timelineScrollViewer.HorizontalOffset == hoffset) return;
+
+            _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
+            markerScrollviewer.ScrollToHorizontalOffset(hoffset);
+            TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
         }
 
 
         private void OnProgramItemSelected(object sender, MouseButtonEventArgs e)
         {
-            if (sender is Border)
+            var border = sender as Border;
+            if (border != null)
             {
-                SelectedProgram = (sender as Border).Tag as TvGuideProgram;
+                SelectedProgram = border.Tag as TvGuideProgram;
             }
         }
 
@@ -321,12 +309,12 @@ namespace SkinEditor.Controls
     public class ProgramWidthConverter : IMultiValueConverter
     {
 
-        private double GetItemWidth(DateTime startTime, DateTime endTime, double multi)
+        private static double GetItemWidth(DateTime startTime, DateTime endTime, double multi)
         {
             return (endTime - startTime).TotalMinutes * multi;
         }
 
-        private double GetStartPoint(DateTime startTime, DateTime guideStart, double multi)
+        private static double GetStartPoint(DateTime startTime, DateTime guideStart, double multi)
         {
             return ((startTime - guideStart).TotalMinutes * multi);
         }
@@ -334,36 +322,34 @@ namespace SkinEditor.Controls
 
 
 
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
+            TvGuideProgram guideProgram;
+
             if (parameter.ToString() == "ProgramWidth")
             {
                 if (values != null && values.Count() == 3)
                 {
-                   
-                    if (values[0] is TvGuideProgram)
+                    guideProgram = values[0] as TvGuideProgram;
+                    if (guideProgram != null)
                     {
-                        var program = values[0] as TvGuideProgram;
-                        return GetItemWidth(program.StartTime, program.EndTime, (double)values[2]);
+                        var program1 = guideProgram;
+                        return GetItemWidth(program1.StartTime, program1.EndTime, (double)values[2]);
                     }
                 }
             }
-            if (parameter.ToString() == "ProgramPosition")
-            {
-                if (values != null && values.Count() == 3)
-                {
+            if (parameter.ToString() != "ProgramPosition") return 0.0;
 
-                    if (values[0] is TvGuideProgram)
-                    {
-                        var program = values[0] as TvGuideProgram;
-                        return GetStartPoint(program.StartTime, (DateTime)values[1], (double)values[2]);
-                    }
-                }
-            }
-            return 0.0;
+            if (values == null || values.Count() != 3) return 0.0;
+
+            guideProgram = values[0] as TvGuideProgram;
+            if (guideProgram == null) return 0.0;
+
+            var program2 = guideProgram;
+            return GetStartPoint(program2.StartTime, (DateTime)values[1], (double)values[2]);
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

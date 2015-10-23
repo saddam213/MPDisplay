@@ -1,63 +1,43 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Threading;
-using GUIFramework.Managers;
-using GUISkinFramework.Common;
-using GUISkinFramework.Controls;
 using GUISkinFramework.Skin;
-using MessageFramework.DataObjects;
-using MPDisplay.Common;
-using MPDisplay.Common.Utils;
-using MPDisplay.Common.ExtensionMethods;
 
 namespace GUIFramework.GUI
 {
     [GUISkinElement(typeof(XmlControl))]
     public class GUIDraggableListView : GUIControl
     {
-        protected ScrollViewer _scrollViewer;
+        protected ScrollViewer ScrollViewer;
 
-        private const double LOWSPEEDLEVEL = 200.0;
-        private const double HIGHSPEEDLEVEL = 1000.0;
-        private const double SCROLLDURATION = 1.0;
-        private const double SCROLLFACTOR = 0.3;
-        protected bool isMouseDoubleClick = false;
-        protected bool isMouseDown = false;
-        protected bool mayBeOutOfSync = false;
-        private Point initialOffset;
-        private Point mouseDownPoint;
-        private Point mouseMovePoint1;
-        private Point mouseMovePoint2;
-        private Point mouseMovePoint3;
-        private DateTime mouseDownTime;
-        private DateTime mouseMoveTime1;
-        private DateTime mouseMoveTime2;
-        private DateTime mouseMoveTime3;
-        private Point mouseCurrentPoint;
-        protected bool isScrolling;
-        private Storyboard storyboard;
+        private const double Lowspeedlevel = 200.0;
+        private const double Highspeedlevel = 1000.0;
+        private const double Scrollduration = 1.0;
+        private const double Scrollfactor = 0.3;
+        protected bool IsMouseDoubleClick;
+        protected bool IsMouseButtonDown;
+        protected bool MayBeOutOfSync;
+        private Point _initialOffset;
+        private Point _mouseDownPoint;
+        private Point _mouseMovePoint1;
+        private Point _mouseMovePoint2;
+        private Point _mouseMovePoint3;
+        private DateTime _mouseDownTime;
+        private DateTime _mouseMoveTime1;
+        private DateTime _mouseMoveTime2;
+        private DateTime _mouseMoveTime3;
+        private Point _mouseCurrentPoint;
+        protected bool IsScrolling;
+        private Storyboard _storyboard;
 
         #region Constructor
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ListBox3D"/> class.
-        /// </summary>
-        public GUIDraggableListView() : base()
-        {
-
-        }
 
         #endregion
 
         #region Control Base
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Called when [window open].
         /// </summary>
@@ -66,6 +46,7 @@ namespace GUIFramework.GUI
             base.OnWindowOpen();
          }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Creates the control.
         /// </summary>
@@ -74,6 +55,7 @@ namespace GUIFramework.GUI
             base.CreateControl();
        }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Registers the info data.
         /// </summary>
@@ -82,7 +64,7 @@ namespace GUIFramework.GUI
             base.OnRegisterInfoData();
         }
 
-
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Deregisters the info data.
         /// </summary>
@@ -91,6 +73,7 @@ namespace GUIFramework.GUI
             base.OnDeregisterInfoData();
        }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Updates the info data.
         /// </summary>
@@ -99,6 +82,7 @@ namespace GUIFramework.GUI
             base.UpdateInfoData();
         }
 
+        // ReSharper disable once RedundantOverridenMember
         /// <summary>
         /// Clears the info data.
         /// </summary>
@@ -128,38 +112,38 @@ namespace GUIFramework.GUI
             //System.Diagnostics.Trace.WriteLine("OnPreviewMouseDown: mouse down point " + e.GetPosition(this));
             //System.Diagnostics.Trace.WriteLine("OnPreviewMouseDown:: mouse ClickCount: " + e.ClickCount);
 
-            // Set isMouseDown to true
-            isMouseDown = true;
-            if (_scrollViewer != null)
+            // Set IsMouseButtonDown to true
+            IsMouseButtonDown = true;
+            if (ScrollViewer != null)
             {
                 // Check whether it is a mouse double click
-                isMouseDoubleClick = (e.ClickCount > 1);
+                IsMouseDoubleClick = (e.ClickCount > 1);
 
                 // Set isScrolling to false
                 // isScrolling is true when initialOffset is saved and mouse cursor
                 // is updated for scrolling
-                isScrolling = false;
+                IsScrolling = false;
 
-                if (storyboard != null)
+                if (_storyboard != null)
                 {
                     // Pause any storyboard if still active
-                    if (storyboard.GetCurrentState(this) == ClockState.Active)
+                    if (_storyboard.GetCurrentState(this) == ClockState.Active)
                     {
-                        storyboard.Pause(this);
+                        _storyboard.Pause(this);
                     }
                     // Save the current horizontal and vertical offset
-                    double tempHorizontalOffset = _scrollViewer.HorizontalOffset;
-                    double tempVerticalOffset = _scrollViewer.VerticalOffset;
+                    var tempHorizontalOffset = ScrollViewer.HorizontalOffset;
+                    var tempVerticalOffset = ScrollViewer.VerticalOffset;
                     // Clear out the value provided by the animation
-                    BeginAnimation(GUIDraggableListView.ScrollViewerHorizontalOffsetProperty, null);
+                    BeginAnimation(ScrollViewerHorizontalOffsetProperty, null);
                     // Set the current horizontal offset back
-                    _scrollViewer.ScrollToHorizontalOffset(tempHorizontalOffset);
+                    ScrollViewer.ScrollToHorizontalOffset(tempHorizontalOffset);
                     // Clear out the value provided by the animation
-                    BeginAnimation(GUIDraggableListView.ScrollViewerVerticalOffsetProperty, null);
+                    BeginAnimation(ScrollViewerVerticalOffsetProperty, null);
                     // Set the current vertical offset back
-                    _scrollViewer.ScrollToVerticalOffset(tempVerticalOffset);
+                    ScrollViewer.ScrollToVerticalOffset(tempVerticalOffset);
 
-                    storyboard = null;
+                    _storyboard = null;
                 }
             }
             base.OnPreviewMouseDown(e);
@@ -179,123 +163,112 @@ namespace GUIFramework.GUI
             //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: isScrolling =" + isScrolling);
 
             // Scroll the ScrollViewer only when mouse button is Pressed and is over the control
-            if (e.LeftButton == MouseButtonState.Pressed && _scrollViewer != null && this.IsMouseActualOver(e.GetPosition(this)))
+            if (e.LeftButton == MouseButtonState.Pressed && ScrollViewer != null && IsMouseActualOver(e.GetPosition(this)))
             {
                 // Get the current mouse position
-                mouseCurrentPoint = e.GetPosition(this);
+                _mouseCurrentPoint = e.GetPosition(this);
 
                 // The default: IsMouseCaptured is true
-                if (!(this.IsMouseCaptured))
-                    this.CaptureMouse();
+                if (!(IsMouseCaptured))
+                    CaptureMouse();
 
-                if (!isScrolling)
+                if (!IsScrolling)
                 {
                     // Set isScrolling to ture
                     // isScrolling is true when initialOffset is saved and mouse cursor
                     // is updated for scrolling
-                    isScrolling = true;
+                    IsScrolling = true;
 
                     // Save the HorizontalOffset and VerticalOffset
-                    initialOffset.X = _scrollViewer.HorizontalOffset;
-                    initialOffset.Y = _scrollViewer.VerticalOffset;
+                    _initialOffset.X = ScrollViewer.HorizontalOffset;
+                    _initialOffset.Y = ScrollViewer.VerticalOffset;
 
                     // Initialize Point1 Point2, and Point3, and set mouseDownPoint
-                    mouseDownPoint = mouseMovePoint1 = mouseMovePoint2 = mouseMovePoint3 = e.GetPosition(this);
-                    mouseDownTime = mouseMoveTime1 = mouseMoveTime2 = mouseMoveTime3 = DateTime.Now;
+                    _mouseDownPoint = _mouseMovePoint1 = _mouseMovePoint2 = _mouseMovePoint3 = e.GetPosition(this);
+                    _mouseDownTime = _mouseMoveTime1 = _mouseMoveTime2 = _mouseMoveTime3 = DateTime.Now;
 
                     // Update the cursor
-                    if (_scrollViewer.ExtentWidth > _scrollViewer.ViewportWidth &&
-                        _scrollViewer.ExtentHeight > _scrollViewer.ViewportHeight)
-                        this.Cursor = Cursors.ScrollAll;
-                    else if (_scrollViewer.ExtentWidth > _scrollViewer.ViewportWidth)
-                        this.Cursor = Cursors.ScrollWE;
-                    else if (_scrollViewer.ExtentHeight > _scrollViewer.ViewportHeight)
-                        this.Cursor = Cursors.ScrollNS;
+                    if (ScrollViewer.ExtentWidth > ScrollViewer.ViewportWidth &&
+                        ScrollViewer.ExtentHeight > ScrollViewer.ViewportHeight)
+                        Cursor = Cursors.ScrollAll;
+                    else if (ScrollViewer.ExtentWidth > ScrollViewer.ViewportWidth)
+                        Cursor = Cursors.ScrollWE;
+                    else if (ScrollViewer.ExtentHeight > ScrollViewer.ViewportHeight)
+                        Cursor = Cursors.ScrollNS;
                     else
-                        this.Cursor = Cursors.Arrow;
+                        Cursor = Cursors.Arrow;
                 }
                 // Calculate the delta from mouseDownPoint
-                Point delta = new Point(this.mouseDownPoint.X - mouseCurrentPoint.X,
-                    this.mouseDownPoint.Y - mouseCurrentPoint.Y);
+                var delta = new Point(_mouseDownPoint.X - _mouseCurrentPoint.X,
+                    _mouseDownPoint.Y - _mouseCurrentPoint.Y);
 
                 // If scrolling reaches either edge, save this as a new starting point
-                if ((_scrollViewer.ScrollableHeight > 0 &&
-                    ((_scrollViewer.VerticalOffset == 0 && delta.Y < 0) ||
-                    (_scrollViewer.VerticalOffset == _scrollViewer.ScrollableHeight && delta.Y > 0))) ||
-                    _scrollViewer.ScrollableWidth > 0 &&
-                    ((_scrollViewer.HorizontalOffset == 0 && delta.X < 0) ||
-                    (_scrollViewer.HorizontalOffset == _scrollViewer.ScrollableWidth && delta.X > 0)))
+                if ((ScrollViewer.ScrollableHeight > 0 &&
+                    ((Math.Abs(ScrollViewer.VerticalOffset) < 0.0000001 && delta.Y < 0) ||
+                    (Math.Abs(ScrollViewer.VerticalOffset - ScrollViewer.ScrollableHeight) < 0.0000001 && delta.Y > 0))) ||
+                    ScrollViewer.ScrollableWidth > 0 &&
+                    ((Math.Abs(ScrollViewer.HorizontalOffset) < 0.0000001 && delta.X < 0) ||
+                    (Math.Abs(ScrollViewer.HorizontalOffset - ScrollViewer.ScrollableWidth) < 0.0000001 && delta.X > 0)))
                 {
                     // Save the HorizontalOffset and VerticalOffset
-                    initialOffset.X = _scrollViewer.HorizontalOffset;
-                    initialOffset.Y = _scrollViewer.VerticalOffset;
+                    _initialOffset.X = ScrollViewer.HorizontalOffset;
+                    _initialOffset.Y = ScrollViewer.VerticalOffset;
 
                     // Initialize Point1 Point2, and Point3, and set mouseDownPoint
-                    mouseDownPoint = mouseMovePoint1 = mouseMovePoint2 = mouseMovePoint3 = e.GetPosition(this);
-                    mouseDownTime = mouseMoveTime1 = mouseMoveTime2 = mouseMoveTime3 = DateTime.Now;
+                    _mouseDownPoint = _mouseMovePoint1 = _mouseMovePoint2 = _mouseMovePoint3 = e.GetPosition(this);
+                    _mouseDownTime = _mouseMoveTime1 = _mouseMoveTime2 = _mouseMoveTime3 = DateTime.Now;
                 }
                 else
                 {
                     // Scroll the ScrollViewer
-                    _scrollViewer.ScrollToHorizontalOffset(this.initialOffset.X + delta.X);
-                    _scrollViewer.ScrollToVerticalOffset(this.initialOffset.Y + delta.Y);
+                    ScrollViewer.ScrollToHorizontalOffset(_initialOffset.X + delta.X);
+                    ScrollViewer.ScrollToVerticalOffset(_initialOffset.Y + delta.Y);
                 }
-
-                // DEBUG
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: delta =" + delta);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.ExtentHeight =" + listViewScrollViewer.ExtentHeight);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.ViewportHeight =" + listViewScrollViewer.ViewportHeight);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.ScrollableHeight =" + listViewScrollViewer.ScrollableHeight);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.VerticalOffset =" + listViewScrollViewer.VerticalOffset);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.ExtentWidth =" + listViewScrollViewer.ExtentWidth);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.ViewportWidth =" + listViewScrollViewer.ViewportWidth);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.ScrollableWidth =" + listViewScrollViewer.ScrollableWidth);
-                //System.Diagnostics.Trace.WriteLine("OnPreviewMouseMove: listViewScrollViewer.HorizontalOffset =" + listViewScrollViewer.HorizontalOffset);
 
                 // Save the last three points of the mouse move
                 // this is used to estimate the speed of the mouse move
-                if (mouseMoveTime1 == mouseDownTime && mouseMoveTime2 == mouseDownTime && mouseMoveTime3 == mouseDownTime)
+                if (_mouseMoveTime1 == _mouseDownTime && _mouseMoveTime2 == _mouseDownTime && _mouseMoveTime3 == _mouseDownTime)
                 {
-                    mouseMovePoint1 = mouseCurrentPoint;
-                    mouseMoveTime1 = DateTime.Now;
+                    _mouseMovePoint1 = _mouseCurrentPoint;
+                    _mouseMoveTime1 = DateTime.Now;
                 }
-                else if (mouseMoveTime2 == mouseDownTime && mouseMoveTime3 == mouseDownTime)
+                else if (_mouseMoveTime2 == _mouseDownTime && _mouseMoveTime3 == _mouseDownTime)
                 {
-                    mouseMovePoint2 = mouseCurrentPoint;
-                    mouseMoveTime2 = DateTime.Now;
+                    _mouseMovePoint2 = _mouseCurrentPoint;
+                    _mouseMoveTime2 = DateTime.Now;
                 }
-                else if (mouseMoveTime3 == mouseDownTime)
+                else if (_mouseMoveTime3 == _mouseDownTime)
                 {
-                    mouseMovePoint3 = mouseCurrentPoint;
-                    mouseMoveTime3 = DateTime.Now;
+                    _mouseMovePoint3 = _mouseCurrentPoint;
+                    _mouseMoveTime3 = DateTime.Now;
                 }
                 else
                 {
-                    mouseMovePoint1 = mouseMovePoint2;
-                    mouseMovePoint2 = mouseMovePoint3;
-                    mouseMovePoint3 = mouseCurrentPoint;
-                    mouseMoveTime1 = mouseMoveTime2;
-                    mouseMoveTime2 = mouseMoveTime3;
-                    mouseMoveTime3 = DateTime.Now;
+                    _mouseMovePoint1 = _mouseMovePoint2;
+                    _mouseMovePoint2 = _mouseMovePoint3;
+                    _mouseMovePoint3 = _mouseCurrentPoint;
+                    _mouseMoveTime1 = _mouseMoveTime2;
+                    _mouseMoveTime2 = _mouseMoveTime3;
+                    _mouseMoveTime3 = DateTime.Now;
                 }
 
                 // Sync selected Item(s)
-                if (mayBeOutOfSync)
+                if (MayBeOutOfSync)
                 {
                     SelectListItem();
-                    mayBeOutOfSync = false;
+                    MayBeOutOfSync = false;
                 }
             }
             // Set isScrolling to false when mouse button is Pressed but is not over the control
-            else if (e.LeftButton == MouseButtonState.Pressed && _scrollViewer != null && !(this.IsMouseActualOver(e.GetPosition(this))))
+            else if (e.LeftButton == MouseButtonState.Pressed && ScrollViewer != null && !(IsMouseActualOver(e.GetPosition(this))))
             {
                 // Set isScrolling to false and update the cursor
-                this.Cursor = Cursors.Arrow;
-                isScrolling = false;
+                Cursor = Cursors.Arrow;
+                IsScrolling = false;
                 // Release mouse capture when the mouse is not over the control
                 // did this to disable scrolling while mouse is not over the control
-                if (this.IsMouseCaptured)
-                    this.ReleaseMouseCapture();
+                if (IsMouseCaptured)
+                    ReleaseMouseCapture();
             }
             base.OnPreviewMouseMove(e);
         }
@@ -306,103 +279,91 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         protected override void OnPreviewMouseUp(MouseButtonEventArgs e)
         {
-            // DEBUG
-            //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: mouse up point " + e.GetPosition(this));
-            //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: isScrolling =" + isScrolling);
-            //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: mouse ClickCount: " + e.ClickCount);
+            // Set IsMouseButtonDown to false
+            IsMouseButtonDown = false;
 
-            // Set isMouseDown to false
-            isMouseDown = false;
-
-            if (_scrollViewer != null)
+            if (ScrollViewer != null)
             {
                 // Sync selected Item(s)
-                if (mayBeOutOfSync)
+                if (MayBeOutOfSync)
                 {
                     SelectListItem();
-                    mayBeOutOfSync = false;
+                    MayBeOutOfSync = false;
                 }
             }
 
-            if (_scrollViewer != null && isScrolling)
+            if (ScrollViewer != null && IsScrolling)
             {
                 // Set isScrolling to false and update the cursor
-                this.Cursor = Cursors.Arrow;
-                isScrolling = false;
-                if (this.IsMouseCaptured)
-                    this.ReleaseMouseCapture();
+                Cursor = Cursors.Arrow;
+                IsScrolling = false;
+                if (IsMouseCaptured)
+                    ReleaseMouseCapture();
 
                 // Estimate scroll speed
-                double speed = 0.0, speedX = 0.0, speedY = 0.0, speed1 = 0.0, speed2 = 0.0;
-                double mouseScrollTime = 0.0;
-                double mouseScrollDistance = 0.0;
-                Direction leftOrRight, upOrDown;
+                double speed1 = 0.0, speed2 = 0.0;
 
-                if (mouseMoveTime1 != mouseDownTime && mouseMoveTime2 != mouseDownTime && mouseMoveTime3 != mouseDownTime)
+                if (_mouseMoveTime1 != _mouseDownTime && _mouseMoveTime2 != _mouseDownTime && _mouseMoveTime3 != _mouseDownTime)
                 {
                     // Case 1: estimate speed based on Point1 and Point3
-                    mouseScrollTime = mouseMoveTime3.Subtract(mouseMoveTime1).TotalSeconds;
-                    mouseScrollDistance = Math.Sqrt(Math.Pow(mouseMovePoint3.X - mouseMovePoint1.X, 2.0) +
-                        Math.Pow(mouseMovePoint3.Y - mouseMovePoint1.Y, 2.0));
-                    if (mouseScrollTime != 0 && mouseScrollDistance != 0)
+                    var mouseScrollTime = _mouseMoveTime3.Subtract(_mouseMoveTime1).TotalSeconds;
+                    var mouseScrollDistance = Math.Sqrt(Math.Pow(_mouseMovePoint3.X - _mouseMovePoint1.X, 2.0) +
+                                                           Math.Pow(_mouseMovePoint3.Y - _mouseMovePoint1.Y, 2.0));
+                    if (Math.Abs(mouseScrollTime) > 0.0000001 && Math.Abs(mouseScrollDistance) > 0.0000001)
                         speed1 = mouseScrollDistance / mouseScrollTime;
 
                     // Case 2: estimate speed based on mouseDownPoint and Point3
-                    mouseScrollTime = mouseMoveTime3.Subtract(mouseDownTime).TotalSeconds;
-                    mouseScrollDistance = Math.Sqrt(Math.Pow(mouseMovePoint3.X - mouseDownPoint.X, 2.0) +
-                        Math.Pow(mouseMovePoint3.Y - mouseDownPoint.Y, 2.0));
+                    mouseScrollTime = _mouseMoveTime3.Subtract(_mouseDownTime).TotalSeconds;
+                    mouseScrollDistance = Math.Sqrt(Math.Pow(_mouseMovePoint3.X - _mouseDownPoint.X, 2.0) +
+                        Math.Pow(_mouseMovePoint3.Y - _mouseDownPoint.Y, 2.0));
 
-                    if (mouseScrollTime != 0 && mouseScrollDistance != 0)
+                    if (Math.Abs(mouseScrollTime) > 0.0000001 && Math.Abs(mouseScrollDistance) > 0.0000001)
                         speed2 = mouseScrollDistance / mouseScrollTime;
 
                     // Pick the larger of speed1 and speed2, which is more likely to be correct
                     // also, calculate moving direction and speed on X and Y axles
+                    double speed;
+                    double speedX;
+                    double speedY;
+                    Direction leftOrRight;
+                    Direction upOrDown;
                     if (speed1 > speed2)
                     {
                         speed = speed1;
-                        leftOrRight = (mouseMovePoint3.X > mouseMovePoint1.X) ? Direction.Left : Direction.Right;
-                        upOrDown = (mouseMovePoint3.Y > mouseMovePoint1.Y) ? Direction.Up : Direction.Down;
-                        speedX = Math.Abs(mouseMovePoint3.X - mouseMovePoint1.X) / mouseMoveTime3.Subtract(mouseMoveTime1).TotalSeconds;
-                        speedY = Math.Abs(mouseMovePoint3.Y - mouseMovePoint1.Y) / mouseMoveTime3.Subtract(mouseMoveTime1).TotalSeconds;
+                        leftOrRight = (_mouseMovePoint3.X > _mouseMovePoint1.X) ? Direction.Left : Direction.Right;
+                        upOrDown = (_mouseMovePoint3.Y > _mouseMovePoint1.Y) ? Direction.Up : Direction.Down;
+                        speedX = Math.Abs(_mouseMovePoint3.X - _mouseMovePoint1.X) / _mouseMoveTime3.Subtract(_mouseMoveTime1).TotalSeconds;
+                        speedY = Math.Abs(_mouseMovePoint3.Y - _mouseMovePoint1.Y) / _mouseMoveTime3.Subtract(_mouseMoveTime1).TotalSeconds;
                     }
                     else
                     {
                         speed = speed2;
-                        leftOrRight = (mouseMovePoint3.X > mouseDownPoint.X) ? Direction.Left : Direction.Right;
-                        upOrDown = (mouseMovePoint3.Y > mouseDownPoint.Y) ? Direction.Up : Direction.Down;
-                        speedX = Math.Abs(mouseMovePoint3.X - mouseDownPoint.X) / mouseMoveTime3.Subtract(mouseDownTime).TotalSeconds;
-                        speedY = Math.Abs(mouseMovePoint3.Y - mouseDownPoint.Y) / mouseMoveTime3.Subtract(mouseDownTime).TotalSeconds;
+                        leftOrRight = (_mouseMovePoint3.X > _mouseDownPoint.X) ? Direction.Left : Direction.Right;
+                        upOrDown = (_mouseMovePoint3.Y > _mouseDownPoint.Y) ? Direction.Up : Direction.Down;
+                        speedX = Math.Abs(_mouseMovePoint3.X - _mouseDownPoint.X) / _mouseMoveTime3.Subtract(_mouseDownTime).TotalSeconds;
+                        speedY = Math.Abs(_mouseMovePoint3.Y - _mouseDownPoint.Y) / _mouseMoveTime3.Subtract(_mouseDownTime).TotalSeconds;
                     }
 
-                    this.RegisterName("myGUIDraggableListView", this);
-
-                    // DEBUG
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: leftOrRight =" + leftOrRight);
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: upOrDown =" + upOrDown);
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: speedX =" + speedX);
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: speedY =" + speedY);
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: speed1 =" + speed1);
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: speed2 =" + speed2);
-                    //System.Diagnostics.Trace.WriteLine("OnPreviewMouseUp: speed =" + speed);
+                    RegisterName("myGUIDraggableListView", this);
 
                     // If speed is higher than HIGHSPEEDLEVEL, scrolling will
                     // continue until it reaches either edge or a mouse is clicked
-                    if (speed > HIGHSPEEDLEVEL)
+                    if (speed > Highspeedlevel)
                     {
-                        double durationX = 0.0, durationY = 0.0;
+                        double durationX, durationY;
 
                         // Calculate durationX and durationY
-                        if (_scrollViewer.ScrollableWidth > 0 && speedX != 0)
+                        if (ScrollViewer.ScrollableWidth > 0 && Math.Abs(speedX) > 0.0000001)
                         {
                             if (leftOrRight == Direction.Right)
                             {
                                 // time needed to move to right edge
-                                durationX = (_scrollViewer.ScrollableWidth - _scrollViewer.HorizontalOffset) / speedX;
+                                durationX = (ScrollViewer.ScrollableWidth - ScrollViewer.HorizontalOffset) / speedX;
                             }
                             else
                             {
                                 // time needed to move to left edge
-                                durationX = _scrollViewer.HorizontalOffset / speedX;
+                                durationX = ScrollViewer.HorizontalOffset / speedX;
                             }
                         }
                         else // Cannot scroll horizontally
@@ -410,17 +371,17 @@ namespace GUIFramework.GUI
                             durationX = 0.0;
                         }
 
-                        if (_scrollViewer.ScrollableHeight > 0 && speedY != 0)
+                        if (ScrollViewer.ScrollableHeight > 0 && Math.Abs(speedY) > 0.0000001)
                         {
                             if (upOrDown == Direction.Down)
                             {
                                 // time needed to move down to bottom
-                                durationY = (_scrollViewer.ScrollableHeight - _scrollViewer.VerticalOffset) / speedY;
+                                durationY = (ScrollViewer.ScrollableHeight - ScrollViewer.VerticalOffset) / speedY;
                             }
                             else
                             {
                                 // time needed to move up to top
-                                durationY = _scrollViewer.VerticalOffset / speedY;
+                                durationY = ScrollViewer.VerticalOffset / speedY;
                             }
                         }
                         else // Cannot scroll vertically
@@ -428,103 +389,103 @@ namespace GUIFramework.GUI
                             durationY = 0.0;
                         }
 
-                        storyboard = new Storyboard();
+                        _storyboard = new Storyboard();
 
-                        DoubleAnimation horizontalScrollAnimation = new DoubleAnimation();
-                        DoubleAnimation verticalScrollAnimation = new DoubleAnimation();
+                        var horizontalScrollAnimation = new DoubleAnimation();
+                        var verticalScrollAnimation = new DoubleAnimation();
 
-                        horizontalScrollAnimation.From = _scrollViewer.HorizontalOffset;
-                        verticalScrollAnimation.From = _scrollViewer.VerticalOffset;
+                        horizontalScrollAnimation.From = ScrollViewer.HorizontalOffset;
+                        verticalScrollAnimation.From = ScrollViewer.VerticalOffset;
 
                         if (leftOrRight == Direction.Right && upOrDown == Direction.Down)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset + durationX * speedX;
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset + durationX * speedX;
                             horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationX)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset + durationY * speedY;
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset + durationY * speedY;
                             verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationY)));
                         }
                         else if (leftOrRight == Direction.Right && upOrDown == Direction.Up)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset + durationX * speedX;
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset + durationX * speedX;
                             horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationX)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset - durationY * speedY;
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset - durationY * speedY;
                             verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationY)));
                         }
                         else if (leftOrRight == Direction.Left && upOrDown == Direction.Down)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset - durationX * speedX;
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset - durationX * speedX;
                             horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationX)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset + durationY * speedY;
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset + durationY * speedY;
                             verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationY)));
                         }
                         else //if (leftOrRight == Direction.Left && upOrDown == Direction.Up)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset - durationX * speedX;
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset - durationX * speedX;
                             horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationX)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset - durationY * speedY;
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset - durationY * speedY;
                             verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(durationY)));
                         }
 
                         Storyboard.SetTargetName(horizontalScrollAnimation, "myGUIDraggableListView");
-                        Storyboard.SetTargetProperty(horizontalScrollAnimation, new PropertyPath(GUIDraggableListView.ScrollViewerHorizontalOffsetProperty));
+                        Storyboard.SetTargetProperty(horizontalScrollAnimation, new PropertyPath(ScrollViewerHorizontalOffsetProperty));
                         Storyboard.SetTargetName(verticalScrollAnimation, "myGUIDraggableListView");
-                        Storyboard.SetTargetProperty(verticalScrollAnimation, new PropertyPath(GUIDraggableListView.ScrollViewerVerticalOffsetProperty));
-                        storyboard.Children.Add(horizontalScrollAnimation);
-                        storyboard.Children.Add(verticalScrollAnimation);
+                        Storyboard.SetTargetProperty(verticalScrollAnimation, new PropertyPath(ScrollViewerVerticalOffsetProperty));
+                        _storyboard.Children.Add(horizontalScrollAnimation);
+                        _storyboard.Children.Add(verticalScrollAnimation);
 
-                        storyboard.Begin(this, true);
+                        _storyboard.Begin(this, true);
                     }
                     // If speed is higher than LOWSPEEDLEVEL, scrolling will
                     // continue for SCROLLDURATION (one second) or stop after a mouse is clicked
-                    else if (speed > LOWSPEEDLEVEL)
+                    else if (speed > Lowspeedlevel)
                     {
-                        storyboard = new Storyboard();
+                        _storyboard = new Storyboard();
 
-                        DoubleAnimation horizontalScrollAnimation = new DoubleAnimation();
-                        DoubleAnimation verticalScrollAnimation = new DoubleAnimation();
+                        var horizontalScrollAnimation = new DoubleAnimation();
+                        var verticalScrollAnimation = new DoubleAnimation();
 
-                        horizontalScrollAnimation.From = _scrollViewer.HorizontalOffset;
+                        horizontalScrollAnimation.From = ScrollViewer.HorizontalOffset;
                         horizontalScrollAnimation.DecelerationRatio = 1.0;
-                        verticalScrollAnimation.From = _scrollViewer.VerticalOffset;
+                        verticalScrollAnimation.From = ScrollViewer.VerticalOffset;
                         verticalScrollAnimation.DecelerationRatio = 1.0;
 
                         if (leftOrRight == Direction.Right && upOrDown == Direction.Down)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset + SCROLLDURATION * speedX * SCROLLFACTOR;
-                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset + SCROLLDURATION * speedY * SCROLLFACTOR;
-                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset + Scrollduration * speedX * Scrollfactor;
+                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset + Scrollduration * speedY * Scrollfactor;
+                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
                         }
                         else if (leftOrRight == Direction.Right && upOrDown == Direction.Up)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset + SCROLLDURATION * speedX * SCROLLFACTOR;
-                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset - SCROLLDURATION * speedY * SCROLLFACTOR;
-                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset + Scrollduration * speedX * Scrollfactor;
+                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset - Scrollduration * speedY * Scrollfactor;
+                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
                         }
                         else if (leftOrRight == Direction.Left && upOrDown == Direction.Down)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset - SCROLLDURATION * speedX * SCROLLFACTOR;
-                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset + SCROLLDURATION * speedY * SCROLLFACTOR;
-                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset - Scrollduration * speedX * Scrollfactor;
+                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset + Scrollduration * speedY * Scrollfactor;
+                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
                         }
                         else //if (leftOrRight == Direction.Left && upOrDown == Direction.Up)
                         {
-                            horizontalScrollAnimation.To = _scrollViewer.HorizontalOffset - SCROLLDURATION * speedX * SCROLLFACTOR;
-                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
-                            verticalScrollAnimation.To = _scrollViewer.VerticalOffset - SCROLLDURATION * speedY * SCROLLFACTOR;
-                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(SCROLLDURATION)));
+                            horizontalScrollAnimation.To = ScrollViewer.HorizontalOffset - Scrollduration * speedX * Scrollfactor;
+                            horizontalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
+                            verticalScrollAnimation.To = ScrollViewer.VerticalOffset - Scrollduration * speedY * Scrollfactor;
+                            verticalScrollAnimation.Duration = new Duration(new TimeSpan(0, 0, Convert.ToInt32(Scrollduration)));
                         }
 
                         Storyboard.SetTargetName(horizontalScrollAnimation, "myGUIDraggableListView");
-                        Storyboard.SetTargetProperty(horizontalScrollAnimation, new PropertyPath(GUIDraggableListView.ScrollViewerHorizontalOffsetProperty));
+                        Storyboard.SetTargetProperty(horizontalScrollAnimation, new PropertyPath(ScrollViewerHorizontalOffsetProperty));
                         Storyboard.SetTargetName(verticalScrollAnimation, "myGUIDraggableListView");
-                        Storyboard.SetTargetProperty(verticalScrollAnimation, new PropertyPath(GUIDraggableListView.ScrollViewerVerticalOffsetProperty));
-                        storyboard.Children.Add(horizontalScrollAnimation);
-                        storyboard.Children.Add(verticalScrollAnimation);
+                        Storyboard.SetTargetProperty(verticalScrollAnimation, new PropertyPath(ScrollViewerVerticalOffsetProperty));
+                        _storyboard.Children.Add(horizontalScrollAnimation);
+                        _storyboard.Children.Add(verticalScrollAnimation);
 
-                        storyboard.Begin(this, true);
+                        _storyboard.Begin(this, true);
                     }
                 }
             }
@@ -664,16 +625,15 @@ namespace GUIFramework.GUI
             // DEBUG
             //System.Diagnostics.Trace.WriteLine("draggableListView_MouseButtonDown: mouse ClickCount: " + e.ClickCount);
 
-            if (_scrollViewer != null)
+            if (ScrollViewer == null) return;
+
+            // Sync selected Item(s)
+            if (MayBeOutOfSync)
             {
-                // Sync selected Item(s)
-                if (mayBeOutOfSync)
-                {
-                    mayBeOutOfSync = false;
-                }
-                // Reset mouse double click to false
-                this.isMouseDoubleClick = false;
+                MayBeOutOfSync = false;
             }
+            // Reset mouse double click to false
+            IsMouseDoubleClick = false;
         }
 
         /// <summary>
@@ -684,27 +644,25 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         protected void GUIList_ScrollChanged(object sender, ScrollChangedEventArgs e)
         {
-            int newValue;
-
             // Check whether VerticalTotalPage changed
-            newValue = GetTotalPage(Orientation.Vertical);
-            if (this.VerticalTotalPage != newValue)
-                this.VerticalTotalPage = newValue;
+            var newValue = GetTotalPage(Orientation.Vertical);
+            if (VerticalTotalPage != newValue)
+                VerticalTotalPage = newValue;
 
             // Check whether VerticalCurrentPage changed
             newValue = GetCurrentPage(Orientation.Vertical);
-            if (this.VerticalCurrentPage != newValue)
-                this.VerticalCurrentPage = newValue;
+            if (VerticalCurrentPage != newValue)
+                VerticalCurrentPage = newValue;
 
             // Check whether HorizontalTotalPage changed
             newValue = GetTotalPage(Orientation.Horizontal);
-            if (this.HorizontalTotalPage != newValue)
-                this.HorizontalTotalPage = newValue;
+            if (HorizontalTotalPage != newValue)
+                HorizontalTotalPage = newValue;
 
             // Check whether HorizontalCurrentPage changed
             newValue = GetCurrentPage(Orientation.Horizontal);
-            if (this.HorizontalCurrentPage != newValue)
-                this.HorizontalCurrentPage = newValue;
+            if (HorizontalCurrentPage != newValue)
+                HorizontalCurrentPage = newValue;
         }
 
         /// <summary>
@@ -714,15 +672,14 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         private static void HorizontalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            GUIDraggableListView gl = (GUIDraggableListView)d;
-            if (gl._scrollViewer != null)
+            var gl = (GUIDraggableListView)d;
+            if (gl.ScrollViewer == null) return;
+
+            if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl.ScrollViewer.ScrollableWidth)
             {
-                if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl._scrollViewer.ScrollableWidth)
-                {
-                    gl._scrollViewer.ScrollToHorizontalOffset((double)e.NewValue);
-                    // DEBUG
-                    //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: HorizontalOffset =" + (double)e.NewValue);
-                }
+                gl.ScrollViewer.ScrollToHorizontalOffset((double)e.NewValue);
+                // DEBUG
+                //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: HorizontalOffset =" + (double)e.NewValue);
             }
         }
 
@@ -733,15 +690,14 @@ namespace GUIFramework.GUI
         /// <param name="e"></param>
         private static void VerticalOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            GUIDraggableListView gl = (GUIDraggableListView)d;
-            if (gl._scrollViewer != null)
+            var gl = (GUIDraggableListView)d;
+            if (gl.ScrollViewer == null) return;
+
+            if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl.ScrollViewer.ScrollableHeight)
             {
-                if ((double)e.NewValue >= 0.0 && (double)e.NewValue <= gl._scrollViewer.ScrollableHeight)
-                {
-                    gl._scrollViewer.ScrollToVerticalOffset((double)e.NewValue);
-                    // DEBUG
-                    //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: VerticalOffset =" + (double)e.NewValue);
-                }
+                gl.ScrollViewer.ScrollToVerticalOffset((double)e.NewValue);
+                // DEBUG
+                //System.Diagnostics.Trace.WriteLine("HorizontalOffsetChanged: VerticalOffset =" + (double)e.NewValue);
             }
         }
 
@@ -756,12 +712,12 @@ namespace GUIFramework.GUI
 
             if (direction == Orientation.Vertical)
             {
-                if (_scrollViewer != null)
+                if (ScrollViewer != null)
                     try
                     {
-                        intVal = Convert.ToInt32(Math.Round(_scrollViewer.ExtentHeight / _scrollViewer.ViewportHeight + 0.5));
+                        intVal = Convert.ToInt32(Math.Round(ScrollViewer.ExtentHeight / ScrollViewer.ViewportHeight + 0.5));
                     }
-                    catch (System.OverflowException)
+                    catch (OverflowException)
                     {
                         intVal = 0;
                     }
@@ -770,12 +726,12 @@ namespace GUIFramework.GUI
             }
             else  // Orientation.Horizontal
             {
-                if (_scrollViewer != null)
+                if (ScrollViewer != null)
                     try
                     {
-                        intVal = Convert.ToInt32(Math.Round(_scrollViewer.ExtentWidth / _scrollViewer.ViewportWidth + 0.5));
+                        intVal = Convert.ToInt32(Math.Round(ScrollViewer.ExtentWidth / ScrollViewer.ViewportWidth + 0.5));
                     }
-                    catch (System.OverflowException)
+                    catch (OverflowException)
                     {
                         intVal = 0;
                     }
@@ -796,12 +752,12 @@ namespace GUIFramework.GUI
 
             if (direction == Orientation.Vertical)
             {
-                if (_scrollViewer != null)
+                if (ScrollViewer != null)
                     try
                     {
-                        intVal = Convert.ToInt32(Math.Round(_scrollViewer.VerticalOffset / _scrollViewer.ViewportHeight + 0.5) + 1);
+                        intVal = Convert.ToInt32(Math.Round(ScrollViewer.VerticalOffset / ScrollViewer.ViewportHeight + 0.5) + 1);
                     }
-                    catch (System.OverflowException)
+                    catch (OverflowException)
                     {
                         intVal = 0;
                     }
@@ -810,12 +766,12 @@ namespace GUIFramework.GUI
             }
             else  // Orientation.Horizontal
             {
-                if (_scrollViewer != null)
+                if (ScrollViewer != null)
                     try
                     {
-                        intVal = Convert.ToInt32(Math.Round(_scrollViewer.HorizontalOffset / _scrollViewer.ViewportWidth + 0.5) + 1);
+                        intVal = Convert.ToInt32(Math.Round(ScrollViewer.HorizontalOffset / ScrollViewer.ViewportWidth + 0.5) + 1);
                     }
-                    catch (System.OverflowException)
+                    catch (OverflowException)
                     {
                         intVal = 0;
                     }
@@ -833,10 +789,7 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         private bool IsMouseActualOver(Point p)
         {
-            if (p.X >= 0 && p.X < this.ActualWidth && p.Y >= 0 && p.Y < this.ActualHeight)
-                return true;
-            else
-                return false;
+            return p.X >= 0 && p.X < ActualWidth && p.Y >= 0 && p.Y < ActualHeight;
         }
 
         #endregion Private Functions

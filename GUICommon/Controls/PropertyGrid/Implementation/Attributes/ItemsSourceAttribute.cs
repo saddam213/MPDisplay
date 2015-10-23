@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class ItemsSourceAttribute : Attribute
     {
@@ -10,7 +10,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
         {
             var valueSourceInterface = type.GetInterface("MPDisplay.Common.Controls.PropertyGrid.Attributes.IItemsSource");
             if (valueSourceInterface == null)
-                throw new ArgumentException("Type must implement the IItemsSource interface.", "type");
+                throw new ArgumentException(@"Type must implement the IItemsSource interface.", "type");
 
             Type = type;
         }

@@ -1,13 +1,15 @@
-﻿using MediaPortal.GUI.Library;
-using MediaPortalPlugin.InfoManagers;
-using MessageFramework.DataObjects;
-using Common.Logging;
-using Common.Settings;
-using Common.Helpers;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.ServiceModel;
 using System.Threading;
+using Common.Helpers;
+using Common.Log;
+using Common.Settings;
+using MediaPortalPlugin.InfoManagers;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
 using Microsoft.Win32;
 
 namespace MediaPortalPlugin
@@ -20,15 +22,21 @@ namespace MediaPortalPlugin
     {
         #region Singleton Implementation
 
-        private static MessageService instance;
+        private static MessageService _instance;
 
         /// <summary>
         /// Prevents a default instance of the <see cref="MessageService"/> class from being created.
         /// </summary>
         private MessageService()
         {
-            Log = Common.Logging.LoggingManager.GetLog(typeof(MessageService));
+            _log = LoggingManager.GetLog(typeof(MessageService));
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
+
+            IsMpDisplayConnected = false;
+            IsSkinEditorConnected = false;
+            _connections[ConnectionType.SkinEditor] = 0;
+            _connections[ConnectionType.MPDisplay] = 0;
+
         }
 
         /// <summary>
@@ -36,14 +44,7 @@ namespace MediaPortalPlugin
         /// </summary>
         public static MessageService Instance
         {
-            get
-            {
-                if (instance == null)
-                {
-                    instance = new MessageService();
-                }
-                return instance;
-            }
+            get { return _instance ?? (_instance = new MessageService()); }
         }
 
         /// <summary>
@@ -64,10 +65,11 @@ namespace MediaPortalPlugin
         private EndpointAddress _serverEndpoint;
         private NetTcpBinding _serverBinding;
         private ConnectionSettings _settings;
-        private Common.Logging.Log Log;
-        private System.Threading.Timer _keepAlive;
-        private bool _isDisconnecting = false;
-        private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2); 
+        private Log _log;
+        private Timer _keepAlive;
+        private bool _isDisconnecting;
+        private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2);
+        private Dictionary<ConnectionType, int> _connections = new Dictionary<ConnectionType, int>();
 
         #endregion
 
@@ -87,7 +89,7 @@ namespace MediaPortalPlugin
         /// <value>
         /// <c>true</c> if [is mp display connected]; otherwise, <c>false</c>.
         /// </value>
-        public bool IsMPDisplayConnected { get; set; }
+        public bool IsMpDisplayConnected { get; set; }
 
 
         public bool IsSkinEditorConnected { get; set; }
@@ -106,12 +108,12 @@ namespace MediaPortalPlugin
             try
             {
                 _settings = settings;
-                string connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
-                Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", connectionString);
+                var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", connectionString);
                 _serverEndpoint = new EndpointAddress(connectionString);
-                _serverBinding = ConnectHelper.getServerBinding();
+                _serverBinding = ConnectHelper.GetServerBinding();
 
-                InstanceContext site = new InstanceContext(this);
+                var site = new InstanceContext(this);
                 if (_messageClient != null)
                 {
                     _messageClient.InnerChannel.Faulted -= OnConnectionFaulted;
@@ -130,21 +132,21 @@ namespace MediaPortalPlugin
                 _messageClient.SendInfoMessageCompleted += _messageClient_SendMessageCompleted;
                 _messageClient.SendDataMessageCompleted += _messageClient_SendMessageCompleted;
                 _messageClient.SendPropertyMessageCompleted += _messageClient_SendMessageCompleted;
-            
-                _connection = new APIConnection("MediaPortalPlugin");
+
+                _connection = new APIConnection(ConnectionType.MediaPortalPlugin);
                 ConnectToService();
             }
             catch (Exception ex)
             {
-                Log.Exception("[Initialize] - An exception occured initializing server connection.", ex);
+                _log.Exception("[Initialize] - An exception occured initializing server connection.", ex);
             }
         }
 
-        void _messageClient_SendMessageCompleted(object sender, System.ComponentModel.AsyncCompletedEventArgs e)
+        void _messageClient_SendMessageCompleted(object sender, AsyncCompletedEventArgs e)
         {
             if (e.Error != null)
             {
-                Log.Exception("An error occured sending message to MPDisplay.", e.Error);
+                _log.Exception("An error occured sending message to MPDisplay.", e.Error);
             }
         }
 
@@ -154,7 +156,7 @@ namespace MediaPortalPlugin
         public void Shutdown()
         {
             SystemEvents.PowerModeChanged -= SystemEvents_PowerModeChanged;
-            Log.Message(LogLevel.Info, "[Shutdown] - Shuting down connection instance.");
+            _log.Message(LogLevel.Info, "[Shutdown] - Shuting down connection instance.");
             _isDisconnecting = true;
             Disconnect();
         }
@@ -167,11 +169,10 @@ namespace MediaPortalPlugin
         private void StartKeepAlive()
         {
             StopKeepAlive();
-            if (_keepAlive == null)
-            {
-                Log.Message(LogLevel.Debug, "[KeepAlive] - Starting KeepAlive thread.");
-                _keepAlive = new System.Threading.Timer(SendKeepAlive, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
-            }
+            if (_keepAlive != null) return;
+
+            _log.Message(LogLevel.Debug, "[KeepAlive] - Starting KeepAlive thread.");
+            _keepAlive = new Timer(SendKeepAlive, null, TimeSpan.FromSeconds(30), TimeSpan.FromSeconds(30));
         }
 
         /// <summary>
@@ -179,12 +180,11 @@ namespace MediaPortalPlugin
         /// </summary>
         private void StopKeepAlive()
         {
-            if (_keepAlive != null)
-            {
-                Log.Message(LogLevel.Debug, "[KeepAlive] - Stopping KeepAlive thread.");
-                _keepAlive.Change(Timeout.Infinite, Timeout.Infinite);
-                _keepAlive = null;
-            }
+            if (_keepAlive == null) return;
+
+            _log.Message(LogLevel.Debug, "[KeepAlive] - Stopping KeepAlive thread.");
+            _keepAlive.Change(Timeout.Infinite, Timeout.Infinite);
+            _keepAlive = null;
         }
 
         /// <summary>
@@ -206,11 +206,10 @@ namespace MediaPortalPlugin
         /// </summary>
         public void ConnectToService()
         {
-            if (_messageClient != null)
-            {
-                Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
-                _messageClient.ConnectAsync(_connection);
-            }
+            if (_messageClient == null) return;
+
+            _log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
+            _messageClient.ConnectAsync(_connection);
         }
 
         /// <summary>
@@ -222,16 +221,20 @@ namespace MediaPortalPlugin
         {
             if (e.Error != null)
             {
-                Log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", e.Error.Message);
+                _log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", e.Error.Message);
             }
             else
             {
                 _lastKeepAlive = DateTime.Now;
-                Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
                 IsConnected = true;
-                IsMPDisplayConnected = e.Result.Where(x => !x.ConnectionName.Equals("MediaPortalPlugin") && !x.ConnectionName.Equals("SkinEditor")).Any();
-                IsSkinEditorConnected = e.Result.Any(x => x.ConnectionName.Equals("SkinEditor"));
-                if (IsMPDisplayConnected)
+                _connections[ConnectionType.MPDisplay] = e.Result.Count(x => x.ConnectionType == ConnectionType.MPDisplay);
+                _connections[ConnectionType.SkinEditor] = e.Result.Count(x => x.ConnectionType == ConnectionType.SkinEditor);
+                _log.Message(LogLevel.Info, "[Connect] - Connection to server successful. Connections: <{0} {1}> <{2} {3}>",
+                    ConnectionType.MPDisplay, _connections[ConnectionType.MPDisplay], ConnectionType.SkinEditor, _connections[ConnectionType.SkinEditor]);
+                IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
+                IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
+
+                if (IsMpDisplayConnected)
                 {
                     WindowManager.Instance.SendFullUpdate();
                 }
@@ -245,12 +248,11 @@ namespace MediaPortalPlugin
         /// </summary>
         public void Reconnect()
         {
-            if (!_isDisconnecting)
-            {
-                Log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
-                Disconnect();
-                InitializeConnection(_settings);
-            }
+            if (_isDisconnecting) return;
+
+            _log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
+            Disconnect();
+            InitializeConnection(_settings);
         }
 
         /// <summary>
@@ -259,17 +261,23 @@ namespace MediaPortalPlugin
         public void Disconnect()
         {
             IsConnected = false;
-            IsMPDisplayConnected = false;
+
+            IsMpDisplayConnected = false;
             IsSkinEditorConnected = false;
-            if (_messageClient != null)
+            _connections[ConnectionType.SkinEditor] = 0;
+            _connections[ConnectionType.MPDisplay] = 0;
+
+            if (_messageClient == null) return;
+
+            try
             {
-                try
-                {
-                    StopKeepAlive();
-                    Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
-                    _messageClient.Disconnect();
-                }
-                catch { }
+                StopKeepAlive();
+                _log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
+                _messageClient.Disconnect();
+            }
+            catch( Exception ex)
+            {
+                _log.Message(LogLevel.Error, "[Disconnect] - An exception occured when disconnecting. {0}", ex.Message);
             }
         }
 
@@ -279,20 +287,18 @@ namespace MediaPortalPlugin
         /// <param name="connection">The connection.</param>
         public void SessionConnected(APIConnection connection)
         {
-            if (connection != null)
+            if (connection == null) return;
+
+            if (connection.ConnectionType.Equals(ConnectionType.SkinEditor) || connection.ConnectionType.Equals(ConnectionType.MPDisplay))
             {
-                if (connection.ConnectionName.Equals("SkinEditor"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - SkinEditor connected to network.");
-                    IsSkinEditorConnected = true;
-                }
-                else if (!connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - MPDisplay instance connected to network. ConnectionName: {0}", connection.ConnectionName);
-                    IsMPDisplayConnected = true;
-                    WindowManager.Instance.SendFullUpdate();
-                }
+                _connections[connection.ConnectionType]++;
+                IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
+                IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
+                _log.Message(LogLevel.Info, "[Session] - Instance connected to network. ConnectionName: {0} Active connections: {1}",
+                    connection.ConnectionName, _connections[connection.ConnectionType]);
             }
+
+            if (connection.ConnectionType.Equals(ConnectionType.MPDisplay)) WindowManager.Instance.SendFullUpdate();
         }
 
         /// <summary>
@@ -301,23 +307,20 @@ namespace MediaPortalPlugin
         /// <param name="connection">The connection.</param>
         public void SessionDisconnected(APIConnection connection)
         {
-            if (connection != null)
+            if (connection == null) return;
+
+            if (connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin))
             {
-                if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                    Reconnect();
-                }
-                else if (connection.ConnectionName.Equals("SkinEditor"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - SkinEditor disconnected from network.");
-                    IsSkinEditorConnected = false;
-                }
-                else
-                {
-                    Log.Message(LogLevel.Info, "[Session] - MPDisplay instance disconnected from network. ConnectionName: {0}", connection.ConnectionName);
-                    IsMPDisplayConnected = false;
-                }
+                Reconnect();
             }
+            else if (connection.ConnectionType.Equals(ConnectionType.SkinEditor) || connection.ConnectionType.Equals(ConnectionType.MPDisplay))
+            {
+                _connections[connection.ConnectionType]--;
+                _log.Message(LogLevel.Info, "[Session] - Instance disconnected from network: ConnectionName: {0}. Active connections: {1}",
+                   connection.ConnectionName, _connections[connection.ConnectionType]);
+                IsSkinEditorConnected = _connections[ConnectionType.SkinEditor] > 0;
+                IsMpDisplayConnected = _connections[ConnectionType.MPDisplay] > 0;
+           }
         }
 
         /// <summary>
@@ -327,7 +330,7 @@ namespace MediaPortalPlugin
         /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
         private void OnConnectionFaulted(object sender, EventArgs e)
         {
-            Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
+            _log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
             Reconnect();
         } 
 
@@ -341,7 +344,7 @@ namespace MediaPortalPlugin
         /// <param name="message">The message.</param>
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
-            Log.Message(LogLevel.Debug, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
+            _log.Message(LogLevel.Debug, "[Receive] - Message received, MessageType: {0}.", message.MessageType);
             WindowManager.Instance.OnMediaPortalMessageReceived(message);
         }
 
@@ -353,81 +356,70 @@ namespace MediaPortalPlugin
         {
             try
             {
-                if (IsConnected)
-                {
-                    if (IsMPDisplayConnected)
-                    {
-                        if (_messageClient != null && property != null)
-                        {
-                             Log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}, Label: {2}.", property.SkinTag, property.PropertyType, property.Label); //Test
-                            _messageClient.SendPropertyMessageAsync(property);
-                        }
-                    }
+                if (!IsConnected) return;
 
-                  
-                }
+                if (!IsMpDisplayConnected) return;
 
+                if (_messageClient == null || property == null) return;
+                _log.Message(LogLevel.Verbose, "[Send] - Sending property message, Property: {0}, Type: {1}, Label: {2}.", property.SkinTag, property.PropertyType, property.Label); 
+                _messageClient.SendPropertyMessageAsync(property);
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[SendPropertyMessage] - An exception occured sending message.", ex.Message);
+                _log.Message(LogLevel.Error, "[SendPropertyMessage] - An exception occured sending message. {0}", ex.Message);
             }
         }
 
         /// <summary>
         /// Sends the MPGUI list.
         /// </summary>
-        /// <param name="listdata">The listdata.</param>
+        /// <param name="listMessage">The message.</param>
         public void SendListMessage(APIListMessage listMessage)
         {
             try
             {
-                if (IsConnected && IsMPDisplayConnected)
+                if (!IsConnected || !IsMpDisplayConnected) return;
+
+                if (_messageClient == null || listMessage == null) return;
+
+                if (listMessage.MessageType == APIListMessageType.TVGuide)
                 {
-                    if (_messageClient != null && listMessage != null)
-                    {
-                        if (listMessage.MessageType == APIListMessageType.TVGuide)
-                        {
-                            Log.Message(LogLevel.Verbose, "[Send] - Sending list message, MessageType: {0} TVGuideType: {1}.", listMessage.MessageType, listMessage.TvGuide.MessageType);
-                        }
-                        else
-                        {
-                            Log.Message(LogLevel.Verbose, "[Send] - Sending list message, MessageType: {0}.", listMessage.MessageType);
-                        }
-                         if (listMessage.MessageType == APIListMessageType.List && listMessage.List.BatchCount != -1)
-                        {
-                            Log.Message(LogLevel.Verbose, "[SendListMessage] - Sending list batch, BatchId: {0}, BatchNumber: {1}, BatchCount: {2}", listMessage.List.BatchId, listMessage.List.BatchNumber, listMessage.List.BatchCount);
-                        }
-                        _messageClient.SendListMessageAsync(listMessage);
-                    }
+                    _log.Message(LogLevel.Verbose, "[Send] - Sending list message, MessageType: {0} TVGuideType: {1}.", listMessage.MessageType, listMessage.TvGuide.MessageType);
                 }
+                else
+                {
+                    _log.Message(LogLevel.Verbose, "[Send] - Sending list message, MessageType: {0}.", listMessage.MessageType);
+                }
+                if (listMessage.MessageType == APIListMessageType.List && listMessage.List.BatchCount != -1)
+                {
+                    _log.Message(LogLevel.Verbose, "[SendListMessage] - Sending list batch, BatchId: {0}, BatchNumber: {1}, BatchCount: {2}", listMessage.List.BatchId, listMessage.List.BatchNumber, listMessage.List.BatchCount);
+                }
+                _messageClient.SendListMessageAsync(listMessage);
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[SendListMessage] - An exception occured sending message.", ex.Message);
+                _log.Message(LogLevel.Error, "[SendListMessage] - An exception occured sending message. {0}", ex.Message);
             }
         }
 
         /// <summary>
         /// Sends the MP multi message.
         /// </summary>
-        /// <param name="message">The message.</param>
+        /// <param name="infoMessage">The message.</param>
         public void SendInfoMessage(APIInfoMessage infoMessage)
         {
             try
             {
-                if (IsConnected && IsMPDisplayConnected)
-                {
-                    if (_messageClient != null && infoMessage != null)
-                    {
-                        Log.Message(LogLevel.Verbose, "[Send] - Sending info message, MessageType: {0}.", infoMessage.MessageType);
-                        _messageClient.SendInfoMessageAsync(infoMessage);
-                    }
-                }
+                if (!IsConnected || !IsMpDisplayConnected) return;
+
+                if (_messageClient == null || infoMessage == null) return;
+
+                _log.Message(LogLevel.Verbose, "[Send] - Sending info message, MessageType: {0}.", infoMessage.MessageType);
+                _messageClient.SendInfoMessageAsync(infoMessage);
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[SendInfoMessage] - An exception occured sending message.", ex.Message);
+                _log.Message(LogLevel.Error, "[SendInfoMessage] - An exception occured sending message. {0}", ex.Message);
             }
         }
 
@@ -439,28 +431,26 @@ namespace MediaPortalPlugin
         {
             try
             {
-                if (IsConnected && IsMPDisplayConnected)
+                if (!IsConnected || !IsMpDisplayConnected) return;
+
+                if (_messageClient == null || dataMessage == null) return;
+
+                if (dataMessage.DataType != APIDataMessageType.EQData)
                 {
-                    if (_messageClient != null && dataMessage != null)
+                    if (dataMessage.IntArray != null)
                     {
-                        if (dataMessage.DataType != APIDataMessageType.EQData)
-                        {
-                            if (dataMessage.IntArray != null)
-                            {
-                                Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}, ArraySize {2}.", dataMessage.DataType, dataMessage.IntValue, dataMessage.IntArray.Count());
-                            }
-                            else
-                            {
-                                Log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}.", dataMessage.DataType, dataMessage.IntValue);
-                            }
-                        }
-                        _messageClient.SendDataMessageAsync(dataMessage);
+                        _log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}, ArraySize {2}.", dataMessage.DataType, dataMessage.IntValue, dataMessage.IntArray.Count());
+                    }
+                    else
+                    {
+                        _log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}.", dataMessage.DataType, dataMessage.IntValue);
                     }
                 }
+                _messageClient.SendDataMessageAsync(dataMessage);
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[SendDataMessage] - An Exception Occured Processing Message", ex.Message);
+                _log.Message(LogLevel.Error, "[SendDataMessage] - An Exception occured Processing Message {0}", ex.Message);
             }
         }
 
@@ -471,18 +461,16 @@ namespace MediaPortalPlugin
         {
             try
             {
-                if (IsConnected)
-                {
-                    if (_messageClient != null)
-                    {
-                        Log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
-                        _messageClient.SendDataMessageAsync(new APIDataMessage {  DataType = APIDataMessageType.KeepAlive});
-                    }
-                }
+                if (!IsConnected) return;
+
+                if (_messageClient == null) return;
+
+                _log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
+                _messageClient.SendDataMessageAsync(new APIDataMessage {  DataType = APIDataMessageType.KeepAlive});
             }
             catch (Exception ex)
             {
-                Log.Exception("[KeepAlive] - An Exception Occured sending KeepAlive message", ex);
+                _log.Exception("[KeepAlive] - An Exception occured sending KeepAlive message.", ex);
             }
         }
 
@@ -492,17 +480,14 @@ namespace MediaPortalPlugin
         /// <param name="message">The message.</param>
         public void ReceiveAPIDataMessage(APIDataMessage message)
         {
-            if (message != null)
-            {
-                if (message.DataType == APIDataMessageType.KeepAlive)
-                {
-                    _lastKeepAlive = DateTime.Now;
-                    return;
-                }
-            }
-        } 
+            if (message == null) return;
 
-        public void ReceiveTVServerMessage(APITVServerMessage message) { }
+            if (message.DataType == APIDataMessageType.KeepAlive)
+            {
+                _lastKeepAlive = DateTime.Now;
+            }
+        }
+
         public void ReceiveAPIPropertyMessage(APIPropertyMessage message) { }
         public void ReceiveAPIListMessage(APIListMessage message) { }
         public void ReceiveAPIInfoMessage(APIInfoMessage message) { }
@@ -513,17 +498,19 @@ namespace MediaPortalPlugin
         {
             if (e.Mode == PowerModes.Resume)
             {
-                ThreadPool.QueueUserWorkItem((o) =>
+                _log.Message(LogLevel.Info, "[PowerModeChanged] - Resume event");
+
+                ThreadPool.QueueUserWorkItem(o =>
                 {
                     Thread.Sleep(_settings.ResumeDelay);
                     InitializeConnection(_settings);
                 });
             }
 
-            if (e.Mode == PowerModes.Suspend)
-            {
-                Disconnect();
-            }
+            if (e.Mode != PowerModes.Suspend) return;
+
+            _log.Message(LogLevel.Info, "[PowerModeChanged] - Suspend event");
+            Disconnect();
         }
 
 
@@ -531,22 +518,20 @@ namespace MediaPortalPlugin
         {   
             try
             {
-                if (IsConnected && IsSkinEditorConnected)
+                if (!IsConnected || !IsSkinEditorConnected) return;
+
+                if (_messageClient == null || message == null) return;
+
+                var dataMessage = new APIDataMessage
                 {
-                    if (_messageClient != null && message != null)
-                    {
-                        var dataMessage = new APIDataMessage
-                        {
-                            DataType = APIDataMessageType.SkinEditorInfo,
-                            SkinEditorData = message
-                        };
-                        _messageClient.SendDataMessageAsync(dataMessage);
-                    }
-                }
+                    DataType = APIDataMessageType.SkinEditorInfo,
+                    SkinEditorData = message
+                };
+                _messageClient.SendDataMessageAsync(dataMessage);
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Error, "[SendSkinEditorDataMessage] - An Exception Occured Processing Message", ex.Message);
+                _log.Message(LogLevel.Error, "[SendSkinEditorDataMessage] - An Exception Occured Processing Message. {0}", ex.Message);
             }
         }
       

@@ -1,43 +1,25 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace MPDisplay.Common.Controls
+﻿namespace MPDisplay.Common.Controls
 {
     public class AutoCompleteEntry
     {
-        private string[] keywordStrings;
-        private string displayString;
+        private string[] _keywordStrings;
 
         public string[] KeywordStrings
         {
-            get
-            {
-                if (keywordStrings == null)
-                {
-                    keywordStrings = new string[] { displayString };
-                }
-                return keywordStrings;
-            }
+            get { return _keywordStrings ?? (_keywordStrings = new[] {DisplayName}); }
         }
 
-        public string DisplayName
-        {
-            get { return displayString; }
-            set { displayString = value; }
-        }
+        public string DisplayName { get; set; }
 
         public AutoCompleteEntry(string name, params string[] keywords)
         {
-            displayString = name;
-            keywordStrings = keywords;
+            DisplayName = name;
+            _keywordStrings = keywords;
         }
 
         public override string ToString()
         {
-            return displayString;
+            return DisplayName;
         }
     }
 }

@@ -47,7 +47,6 @@
     <Compile Include="..\GlobalAssembly.cs">
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
-    <Compile Include="APIClientConnection.cs" />
     <Compile Include="DataObjects\APIConnection.cs" />
     <Compile Include="DataObjects\APIList.cs" />
     <Compile Include="DataObjects\APIPlaybackType.cs" />
@@ -59,7 +58,6 @@
     <Compile Include="Messages\APIMediaPortalMessage.cs" />
     <Compile Include="DataObjects\APIMessageType.cs" />
     <Compile Include="Messages\APIPropertyMessage.cs" />
-    <Compile Include="Messages\APITVServerMessage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

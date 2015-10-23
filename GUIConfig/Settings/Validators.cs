@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Globalization;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 
 namespace GUIConfig.Settings
@@ -18,7 +15,7 @@ namespace GUIConfig.Settings
         /// <returns>
         /// A <see cref="T:System.Windows.Controls.ValidationResult" /> object.
         /// </returns>
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             //I know it's called IP Address internally but it really should be hostname.
             var hostName = value as string;
@@ -31,12 +28,9 @@ namespace GUIConfig.Settings
 
             //http://tools.ietf.org/html/rfc952
             //See the above link for the list of valid host names.
-            if (!Regex.IsMatch(hostName, @"^[A-Za-z0-9.-]+$"))
-            {
-                return new ValidationResult(false, "Hostname is not valid. Valid chars are A-Z, a-z, 0-9, (.) and (-). See http://tools.ietf.org/html/rfc952 for further details");
-            }
-
-            return new ValidationResult(true, null);
+            return !Regex.IsMatch(hostName, @"^[A-Za-z0-9.-]+$") ? 
+                new ValidationResult(false, "Hostname is not valid. Valid chars are A-Z, a-z, 0-9, (.) and (-). See http://tools.ietf.org/html/rfc952 for further details") :
+                new ValidationResult(true, null);
         }
     }
 }

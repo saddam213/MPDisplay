@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
-using Common.Settings.SettingsObjects;
+﻿using System.Xml.Serialization;
 
 namespace Common.Settings
 {
@@ -13,7 +7,7 @@ namespace Common.Settings
     {
         private ConnectionSettings _connectionSettings = new ConnectionSettings();
         private bool _launchMPDisplayOnStart = true;
-        private bool _restartMPDisplayOnStart = false;
+        private bool _restartMPDisplayOnStart;
         private bool _closeMPDisplayOnExit = true;
         private bool _isSystemInfoEnabled = true;
         private int _listBatchThreshold = 600;

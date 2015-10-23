@@ -1,32 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Property;
 using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for PropertyEditor.xaml
     /// </summary>
-    public partial class PropertyEditor : UserControl, INotifyPropertyChanged
+    public partial class PropertyEditor : INotifyPropertyChanged
     {
  
         private XmlProperty _selectedProperty;
-        private int _mediaPortalTagSelectedIndex = 0;
+        private int _mediaPortalTagSelectedIndex;
         private FilterOptions _currentFilter;
 
         public PropertyEditor(XmlSkinInfo skinInfo)
@@ -128,12 +117,10 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
 
         private void Button_MediaPortalTagRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedProperty != null)
+            if (SelectedProperty == null) return;
+            if (MediaPortalTagSelectedIndex >= 0 && (SelectedProperty.MediaPortalTags.Count - 1) >= MediaPortalTagSelectedIndex)
             {
-                if (MediaPortalTagSelectedIndex >= 0 && (SelectedProperty.MediaPortalTags.Count - 1) >= MediaPortalTagSelectedIndex)
-                {
-                    SelectedProperty.MediaPortalTags.RemoveAt(MediaPortalTagSelectedIndex);
-                }
+                SelectedProperty.MediaPortalTags.RemoveAt(MediaPortalTagSelectedIndex);
             }
         }
 
@@ -145,18 +132,18 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
        // Filter the property list
         private bool FilterPropertyList(object item)
         {
-            bool value = true;
+            var value = true;
 
-            XmlProperty property = item as XmlProperty;
+            var property = item as XmlProperty;
 
             switch (CurrentFilter)
             {
                 case FilterOptions.ShowMP:
-                    if (property.IsInternal) value = false;
+                    if (property != null && property.IsInternal) value = false;
                     break;
 
                 case FilterOptions.ShowMPD:
-                     if (!property.IsInternal) value = false;
+                     if (property != null && !property.IsInternal) value = false;
                    break;
             }
             return value;
@@ -167,7 +154,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
 
   public class PropertyTagValidationRule : ValidationRule
     {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
           
             var tag = value as string;
@@ -177,12 +164,7 @@ namespace GUISkinFramework.Editor.PropertyEditors.PropertyEditor
                 return new ValidationResult(false, "The property tag may not be empty.");
             }
 
-            if (!tag.StartsWith("#"))
-            {
-                return new ValidationResult(false, "The property tag must start with '#'");
-            }
-           
-            return new ValidationResult(true, null);
+            return !tag.StartsWith("#") ? new ValidationResult(false, "The property tag must start with '#'") : new ValidationResult(true, null);
         }
     }
 

@@ -8,7 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
 
-namespace MPDisplay.Common.Controls.Primitives
+namespace MPDisplay.Common.Controls.Core
 {
     public class Selector : ItemsControl //should probably make this control an ICommandSource
     {
@@ -25,8 +25,8 @@ namespace MPDisplay.Common.Controls.Primitives
         public Selector()
         {
             SelectedItems = new ObservableCollection<object>();
-            AddHandler(Selector.SelectedEvent, new RoutedEventHandler(Selector_ItemSelected));
-            AddHandler(Selector.UnSelectedEvent, new RoutedEventHandler(Selector_ItemUnselected));
+            AddHandler(SelectedEvent, new RoutedEventHandler(Selector_ItemSelected));
+            AddHandler(UnSelectedEvent, new RoutedEventHandler(Selector_ItemUnselected));
         }
 
         #endregion //Constructors
@@ -51,7 +51,7 @@ namespace MPDisplay.Common.Controls.Primitives
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(Selector), new UIPropertyMetadata(null));
         public object SelectedItem
         {
-            get { return (object)GetValue(SelectedItemProperty); }
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
@@ -82,7 +82,7 @@ namespace MPDisplay.Common.Controls.Primitives
 
         private static void OnSelectedValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            Selector selector = o as Selector;
+            var selector = o as Selector;
             if (selector != null)
                 selector.OnSelectedValueChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -126,25 +126,20 @@ namespace MPDisplay.Common.Controls.Primitives
             //first try resolving SelectorItem.IsSelected by data binding to the SelectedMemeberPath property
             if (!String.IsNullOrEmpty(SelectedMemberPath))
             {
-                Binding selectedBinding = new Binding(SelectedMemberPath)
+                var selectedBinding = new Binding(SelectedMemberPath)
                 {
                     Mode = BindingMode.TwoWay,
                     Source = item
                 };
-                selectorItem.SetBinding(SelectorItem.IsSelectedProperty, selectedBinding);
+                if (selectorItem != null) selectorItem.SetBinding(SelectorItem.IsSelectedProperty, selectedBinding);
             }
 
             //now let's search the SelectedItems for the current item.  If it's there then mark it as selected
             if (SelectedItems != null)
             {
-                foreach (object selectedItem in SelectedItems)
+                if (SelectedItems.Cast<object>().Contains(item))
                 {
-                    //a match was found so select it and get the hell out of here
-                    if (item.Equals(selectedItem))
-                    {
-                        selectorItem.SetValue(SelectorItem.IsSelectedProperty, true);
-                        break;
-                    }
+                    if (selectorItem != null) selectorItem.SetValue(SelectorItem.IsSelectedProperty, true);
                 }
             }
 
@@ -186,24 +181,17 @@ namespace MPDisplay.Common.Controls.Primitives
 
         protected object GetItemValue(object item)
         {
-            if (!String.IsNullOrEmpty(ValueMemberPath))
-            {
-                var property = item.GetType().GetProperty(ValueMemberPath);
-                if (property != null)
-                    return property.GetValue(item, null);
-            }
+            if (String.IsNullOrEmpty(ValueMemberPath)) return item;
 
-            return item;
+            var property = item.GetType().GetProperty(ValueMemberPath);
+            return property != null ? property.GetValue(item, null) : item;
         }
 
         protected static object GetDataContextItem(object item)
         {
             var element = item as FrameworkElement;
 
-            if (element != null)
-                return element.DataContext;
-            else
-                return null;
+            return element != null ? element.DataContext : null;
         }
 
         protected string GetDelimitedValue(object value)
@@ -223,10 +211,9 @@ namespace MPDisplay.Common.Controls.Primitives
             if (_surpressSelectionChanged)
                 return;
 
-            RaiseEvent(new SelectedItemChangedEventArgs(Selector.SelectedItemChangedEvent, this, item, isSelected));
+            RaiseEvent(new SelectedItemChangedEventArgs(SelectedItemChangedEvent, this, item, isSelected));
 
-            if (Command != null)
-                Command.Execute(item);
+            if (Command != null) Command.Execute(item);
         }
 
         protected virtual void Update(object item, bool remove)
@@ -243,8 +230,7 @@ namespace MPDisplay.Common.Controls.Primitives
 
         private void UpdateSelectedItems(object item, bool remove)
         {
-            if (SelectedItems == null)
-                SelectedItems = new ObservableCollection<object>();
+            if (SelectedItems == null) SelectedItems = new ObservableCollection<object>();
 
             if (remove)
             {
@@ -267,7 +253,7 @@ namespace MPDisplay.Common.Controls.Primitives
             _surpressSelectedValueChanged = true;
 
 
-            string newValue = String.Join(Delimiter, SelectedItems.Cast<object>().Select(x => GetItemValue(x).ToString()).ToArray());
+            var newValue = String.Join(Delimiter, SelectedItems.Cast<object>().Select(x => GetItemValue(x).ToString()).ToArray());
 
           //  string newValue = String.Join(Delimiter, SelectedItems.Cast<object>().Select(x => GetItemValue(x)));
 
@@ -286,23 +272,15 @@ namespace MPDisplay.Common.Controls.Primitives
 
             if (!String.IsNullOrEmpty(SelectedValue))
             {
-                string[] values = SelectedValue.Split(new string[] { Delimiter }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string value in values)
+                var values = SelectedValue.Split(new[] { Delimiter }, StringSplitOptions.RemoveEmptyEntries);
+                foreach (var item in values.Select(ResolveItemByValue).Where(item => item != null))
                 {
-                    var item = ResolveItemByValue(value);
+                    SelectedItems.Add(item);
 
-                    if (item != null)
-                    {
-                        SelectedItems.Add(item);
-
-                        //now try to select it in the list
-                        var selectorItem = ItemContainerGenerator.ContainerFromItem(item) as SelectorItem;
-                        if (selectorItem != null)
-                        {
-                            if (!selectorItem.IsSelected)
-                                selectorItem.IsSelected = true;
-                        }
-                    }
+                    //now try to select it in the list
+                    var selectorItem = ItemContainerGenerator.ContainerFromItem(item) as SelectorItem;
+                    if (selectorItem == null) continue;
+                    if (!selectorItem.IsSelected) selectorItem.IsSelected = true;
                 }
             }
 
@@ -325,14 +303,14 @@ namespace MPDisplay.Common.Controls.Primitives
 
             if (ItemsSource != null)
             {
-                foreach (object item in ItemsSource)
+                // ReSharper disable once LoopCanBePartlyConvertedToQuery
+                foreach (var item in ItemsSource)
                 {
                     var selectorItem = ItemContainerGenerator.ContainerFromItem(item) as SelectorItem;
-                    if (selectorItem != null)
-                    {
-                        if (selectorItem.IsSelected)
-                            selectorItem.IsSelected = false;
-                    }
+                    if (selectorItem == null) continue;
+
+                    if (selectorItem.IsSelected)
+                        selectorItem.IsSelected = false;
                 }
             }
 
@@ -341,21 +319,18 @@ namespace MPDisplay.Common.Controls.Primitives
 
         protected object ResolveItemByValue(string value)
         {
-            if (!String.IsNullOrEmpty(ValueMemberPath))
+            if (String.IsNullOrEmpty(ValueMemberPath)) return value;
+
+            if (ItemsSource == null) return value;
+
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
+            foreach (var item in ItemsSource)
             {
-                if (ItemsSource != null)
-                {
-                    foreach (object item in ItemsSource)
-                    {
-                        var property = item.GetType().GetProperty(ValueMemberPath);
-                        if (property != null)
-                        {
-                            var propertyValue = property.GetValue(item, null);
-                            if (value.Equals(propertyValue.ToString(), StringComparison.InvariantCultureIgnoreCase))
-                                return item;
-                        }
-                    }
-                }
+                var property = item.GetType().GetProperty(ValueMemberPath);
+                if (property == null) continue;
+
+                var propertyValue = property.GetValue(item, null);
+                if (value.Equals(propertyValue.ToString(), StringComparison.InvariantCultureIgnoreCase)) return item;
             }
 
             return value;

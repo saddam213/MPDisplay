@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using System.Windows.Data;
 using System.Windows.Media;
 
@@ -18,27 +19,27 @@ namespace MPDisplay.Common.BindingConverters
         /// <returns>
         /// A converted SolidColorBrush. If the method returns null, the valid null value is used.
         /// </returns>
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value == null) return null;
+            if (value is Color)
             {
-                if (value is Color)
-                {
-                    return ((Color)value).ToString();
-                }
-                if (value is string)
-                {
-                    var getcolor = Colors.Transparent;
-                    try
-                    {
-                        getcolor = (Color)ColorConverter.ConvertFromString(value.ToString());
-                    }
-                    catch { }
-                    return getcolor;
-                }
+                return ((Color)value).ToString();
             }
-
-            return value;
+            if (!(value is string)) return value;
+            var getcolor = Colors.Transparent;
+            try
+            {
+                var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                if (convertFromString != null)
+                    // ReSharper disable once PossibleInvalidCastException
+                    getcolor = (Color)convertFromString;
+            }
+            catch
+            {
+                // ignored
+            }
+            return getcolor;
         }
 
 
@@ -53,24 +54,28 @@ namespace MPDisplay.Common.BindingConverters
         /// <returns>
         /// A converted value. If the method returns null, the valid null value is used.
         /// </returns>
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value == null) return null;
+
+            if (value is string)
             {
-                if (value is string)
+                var getcolor = Colors.Transparent;
+                try
                 {
-                    var getcolor = Colors.Transparent;
-                    try
-                    {
-                        getcolor = (Color)ColorConverter.ConvertFromString(value.ToString());
-                    }
-                    catch { }
-                    return getcolor;
+                    var convertFromString = ColorConverter.ConvertFromString(value.ToString());
+                    if (convertFromString != null)
+                        getcolor = (Color)convertFromString;
                 }
-                if (value is Color)
+                catch
                 {
-                    value.ToString();
+                    // ignored
                 }
+                return getcolor;
+            }
+            if (value is Color)
+            {
+                return value;
             }
 
             return value;

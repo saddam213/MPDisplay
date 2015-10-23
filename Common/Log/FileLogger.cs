@@ -1,11 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Reflection;
-using System.Text;
-using System.Linq;
 
-namespace Common.Logging
+namespace Common.Log
 {
     /// <summary>
     /// Outputs messages to a file
@@ -15,19 +10,20 @@ namespace Common.Logging
         private string _filename;
         private string _directory;
         private string _fullPath;
-        private int _linesLogged = 0;
+        private int _linesLogged;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="FileLogger"/> class.
         /// </summary>
         /// <param name="directory">The directory.</param>
         /// <param name="filename">The filename.</param>
+        /// <param name="level"> Log Level</param>
         public FileLogger(string directory, string filename, LogLevel level)
             : base(level)
         {
             _directory = directory;
             _filename = filename;
-            _fullPath = System.IO.Path.Combine(_directory, _filename) + ".log";
+            _fullPath = Path.Combine(_directory, _filename) + ".log";
 
             if (!Directory.Exists(_directory))
             {
@@ -51,7 +47,7 @@ namespace Common.Logging
                 }
             }
 
-            using (StreamWriter writer = new StreamWriter(_fullPath, true))
+            using (var writer = new StreamWriter(_fullPath, true))
             {
                 writer.WriteLine(message);
             }
@@ -66,24 +62,22 @@ namespace Common.Logging
             try
             {
                 // if any older files exist cycle the file number
-                for (int i = 10; i > 0; i--)
+                for (var i = 10; i > 0; i--)
                 {
-                    string current = string.Format("{0}_{1}.log", System.IO.Path.Combine(_directory, _filename), i);
-                    if (File.Exists(current))
+                    var current = string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i);
+                    if (!File.Exists(current)) continue;
+                    if (i == 10)
                     {
-                        if (i == 10)
-                        {
-                            File.Delete(current);
-                            continue;
-                        }
-                        File.Move(current, string.Format("{0}_{1}.log", System.IO.Path.Combine(_directory, _filename), i + 1));
+                        File.Delete(current);
+                        continue;
                     }
+                    File.Move(current, string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i + 1));
                 }
 
                 // If the current log exists cycle its number
                 if (File.Exists(_fullPath))
                 {
-                    File.Move(_fullPath, string.Format("{0}_1.log", System.IO.Path.Combine(_directory, _filename)));
+                    File.Move(_fullPath, string.Format("{0}_1.log", Path.Combine(_directory, _filename)));
                 }
             }
             catch 

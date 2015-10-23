@@ -1,19 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Media;
 
-namespace MPDisplay.Common.Utils
+namespace MPDisplay.Common
 {
     public class MouseTouchDevice : TouchDevice
     {
         #region Class Members
 
-        private static MouseTouchDevice device;
+        private static MouseTouchDevice _device;
 
         public Point Position { get; set; }
 
@@ -36,28 +31,26 @@ namespace MPDisplay.Common.Utils
 
         private static void MouseDown(object sender, MouseButtonEventArgs e)
         {
-            if (device != null &&
-                device.IsActive)
+            if (_device != null &&
+                _device.IsActive)
             {
-                device.ReportUp();
-                device.Deactivate();
-                device = null;
+                _device.ReportUp();
+                _device.Deactivate();
+                _device = null;
             }
-            device = new MouseTouchDevice(e.MouseDevice.GetHashCode());
-            device.SetActiveSource(e.MouseDevice.ActiveSource);
-            device.Position = e.GetPosition(null);
-            device.Activate();
-            device.ReportDown();
+            _device = new MouseTouchDevice(e.MouseDevice.GetHashCode());
+            _device.SetActiveSource(e.MouseDevice.ActiveSource);
+            _device.Position = e.GetPosition(null);
+            _device.Activate();
+            _device.ReportDown();
         }
 
         private static void MouseMove(object sender, MouseEventArgs e)
         {
-            if (device != null &&
-                device.IsActive)
-            {
-                device.Position = e.GetPosition(null);
-                device.ReportMove();
-            }
+            if (_device == null || !_device.IsActive) return;
+
+            _device.Position = e.GetPosition(null);
+            _device.ReportMove();
         }
 
         private static void MouseUp(object sender, MouseButtonEventArgs e)
@@ -67,14 +60,12 @@ namespace MPDisplay.Common.Utils
 
         static void LostMouseCapture(object sender, MouseEventArgs e)
         {
-            if (device != null &&
-                device.IsActive)
-            {
-                device.Position = e.GetPosition(null);
-                device.ReportUp();
-                device.Deactivate();
-                device = null;
-            }
+            if (_device == null || !_device.IsActive) return;
+
+            _device.Position = e.GetPosition(null);
+            _device.ReportUp();
+            _device.Deactivate();
+            _device = null;
         }
 
         static void MouseLeave(object sender, MouseEventArgs e)
@@ -103,13 +94,14 @@ namespace MPDisplay.Common.Utils
 
         public override TouchPoint GetTouchPoint(IInputElement relativeTo)
         {
-            Point point = Position;
+            var point = Position;
             if (relativeTo != null)
             {
-                point = this.ActiveSource.RootVisual.TransformToDescendant((Visual)relativeTo).Transform(Position);
+                if (ActiveSource != null)
+                    point = ActiveSource.RootVisual.TransformToDescendant((Visual)relativeTo).Transform(Position);
             }
 
-            Rect rect = new Rect(point, new Size(1, 1));
+            var rect = new Rect(point, new Size(1, 1));
 
             return new TouchPoint(this, point, rect, TouchAction.Move);
         }

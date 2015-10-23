@@ -1,7 +1,6 @@
-﻿using System;
-using System.Windows.Input;
+﻿using System.Windows.Input;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Commands
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class PropertyGridCommands
     {

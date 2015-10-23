@@ -1,20 +1,17 @@
-﻿<Views:ViewModelBase x:Class="GUIConfig.ViewModels.SkinSettingsView"
-             xmlns:Views="clr-namespace:GUIConfig.ViewModels"
+﻿<views:ViewModelBase x:Class="GUIConfig.ViewModels.SkinSettingsView"
+             xmlns:views="clr-namespace:GUIConfig.ViewModels"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:System="clr-namespace:System;assembly=mscorlib"
-			    xmlns:Theading="clr-namespace:System.Threading;assembly=mscorlib"
-         xmlns:Cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
-		 xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-		 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-		 	  xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-		 xmlns:skin="clr-namespace:GUIConfig.ViewModels"
-             mc:Ignorable="d" x:Name="UI" >
+			 xmlns:system="clr-namespace:System;assembly=mscorlib"
+             xmlns:cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
+             xmlns:settings="clr-namespace:GUIConfig.Settings"
+		    xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+		    mc:Ignorable="d" x:Name="UI" >
 	<Grid DataContext="{Binding ElementName=UI}" >
 		<Grid.Resources>
-			<CollectionViewSource x:Key="skinOptions" Source="{Binding SelectedSkin.SkinOptions, ElementName=UI}">
+			<CollectionViewSource x:Key="SkinOptions" Source="{Binding SelectedSkin.SkinOptions, ElementName=UI}">
 				<CollectionViewSource.GroupDescriptions>
 					<PropertyGroupDescription PropertyName="Group" />
 				</CollectionViewSource.GroupDescriptions>
@@ -27,19 +24,13 @@
 
 
 
-			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
+			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type system:Enum}">
 				<ObjectDataProvider.MethodParameters>
-					<x:Type TypeName="Cursors:CursorType"/>
+					<x:Type TypeName="cursors:CursorType"/>
 				</ObjectDataProvider.MethodParameters>
 			</ObjectDataProvider>
 
 		</Grid.Resources>
-
-
-
-
-
-
 
 		<GroupBox Header="{Binding FallbackValue=Skin, ConverterParameter=Skin, Converter={StaticResource LanguageConverter}}" >
 			<StackPanel Orientation="Horizontal">
@@ -100,9 +91,9 @@
 					<ComboBox x:Name="comboCursors" ItemsSource="{Binding Source={StaticResource Cursors}}" Cursor="{Binding ElementName=comboCursors,Path=SelectedItem}" SelectedItem="{Binding DataObject.CursorStyle}"/>
 				</StackPanel>
 
-				<DockPanel Grid.Column="1" Margin="5,0,0,0" Width="200">
+				<DockPanel Margin="5,0,0,0" Width="200">
 					<TextBlock Text="{Binding FallbackValue=Skin Options, ConverterParameter=Skin Options, Converter={StaticResource LanguageConverter}}" DockPanel.Dock="Top"/>
-					<ListBox ItemsSource="{Binding Source={StaticResource skinOptions}}" >
+					<ListBox ItemsSource="{Binding Source={StaticResource SkinOptions}}" >
 						<ListBox.Resources>
 							<SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
 							<SolidColorBrush x:Key="{x:Static SystemColors.InactiveSelectionHighlightBrushKey}" Color="Transparent" />
@@ -119,7 +110,7 @@
 					</ListBox.GroupStyle>
 
 					<ListBox.ItemTemplate>
-						<DataTemplate DataType="{x:Type skin:SkinOption}">
+						<DataTemplate DataType="{x:Type settings:SkinOption}">
 							<RadioButton x:Name="radioButton" GroupName="{Binding Group}" IsChecked="{Binding IsEnabled}" >
 								<StackPanel>
 									<TextBlock Text="{Binding Name}" FontSize="12" />
@@ -139,7 +130,7 @@
 				</ListBox>
 				</DockPanel>
 
-				<StackPanel Grid.Column="2" Margin="5,15,0,0" Width="200">
+				<StackPanel Margin="5,15,0,0" Width="200">
 					<CheckBox Content="{Binding FallbackValue=Enable Text Scrolling, Converter={StaticResource LanguageConverter}, ConverterParameter=Enable Text Scrolling}" IsChecked="{Binding Path=SelectedSkin.TextEnableScrolling}"  />
 					<Grid Margin="0,5,0,0" IsEnabled="{Binding SelectedSkin.TextEnableScrolling}" >
 						<Grid.ColumnDefinitions>
@@ -148,18 +139,18 @@
 						</Grid.ColumnDefinitions>
 						<StackPanel Grid.Column="0" Margin="0,0,2,0">
 							<TextBlock Text="{Binding Mode=OneWay, FallbackValue=Horiz. Speed, ConverterParameter=Horiz. Speed, Converter={StaticResource LanguageConverter}}" />
-							<controls:IntegerUpDown Value="{Binding SelectedSkin.TextHorizontalScrollSpeed}" />
+							<implementation:IntegerUpDown Value="{Binding SelectedSkin.TextHorizontalScrollSpeed}" />
 							<TextBlock Text="{Binding FallbackValue=Horiz. Delay, Converter={StaticResource LanguageConverter}, ConverterParameter=Horiz. Delay}" />
-							<controls:IntegerUpDown Value="{Binding SelectedSkin.TextHorizontalScrollDelay}" />
+							<implementation:IntegerUpDown Value="{Binding SelectedSkin.TextHorizontalScrollDelay}" />
 							<CheckBox  IsChecked="{Binding SelectedSkin.TextHorizontalScrollWrap}" Content="{Binding FallbackValue=Scroll Wrap, Converter={StaticResource LanguageConverter}, ConverterParameter=Scroll Wrap}" Margin="0,5,0,0"/>
 							<TextBlock Text="{Binding FallbackValue=Horiz. Separator, Converter={StaticResource LanguageConverter}, ConverterParameter=Horiz. Separator}" />
 							<TextBox Text="{Binding SelectedSkin.TextHorizontalScrollSeperator}"  />
 						</StackPanel>
 						<StackPanel Grid.Column="1" Margin="2,0,0,0">
 							<TextBlock Text="{Binding FallbackValue=Vert. Speed, Converter={StaticResource LanguageConverter}, ConverterParameter=Vert. Speed}" />
-							<controls:IntegerUpDown Value="{Binding SelectedSkin.TextVerticalScrollSpeed}" />
+							<implementation:IntegerUpDown Value="{Binding SelectedSkin.TextVerticalScrollSpeed}" />
 							<TextBlock Text="{Binding FallbackValue=Vert. Delay, Converter={StaticResource LanguageConverter}, ConverterParameter=Vert. Delay}" />
-							<controls:IntegerUpDown Value="{Binding SelectedSkin.TextVerticalScrollDelay}" />
+							<implementation:IntegerUpDown Value="{Binding SelectedSkin.TextVerticalScrollDelay}" />
 							<CheckBox  IsChecked="{Binding SelectedSkin.TextVerticalScrollWrap}" Content="{Binding FallbackValue=Scroll Wrap, Converter={StaticResource LanguageConverter}, ConverterParameter=Scroll Wrap}" Margin="0,5,0,0"/>
 							<TextBlock Text="{Binding FallbackValue=Vert. Separator, Converter={StaticResource LanguageConverter}, ConverterParameter=Vert. Separator}" />
 							<TextBox Text="{Binding SelectedSkin.TextVerticalScrollSeperator}"  />
@@ -178,4 +169,4 @@
 
 
 	</Grid>
-</Views:ViewModelBase>
+</views:ViewModelBase>

@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Common
+namespace Common.Helpers
 {
     public static class ExtensionMethods
     {
@@ -28,7 +27,7 @@ namespace Common
             var asGb = Math.Round((double)value / OneGb, decimalPlaces);
             var asMb = Math.Round((double)value / OneMb, decimalPlaces);
             var asKb = Math.Round((double)value / OneKb, decimalPlaces);
-            string chosenValue = asTb > 1 ? string.Format("{0}Tb", asTb)
+            var chosenValue = asTb > 1 ? string.Format("{0}Tb", asTb)
                 : asGb > 1 ? string.Format("{0}Gb", asGb)
                 : asMb > 1 ? string.Format("{0}Mb", asMb)
                 : asKb > 1 ? string.Format("{0}Kb", asKb)
@@ -39,7 +38,7 @@ namespace Common
 
         public static bool IsNumber(this string str)
         {
-            int value = 0;
+            int value;
             return !string.IsNullOrEmpty(str.Trim())
                 && int.TryParse(str.Trim(), out value);
         }
@@ -48,7 +47,7 @@ namespace Common
 
         public static double ToDouble(this int value)
         {
-            return value <= 0 ? 0.0 : ((double)value) / 100.0;
+            return value <= 0 ? 0.0 : value / 100.0;
         }
 
         public static bool ImageEquals(this byte[] first, byte[] second)
@@ -65,26 +64,15 @@ namespace Common
             {
                 return false;
             }
-            for (int i = 0; i < first.Length; i++)
-            {
-                if (first[i] != second[i])
-                {
-                    return false;
-                }
-            }
-            return true;
+            return !first.Where((t, i) => t != second[i]).Any();
         }
 
-        public static V GetValueOrDefault<K, V>(this Dictionary<K, V> dictionary, K key, V defaultValue)
+        public static TV GetValueOrDefault<TK, TV>(this Dictionary<TK, TV> dictionary, TK key, TV defaultValue)
         {
             lock (dictionary)
             {
-                V exists;
-                if (dictionary.TryGetValue(key, out exists))
-                {
-                    return exists;
-                }
-                return defaultValue;
+                TV exists;
+                return dictionary.TryGetValue(key, out exists) ? exists : defaultValue;
             }
         }
 

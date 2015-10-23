@@ -1,13 +1,9 @@
 ﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class MovingPicturesPlugin : PluginHelper
     {
@@ -19,22 +15,12 @@ namespace MediaPortalPlugin.PluginHelpers
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                var moviePlayer = ReflectionHelper.GetFieldValue(PluginWindow, "moviePlayer", null);
-                if (moviePlayer != null)
-                {
-                    var currentMovie = ReflectionHelper.GetPropertyValue<object>(moviePlayer, "CurrentMedia",null);
-                    if (currentMovie != null)
-                    {
-                        if (ReflectionHelper.GetPropertyValue<string>(currentMovie, "FullPath", string.Empty) == filename)
-                        {
-                            return true;
-                        }
-                    }
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            var moviePlayer = ReflectionHelper.GetFieldValue(PluginWindow, "moviePlayer");
+            if (moviePlayer == null) return false;
+            var currentMovie = ReflectionHelper.GetPropertyValue<object>(moviePlayer, "CurrentMedia",null);
+            if (currentMovie == null) return false;
+            return ReflectionHelper.GetPropertyValue(currentMovie, "FullPath", string.Empty) == filename;
         }
 
         public override APIPlaybackType PlayType

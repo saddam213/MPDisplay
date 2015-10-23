@@ -1,25 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Windows.Threading;
-using MPDisplay.Common.Utils;
-using MPDisplay.Common;
 using System.Windows.Media.Animation;
-using System.Threading;
-using GUISkinFramework.Controls;
+using System.Windows.Threading;
+using GUISkinFramework.Skin;
+using MPDisplay.Common;
 using MPDisplay.Common.ExtensionMethods;
 
 namespace SkinEditor.Controls
@@ -27,23 +18,25 @@ namespace SkinEditor.Controls
     /// <summary>
     /// Interaction logic for CoverFlowListBox.xaml
     /// </summary>
-    public partial class CoverFlowListBox : UserControl, INotifyPropertyChanged
+    public partial class CoverFlowListBox : INotifyPropertyChanged
     {
         #region Fields
 
         private XmlListItemStyle _currentLayout = new XmlListItemStyle();
         private ScrollViewer _scrollViewer;
-        private Point _itemMouseDownPoint = new Point();
+        private Point _itemMouseDownPoint;
         private XmlListLayout _currentOrientation = XmlListLayout.Vertical;
         private bool _itemMouseDown;
         private DispatcherTimer _selectionTimer;
+
+        private const double Tolerance = 0.0000001;
 
         #endregion
 
         #region Constructor
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ListBox3D"/> class.
+        /// Initializes a new instance of the ListBox3D class.
         /// </summary>
         public CoverFlowListBox()
         {
@@ -58,13 +51,13 @@ namespace SkinEditor.Controls
         #region DependencyProperties
 
         public static readonly DependencyProperty ListItemsProperty = DependencyProperty.Register("ListItems", typeof(ObservableCollection<CoverFlowListBoxItem>), typeof(CoverFlowListBox), new PropertyMetadata(new ObservableCollection<CoverFlowListBoxItem>()));
-        public static readonly DependencyProperty LayoutVerticalProperty = DependencyProperty.Register("LayoutVertical", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
-        public static readonly DependencyProperty LayoutVerticalIconProperty = DependencyProperty.Register("LayoutVerticalIcon", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
-        public static readonly DependencyProperty LayoutHorizontalProperty = DependencyProperty.Register("LayoutHorizontal", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
-        public static readonly DependencyProperty LayoutCoverFlowProperty = DependencyProperty.Register("LayoutCoverFlow", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => (s as CoverFlowListBox).UpdateItemLayout()));
+        public static readonly DependencyProperty LayoutVerticalProperty = DependencyProperty.Register("LayoutVertical", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => ((CoverFlowListBox) s).UpdateItemLayout()));
+        public static readonly DependencyProperty LayoutVerticalIconProperty = DependencyProperty.Register("LayoutVerticalIcon", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => ((CoverFlowListBox) s).UpdateItemLayout()));
+        public static readonly DependencyProperty LayoutHorizontalProperty = DependencyProperty.Register("LayoutHorizontal", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => ((CoverFlowListBox) s).UpdateItemLayout()));
+        public static readonly DependencyProperty LayoutCoverFlowProperty = DependencyProperty.Register("LayoutCoverFlow", typeof(XmlListItemStyle), typeof(CoverFlowListBox), new PropertyMetadata(new XmlListItemStyle(), (s, e) => ((CoverFlowListBox) s).UpdateItemLayout()));
         public static readonly DependencyProperty UserSelectedItemProperty = DependencyProperty.Register("UserSelectedItem", typeof(CoverFlowListBoxItem), typeof(CoverFlowListBox), new PropertyMetadata(null));
-        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(CoverFlowListBoxItem), typeof(CoverFlowListBox), new PropertyMetadata(new CoverFlowListBoxItem(), new PropertyChangedCallback(OnSelectedItemChanged)));
-        public static readonly DependencyProperty ListOrientationProperty = DependencyProperty.Register("ListOrientation", typeof(XmlListLayout), typeof(CoverFlowListBox), new PropertyMetadata(XmlListLayout.Vertical, new PropertyChangedCallback(OnListOrientationChanged)));
+        public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(CoverFlowListBoxItem), typeof(CoverFlowListBox), new PropertyMetadata(new CoverFlowListBoxItem(), OnSelectedItemChanged));
+        public static readonly DependencyProperty ListOrientationProperty = DependencyProperty.Register("ListOrientation", typeof(XmlListLayout), typeof(CoverFlowListBox), new PropertyMetadata(XmlListLayout.Vertical, OnListOrientationChanged));
         #endregion
 
         #region Properties
@@ -161,7 +154,8 @@ namespace SkinEditor.Controls
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnListOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as CoverFlowListBox).ChangeLayout((XmlListLayout)e.NewValue);
+            var coverFlowListBox = d as CoverFlowListBox;
+            if (coverFlowListBox != null) coverFlowListBox.ChangeLayout((XmlListLayout)e.NewValue);
         }
 
         /// <summary>
@@ -171,7 +165,8 @@ namespace SkinEditor.Controls
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            (d as CoverFlowListBox).SelectItem(e.NewValue as CoverFlowListBoxItem);
+            var coverFlowListBox = d as CoverFlowListBox;
+            if (coverFlowListBox != null) coverFlowListBox.SelectItem(e.NewValue as CoverFlowListBoxItem);
         }
 
         #endregion
@@ -201,7 +196,7 @@ namespace SkinEditor.Controls
         {
             StopSelectionTimer();
 
-            double newPos = IsLayoutVertical
+            var newPos = IsLayoutVertical
                 ? (_itemMouseDownPoint.Y - Mouse.GetPosition(this).Y)
                 : (_itemMouseDownPoint.X - Mouse.GetPosition(this).X);
 
@@ -217,68 +212,60 @@ namespace SkinEditor.Controls
         /// <param name="item">The item.</param>
         public void ScrollItemToCenter(CoverFlowListBoxItem item)
         {
-            if (item != null)
+            if (item == null) return;
+
+            var positionFromCenter = listbox.GetItemOffsetFromCenterOfView(item);
+
+            if (positionFromCenter != null)
             {
-                Point? positionFromCenter = listbox.GetItemOffsetFromCenterOfView(item);
-                if (positionFromCenter != null)
+                var newpos = positionFromCenter.Value;
+                int duration;
+                DoubleAnimation animation;
+
+                if (IsLayoutVertical)
                 {
-                    Point newpos = positionFromCenter.Value;
-                    if (IsLayoutVertical)
-                    {
-                        if (newpos.Y != 0 && newpos.Y != _scrollViewer.VerticalOffset)
-                        {
-                            int duration = newpos.Y < _scrollViewer.VerticalOffset
-                               ? (int)Math.Min(1000, Math.Max(0, _scrollViewer.VerticalOffset - newpos.Y))
-                               : (int)Math.Min(1000, Math.Max(0, newpos.Y - _scrollViewer.VerticalOffset));
+                    if (!(Math.Abs(newpos.Y) > Tolerance) ||
+                        !(Math.Abs(newpos.Y - _scrollViewer.VerticalOffset) > Tolerance)) return;
 
-                            if (duration != 0)
-                            {
-                                var animation = new DoubleAnimation(_scrollViewer.VerticalOffset, newpos.Y, new Duration(TimeSpan.FromMilliseconds(duration)));
-                                animation.Completed += (s, e) => AdjustItemCenter();
-                                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
-                            }
-                        }
-                        return;
-                    }
-                    else
-                    {
-                        if (newpos.X != 0 && newpos.X != _scrollViewer.HorizontalOffset)
-                        {
-                            int duration = newpos.X < _scrollViewer.HorizontalOffset
-                                ? (int)Math.Min(500, Math.Max(0, (_scrollViewer.HorizontalOffset - newpos.X) / 2))
-                                : (int)Math.Min(500, Math.Max(0, (newpos.X - _scrollViewer.HorizontalOffset) / 2));
+                    duration = newpos.Y < _scrollViewer.VerticalOffset
+                        ? (int)Math.Min(1000, Math.Max(0, _scrollViewer.VerticalOffset - newpos.Y))
+                        : (int)Math.Min(1000, Math.Max(0, newpos.Y - _scrollViewer.VerticalOffset));
 
-                            if (duration != 0)
-                            {
-                                var animation = new DoubleAnimation(_scrollViewer.HorizontalOffset, newpos.X, new Duration(TimeSpan.FromMilliseconds(duration)));
-                                animation.Completed += (s, e) => AdjustItemCenter();
-                                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
-                            }
-                        }
-                        return;
-                    }
-                   
+                    if (duration == 0) return;
+                    animation = new DoubleAnimation(_scrollViewer.VerticalOffset, newpos.Y, new Duration(TimeSpan.FromMilliseconds(duration)));
+                    animation.Completed += (s, e) => AdjustItemCenter();
+                    _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableVerticalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
+                    return;
                 }
-                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty,null);
+                if (!(Math.Abs(newpos.X) > Tolerance) || !(Math.Abs(newpos.X - _scrollViewer.HorizontalOffset) > Tolerance)) return;
+
+                duration = newpos.X < _scrollViewer.HorizontalOffset
+                    ? (int)Math.Min(500, Math.Max(0, (_scrollViewer.HorizontalOffset - newpos.X) / 2))
+                    : (int)Math.Min(500, Math.Max(0, (newpos.X - _scrollViewer.HorizontalOffset) / 2));
+
+                if (duration == 0) return;
+                animation = new DoubleAnimation(_scrollViewer.HorizontalOffset, newpos.X, new Duration(TimeSpan.FromMilliseconds(duration)));
+                animation.Completed += (s, e) => AdjustItemCenter();
+                _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty, animation, HandoffBehavior.SnapshotAndReplace);
+                return;
             }
+            _scrollViewer.BeginAnimation(ItemsControlExtensions.AnimatableHorizontalOffsetProperty,null);
         }
 
         /// <summary>
         /// Adjusts the item center.
         /// </summary>
-        /// <param name="item">The item.</param>
         private void AdjustItemCenter()
         {
-            ThreadPool.QueueUserWorkItem((o) =>
+            ThreadPool.QueueUserWorkItem(o =>
             {
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
                 {
-                    if ((listbox.SelectedItem as CoverFlowListBoxItem) != GetCenterItem())
-                    {
-                        listbox.ScrollIntoView(listbox.SelectedItem);
-                        ScrollItemToCenter(listbox.SelectedItem as CoverFlowListBoxItem);
-                    }
+                    if ((listbox.SelectedItem as CoverFlowListBoxItem) == GetCenterItem()) return;
+
+                    listbox.ScrollIntoView(listbox.SelectedItem);
+                    ScrollItemToCenter(listbox.SelectedItem as CoverFlowListBoxItem);
                 }, DispatcherPriority.Background);
             });
         }
@@ -303,25 +290,12 @@ namespace SkinEditor.Controls
                 case XmlListLayout.CoverFlow:
                     CurrentLayout = LayoutCoverFlow;
                     break;
-                default:
-                    break;
             }
 
-            if (_currentOrientation != orientation)
-            {
-                _currentOrientation = orientation;
-                listbox.Items.Refresh();
-            }
-        }
+            if (_currentOrientation == orientation) return;
 
-        private void RefreshList()
-        {
-            var items = ListItems;
-            ListItems.Clear();
-            foreach (var item in items)
-            {
-                ListItems.Add(item);
-            }
+            _currentOrientation = orientation;
+            listbox.Items.Refresh();
         }
 
         /// <summary>
@@ -330,8 +304,7 @@ namespace SkinEditor.Controls
         private void StartSelectionTimer()
         {
             StopSelectionTimer();
-            _selectionTimer = new DispatcherTimer();
-            _selectionTimer.Interval = TimeSpan.FromSeconds(4);
+            _selectionTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(4)};
             _selectionTimer.Tick += (s, e) =>
             {
                 StopSelectionTimer();
@@ -345,11 +318,10 @@ namespace SkinEditor.Controls
         /// </summary>
         private void StopSelectionTimer()
         {
-            if (_selectionTimer != null)
-            {
-                _selectionTimer.Stop();
-                _selectionTimer = null;
-            }
+            if (_selectionTimer == null) return;
+
+            _selectionTimer.Stop();
+            _selectionTimer = null;
         }
 
         /// <summary>
@@ -359,10 +331,11 @@ namespace SkinEditor.Controls
         private CoverFlowListBoxItem GetCenterItem()
         {
             var element = listbox.InputHitTest(new Point((listbox.ActualWidth / 2.0), (listbox.ActualHeight / 2.0))) as Border;
-            if (element != null)
-            {
-                return (element.Child as ContentPresenter).Content as CoverFlowListBoxItem;
-            }
+            if (element == null) return null;
+
+            var contentPresenter = element.Child as ContentPresenter;
+            if (contentPresenter != null)
+                return contentPresenter.Content as CoverFlowListBoxItem;
             return null;
         }
 
@@ -398,7 +371,7 @@ namespace SkinEditor.Controls
         {
             StopSelectionTimer();
             _itemMouseDown = false;
-            double newPos = IsLayoutVertical
+            var newPos = IsLayoutVertical
                 ? (_itemMouseDownPoint.Y - e.GetPosition(this).Y)
                 : (_itemMouseDownPoint.X - e.GetPosition(this).X);
 
@@ -446,11 +419,12 @@ namespace SkinEditor.Controls
         }
 
         #endregion
+
     }
 
     public class CoverFlowGreaterThanSelectedIndexConverter : IMultiValueConverter
     {
-        public object Convert(object[] values, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             try
             {
@@ -458,11 +432,14 @@ namespace SkinEditor.Controls
                 var itemIndex = int.Parse(values[1].ToString());
                 return itemIndex > selectedIndex;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
             return false;
         }
 
-        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, System.Globalization.CultureInfo culture)
+        public object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

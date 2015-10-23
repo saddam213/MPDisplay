@@ -1,8 +1,8 @@
 ﻿using System;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
-    [AttributeUsage(AttributeTargets.Property, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Property)]
     public class PropertyOrderAttribute : Attribute
     {
         public int Order { get; set; }

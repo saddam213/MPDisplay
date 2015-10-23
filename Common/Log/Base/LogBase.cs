@@ -3,31 +3,29 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 
-namespace Common.Logging
+namespace Common.Log
 {
     /// <summary>
     /// Base class for logs
     /// </summary>
-    /// <typeparam name="LogType">Log type</typeparam>
     public abstract class Logger : IDisposable
     {
-        private Queue<Action> queue = new Queue<Action>();
-        private ManualResetEvent hasNewItems = new ManualResetEvent(false);
-        private ManualResetEvent terminate = new ManualResetEvent(false);
-        private ManualResetEvent waiting = new ManualResetEvent(false);
-        private Thread loggingThread;
-        private volatile LogLevel _logLevel = LogLevel.Verbose;
+        private Queue<Action> _queue = new Queue<Action>();
+        private ManualResetEvent _hasNewItems = new ManualResetEvent(false);
+        private ManualResetEvent _terminate = new ManualResetEvent(false);
+        private ManualResetEvent _waiting = new ManualResetEvent(false);
+        private Thread _loggingThread;
+        private volatile LogLevel _logLevel;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Logger"/> class.
         /// </summary>
-        public Logger(LogLevel level)
+        protected Logger(LogLevel level)
         {
             _logLevel = level;
             // Create background thread, to ensure the queue is serviced from a single thread
-            loggingThread = new Thread(new ThreadStart(ProcessQueue));
-            loggingThread.IsBackground = true;
-            loggingThread.Start();
+            _loggingThread = new Thread(ProcessQueue) {IsBackground = true};
+            _loggingThread.Start();
         }
 
         public virtual void WriteHeader()
@@ -53,22 +51,22 @@ namespace Common.Logging
         {
             while (true)
             {
-                waiting.Set();
-                if (ManualResetEvent.WaitAny(new WaitHandle[] { hasNewItems, terminate }) == 1)
+                _waiting.Set();
+                if (WaitHandle.WaitAny(new WaitHandle[] { _hasNewItems, _terminate }) == 1)
                 {
                     return;
                 }
 
-                hasNewItems.Reset();
-                waiting.Reset();
+                _hasNewItems.Reset();
+                _waiting.Reset();
 
                 // create a copy of the current queue so we can continue
                 // to queue up log lines while we process the currnt queue
                 Queue<Action> queueCopy;
-                lock (queue)
+                lock (_queue)
                 {
-                    queueCopy = new Queue<Action>(queue);
-                    queue.Clear();
+                    queueCopy = new Queue<Action>(_queue);
+                    _queue.Clear();
                 }
 
                 // Write queue
@@ -80,27 +78,23 @@ namespace Common.Logging
         }
 
 
-
-
         /// <summary>
         /// Queues the log message.
         /// </summary>
+        /// <param name="level">The log level</param>
         /// <param name="message">The message.</param>
         public void QueueLogMessage(LogLevel level, string message)
         {
-            if (_logLevel == LogLevel.None)
+            if (_logLevel == LogLevel.None || level < _logLevel)
             {
                 return;
             }
 
-            if (level >= _logLevel)
+            lock (_queue)
             {
-                lock (queue)
-                {
-                    queue.Enqueue(() => LogQueuedMessage(message));
-                }
-                hasNewItems.Set();
+                _queue.Enqueue(() => LogQueuedMessage(message));
             }
+            _hasNewItems.Set();
         }
 
         /// <summary>
@@ -134,7 +128,7 @@ namespace Common.Logging
         private void Flush()
         {
             WriteFooter();
-            waiting.WaitOne();
+            _waiting.WaitOne();
         }
 
         /// <summary>
@@ -143,8 +137,8 @@ namespace Common.Logging
         public virtual void Dispose()
         {
             Flush();
-            terminate.Set();
-            loggingThread.Join();
+            _terminate.Set();
+            _loggingThread.Join();
         }
     }
 }

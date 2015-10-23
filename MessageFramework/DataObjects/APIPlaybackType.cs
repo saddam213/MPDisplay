@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-namespace MessageFramework.DataObjects
+﻿namespace MessageFramework.DataObjects
 {
+    // ReSharper disable InconsistentNaming
+    // attention: Values must match enum PlaybackType in VisibleConditionEditorDialog.xaml.cs
+
     public enum APIPlaybackType
     {
         None = 0,
@@ -27,14 +25,14 @@ namespace MessageFramework.DataObjects
         PandoraMusicBox,
         RadioTime,
         Streamradio,
-        TuneIn,
+        TuneIn
     }
 
     public enum APIPlaybackState
     {
         None = 0,
         Playing,
-        Stopped,
+        Stopped
       //  Started
     }
 }

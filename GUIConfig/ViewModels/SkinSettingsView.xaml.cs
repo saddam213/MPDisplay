@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
 using Common.Helpers;
-using Common.Logging;
+using Common.Log;
 using Common.Settings;
+using GUIConfig.Settings;
 using MPDisplay.Common.Utils;
 
 namespace GUIConfig.ViewModels
@@ -27,11 +14,11 @@ namespace GUIConfig.ViewModels
     /// <summary>
     /// Interaction logic for BasicSettingsView.xaml
     /// </summary>
-    public partial class SkinSettingsView : ViewModelBase
+    public partial class SkinSettingsView
     {
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(SkinSettingsView));
+        private Log _log = LoggingManager.GetLog(typeof(SkinSettingsView));
         private ObservableCollection<SkinInfo> _skins = new ObservableCollection<SkinInfo>();
         private SkinInfo _selectedSkin;
 
@@ -73,7 +60,7 @@ namespace GUIConfig.ViewModels
         public SkinInfo SelectedSkin
         {
             get { return _selectedSkin; }
-            set { _selectedSkin = value; NotifyPropertyChanged("SelectedSkin"); }
+            set { _selectedSkin = value; NotifyPropertyChanged(); }
         }
 
         /// <summary>
@@ -89,22 +76,6 @@ namespace GUIConfig.ViewModels
         #region Methods
 
         /// <summary>
-        /// Called when model tab opens.
-        /// </summary>
-        public override void OnModelOpen()
-        {
-            base.OnModelOpen();
-        }
-
-        /// <summary>
-        /// Called when model tab closes.
-        /// </summary>
-        public override void OnModelClose()
-        {
-            base.OnModelClose();
-        }
-
-        /// <summary>
         /// Saves the changes.
         /// </summary>
         public override void SaveChanges()
@@ -116,7 +87,7 @@ namespace GUIConfig.ViewModels
                 {
                     option.PreviewImage = option.PreviewImage.Replace(skin.SkinImageFolder, "");
                 }
-                SerializationHelper.Serialize<SkinInfo>(skin, skin.SkinInfoPath);
+                SerializationHelper.Serialize(skin, skin.SkinInfoPath);
             }
         }
 
@@ -124,7 +95,7 @@ namespace GUIConfig.ViewModels
         /// Determines whether this instance [can launch skin editor].
         /// </summary>
         /// <returns></returns>
-        private bool CanLaunchSkinEditor()
+        private static bool CanLaunchSkinEditor()
         {
             return File.Exists(RegistrySettings.SkinEditorExePath);
         }
@@ -134,7 +105,7 @@ namespace GUIConfig.ViewModels
         /// </summary>
         private void LaunchSkinEditor()
         {
-            Log.Message(LogLevel.Info, "Launching MPDisplay SkinEditor, EditorPath: {0}, SkinInfo: {1}", RegistrySettings.SkinEditorExePath, SelectedSkin.SkinInfoPath);
+            _log.Message(LogLevel.Info, "Launching MPDisplay SkinEditor, EditorPath: {0}, SkinInfo: {1}", RegistrySettings.SkinEditorExePath, SelectedSkin.SkinInfoPath);
             Process.Start(RegistrySettings.SkinEditorExePath, SelectedSkin.SkinInfoPath);
         }
 
@@ -143,37 +114,36 @@ namespace GUIConfig.ViewModels
         /// </summary>
         private void LoadSkins()
         {
-            Log.Message(LogLevel.Info, "Loading skins...");
+            _log.Message(LogLevel.Info, "Loading skins...");
             if (Directory.Exists(RegistrySettings.MPDisplaySkinFolder))
             {
                 _skins.Clear();
                 var skinXmls = Directory.GetFiles(RegistrySettings.MPDisplaySkinFolder, "SkinInfo.xml", SearchOption.AllDirectories);
-                if (skinXmls.Any())
-                {
-                    foreach (var skinXml in skinXmls)
-                    {
-                        var skin = SerializationHelper.Deserialize<SkinInfo>(skinXml);
-                        if (skin != null)
-                        {
-                            Log.Message(LogLevel.Info, "Sucessfully loaded SkinInfo.Xml, Skin: {0}", skin.SkinName);
-                            skin.SkinFolderPath = System.IO.Path.GetDirectoryName(skinXml);
-                            foreach (var option in skin.SkinOptions)
-                            {
-                                option.PreviewImage = skin.SkinImageFolder + option.PreviewImage;
-                            }
-                            _skins.Add(skin);
-                        }
-                        else
-                        {
-                            Log.Message(LogLevel.Error, "Failed to load SkinInfo.Xml, File: {0}", skinXml);
-                        }
+                if (!skinXmls.Any()) return;
 
+                foreach (var skinXml in skinXmls)
+                {
+                    var skin = SerializationHelper.Deserialize<SkinInfo>(skinXml);
+                    if (skin != null)
+                    {
+                        _log.Message(LogLevel.Info, "Sucessfully loaded SkinInfo.Xml, Skin: {0}", skin.SkinName);
+                        skin.SkinFolderPath = Path.GetDirectoryName(skinXml);
+                        foreach (var option in skin.SkinOptions)
+                        {
+                            option.PreviewImage = skin.SkinImageFolder + option.PreviewImage;
+                        }
+                        _skins.Add(skin);
                     }
+                    else
+                    {
+                        _log.Message(LogLevel.Error, "Failed to load SkinInfo.Xml, File: {0}", skinXml);
+                    }
+
                 }
             }
             else
             {
-                Log.Message(LogLevel.Error, "MPDisplay skin dorectory not found!. Directory: {0}", RegistrySettings.MPDisplaySkinFolder);
+                _log.Message(LogLevel.Error, "MPDisplay skin dorectory not found!. Directory: {0}", RegistrySettings.MPDisplaySkinFolder);
             }
         }
 

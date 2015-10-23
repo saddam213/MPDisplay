@@ -4,12 +4,10 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
 using System.Xml.Serialization;
 
-namespace GUIConfig.ViewModels
+namespace GUIConfig.Settings
 {
     /// <summary>
     /// Slimline version class for XmlSkinInfo
@@ -258,8 +256,8 @@ namespace GUIConfig.ViewModels
         {
             get
             { 
-                string filename = string.Format("{0}\\Preview_{1}.png",SkinImageFolder, CurrentStyle);
-                if (System.IO.File.Exists(filename))
+                var filename = string.Format("{0}\\Preview_{1}.png",SkinImageFolder, CurrentStyle);
+                if (File.Exists(filename))
                 {
                     return filename;
                 }
@@ -274,11 +272,7 @@ namespace GUIConfig.ViewModels
         {
             get
             {
-                if (Directory.Exists(SkinStyleFolder))
-                {
-                    return Directory.GetFiles(SkinStyleFolder, "*.xml").Select(x => System.IO.Path.GetFileNameWithoutExtension(x));
-                }
-                return null;
+                return Directory.Exists(SkinStyleFolder) ? Directory.GetFiles(SkinStyleFolder, "*.xml").Select(Path.GetFileNameWithoutExtension) : null;
             }
         }
 
@@ -289,13 +283,14 @@ namespace GUIConfig.ViewModels
         {
             get
             {
-                if (File.Exists(SkinLanguagePath))
+                if (!File.Exists(SkinLanguagePath)) return null;
+                try
                 {
-                    try
-                    {
-                        return XElement.Load(SkinLanguagePath).Descendants("LanguageValue").Select(x => x.FirstAttribute.Value).Distinct();
-                    }
-                    catch  { }
+                    return XElement.Load(SkinLanguagePath).Descendants("LanguageValue").Select(x => x.FirstAttribute.Value).Distinct();
+                }
+                catch
+                {
+                    // ignored
                 }
                 return null;
             }
@@ -328,7 +323,7 @@ namespace GUIConfig.ViewModels
 
         private string _name = string.Empty;
         private bool _isEnabled;
-        private string _description = null;
+        private string _description = string.Empty;
         private string _previewImage = string.Empty;
         private bool _isPreviewImageEnabled;
         private string _group;

@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace Common
+namespace Common.Helpers
+
 {
     public static class CollectionExtensions
     {
@@ -24,15 +24,9 @@ namespace Common
                 return first == null && second == null;
             }
 
-            if (second.Count() != first.Count())
-            {
-                return true;
-            }
-
-            var sequence1 = first.OrderBy(x => x);
-            var sequence2 = second.OrderBy(x => x);
-
-            return first.SequenceEqual(second);
+            var enumerable = second as IList<T> ?? second.ToList();
+            var enumerable1 = first as IList<T> ?? first.ToList();
+            return enumerable.Count() != enumerable1.Count() || enumerable1.SequenceEqual(enumerable);
         }
 
         /// <summary>
@@ -53,13 +47,15 @@ namespace Common
                 return first == null && second == null;
             }
 
-            if (second.Count() != first.Count())
+            var enumerable = second as IList<T> ?? second.ToList();
+            var enumerable1 = first as IList<T> ?? first.ToList();
+            if (enumerable.Count() != enumerable1.Count())
             {
                 return false;
             }
 
-            var sequence1 = first.OrderBy(selector).Select(selector);
-            var sequence2 = second.OrderBy(selector).Select(selector);
+            var sequence1 = enumerable1.OrderBy(selector).Select(selector);
+            var sequence2 = enumerable.OrderBy(selector).Select(selector);
 
             return sequence1.SequenceEqual(sequence2);
         }
@@ -81,12 +77,9 @@ namespace Common
                 return first == null && second == null;
             }
 
-            if (second.Count() != first.Count())
-            {
-                return true;
-            }
-
-            return first.SequenceEqual(second);
+            var enumerable = second as IList<T> ?? second.ToList();
+            var enumerable1 = first as IList<T> ?? first.ToList();
+            return enumerable.Count() != enumerable1.Count() || enumerable1.SequenceEqual(enumerable);
         }
 
         /// <summary>
@@ -94,26 +87,29 @@ namespace Common
         /// the default equality comparer for their type.
         /// </summary>
         /// <typeparam name="T">The collection object type</typeparam>
+        /// <typeparam name="TU">The second collection object type</typeparam>
         /// <param name="first">The first collection.</param>
         /// <param name="second">The second collection.</param>
         /// <param name="selector">The function used to sort and compare.</param>
         /// <returns>
         /// true if all elements are equal and in the same order
         /// </returns>
-        public static bool AreOrderedEqualBy<T, U>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, U> selector) where U : IComparable
+        public static bool AreOrderedEqualBy<T, TU>(this IEnumerable<T> first, IEnumerable<T> second, Func<T, TU> selector) where TU : IComparable
         {
             if (first == null || second == null)
             {
                 return first == null && second == null;
             }
 
-            if (second.Count() != first.Count())
+            var enumerable = second as IList<T> ?? second.ToList();
+            var enumerable1 = first as IList<T> ?? first.ToList();
+            if (enumerable.Count() != enumerable1.Count())
             {
                 return true;
             }
 
-            var sequence1 = first.Select(selector);
-            var sequence2 = second.Select(selector);
+            var sequence1 = enumerable1.Select(selector);
+            var sequence2 = enumerable.Select(selector);
 
             return sequence1.SequenceEqual(sequence2);
         }
@@ -128,14 +124,8 @@ namespace Common
         /// <returns></returns>
         public static IEnumerable<TSource> DistinctBy<TSource, TKey>(this IEnumerable<TSource> source, Func<TSource, TKey> keySelector)
         {
-            HashSet<TKey> seenKeys = new HashSet<TKey>();
-            foreach (TSource element in source)
-            {
-                if (seenKeys.Add(keySelector(element)))
-                {
-                    yield return element;
-                }
-            }
+            var seenKeys = new HashSet<TKey>();
+            return source.Where(element => seenKeys.Add(keySelector(element)));
         }
     }
 }

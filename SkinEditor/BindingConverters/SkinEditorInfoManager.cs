@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GUISkinFramework;
+﻿using System.Linq;
+using GUISkinFramework.Skin;
 
-namespace SkinEditor
+namespace SkinEditor.BindingConverters
 {
     public static class SkinEditorInfoManager
     {
@@ -22,16 +18,13 @@ namespace SkinEditor
 
         public static string GetLanguageValue(string skinTag)
         {
-            if (_skinInfo != null && _skinInfo.Language != null)
-            {
-                var entry = _skinInfo.Language.LanguageEntries.FirstOrDefault(x => x.SkinTag == skinTag);
-                if (entry != null)
-                {
-                    var value = entry.Values.FirstOrDefault(x => x.Language == _skinInfo.CurrentLanguage) ?? entry.Values.FirstOrDefault();
-                    return value == null ? skinTag : value.Value;
-                }
-            }
-            return skinTag;
+            if (_skinInfo == null || _skinInfo.Language == null) return skinTag;
+
+            var entry = _skinInfo.Language.LanguageEntries.FirstOrDefault(x => x.SkinTag == skinTag);
+            if (entry == null) return skinTag;
+
+            var value = entry.Values.FirstOrDefault(x => x.Language == _skinInfo.CurrentLanguage) ?? entry.Values.FirstOrDefault();
+            return value == null ? skinTag : value.Value;
         }
     }
 }

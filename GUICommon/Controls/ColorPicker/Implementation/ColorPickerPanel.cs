@@ -1,10 +1,10 @@
 ﻿using System;
+using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Media;
-using System.Collections.ObjectModel;
 using System.Windows.Input;
-using MPDisplay.Common.Controls.Core.Utilities;
+using System.Windows.Media;
+using MPDisplay.Common.Controls.Core;
 
 namespace MPDisplay.Common.Controls
 {
@@ -100,7 +100,8 @@ namespace MPDisplay.Common.Controls
 
         #region SelectedColor
 
-        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color), typeof(ColorPickerPanel), new FrameworkPropertyMetadata(Colors.Black, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, new PropertyChangedCallback(OnSelectedColorPropertyChanged)));
+        public static readonly DependencyProperty SelectedColorProperty = DependencyProperty.Register("SelectedColor", typeof(Color),
+            typeof(ColorPickerPanel), new FrameworkPropertyMetadata(Colors.Black, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnSelectedColorPropertyChanged));
         public Color SelectedColor
         {
             get { return (Color)GetValue(SelectedColorProperty); }
@@ -109,17 +110,19 @@ namespace MPDisplay.Common.Controls
 
         private static void OnSelectedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ColorPickerPanel ColorPickerPanel = (ColorPickerPanel)d;
-            if (ColorPickerPanel != null)
-                ColorPickerPanel.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
+            var colorPickerPanel = (ColorPickerPanel)d;
+            if (colorPickerPanel != null)
+                colorPickerPanel.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
         }
 
         private void OnSelectedColorChanged(Color oldValue, Color newValue)
         {
             SelectedColorText = newValue.GetColorName();
 
-            RoutedPropertyChangedEventArgs<Color> args = new RoutedPropertyChangedEventArgs<Color>(oldValue, newValue);
-            args.RoutedEvent = ColorPickerPanel.SelectedColorChangedEvent;
+            var args = new RoutedPropertyChangedEventArgs<Color>(oldValue, newValue)
+            {
+                RoutedEvent = SelectedColorChangedEvent
+            };
             RaiseEvent(args);
         }
 
@@ -281,16 +284,15 @@ namespace MPDisplay.Common.Controls
 
         private void Color_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            ListBox lb = (ListBox)sender;
+            var lb = (ListBox)sender;
 
-            if (e.AddedItems.Count > 0)
-            {
-                var colorItem = (ColorItem)e.AddedItems[0];
-                SelectedColor = colorItem.Color;
-                UpdateRecentColors(colorItem);
-                CloseColorPickerPanel();
-                lb.SelectedIndex = -1; //for now I don't care about keeping track of the selected color
-            }
+            if (e.AddedItems.Count <= 0) return;
+
+            var colorItem = (ColorItem)e.AddedItems[0];
+            SelectedColor = colorItem.Color;
+            UpdateRecentColors(colorItem);
+            CloseColorPickerPanel();
+            lb.SelectedIndex = -1; //for now I don't care about keeping track of the selected color
         }
 
         #endregion //Event Handlers
@@ -326,35 +328,37 @@ namespace MPDisplay.Common.Controls
 
         private static ObservableCollection<ColorItem> CreateStandardColors()
         {
-            ObservableCollection<ColorItem> _standardColors = new ObservableCollection<ColorItem>();
-            _standardColors.Add(new ColorItem(Colors.Transparent, "Transparent"));
-            _standardColors.Add(new ColorItem(Colors.White, "White"));
-            _standardColors.Add(new ColorItem(Colors.Gray, "Gray"));
-            _standardColors.Add(new ColorItem(Colors.Black, "Black"));
-            _standardColors.Add(new ColorItem(Colors.Red, "Red"));
-            _standardColors.Add(new ColorItem(Colors.Green, "Green"));
-            _standardColors.Add(new ColorItem(Colors.Blue, "Blue"));
-            _standardColors.Add(new ColorItem(Colors.Yellow, "Yellow"));
-            _standardColors.Add(new ColorItem(Colors.Orange, "Orange"));
-            _standardColors.Add(new ColorItem(Colors.Purple, "Purple"));
-            return _standardColors;
+            var standardColors = new ObservableCollection<ColorItem>
+            {
+                new ColorItem(Colors.Transparent, "Transparent"),
+                new ColorItem(Colors.White, "White"),
+                new ColorItem(Colors.Gray, "Gray"),
+                new ColorItem(Colors.Black, "Black"),
+                new ColorItem(Colors.Red, "Red"),
+                new ColorItem(Colors.Green, "Green"),
+                new ColorItem(Colors.Blue, "Blue"),
+                new ColorItem(Colors.Yellow, "Yellow"),
+                new ColorItem(Colors.Orange, "Orange"),
+                new ColorItem(Colors.Purple, "Purple")
+            };
+            return standardColors;
         }
 
         private static ObservableCollection<ColorItem> CreateAvailableColors()
         {
-            ObservableCollection<ColorItem> _standardColors = new ObservableCollection<ColorItem>();
+            var standardColors = new ObservableCollection<ColorItem>();
 
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
             foreach (var item in ColorUtilities.KnownColors)
             {
-                if (!String.Equals(item.Key, "Transparent"))
-                {
-                    var colorItem = new ColorItem(item.Value, item.Key);
-                    if (!_standardColors.Contains(colorItem))
-                        _standardColors.Add(colorItem);
-                }
+                if (String.Equals(item.Key, "Transparent")) continue;
+
+                var colorItem = new ColorItem(item.Value, item.Key);
+                if (!standardColors.Contains(colorItem))
+                    standardColors.Add(colorItem);
             }
 
-            return _standardColors;
+            return standardColors;
         }
 
         #endregion //Methods

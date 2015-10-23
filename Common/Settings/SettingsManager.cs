@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Xml.Serialization;
-using Common.Helpers;
+﻿using Common.Helpers;
 
 namespace Common.Settings
 {
@@ -19,7 +13,7 @@ namespace Common.Settings
         /// <returns></returns>
         public static bool Save<T>(T obj, string filename) where T : SettingsBase
         {
-            return SerializationHelper.Serialize<T>(obj, filename);
+            return SerializationHelper.Serialize(obj, filename);
         }
 
         /// <summary>

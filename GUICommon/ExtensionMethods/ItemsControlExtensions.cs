@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Media;
 using System.Windows.Threading;
-using MPDisplay.Common.ExtensionMethods;
 
 namespace MPDisplay.Common.ExtensionMethods
 {
@@ -20,7 +15,7 @@ namespace MPDisplay.Common.ExtensionMethods
 
         public static readonly DependencyProperty AnimatableHorizontalOffsetProperty
             = DependencyProperty.RegisterAttached("AnimatableHorizontalOffset", typeof(double), typeof(ItemsControlExtensions)
-            , new FrameworkPropertyMetadata(0.0, new PropertyChangedCallback(OnHorizontalChanged)));
+            , new FrameworkPropertyMetadata(0.0, OnHorizontalChanged));
 
         public static double GetAnimatableHorizontalOffset(DependencyObject obj)
         {
@@ -39,15 +34,14 @@ namespace MPDisplay.Common.ExtensionMethods
         /// <param name="e">The <see cref="System.Windows.DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnHorizontalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ScrollViewer viewer = d as ScrollViewer;
-            viewer.ScrollToHorizontalOffset((double)e.NewValue);
+            var viewer = d as ScrollViewer;
+            if (viewer != null) viewer.ScrollToHorizontalOffset((double)e.NewValue);
         }
 
 
         // Using a DependencyProperty as the backing store for SearchValue.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty AnimatableVerticalOffsetProperty =
-            DependencyProperty.RegisterAttached("AnimatableVerticalOffset", typeof(double), typeof(ItemsControlExtensions),
-                new FrameworkPropertyMetadata(0.0, new PropertyChangedCallback(OnVerticalChanged)));
+            DependencyProperty.RegisterAttached("AnimatableVerticalOffset", typeof(double), typeof(ItemsControlExtensions), new FrameworkPropertyMetadata(0.0, OnVerticalChanged));
 
         public static double GetAnimatableVerticalOffset(DependencyObject obj)
         {
@@ -66,8 +60,8 @@ namespace MPDisplay.Common.ExtensionMethods
         /// <param name="e">The <see cref="System.Windows.DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnVerticalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            ScrollViewer viewer = d as ScrollViewer;
-            viewer.ScrollToVerticalOffset((double)e.NewValue);
+            var viewer = d as ScrollViewer;
+            if (viewer != null) viewer.ScrollToVerticalOffset((double)e.NewValue);
         }
 
         #endregion
@@ -86,26 +80,22 @@ namespace MPDisplay.Common.ExtensionMethods
 
         // Using a DependencyProperty as the backing store for ScrollItemIntoView.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ScrollItemIntoViewProperty =
-            DependencyProperty.RegisterAttached("ScrollItemIntoView", typeof(bool), typeof(ItemsControlExtensions), new FrameworkPropertyMetadata(false, new PropertyChangedCallback(OnScrollItemIntoViewChanged)));
+            DependencyProperty.RegisterAttached("ScrollItemIntoView", typeof(bool), typeof(ItemsControlExtensions), new FrameworkPropertyMetadata(false, OnScrollItemIntoViewChanged));
 
         private static void OnScrollItemIntoViewChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is ListBox)
+            if (!(d is ListBox)) return;
+
+            var viewer = (ListBox) d;
+            if (viewer.IsSynchronizedWithCurrentItem == true)
             {
-                ListBox viewer = d as ListBox;
-                if (viewer.IsSynchronizedWithCurrentItem == true)
-                {
-                    viewer.Items.CurrentChanged += (s, r) => viewer.Dispatcher.BeginInvoke((Action)delegate { viewer.ScrollIntoView(viewer.Items.CurrentItem); }, DispatcherPriority.Background); 
-                }
-                else
-                {
-                    viewer.SelectionChanged += (s, r) => viewer.Dispatcher.BeginInvoke((Action)delegate { viewer.ScrollIntoView(viewer.SelectedItem); }, DispatcherPriority.Background); 
-                }
+                viewer.Items.CurrentChanged += (s, r) => viewer.Dispatcher.BeginInvoke((Action)delegate { viewer.ScrollIntoView(viewer.Items.CurrentItem); }, DispatcherPriority.Background); 
+            }
+            else
+            {
+                viewer.SelectionChanged += (s, r) => viewer.Dispatcher.BeginInvoke((Action)delegate { viewer.ScrollIntoView(viewer.SelectedItem); }, DispatcherPriority.Background); 
             }
         }
-
-        
-
 
         #endregion
 
@@ -115,40 +105,33 @@ namespace MPDisplay.Common.ExtensionMethods
         {
             // Find the container
             var container = itemsControl.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
-            if (container != null)
+            if (container == null) return null;
+
+            // Find the ScrollContentPresenter
+            var presenter = container.GetAscendantByType<ScrollContentPresenter>();
+            if (presenter == null) return null;
+
+            // Find the IScrollInfo
+            IScrollInfo scrollInfo = presenter;
+            if (presenter.CanContentScroll)
             {
-                // Find the ScrollContentPresenter
-                ScrollContentPresenter presenter = container.GetAscendantByType<ScrollContentPresenter>();
-                if (presenter != null)
-                {
-                    // Find the IScrollInfo
-                    IScrollInfo scrollInfo = presenter;
-                    if (presenter.CanContentScroll)
-                    {
-                        scrollInfo = presenter.Content as IScrollInfo
-                            ?? VisualTreeExtensions.FirstVisualChild(presenter.Content as ItemsPresenter) as IScrollInfo
-                            ?? presenter;
-                    }
-
-                    // Compute the center point of the container relative to the scrollInfo
-                    Size size = container.RenderSize;
-                    Point center = container.TransformToAncestor((Visual)scrollInfo).Transform(new Point(size.Width / 2, size.Height / 2));
-                    center.Y += scrollInfo.VerticalOffset;
-                    center.X += scrollInfo.HorizontalOffset;
-
-                    return new Point(CenteringOffset(center.X, scrollInfo.ViewportWidth, scrollInfo.ExtentWidth)
-                                   , CenteringOffset(center.Y, scrollInfo.ViewportHeight, scrollInfo.ExtentHeight));
-                }
+                scrollInfo = presenter.Content as IScrollInfo ?? (presenter.Content as ItemsPresenter).FirstVisualChild() as IScrollInfo ?? presenter;
             }
-            return null;
+
+            // Compute the center point of the container relative to the scrollInfo
+            var size = container.RenderSize;
+            var center = container.TransformToAncestor((Visual)scrollInfo).Transform(new Point(size.Width / 2, size.Height / 2));
+            center.Y += scrollInfo.VerticalOffset;
+            center.X += scrollInfo.HorizontalOffset;
+
+            return new Point(CenteringOffset(center.X, scrollInfo.ViewportWidth, scrollInfo.ExtentWidth) 
+                , CenteringOffset(center.Y, scrollInfo.ViewportHeight, scrollInfo.ExtentHeight));
         }
 
         private static double CenteringOffset(double center, double viewport, double extent)
         {
-            var t =  (extent - center) - (viewport / 2);
             return Math.Min(extent, Math.Max(0, center - viewport / 2));
         }
-
 
         #endregion
 

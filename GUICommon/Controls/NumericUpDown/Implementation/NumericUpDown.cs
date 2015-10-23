@@ -1,8 +1,7 @@
 ﻿using System;
-using System.Windows;
-using System.Windows.Input;
-using MPDisplay.Common.Controls.Primitives;
 using System.Globalization;
+using System.Windows;
+using MPDisplay.Common.Controls.Core;
 
 namespace MPDisplay.Common.Controls
 {
@@ -32,7 +31,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnFormatStringChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            NumericUpDown<T> numericUpDown = o as NumericUpDown<T>;
+            var numericUpDown = o as NumericUpDown<T>;
             if (numericUpDown != null)
                 numericUpDown.OnFormatStringChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -67,7 +66,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnMaximumChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            NumericUpDown<T> numericUpDown = o as NumericUpDown<T>;
+            var numericUpDown = o as NumericUpDown<T>;
             if (numericUpDown != null)
                 numericUpDown.OnMaximumChanged((T)e.OldValue, (T)e.NewValue);
         }
@@ -90,7 +89,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnMinimumChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            NumericUpDown<T> numericUpDown = o as NumericUpDown<T>;
+            var numericUpDown = o as NumericUpDown<T>;
             if (numericUpDown != null)
                 numericUpDown.OnMinimumChanged((T)e.OldValue, (T)e.NewValue);
         }
@@ -134,11 +133,11 @@ namespace MPDisplay.Common.Controls
 
         protected static decimal ParsePercent(string text, IFormatProvider cultureInfo)
         {
-            NumberFormatInfo info = NumberFormatInfo.GetInstance(cultureInfo);
+            var info = NumberFormatInfo.GetInstance(cultureInfo);
 
             text = text.Replace(info.PercentSymbol, null);
 
-            decimal result = Decimal.Parse(text, NumberStyles.Any, info);
+            var result = Decimal.Parse(text, NumberStyles.Any, info);
             result = result / 100;
 
             return result;

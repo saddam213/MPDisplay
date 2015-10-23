@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{A1DA5D1E-6D9F-413B-9BBA-4C584E8D1960}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExifReader</RootNamespace>
+    <AssemblyName>ExifReader</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CachedAttributeExtractor.cs" />
+    <Compile Include="EnumDisplayNameAttribute.cs" />
+    <Compile Include="ExifProperty.cs" />
+    <Compile Include="ExifPropertyFormatterAttribute.cs" />
+    <Compile Include="ExifPropertyFormatterProvider.cs" />
+    <Compile Include="ExifPropertyPropertyDescriptor.cs" />
+    <Compile Include="ExifReader.cs" />
+    <Compile Include="ExifReaderCustomTypeDescriptor.cs" />
+    <Compile Include="ExifReaderException.cs" />
+    <Compile Include="ExifReaderTypeDescriptionProvider.cs" />
+    <Compile Include="ExifValue.cs" />
+    <Compile Include="ExifValueCreator.cs" />
+    <Compile Include="ExifValueUndefinedExtractorAttribute.cs" />
+    <Compile Include="ExifValueUndefinedExtractorProvider.cs" />
+    <Compile Include="IExifPropertyFormatter.cs" />
+    <Compile Include="IExifValue.cs" />
+    <Compile Include="IExifValueUndefinedExtractor.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyFormatters\ExifColorSpacePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifContrastPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifExposureBiasPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifExposureModePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifExposureProgPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifExposureTimePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifFlashPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifFNumberPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifFocalResUnitPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifGainControlPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifISOSpeedPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifLightSourcePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifMeteringModePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifFocalLengthPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifSaturationPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifSceneCaptureTypePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifSensingMethodPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifSharpnessPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifShutterSpeedPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifSubjectDistanceRangePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ExifSubjectDistPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\GenericDictionaryPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\GenericRational32PropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\GpsLatitudeLongitudePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\GpsTimePropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\ResolutionUnitPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\SimpleExifPropertyFormatter.cs" />
+    <Compile Include="PropertyFormatters\WhiteBalancePropertyFormatter.cs" />
+    <Compile Include="PropertyTagId.cs" />
+    <Compile Include="PropertyTagType.cs" />
+    <Compile Include="QueryPropertyFormatterEventArgs.cs" />
+    <Compile Include="Rational32.cs" />
+    <Compile Include="CommonInt32.cs" />
+    <Compile Include="QueryUndefinedExtractorEventArgs.cs" />
+    <Compile Include="UndefinedExtractor\ExifFileSourceUndefinedExtractor.cs" />
+    <Compile Include="UndefinedExtractor\ExifSceneTypeUndefinedExtractor.cs" />
+    <Compile Include="UndefinedExtractor\GenericStringUndefinedExtractor.cs" />
+    <Compile Include="UndefinedExtractor\SimpleUndefinedExtractor.cs" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

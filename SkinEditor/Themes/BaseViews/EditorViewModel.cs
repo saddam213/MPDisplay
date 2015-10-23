@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using GUISkinFramework;
-using SkinEditor.ConnectionHelpers;
+using GUISkinFramework.Skin;
+using SkinEditor.Helpers;
 
-namespace SkinEditor.Views
+namespace SkinEditor.Themes
 {
     public class EditorViewModel : UserControl, INotifyPropertyChanged
     {
@@ -49,7 +44,7 @@ namespace SkinEditor.Views
 
         // Using a DependencyProperty as the backing store for SkinInfo.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty SkinInfoProperty =
-            DependencyProperty.Register("SkinInfo", typeof(XmlSkinInfo), typeof(EditorViewModel), new PropertyMetadata(new XmlSkinInfo(), (d,e) => (d as EditorViewModel).Initialize()));
+            DependencyProperty.Register("SkinInfo", typeof(XmlSkinInfo), typeof(EditorViewModel), new PropertyMetadata(new XmlSkinInfo(), (d,e) => ((EditorViewModel) d).Initialize()));
 
         
 

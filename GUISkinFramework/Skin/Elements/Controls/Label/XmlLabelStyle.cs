@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "LabelStyle")]
@@ -63,7 +51,7 @@ namespace GUISkinFramework.Controls
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            FontBrush = style.GetStyle<XmlBrush>(FontBrush);
+            FontBrush = style.GetStyle(FontBrush);
         }
     }
 

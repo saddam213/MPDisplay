@@ -1,36 +1,17 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.ObjectModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
+using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class AnimationEditor : UserControl, ITypeEditor
+    public partial class AnimationEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public AnimationEditor()
         {
@@ -72,11 +53,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            AnimationEditorDialog editor = new AnimationEditorDialog(_Item.Instance);
-            editor.SetItems((_Item.Value as ObservableCollection<XmlAnimation>) ?? new ObservableCollection<XmlAnimation>());
+            var editor = new AnimationEditorDialog(_item.Instance);
+            editor.SetItems((_item.Value as ObservableCollection<XmlAnimation>) ?? new ObservableCollection<XmlAnimation>());
             if (editor.ShowDialog() == true)
             {
-                _Item.Value = editor.GetItems();
+                _item.Value = editor.GetItems();
             }
             ActionInfo = GetText();
             ActionToolTip = GetToolTipText();
@@ -84,13 +65,13 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
+            _item = propertyItem;
             ActionInfo = GetText();
             ActionToolTip = GetToolTipText();
             return this;
         }
 
-        private string GetText()
+        private static string GetText()
         {
             //if (_Item != null && _Item.Value != null)
             //{
@@ -102,7 +83,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             return "(Empty)";
         }
 
-        private string GetToolTipText()
+        private static string GetToolTipText()
         {
            
             //if (_Item != null && _Item.Value is IList && (_Item.Value as IList).Count > 0)

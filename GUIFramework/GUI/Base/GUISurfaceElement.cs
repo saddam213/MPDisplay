@@ -1,6 +1,7 @@
 ﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace GUIFramework.GUI
@@ -28,7 +29,7 @@ namespace GUIFramework.GUI
         /// </value>
         public bool IsOpen
         {
-            get { return Visibility == System.Windows.Visibility.Visible; }
+            get { return Visibility == Visibility.Visible; }
         }
 
         /// <summary>

@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using GUIFramework.Managers;
-using GUISkinFramework.Common;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -18,7 +16,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// The _actions
         /// </summary>
-        public List<Action> _actions = new List<Action>();
+        public List<Action> Actions = new List<Action>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GUIActionCollection"/> class.
@@ -26,12 +24,12 @@ namespace GUIFramework.GUI
         /// <param name="xmlActions">The XML actions.</param>
         public GUIActionCollection(IEnumerable<XmlAction> xmlActions)
         {
-            if (xmlActions != null)
+            if (xmlActions == null) return;
+
+            foreach (var xmlaction in xmlActions)
             {
-                foreach (var xmlaction in xmlActions)
-                {
-                    _actions.Add(() => GUIActionManager.ActionService.NotifyListeners(xmlaction.ActionType, xmlaction));
-                }
+                var xmlaction1 = xmlaction;
+                Actions.Add(() => GUIActionManager.ActionService.NotifyListeners(xmlaction1.ActionType, xmlaction1));
             }
         }
 
@@ -43,9 +41,9 @@ namespace GUIFramework.GUI
         {
             await Application.Current.Dispatcher.BeginInvoke((Action)delegate
             {
-                if (_actions.Any())
+                if (Actions.Any())
                 {
-                    _actions.ForEach(action => action());
+                    Actions.ForEach(action => action());
                 }
             });
         }

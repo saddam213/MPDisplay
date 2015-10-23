@@ -1,23 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Forms;
 
-namespace SkinEditor.ConnectionHelpers
+namespace SkinEditor.Helpers
 {
     public static class FileSystemHelper
     {
         public static string OpenFolderDialog(string startDirectory)
         {
-            var dialog = new System.Windows.Forms.FolderBrowserDialog();
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-            {
-                return dialog.SelectedPath;
-            }
-            return string.Empty;
+            var dialog = new FolderBrowserDialog();
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : string.Empty;
         }
 
         /// <summary>
@@ -29,16 +25,14 @@ namespace SkinEditor.ConnectionHelpers
         public static string OpenFileDialog(string startDirectory, string filter)
         {
              // Filter Example = "Png Images (*.png)|*.png";
-            var dialog = new System.Windows.Forms.OpenFileDialog();
-            dialog.Filter = filter;
-            dialog.RestoreDirectory = true;
-            dialog.ShowReadOnly = true;
-            dialog.InitialDirectory = startDirectory;
-            if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+            var dialog = new OpenFileDialog
             {
-                return dialog.FileName;
-            }
-            return string.Empty;
+                Filter = filter,
+                RestoreDirectory = true,
+                ShowReadOnly = true,
+                InitialDirectory = startDirectory
+            };
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : string.Empty;
         }
 
         public static void TryDelete(string file)
@@ -49,6 +43,7 @@ namespace SkinEditor.ConnectionHelpers
             }
             catch
             {
+                // ignored
             }
         }
 
@@ -69,6 +64,7 @@ namespace SkinEditor.ConnectionHelpers
             }
             catch
             {
+                // ignored
             }
             return false;
         }
@@ -88,13 +84,11 @@ namespace SkinEditor.ConnectionHelpers
 
         public static IEnumerable<string> GetFiles(string dir, string extensions)
         {
-            if (Directory.Exists(dir))
-            {
-                foreach (var item in Directory.GetFiles(dir, extensions))
-                {
-                    yield return item;
-                }
+            if (!Directory.Exists(dir)) yield break;
 
+            foreach (var item in Directory.GetFiles(dir, extensions))
+            {
+                yield return item;
             }
         }
 
@@ -116,7 +110,7 @@ namespace SkinEditor.ConnectionHelpers
 
     public class FilePathValidationRule : ValidationRule
     {
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             if (value != null && value.GetType() != typeof(string))
                 return new ValidationResult(false, "Input value was of the wrong type, expected a text");
@@ -124,10 +118,7 @@ namespace SkinEditor.ConnectionHelpers
             //check for empty/null file path:
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrWhiteSpace(filePath))
             {
-                if (!AllowEmptyPath)
-                    return new ValidationResult(false, string.Format("The {0} may not be empty.",Message));
-                else
-                    return new ValidationResult(true, null);
+                return !AllowEmptyPath ? new ValidationResult(false, string.Format("The {0} may not be empty.",Message)) : new ValidationResult(true, null);
             }
 
             if (IsFileNameOnly)
@@ -154,7 +145,7 @@ namespace SkinEditor.ConnectionHelpers
                 //check the filename (if one can be isolated out):
                 try
                 {
-                    string fileName = Path.GetFileName(filePath);
+                    var fileName = Path.GetFileName(filePath);
                     if (Path.GetInvalidFileNameChars().Any(x => fileName.Contains(x)))
                         throw new ArgumentException(string.Format("The characters {0} are not permitted in a {1}.", GetPrinatbleInvalidChars(Path.GetInvalidFileNameChars()), Message));
                 }
@@ -181,9 +172,9 @@ namespace SkinEditor.ConnectionHelpers
         public bool IsFilePathOnly { get; set; }
         
 
-        private string GetPrinatbleInvalidChars(char[] chars)
+        private static string GetPrinatbleInvalidChars(IEnumerable<char> chars)
         {
-            string invalidChars = string.Join("", chars.Where(x => !Char.IsWhiteSpace(x)));
+            var invalidChars = string.Join("", chars.Where(x => !Char.IsWhiteSpace(x)));
             return invalidChars;
         }
     }

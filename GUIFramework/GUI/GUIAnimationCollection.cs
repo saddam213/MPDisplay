@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media.Animation;
-using GUIFramework.Managers;
-using GUISkinFramework.Animations;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -38,15 +35,16 @@ namespace GUIFramework.GUI
             _element = element;
             _startedCallback = animationStartedCallback;
             _completedCallback = animationCompletedCallback;
-            if (_element != null)
+            if (_element == null) return;
+
+            foreach (XmlAnimationCondition condition in Enum.GetValues(typeof(XmlAnimationCondition)))
             {
-                foreach (XmlAnimationCondition condition in Enum.GetValues(typeof(XmlAnimationCondition)))
-                {
-                    if (condition != XmlAnimationCondition.None && !_animations.ContainsKey(condition))
-                    {
-                        _animations.Add(condition, GUIAnimationFactory.CreateAnimation(condition, _element, animations.Where(a => a.Condition == condition).OrderBy(x => x.Delay)));
-                    }
-                }
+                if (condition == XmlAnimationCondition.None || _animations.ContainsKey(condition)) continue;
+
+                // ReSharper disable once PossibleMultipleEnumeration
+                var xmlAnimations = animations as IList<XmlAnimation> ?? animations.ToList();
+                var condition1 = condition;
+                _animations.Add(condition, GUIAnimationFactory.CreateAnimation(condition, _element, xmlAnimations.Where(a => a.Condition == condition1).OrderBy(x => x.Delay)));
             }
         }
 
@@ -60,31 +58,30 @@ namespace GUIFramework.GUI
         /// <param name="condition">The condition.</param>
         public void StartAnimation(XmlAnimationCondition condition)
         {
-            if (_element != null && _animations.ContainsKey(condition))
+            if (_element == null || !_animations.ContainsKey(condition)) return;
+
+            if (_animations[GetDependantAnimation(condition)] != null)
             {
-                if (_animations[GetDependantAnimation(condition)] != null)
-                {
-                    _animations[GetDependantAnimation(condition)].OnAnimationComplete -= OnAnimationComplete;
-                }
+                _animations[GetDependantAnimation(condition)].OnAnimationComplete -= OnAnimationComplete;
+            }
 
-                if (_animations[condition] != null)
-                {
-                    _animations[condition].OnAnimationComplete -= OnAnimationComplete;
-                }
+            if (_animations[condition] != null)
+            {
+                _animations[condition].OnAnimationComplete -= OnAnimationComplete;
+            }
 
-                _startedCallback(condition);
+            _startedCallback(condition);
 
-                if (_animations[condition] != null)
+            if (_animations[condition] != null)
+            {
+                _animations[condition].OnAnimationComplete += OnAnimationComplete;
+                _animations[condition].Begin(_element, HandoffBehavior.SnapshotAndReplace, true);
+            }
+            else
+            {
+                if (_completedCallback != null)
                 {
-                    _animations[condition].OnAnimationComplete += OnAnimationComplete;
-                    _animations[condition].Begin(_element, HandoffBehavior.SnapshotAndReplace, true);
-                }
-                else
-                {
-                    if (_completedCallback != null)
-                    {
-                        _completedCallback(condition);
-                    }
+                    _completedCallback(condition);
                 }
             }
         }
@@ -95,12 +92,11 @@ namespace GUIFramework.GUI
         /// <param name="condition">The condition.</param>
         private void OnAnimationComplete(XmlAnimationCondition condition)
         {
-            if (_element != null && _completedCallback != null)
+            if (_element == null || _completedCallback == null) return;
+
+            if (_animations.ContainsKey(condition))
             {
-                if (_animations.ContainsKey(condition))
-                {
-                    _completedCallback(condition);
-                }
+                _completedCallback(condition);
             }
         }
 
@@ -109,7 +105,7 @@ namespace GUIFramework.GUI
         /// </summary>
         /// <param name="condition">The condition.</param>
         /// <returns></returns>
-        private XmlAnimationCondition GetDependantAnimation(XmlAnimationCondition condition)
+        private static XmlAnimationCondition GetDependantAnimation(XmlAnimationCondition condition)
         {
             switch (condition)
             {
@@ -133,8 +129,6 @@ namespace GUIFramework.GUI
                     return XmlAnimationCondition.PropertyChanged;
                 case XmlAnimationCondition.PropertyChanged:
                     return XmlAnimationCondition.PropertyChanging;
-                default:
-                    break;
             }
             return condition;
         } 

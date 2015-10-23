@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
+using MessageFramework.DataObjects;
 
-namespace MessageFramework.DataObjects
+namespace MessageFramework.Messages
 {
     [DataContract]
     public class APIMediaPortalMessage
@@ -25,7 +24,7 @@ namespace MessageFramework.DataObjects
     {
         ActionMessage,
         WindowInfoMessage,
-        DialogInfoMessage,
+        DialogInfoMessage
     }
 
     public class APIWindowInfoMessage
@@ -49,7 +48,7 @@ namespace MessageFramework.DataObjects
         MediaPortalWindow,
         WindowListAction,
         DialogListAction,
-        GuideAction,
+        GuideAction
     }
 
     public class APIGuideAction
@@ -73,20 +72,15 @@ namespace MessageFramework.DataObjects
 
         public bool IsEqual(APIListAction action)
         {
-            if (action == null || this == null)
+            if (action == null)
             {
-                return this == null && action == null;
+                return false;
             }
 
-            if (ActionType == action.ActionType
-                && ItemListType == action.ItemListType
-                && ItemText == action.ItemText
-                && ItemIndex == action.ItemIndex)
-            {
-                return true;
-            }
-
-            return false;
+            return ActionType == action.ActionType
+                   && ItemListType == action.ItemListType
+                   && ItemText == action.ItemText
+                   && ItemIndex == action.ItemIndex;
         }
 
     }

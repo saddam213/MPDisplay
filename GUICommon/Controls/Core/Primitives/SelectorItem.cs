@@ -2,7 +2,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 
-namespace MPDisplay.Common.Controls.Primitives
+namespace MPDisplay.Common.Controls.Core
 {
     public class SelectorItem : ContentControl
     {
@@ -31,17 +31,16 @@ namespace MPDisplay.Common.Controls.Primitives
 
         private static void OnIsSelectedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            SelectorItem selectorItem = o as SelectorItem;
+            var selectorItem = o as SelectorItem;
             if (selectorItem != null)
                 selectorItem.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsSelectedChanged(bool oldValue, bool newValue)
         {
-            if (newValue)
-                RaiseSelectionChangedEvent(new RoutedEventArgs(Selector.SelectedEvent, this));
-            else
-                RaiseSelectionChangedEvent(new RoutedEventArgs(Selector.UnSelectedEvent, this));
+            RaiseSelectionChangedEvent(newValue
+                ? new RoutedEventArgs(Selector.SelectedEvent, this)
+                : new RoutedEventArgs(Selector.UnSelectedEvent, this));
         }
 
         internal Selector ParentSelector
@@ -71,7 +70,7 @@ namespace MPDisplay.Common.Controls.Primitives
 
         private void RaiseSelectionChangedEvent(RoutedEventArgs e)
         {
-            base.RaiseEvent(e);
+            RaiseEvent(e);
         }
 
         #endregion //Methods

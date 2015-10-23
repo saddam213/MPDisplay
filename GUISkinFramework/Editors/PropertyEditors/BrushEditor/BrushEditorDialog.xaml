@@ -1,9 +1,7 @@
-﻿<Window x:Class="GUISkinFramework.Editor.PropertyEditors.BrushEditorDialog"
+﻿<Window x:Class="GUISkinFramework.Editors.BrushEditorDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:BrushEditors="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
+        xmlns:brushEditor="clr-namespace:GUISkinFramework.Editors"
         Title="Brush Editor" x:Name="UI" Height="505" MinHeight="505" Width="980" MinWidth="980"   >
 
     <Grid DataContext="{Binding ElementName=UI}">
@@ -11,7 +9,7 @@
             <RowDefinition Height="1*"/>
             <RowDefinition Height="40"/>
         </Grid.RowDefinitions>
-        <BrushEditors:BrushTypeEditor SkinInfo="{Binding SkinInfo}" EditBrush="{Binding Value, Mode=OneWay}" OnBrushChanged="BrushTypeEditor_OnBrushChanged" />
+        <brushEditor:BrushTypeEditor SkinInfo="{Binding SkinInfo}" EditBrush="{Binding Value, Mode=OneWay}" OnBrushChanged="BrushTypeEditor_OnBrushChanged" />
         <Button Content="OK" Width="92" Height="30" HorizontalAlignment="Right" Margin="0,0,110,0" Click="Button_Ok_Click" Grid.Row="1"/>
         <Button Content="Cancel" HorizontalAlignment="Right"  Width="92" Height="30" Margin="0,0,5,0" Click="Button_Cancel_Click" Grid.Row="1"/>
         <Button Content="Save Style" Width="92" Height="30" HorizontalAlignment="Left" Margin="5,0,0,0" Click="Button_SaveStyle_Click" Grid.Row="1" />

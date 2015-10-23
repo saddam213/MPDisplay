@@ -1,9 +1,9 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class FontComboBoxEditor : ComboBoxEditor
     {
@@ -11,14 +11,11 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
         {
             if (propertyItem.PropertyType == typeof(FontFamily) || propertyItem.Name.Contains("FontType"))
                 return GetFontFamilies();
-            else if (propertyItem.PropertyType == typeof(FontWeight) || propertyItem.Name.Contains("FontWeight"))
+            if (propertyItem.PropertyType == typeof(FontWeight) || propertyItem.Name.Contains("FontWeight"))
                 return GetFontWeights();
-            else if (propertyItem.PropertyType == typeof(FontStyle))
+            if (propertyItem.PropertyType == typeof(FontStyle))
                 return GetFontStyles();
-            else if (propertyItem.PropertyType == typeof(FontStretch))
-                return GetFontStretches();
-
-            return null;
+            return propertyItem.PropertyType == typeof(FontStretch) ? GetFontStretches() : null;
         }
 
         private static IList<object> GetFontFamilies()
@@ -30,7 +27,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         private static IList<object> GetFontWeights()
         {
-            return new List<object>()
+            return new List<object>
             {
                 FontWeights.Black.ToString(), 
                 FontWeights.Bold.ToString(), 
@@ -47,7 +44,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         private static IList<object> GetFontStyles()
         {
-            return new List<object>()
+            return new List<object>
             {
                 FontStyles.Italic,
                 FontStyles.Normal
@@ -56,7 +53,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         private static IList<object> GetFontStretches()
         {
-            return new List<object>()
+            return new List<object>
             {
                 FontStretches.Condensed,
                 FontStretches.Expanded,

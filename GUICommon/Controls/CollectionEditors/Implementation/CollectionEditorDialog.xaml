@@ -1,8 +1,7 @@
 ﻿<Window x:Class="MPDisplay.Common.Controls.CollectionEditorDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:extToolkit="clr-namespace:MPDisplay.Common.Controls"
-        xmlns:propertyGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid"
+        xmlns:implementation="clr-namespace:MPDisplay.Common.Controls"
         Title="Collection Editor" Height="593" Width="686" WindowStartupLocation="CenterScreen">
     
     <Grid Margin="10">
@@ -11,7 +10,7 @@
             <RowDefinition Height="Auto" />
         </Grid.RowDefinitions>
         
-        <extToolkit:CollectionEditor x:Name="_propertyGrid"
+        <implementation:CollectionEditor x:Name="PropertyGrid"
                                      ItemsSourceType="{Binding ItemsSourceType, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                                      ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"
                                      NewItemTypes="{Binding NewItemTypes, RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=Window}}"

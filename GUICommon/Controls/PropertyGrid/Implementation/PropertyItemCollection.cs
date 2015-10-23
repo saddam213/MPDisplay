@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Windows.Data;
@@ -44,10 +43,10 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             if (text == null)
                 return;
 
-            GetDefaultView().Filter = (item) => 
+            GetDefaultView().Filter = item => 
             {
                 var property = item as PropertyItem;
-                return property.DisplayName.ToLower().StartsWith(text.ToLower());
+                return property != null && property.DisplayName.ToLower().StartsWith(text.ToLower());
             };
         }
     }

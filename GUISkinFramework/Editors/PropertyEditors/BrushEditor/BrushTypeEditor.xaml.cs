@@ -1,33 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.IO;
+﻿using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors.PropertyEditor;
-using GUISkinFramework.PropertyEditors;
-using GUISkinFramework.Skin;
 using Common.Helpers;
+using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushTypeEditor.xaml
     /// </summary>
-    public partial class BrushTypeEditor : UserControl, INotifyPropertyChanged
+    public partial class BrushTypeEditor : INotifyPropertyChanged
     {
         private XmlBrush _selectedStyle;
         private XmlBrush _brush;
@@ -93,7 +76,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// </summary>
         public static readonly DependencyProperty EditBrushProperty =
             DependencyProperty.Register("EditBrush", typeof(XmlBrush)
-            , typeof(BrushTypeEditor), new PropertyMetadata(null, new PropertyChangedCallback(OnEditBrushChanged)));
+            , typeof(BrushTypeEditor), new PropertyMetadata(null, OnEditBrushChanged));
 
         /// <summary>
         /// Called when [edit brush changed].
@@ -102,16 +85,16 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <param name="e">The <see cref="DependencyPropertyChangedEventArgs"/> instance containing the event data.</param>
         private static void OnEditBrushChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (e.NewValue != null)
+            if (e.NewValue == null) return;
+
+            var editor = (d as BrushTypeEditor);
+            var brush = (e.NewValue as XmlBrush).CreateCopy();
+            if (editor == null) return;
+            editor.SetBrushType(brush);
+            editor.Brush = brush;
+            if (brush != null)
             {
-                var editor = (d as BrushTypeEditor);
-                var brush = (e.NewValue as XmlBrush).CreateCopy();
-                editor.SetBrushType(brush);
-                editor.Brush = brush;
-                if (brush != null)
-                {
-                    editor.SelectedStyle = editor.SkinInfo.Style.BrushStyles.FirstOrDefault(s => s.StyleId == brush.StyleId);
-                }
+                editor.SelectedStyle = editor.SkinInfo.Style.BrushStyles.FirstOrDefault(s => s.StyleId == brush.StyleId);
             }
         }
 
@@ -160,9 +143,9 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// Sets the type of the brush.
         /// </summary>
         /// <param name="brush">The brush.</param>
-        private void SetBrushType(XmlBrush brush)
+        private void SetBrushType(XmlStyle brush)
         {
-            BrushType brushType = BrushType.None;
+            BrushType brushType;
 
             if (brush != null && !string.IsNullOrEmpty(brush.StyleId))
             {
@@ -217,8 +200,6 @@ namespace GUISkinFramework.Editor.PropertyEditors
                 case BrushType.Image:
                     Brush = new XmlImageBrush();
                     break;
-                default:
-                    break;
             }
             FireBrushChanged(Brush);
         }
@@ -241,11 +222,10 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <param name="brush">The brush.</param>
         private void XmlImageBrush_BrushChanged(XmlImageBrush brush)
         {
-            if (CurrentBrushType == BrushType.Image)
-            {
-                Brush = brush;
-                FireBrushChanged(brush);
-            }
+            if (CurrentBrushType != BrushType.Image) return;
+
+            Brush = brush;
+            FireBrushChanged(brush);
         }
 
         /// <summary>
@@ -254,11 +234,10 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <param name="brush">The brush.</param>
         private void XmlGradientBrush_BrushChanged(XmlGradientBrush brush)
         {
-            if (CurrentBrushType == BrushType.Gradient)
-            {
-                Brush = brush;
-                FireBrushChanged(brush);
-            }
+            if (CurrentBrushType != BrushType.Gradient) return;
+
+            Brush = brush;
+            FireBrushChanged(brush);
         }
 
         /// <summary>
@@ -268,16 +247,14 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <param name="e">The e.</param>
         private void XmlColorBrush_BrushChanged(object sender, RoutedPropertyChangedEventArgs<Color> e)
         {
-            if (CurrentBrushType == BrushType.Color)
+            if (CurrentBrushType != BrushType.Color) return;
+
+            Brush = new XmlColorBrush
             {
-               
-                Brush = new XmlColorBrush
-                    {
-                        Color = e.NewValue != null ? e.NewValue.ToString() : "Transparent",
-                        StyleId = SelectedStyle == null ? string.Empty : SelectedStyle.StyleId
-                    };
-                FireBrushChanged(Brush);
-            }
+                Color = e.NewValue.ToString(),
+                StyleId = SelectedStyle == null ? string.Empty : SelectedStyle.StyleId
+            };
+            FireBrushChanged(Brush);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -303,10 +280,10 @@ namespace GUISkinFramework.Editor.PropertyEditors
         Image 
     }
 
-    //public enum GradientAngle 
-    //{ 
-    //    Vertical, 
-    //    Horizontal,
-    //    Custom 
-    //};
+    public enum GradientAngle
+    {
+        Vertical,
+        Horizontal,
+        Custom
+    };
 }

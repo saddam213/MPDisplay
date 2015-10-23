@@ -1,19 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
+﻿using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
-using Common.Logging;
-using System.IO;
 
 namespace SkinEditor
 {
     /// <summary>
     /// Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         private static string _startupSkinInfoFilename = string.Empty;
         public static string StartupSkinInfoFilename
@@ -25,21 +19,13 @@ namespace SkinEditor
         {
          
             base.OnStartup(e);
-            if (e.Args != null && e.Args.Any())
-            {
-                string skinInfoFile = e.Args[0];
-                if (File.Exists(skinInfoFile))
-                {
-                    _startupSkinInfoFilename = skinInfoFile;
-                }
-            }
-          
-        }
+            if (!e.Args.Any()) return;
 
-        protected override void OnExit(ExitEventArgs e)
-        {
-           
-            base.OnExit(e);
+            var skinInfoFile = e.Args[0];
+            if (File.Exists(skinInfoFile))
+            {
+                _startupSkinInfoFilename = skinInfoFile;
+            }
         }
     }
 }

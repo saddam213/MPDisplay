@@ -1,8 +1,7 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:local="clr-namespace:MPDisplay.Common.Controls"
-                    xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters"
-                    xmlns:prims="clr-namespace:MPDisplay.Common.Controls.Primitives">
+                    xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters">
 
     <coreConverters:InverseBoolConverter x:Key="InverseBoolConverter" />
 

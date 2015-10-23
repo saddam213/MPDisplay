@@ -1,34 +1,15 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using Common.Helpers;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class IntMinMaxValueEditor : UserControl, ITypeEditor
+    public partial class IntMinMaxValueEditor : ITypeEditor
     {
         private PropertyItem _propertyItem;
 
@@ -38,10 +19,9 @@ namespace GUISkinFramework.Editor.PropertyEditors
         }
 
         public static readonly DependencyProperty ValueProperty =
-            DependencyProperty.Register("Value", typeof(int), typeof(IntMinMaxValueEditor)
-            ,new PropertyMetadata(0, new PropertyChangedCallback(test)));
+            DependencyProperty.Register("Value", typeof(int), typeof(IntMinMaxValueEditor), new PropertyMetadata(0, Test));
 
-        private static void test(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void Test(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
            
         }
@@ -75,22 +55,18 @@ namespace GUISkinFramework.Editor.PropertyEditors
         {
             _propertyItem = propertyItem;
 
-            if (_propertyItem != null && _propertyItem.Instance != null)
+            if (_propertyItem == null || _propertyItem.Instance == null) return this;
+            var propertyRange = ReflectionHelper.GetPropertyPath(_propertyItem.Instance, _propertyItem.BindingPath)
+                .GetCustomAttributes(typeof(PropertyRangeAttribute), true)
+                .FirstOrDefault() as PropertyRangeAttribute;
+            if (propertyRange != null)
             {
-                var propertyRange = ReflectionHelper.GetPropertyPath(_propertyItem.Instance, _propertyItem.BindingPath)
-               .GetCustomAttributes(typeof(PropertyRangeAttribute), true)
-               .FirstOrDefault() as PropertyRangeAttribute;
-                if (propertyRange != null)
-                {
-                    MinValue = propertyRange.Min;
-                    MaxValue = propertyRange.Max;
-                }
-
-                Binding binding = new Binding("Value");
-                binding.Source = _propertyItem;
-                binding.Mode = BindingMode.TwoWay;
-                BindingOperations.SetBinding(this, ValueProperty, binding);
+                MinValue = propertyRange.Min;
+                MaxValue = propertyRange.Max;
             }
+
+            var binding = new Binding("Value") {Source = _propertyItem, Mode = BindingMode.TwoWay};
+            BindingOperations.SetBinding(this, ValueProperty, binding);
 
             return this;
         }

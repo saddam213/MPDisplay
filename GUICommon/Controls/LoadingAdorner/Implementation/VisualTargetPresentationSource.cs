@@ -7,7 +7,7 @@ namespace MPDisplay.Common.Controls
     public class VisualTargetPresentationSource : PresentationSource
     {
         private VisualTarget _visualTarget;
-        private bool _isDisposed = false;
+        private bool _isDisposed;
 
         public VisualTargetPresentationSource(HostVisual hostVisual)
         {
@@ -22,7 +22,7 @@ namespace MPDisplay.Common.Controls
             get { return _visualTarget.RootVisual; }
             set
             {
-                Visual oldRoot = _visualTarget.RootVisual;
+                var oldRoot = _visualTarget.RootVisual;
 
                 // Set the root visual of the VisualTarget.  This visual will
                 // now be used to visually compose the scene.
@@ -34,7 +34,7 @@ namespace MPDisplay.Common.Controls
                 RootChanged(oldRoot, value);
 
                 // Kickoff layout...
-                UIElement rootElement = value as UIElement;
+                var rootElement = value as UIElement;
                 if (rootElement != null)
                 {
                     rootElement.Measure(new Size(Double.PositiveInfinity, Double.PositiveInfinity));

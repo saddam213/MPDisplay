@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
-using System.Collections;
-using System.Reflection;
 
 namespace MPDisplay.Common.Controls
 {
@@ -30,7 +29,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnIsOpenChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PrimitiveTypeCollectionEditor primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
+            var primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
             if (primitiveTypeCollectionEditor != null)
                 primitiveTypeCollectionEditor.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
@@ -53,7 +52,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PrimitiveTypeCollectionEditor primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
+            var primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
             if (primitiveTypeCollectionEditor != null)
                 primitiveTypeCollectionEditor.OnItemsSourceChanged((IList)e.OldValue, (IList)e.NewValue);
         }
@@ -100,7 +99,7 @@ namespace MPDisplay.Common.Controls
 
         private static void OnTextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            PrimitiveTypeCollectionEditor primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
+            var primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
             if (primitiveTypeCollectionEditor != null)
                 primitiveTypeCollectionEditor.OnTextChanged((string)e.OldValue, (string)e.NewValue);
         }
@@ -122,29 +121,24 @@ namespace MPDisplay.Common.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(PrimitiveTypeCollectionEditor), new FrameworkPropertyMetadata(typeof(PrimitiveTypeCollectionEditor)));
         }
 
-        public PrimitiveTypeCollectionEditor()
-        {
-
-        }
-
         #endregion //Constructors
 
         #region Methods
 
         private void PersistChanges()
         {
-            IList list = ResolveItemsSource();
+            var list = ResolveItemsSource();
             if (list == null)
                 return;
 
             //the easiest way to persist changes to the source is to just clear the source list and then add all items to it.
             list.Clear();
 
-            IList items = ResolveItems();
+            var items = ResolveItems();
             foreach (var item in items)
             {
                 list.Add(item);
-            };
+            }
 
             // if something went wrong during conversion we want to reload the text to show only valid entries
             if (_conversionFailed)
@@ -155,30 +149,28 @@ namespace MPDisplay.Common.Controls
         {
             IList items = new List<object>();
 
-            if (ItemType == null)
-                return items;
+            if (ItemType == null) return items;
 
-            string[] textArray = Text.Split('\n');
+            var textArray = Text.Split('\n');
 
-            foreach (string s in textArray)
+            foreach (var s in textArray)
             {
-                string valueString = s.TrimEnd('\r');
-                if (!String.IsNullOrEmpty(valueString))
-                {
-                    object value = null;
-                    try
-                    {
-                        value = Convert.ChangeType(valueString, ItemType);
-                    }
-                    catch
-                    {
-                        //a conversion failed
-                        _conversionFailed = true;
-                    }
+                var valueString = s.TrimEnd('\r');
+                if (String.IsNullOrEmpty(valueString)) continue;
 
-                    if (value != null)
-                        items.Add(value);
+                object value = null;
+                try
+                {
+                    value = Convert.ChangeType(valueString, ItemType);
                 }
+                catch
+                {
+                    //a conversion failed
+                    _conversionFailed = true;
+                }
+
+                if (value != null)
+                    items.Add(value);
             }
 
             return items;
@@ -186,21 +178,17 @@ namespace MPDisplay.Common.Controls
 
         private IList ResolveItemsSource()
         {
-            if (ItemsSource == null)
-                ItemsSource = CreateItemsSource();
-
-            return ItemsSource;
+            return ItemsSource ?? (ItemsSource = CreateItemsSource());
         }
 
         private IList CreateItemsSource()
         {
             IList list = null;
 
-            if (ItemsSourceType != null)
-            {
-                ConstructorInfo constructor = ItemsSourceType.GetConstructor(Type.EmptyTypes);
-                list = (IList)constructor.Invoke(null);
-            }
+            if (ItemsSourceType == null) return null;
+
+            var constructor = ItemsSourceType.GetConstructor(Type.EmptyTypes);
+            if (constructor != null) list = (IList)constructor.Invoke(null);
 
             return list;
         }
@@ -208,10 +196,10 @@ namespace MPDisplay.Common.Controls
         private void SetText(IEnumerable collection)
         {
             _surpressTextChanged = true;
-            StringBuilder builder = new StringBuilder();
-            foreach (object obj2 in collection)
+            var builder = new StringBuilder();
+            foreach (var obj2 in collection)
             {
-                builder.Append(obj2.ToString());
+                builder.Append(obj2);
                 builder.AppendLine();
             }
             Text = builder.ToString().Trim();

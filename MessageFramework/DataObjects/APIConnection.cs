@@ -1,19 +1,29 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.Serialization;
-using System.Text;
 
 namespace MessageFramework.DataObjects
 {
     [DataContract]
     public class APIConnection
     {
-        public APIConnection(string connectionName)
+        public APIConnection(ConnectionType type)
         {
-            this.ConnectionName = connectionName;
+            ConnectionName = type.ToString("g") +"_" + Guid.NewGuid().ToString("n").Substring(0, 10);
+            ConnectionType = type;
         }
         [DataMember]
         public string ConnectionName { get; set; }
+
+        [DataMember]
+        public ConnectionType ConnectionType { get; set; }
     }
-}
+    
+    public enum ConnectionType
+    {
+        Unknown,
+        MediaPortalPlugin,
+        MPDisplay,
+        SkinEditor
+    }
+} 
+

@@ -1,37 +1,33 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
-using Common;
-using Common.Logging;
+using Common.Log;
+using Common.MessengerService;
 using Common.Settings;
 using Common.Status;
 using GUIFramework.GUI;
-using GUISkinFramework;
-using GUISkinFramework.Property;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
 using MessageFramework.DataObjects;
-using MPDisplay.Common;
+using MessageFramework.Messages;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public class PropertyRepository : IRepository
     {
         #region Singleton Implementation
 
-        private PropertyRepository() { }
+        private PropertyRepository()
+        {
+            _log = LoggingManager.GetLog(typeof (PropertyRepository));
+        }
+
         private static PropertyRepository _instance;
         public static PropertyRepository Instance
         {
-            get
-            {
-                if (_instance == null)
-                {
-                    _instance = new PropertyRepository();
-                }
-                return _instance;
-            }
+            get { return _instance ?? (_instance = new PropertyRepository()); }
         }
 
         public static void RegisterPropertyMessage(GUIControl control, string property)
@@ -104,13 +100,12 @@ namespace GUIFramework.Managers
 
         #endregion
 
-        private Log Log = LoggingManager.GetLog(typeof(PropertyRepository));
-
 
         private List<APIPropertyMessage> _skinProperties = new List<APIPropertyMessage>();
         private MessengerService<string> _propertyService = new MessengerService<string>();
         private DataRepository<string, APIPropertyMessage> _propertyRepository;
         private SystemStatusInfo _systemInfo;
+        private Log _log;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -141,20 +136,16 @@ namespace GUIFramework.Managers
         /// <summary>
         /// Adds an APIProperty property.
         /// </summary>
-        /// <param name="tag">The property tag.</param>
-        /// <param name="tagValue">The property value.</param>
+        /// <param name="propertyMessage">The property message.</param>
         public void AddProperty(APIPropertyMessage propertyMessage)
         {
-            if (propertyMessage != null)
-            {
-                // Log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); //Test
- 
-                if (_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage))
-                {
-                // Log.Message(LogLevel.Verbose, "Notify AddProperty Changed: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label ); //Test
-                   NotifyPropertyChanged(propertyMessage.SkinTag);
-                }
-            }
+            if (propertyMessage == null) return;
+
+            _log.Message(LogLevel.Verbose, "AddProperty: SkinTag: {0}, Label: {1}", propertyMessage.SkinTag, propertyMessage.Label );
+
+            if (!_propertyRepository.AddOrUpdate(propertyMessage.SkinTag, propertyMessage)) return;
+
+            NotifyPropertyChanged(propertyMessage.SkinTag);
         }
 
         public void AddProperty(string tag, double tagValue)
@@ -189,41 +180,41 @@ namespace GUIFramework.Managers
 
         public void DeregisterProperty(GUIControl control, string propertyString)
         {
-            if (HasProperties(propertyString))
+            if (!HasProperties(propertyString)) return;
+
+            foreach (var item in GetPropertiesFromXmlString(propertyString))
             {
-                foreach (var item in GetPropertiesFromXmlString(propertyString))
-                {
-                    _propertyService.Deregister(item, control);
-                }
+                _propertyService.Deregister(item, control);
             }
         }
 
         public void RegisterProperty(GUIControl control, string propertyString)
         {
-            if (HasProperties(propertyString))
+            if (!HasProperties(propertyString)) return;
+
+            foreach (var property in GetPropertiesFromXmlString(propertyString))
             {
-                foreach (var property in GetPropertiesFromXmlString(propertyString))
-                {
-                    _propertyService.Register(property, control.OnPropertyChanged);
-                }
+                _propertyService.Register(property, control.OnPropertyChanged);
             }
         }
 
         public Task<string> GetControlLabelValue(string xmlstring, string format)
         {
-            return Task.Factory.StartNew<string>(() =>
+            return Task.Factory.StartNew(() =>
             {
-                string returnValue = string.Empty;
+                var returnValue = string.Empty;
                 if (!string.IsNullOrEmpty(xmlstring))
                 {
                     var parts = xmlstring.Contains("+") ? xmlstring.Split('+').ToList() : new List<string> { xmlstring };
                     foreach (var part in parts)
                     {
+                        // ReSharper disable once InvertIf
                         if (part.StartsWith("@"))
                         {
                             returnValue += SkinInfo.GetLanguageValue(part);
                             continue;
                         }
+                        // ReSharper disable once InvertIf
                         if (part.StartsWith("#"))
                         {
                             if (string.IsNullOrEmpty(format))
@@ -245,7 +236,7 @@ namespace GUIFramework.Managers
 
         public Task<byte[]> GetControlImageValue(string xmlstring)
         {
-            return Task.Factory.StartNew<byte[]>(() =>
+            return Task.Factory.StartNew(() =>
               {
                   if (!string.IsNullOrEmpty(xmlstring))
                   {
@@ -253,11 +244,8 @@ namespace GUIFramework.Managers
                       {
                           return GetPropertyImageValue(xmlstring);
                       }
-                      else
-                      {
-                          string filename = GetControlLabelValue(xmlstring, null).Result;
-                                return SkinInfo.GetImageValue(filename);
-                      }
+                      var filename = GetControlLabelValue(xmlstring, null).Result;
+                      return SkinInfo.GetImageValue(filename);
                   }
                   return null;
               });
@@ -265,10 +253,7 @@ namespace GUIFramework.Managers
 
         public Task<double> GetControlNumberValue(string xmlstring)
         {
-            return Task.Factory.StartNew<double>(() =>
-            {
-                return GetPropertyNumberValue(xmlstring);
-            });
+            return Task.Factory.StartNew(() => GetPropertyNumberValue(xmlstring));
         }
 
         public List<XmlProperty> GetControlProperties(GUIControl control, string xmlstring)
@@ -276,45 +261,33 @@ namespace GUIFramework.Managers
             var returnValue = new List<XmlProperty>();
             if (HasProperties(xmlstring))
             {
-                foreach (var property in GetPropertiesFromXmlString(xmlstring))
-                {
-                    returnValue.Add(SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == property));
-                }
+                returnValue.AddRange(GetPropertiesFromXmlString(xmlstring).Select(property => SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == property)));
             }
             return returnValue;
         }
 
         public List<APIPropertyMessage> GetControlHostProperties(IControlHost controlHost)
         {
-            if (controlHost != null)
+            if (controlHost == null) return new List<APIPropertyMessage>();
+
+            var skinTags = new List<string>();
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
+            foreach (var control in controlHost.Controls.GetControls())
             {
-                var skinTags = new List<string>();
-                foreach (var control in controlHost.Controls.GetControls())
+                if (control.RegisteredProperties == null || !control.RegisteredProperties.Any()) continue;
+
+                foreach (var property in control.RegisteredProperties.Where(property => property != null && !string.IsNullOrEmpty(property.SkinTag) && !skinTags.Contains(property.SkinTag)))
                 {
-                    if (control.RegisteredProperties != null && control.RegisteredProperties.Any())
-                    {
-                        foreach (var property in control.RegisteredProperties)
-                        {
-                            if (property != null && !string.IsNullOrEmpty(property.SkinTag) && !skinTags.Contains(property.SkinTag))
-                            {
-                                skinTags.Add(property.SkinTag);
-                            }
-                        }
-                    }
+                    skinTags.Add(property.SkinTag);
                 }
-                return _skinProperties.Where(p => p != null && skinTags.Contains(p.SkinTag)).ToList();
             }
-            return new List<APIPropertyMessage>();
+            return _skinProperties.Where(p => p != null && skinTags.Contains(p.SkinTag)).ToList();
         }
 
         private string GetPropertyLabelValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            if (result != null)
-            {
-                return result.Label;
-            }
-            return string.Empty;
+            return result != null ? result.Label : string.Empty;
         }
 
         private byte[] GetPropertyImageValue(string tag)
@@ -330,19 +303,15 @@ namespace GUIFramework.Managers
         private double GetPropertyNumberValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            if (result != null)
-            {
-                return result.Number;
-            }
-            return 0;
+            return result != null ? result.Number : 0;
         }
 
-        private bool HasProperties(string xmlString)
+        private static bool HasProperties(string xmlString)
         {
             return !string.IsNullOrEmpty(xmlString) && xmlString.Contains("#");
         }
 
-        private IEnumerable<string> GetPropertiesFromXmlString(string xmlString)
+        private static IEnumerable<string> GetPropertiesFromXmlString(string xmlString)
         {
             if (xmlString.Contains("+"))
             {
@@ -362,20 +331,16 @@ namespace GUIFramework.Managers
         private List<APIPropertyMessage> GetSkinProperties()
         {
             var properties = new List<APIPropertyMessage>();
-            if (SkinInfo != null)
+            if (SkinInfo == null) return properties;
+
+            foreach (var xmlProperty in SkinInfo.Properties.Where(xmlProperty => properties.All(x => x.SkinTag != xmlProperty.SkinTag)))
             {
-                foreach (var xmlProperty in SkinInfo.Properties)
+                properties.Add(new APIPropertyMessage
                 {
-                    if (!properties.Any(x => x.SkinTag == xmlProperty.SkinTag))
-                    {
-                        properties.Add(new APIPropertyMessage
-                        {
-                            SkinTag = xmlProperty.SkinTag,
-                            Tags = xmlProperty.MediaPortalTags.Select(x => x.Tag).ToList(),
-                            PropertyType = xmlProperty.PropertyType.ToAPIType()
-                        });
-                    }
-                }
+                    SkinTag = xmlProperty.SkinTag,
+                    Tags = xmlProperty.MediaPortalTags.Select(x => x.Tag).ToList(),
+                    PropertyType = xmlProperty.PropertyType.ToAPIType()
+                });
             }
             return properties;
         }
@@ -394,25 +359,21 @@ namespace GUIFramework.Managers
 
         private void StartSystemInfoMonitoring()
         {
-            if (Settings.IsSystemInfoEnabled)
-            {
-                _systemInfo = new SystemStatusInfo();
-                _systemInfo.TagPrefix = "MPD";
-                _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
-                _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
-                _systemInfo.StartMonitoring();
-            }
+            if (!Settings.IsSystemInfoEnabled) return;
+
+            _systemInfo = new SystemStatusInfo {TagPrefix = "MPD"};
+            _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
+            _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
+            _systemInfo.StartMonitoring();
         }
 
         private void StopSystemInfoMonitoring()
         {
-            if (Settings.IsSystemInfoEnabled)
-            {
-                _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
-                _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
-                _systemInfo.StopMonitoring();
-                _systemInfo = null;
-            }
+            if (!Settings.IsSystemInfoEnabled) return;
+            _systemInfo.OnTextDataChanged -= SystemInfo_OnTextDataChanged;
+            _systemInfo.OnNumberDataChanged -= SystemInfo_OnNumberDataChanged;
+            _systemInfo.StopMonitoring();
+            _systemInfo = null;
         }
 
 

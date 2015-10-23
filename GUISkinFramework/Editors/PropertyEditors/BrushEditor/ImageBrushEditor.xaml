@@ -1,14 +1,10 @@
-﻿<UserControl x:Class="GUISkinFramework.Editors.PropertyEditors.ImageBrushEditor"
+﻿<UserControl x:Class="GUISkinFramework.Editors.ImageBrushEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                xmlns:sys="clr-namespace:System;assembly=mscorlib"
-               xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
-                 xmlns:editors="clr-namespace:GUISkinFramework.Editor.PropertyEditors.PropertyEditor"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-			 xmlns:common="clr-namespace:GUISkinFramework.Common"
-			 xmlns:extensions="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
+             xmlns:extensions="clr-namespace:MPDisplay.Common.ExtensionMethods;assembly=MPDisplay.UICommon"
              mc:Ignorable="d"  Name="UI" d:DesignHeight="152" >
     <UserControl.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="StretchValues">
@@ -44,8 +40,7 @@
 		<ListBox SelectedIndex="-1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource images}}" SelectedValuePath="XmlName" SelectedValue="{Binding ImageName,Mode=TwoWay}" 
 		ScrollViewer.HorizontalScrollBarVisibility="Disabled" extensions:ItemsControlExtensions.ScrollItemIntoView="True" >
 			<ListBox.Resources>
-				<SolidColorBrush x:Key="HighlightBrush" Color="DeepSkyBlue"/>
-			
+
 			</ListBox.Resources>
 				<ListBox.GroupStyle>
 				<GroupStyle>

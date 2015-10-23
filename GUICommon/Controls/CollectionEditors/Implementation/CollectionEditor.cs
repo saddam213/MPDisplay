@@ -1,12 +1,12 @@
 ﻿using System;
-using System.Linq;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
-using System.Collections.ObjectModel;
-using System.Collections;
-using System.Reflection;
 
 namespace MPDisplay.Common.Controls
 {
@@ -30,21 +30,20 @@ namespace MPDisplay.Common.Controls
 
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CollectionEditor collectionEditor = (CollectionEditor)d;
+            var collectionEditor = (CollectionEditor)d;
             if (collectionEditor != null)
                 collectionEditor.OnItemSourceChanged((IList)e.OldValue, (IList)e.NewValue);
         }
 
         public void OnItemSourceChanged(IList oldValue, IList newValue)
         {
-            if (newValue != null)
-            {
-                foreach (var item in newValue)
-                    Items.Add(CreateClone(item));
-            }
+            if (newValue == null) return;
+
+            foreach (var item in newValue)
+                Items.Add(CreateClone(item));
         }
 
-        public static readonly DependencyProperty ItemsSourceTypeProperty = DependencyProperty.Register("ItemsSourceType", typeof(Type), typeof(CollectionEditor), new UIPropertyMetadata(null, new PropertyChangedCallback(ItemsSourceTypeChanged)));
+        public static readonly DependencyProperty ItemsSourceTypeProperty = DependencyProperty.Register("ItemsSourceType", typeof(Type), typeof(CollectionEditor), new UIPropertyMetadata(null, ItemsSourceTypeChanged));
         public Type ItemsSourceType
         {
             get { return (Type)GetValue(ItemsSourceTypeProperty); }
@@ -53,7 +52,7 @@ namespace MPDisplay.Common.Controls
 
         private static void ItemsSourceTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            CollectionEditor collectionEditor = (CollectionEditor)d;
+            var collectionEditor = (CollectionEditor)d;
             if (collectionEditor != null)
                 collectionEditor.ItemsSourceTypeChanged((Type)e.OldValue, (Type)e.NewValue);
         }
@@ -73,7 +72,7 @@ namespace MPDisplay.Common.Controls
         public static readonly DependencyProperty SelectedItemProperty = DependencyProperty.Register("SelectedItem", typeof(object), typeof(CollectionEditor), new UIPropertyMetadata(null));
         public object SelectedItem
         {
-            get { return (object)GetValue(SelectedItemProperty); }
+            get { return GetValue(SelectedItemProperty); }
             set { SetValue(SelectedItemProperty, value); }
         }
 
@@ -106,9 +105,9 @@ namespace MPDisplay.Common.Controls
             SelectedItem = newItem;
         }
 
-        private void CanAddNew(object sender, CanExecuteRoutedEventArgs e)
+        private static void CanAddNew(object sender, CanExecuteRoutedEventArgs e)
         {
-            Type t = e.Parameter as Type;
+            var t = e.Parameter as Type;
             if (t != null && t.GetConstructor(Type.EmptyTypes) != null)
                 e.CanExecute = true;
         }
@@ -118,7 +117,7 @@ namespace MPDisplay.Common.Controls
             Items.Remove(e.Parameter);
         }
 
-        private void CanDelete(object sender, CanExecuteRoutedEventArgs e)
+        private static void CanDelete(object sender, CanExecuteRoutedEventArgs e)
         {
             e.CanExecute = e.Parameter != null;
         }
@@ -159,19 +158,17 @@ namespace MPDisplay.Common.Controls
 
         private static void CopyValues(object source, object destination)
         {
-            FieldInfo[] myObjectFields = source.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
-            foreach (FieldInfo fi in myObjectFields)
+            var myObjectFields = source.GetType().GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance);
+            foreach (var fi in myObjectFields)
             {
                 fi.SetValue(destination, fi.GetValue(source));
             }
         }
 
-        private object CreateClone(object source)
+        private static object CreateClone(object source)
         {
-            object clone = null;
-
-            Type type = source.GetType();
-            clone = Activator.CreateInstance(type);
+            var type = source.GetType();
+            var clone = Activator.CreateInstance(type);
             CopyValues(source, clone);
 
             return clone;
@@ -181,34 +178,28 @@ namespace MPDisplay.Common.Controls
         {
             IList list = null;
 
-            if (ItemsSourceType != null)
-            {
-                ConstructorInfo constructor = ItemsSourceType.GetConstructor(Type.EmptyTypes);
-                list = (IList)constructor.Invoke(null);
-            }
+            if (ItemsSourceType == null) return null;
+
+            var constructor = ItemsSourceType.GetConstructor(Type.EmptyTypes);
+            if (constructor != null) list = (IList)constructor.Invoke(null);
 
             return list;
         }
 
-        private object CreateNewItem(Type type)
+        private static object CreateNewItem(Type type)
         {
             return Activator.CreateInstance(type);
         }
 
         private static List<Type> GetNewItemTypes(Type type)
         {
-            List<Type> types = new List<Type>();
             var newItemTypes = type.GetGenericArguments();
-            foreach (var t in newItemTypes)
-            {
-                types.Add(t);
-            }
-            return types;
+            return newItemTypes.ToList();
         }
 
         public void PersistChanges()
         {
-            IList list = ResolveItemsSource();
+            var list = ResolveItemsSource();
             if (list == null)
                 return;
 
@@ -223,10 +214,7 @@ namespace MPDisplay.Common.Controls
 
         private IList ResolveItemsSource()
         {
-            if (ItemsSource == null)
-                ItemsSource = CreateItemsSource();
-
-            return ItemsSource;
+            return ItemsSource ?? (ItemsSource = CreateItemsSource());
         }
 
         #endregion //Methods

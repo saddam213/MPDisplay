@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Dialogs
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlInclude(typeof(XmlMPDialog))]
@@ -284,19 +275,9 @@ namespace GUISkinFramework.Dialogs
 
         public virtual void ApplyStyle(XmlStyleCollection style)
         {
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
         }
-
-
-
-
-
-
-
-
-
-      
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)

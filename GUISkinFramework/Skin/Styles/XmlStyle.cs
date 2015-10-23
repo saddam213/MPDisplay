@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Skin;
 
-namespace GUISkinFramework.Styles
+namespace GUISkinFramework.Skin
 {
     [XmlInclude(typeof(XmlButtonStyle))]
     [XmlInclude(typeof(XmlLabelStyle))]
@@ -43,7 +34,7 @@ namespace GUISkinFramework.Styles
         [Browsable(false)]
         public virtual string StyleType
         {
-            get { return this.GetType().Name.Replace("Xml", ""); }
+            get { return GetType().Name.Replace("Xml", ""); }
         }
 
         #region INotifyPropertyChanged

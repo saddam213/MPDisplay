@@ -1,29 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
 
-namespace Common
+namespace Common.MessengerService
 {
     /// <summary>
     /// Provides loosely-coupled messaging between
     /// various objects.  All references to objects
     /// are stored weakly, to prevent memory leaks.
     /// </summary>
-    public class MessengerService<MessageType>
+    public class MessengerService<TMessageType>
     {
         #region Fields
 
-        readonly MessageToActionsMap<MessageType> _messageToActionsMap = new MessageToActionsMap<MessageType>();
-
-        #endregion
-
-        #region Constructor
-
-        public MessengerService()
-        {
-        }
+        readonly MessageToActionsMap<TMessageType> _messageToActionsMap = new MessageToActionsMap<TMessageType>();
 
         #endregion
 
@@ -34,9 +24,9 @@ namespace Common
         /// </summary>
         /// <param name="message">The message to register for.</param>
         /// <param name="callback">The callback to be called when this message is broadcasted.</param>
-        public void Register(MessageType message, Action callback)
+        public void Register(TMessageType message, Action callback)
         {
-            this.Register(message, callback, null);
+            Register(message, callback, null);
         }
 
         /// <summary>
@@ -44,9 +34,9 @@ namespace Common
         /// </summary>
         /// <param name="message">The message to register for.</param>
         /// <param name="callback">The callback to be called when this message is broadcasted.</param>
-        public void Register<T>(MessageType message, Action<T> callback)
+        public void Register<T>(TMessageType message, Action<T> callback)
         {
-            this.Register(message, callback, typeof(T));
+            Register(message, callback, typeof(T));
         }
 
         /// <summary>
@@ -54,9 +44,9 @@ namespace Common
         /// </summary>
         /// <param name="message">The message to register for.</param>
         /// <param name="callback">The callback to be called when this message is broadcasted.</param>
-        public void Register<T, U>(MessageType message, Action<T, U> callback)
+        public void Register<T, TU>(TMessageType message, Action<T, TU> callback)
         {
-            this.Register(message, callback, typeof(T), typeof(U));
+            Register(message, callback, typeof(T), typeof(TU));
         }
 
         /// <summary>
@@ -64,9 +54,9 @@ namespace Common
         /// </summary>
         /// <param name="message">The message to register for.</param>
         /// <param name="callback">The callback to be called when this message is broadcasted.</param>
-        public void Register<T, U, V>(MessageType message, Action<T, U, V> callback)
+        public void Register<T, TU, TV>(TMessageType message, Action<T, TU, TV> callback)
         {
-            this.Register(message, callback, typeof(T), typeof(U), typeof(V));
+            Register(message, callback, typeof(T), typeof(TU), typeof(TV));
         }
 
         /// <summary>
@@ -74,9 +64,9 @@ namespace Common
         /// </summary>
         /// <param name="message">The message to register for.</param>
         /// <param name="callback">The callback to be called when this message is broadcasted.</param>
-        public void Register<T, U, V, W>(MessageType message, Action<T, U, V, W> callback)
+        public void Register<T, TU, TV, TW>(TMessageType message, Action<T, TU, TV, TW> callback)
         {
-            this.Register(message, callback, typeof(T), typeof(U), typeof(V), typeof(W));
+            Register(message, callback, typeof(T), typeof(TU), typeof(TV), typeof(TW));
         }
 
         /// <summary>
@@ -84,9 +74,9 @@ namespace Common
         /// </summary>
         /// <param name="message">The message to register for.</param>
         /// <param name="callback">The callback to be called when this message is broadcasted.</param>
-        public void Register<T, U, V, W, X>(MessageType message, Action<T, U, V, W, X> callback)
+        public void Register<T, TU, TV, TW, TX>(TMessageType message, Action<T, TU, TV, TW, TX> callback)
         {
-            this.Register(message, callback, typeof(T), typeof(U), typeof(V), typeof(W), typeof(X));
+            Register(message, callback, typeof(T), typeof(TU), typeof(TV), typeof(TW), typeof(TX));
         }
 
         /// <summary>
@@ -97,7 +87,7 @@ namespace Common
         /// <param name="parameterType">Type of the parameter.</param>
         /// <exception cref="System.ArgumentException">'message' cannot be null or empty.</exception>
         /// <exception cref="System.ArgumentNullException">callback</exception>
-        private void Register(MessageType message, Delegate callback, params Type[] parameterType)
+        private void Register(TMessageType message, Delegate callback, params Type[] parameterType)
         {
             if (message == null)
                 throw new ArgumentException("'message' cannot be null or empty.");
@@ -113,7 +103,7 @@ namespace Common
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="owner">The owner.</param>
-        public void Deregister(MessageType message, object owner)
+        public void Deregister(TMessageType message, object owner)
         {
             _messageToActionsMap.RemoveAction(message, owner);
         }
@@ -126,8 +116,8 @@ namespace Common
         /// Notifies all registered parties that a message is being broadcasted.
         /// </summary>
         /// <param name="message">The message to broadcast.</param>
-        /// <param name="parameter">The parameter to pass together with the message.</param>
-        public void NotifyListeners(MessageType message, params object[] parameters)
+        /// <param name="parameters">The parameter to pass together with the message.</param>
+        public void NotifyListeners(TMessageType message, params object[] parameters)
         {
             if (message == null)
                 throw new ArgumentException("'message' cannot be null or empty.");
@@ -135,25 +125,24 @@ namespace Common
             Type[] registeredParameters;
             if (_messageToActionsMap.TryGetParameterTypes(message, out registeredParameters))
             {
-                if (registeredParameters == null && (parameters != null && parameters.Count() > 0))
-                    throw new TargetParameterCountException(string.Format("parameters not expected.", message));
+                if (registeredParameters == null && (parameters != null && parameters.Any()))
+                    throw new TargetParameterCountException("parameters not expected.");
 
                 if (registeredParameters != null && (parameters == null || parameters.Count() != registeredParameters.Count()))
-                    throw new TargetParameterCountException(string.Format("parameter count mismatch", message));
+                    throw new TargetParameterCountException("parameter count mismatch");
                
             }
 
             var actions = _messageToActionsMap.GetActions(message);
-            if (actions != null)
+            if (actions == null) return;
+
+            if (parameters == null || !parameters.Any())
             {
-                if (parameters == null || parameters.Count() == 0)
-                {
-                    actions.ForEach(action => action.DynamicInvoke());
-                }
-                else
-                {
-                    actions.ForEach(action => action.DynamicInvoke(parameters));
-                }
+                actions.ForEach(action => action.DynamicInvoke());
+            }
+            else
+            {
+                actions.ForEach(action => action.DynamicInvoke(parameters));
             }
         }
 

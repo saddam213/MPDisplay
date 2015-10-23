@@ -1,6 +1,6 @@
 using System;
 
-namespace Common.Logging
+namespace Common.Log
 {
     /// <summary>
     /// Outputs messages to the console

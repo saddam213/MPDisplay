@@ -1,20 +1,21 @@
 ﻿using System;
-using GUIFramework.Managers;
-using GUISkinFramework.Controls;
+using GUIFramework.Repositories;
+using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Controls
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIProgressBar.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlProgressBar))]  
-    public partial class GUIProgressBar : GUIControl
+    public partial class GUIProgressBar
     {
         #region Fields
 
         private double _progress;
         private string _labelFixed;
         private string _labelMoving;
+        private const double Tolerance = 0.0000001;
 
         #endregion
 
@@ -48,11 +49,10 @@ namespace GUIFramework.GUI.Controls
             get { return _progress; }
             set
             {
-                if (HasChanged(_progress, value))
-                {
-                    _progress = value;
-                    NotifyPropertyChanged("Progress");
-                }
+                if (!HasChanged(_progress, value)) return;
+
+                _progress = value;
+                NotifyPropertyChanged("Progress");
             }
         }
 
@@ -116,12 +116,10 @@ namespace GUIFramework.GUI.Controls
         /// </summary>
         public async override void UpdateInfoData()
         {
-            string text;
-
             base.UpdateInfoData();
             Progress = await PropertyRepository.GetProperty<double>(SkinXml.ProgressValue, null);
 
-            text = await PropertyRepository.GetProperty<string>(SkinXml.LabelFixedText, SkinXml.LabelFixedNumberFormat);
+            var text = await PropertyRepository.GetProperty<string>(SkinXml.LabelFixedText, SkinXml.LabelFixedNumberFormat);
             LabelFixed = !string.IsNullOrEmpty(text) ? text : await PropertyRepository.GetProperty<string>(SkinXml.DefaultLabelFixedText, SkinXml.LabelFixedNumberFormat);
 
             text = await PropertyRepository.GetProperty<string>(SkinXml.LabelMovingText, SkinXml.LabelMovingNumberFormat);
@@ -150,9 +148,9 @@ namespace GUIFramework.GUI.Controls
         /// <param name="value1">The value1.</param>
         /// <param name="value2">The value2.</param>
         /// <returns>If the value has changed to 1 decmal point</returns>
-        private bool HasChanged(double value1, double value2)
+        private static bool HasChanged(double value1, double value2)
         {
-            return Math.Round(value1, 1) != Math.Round(value2, 1);
+            return Math.Abs(Math.Round(value1, 1) - Math.Round(value2, 1)) > Tolerance;
         }
 
         #endregion

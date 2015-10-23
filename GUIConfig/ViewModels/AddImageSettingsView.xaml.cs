@@ -1,24 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
+﻿using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using System.Xml.Linq;
-using Common.Helpers;
-using Common.Logging;
 using Common.Settings;
 using MPDisplay.Common.Utils;
 
@@ -27,11 +9,10 @@ namespace GUIConfig.ViewModels
     /// <summary>
     /// Interaction logic for BasicSettingsView.xaml
     /// </summary>
-    public partial class AddImageSettingsView : ViewModelBase
+    public partial class AddImageSettingsView
     {
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(AddImageSettingsView));
         private AddImagePropertySettings _selectedAddImageProperty;
 
         #endregion
@@ -75,7 +56,7 @@ namespace GUIConfig.ViewModels
         public AddImagePropertySettings SelectedAddImageProperty
         {
             get { return _selectedAddImageProperty; }
-            set { _selectedAddImageProperty = value; NotifyPropertyChanged("SelectedAddImageProperty"); }
+            set { _selectedAddImageProperty = value; NotifyPropertyChanged(); }
         }
 
         /// <summary>
@@ -91,36 +72,12 @@ namespace GUIConfig.ViewModels
         #region Methods
 
         /// <summary>
-        /// Called when model tab opens.
-        /// </summary>
-        public override void OnModelOpen()
-        {
-            base.OnModelOpen();
-        }
-
-        /// <summary>
-        /// Called when model tab closes.
-        /// </summary>
-        public override void OnModelClose()
-        {
-            base.OnModelClose();
-        }
-
-        /// <summary>
-        /// Saves the changes.
-        /// </summary>
-        public override void SaveChanges()
-        {
-            base.SaveChanges();
-        }
-
-        /// <summary>
         /// Launches path picker.
         /// </summary>
         private void LaunchPathPicker()
         {
-            FolderBrowserDialog dlg = new FolderBrowserDialog();
-            DialogResult result = dlg.ShowDialog();
+            var dlg = new FolderBrowserDialog();
+            var result = dlg.ShowDialog();
             if( result == DialogResult.OK )
             {
                 SelectedAddImageProperty.Path = dlg.SelectedPath;
@@ -132,13 +89,15 @@ namespace GUIConfig.ViewModels
         /// </summary>
         private void DeleteItem()
         {
-            if (SelectedAddImageProperty != null)
+            if (SelectedAddImageProperty == null) return;
+            var addImageSettings = DataObject as AddImageSettings;
+            if (addImageSettings != null)
             {
-                var items = (DataObject as AddImageSettings).AddImagePropertySettings;
+                var items = addImageSettings.AddImagePropertySettings;
                 items.Remove(SelectedAddImageProperty);
                 SelectedAddImageProperty = items.FirstOrDefault();
-                HasPendingChanges = true;
             }
+            HasPendingChanges = true;
         }
 
         /// <summary>
@@ -146,11 +105,14 @@ namespace GUIConfig.ViewModels
         /// </summary>
         private void NewItem()
         {
-            var items = (DataObject as AddImageSettings).AddImagePropertySettings;
-            var newitem = new AddImagePropertySettings();
-            newitem.Path = "#MPThumbsPath#";
-            items.Add( newitem  );
-            SelectedAddImageProperty = newitem;
+            var addImageSettings = DataObject as AddImageSettings;
+            if (addImageSettings != null)
+            {
+                var items = addImageSettings.AddImagePropertySettings;
+                var newitem = new AddImagePropertySettings {Path = "#MPThumbsPath#"};
+                items.Add( newitem  );
+                SelectedAddImageProperty = newitem;
+            }
             HasPendingChanges = true;
         }
 

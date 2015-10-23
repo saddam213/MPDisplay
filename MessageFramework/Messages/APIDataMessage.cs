@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
 
-namespace MessageFramework.DataObjects
+namespace MessageFramework.Messages
 {
     [DataContract]
     public class APIDataMessage
@@ -53,7 +50,7 @@ namespace MessageFramework.DataObjects
         ActionId,
         WindowId,
         DialogId,
-        FocusedControlId,
+        FocusedControlId
     }
 
 }

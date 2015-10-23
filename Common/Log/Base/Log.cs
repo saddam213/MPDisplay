@@ -1,6 +1,6 @@
 using System;
 
-namespace Common.Logging
+namespace Common.Log
 {
     public class Log
     {
@@ -34,9 +34,9 @@ namespace Common.Logging
         /// <param name="args">The args.</param>
         public void Message(LogLevel level, string message, params object[] args)
         {
-            string logMessage = args.Length > 0 ? string.Format(message, args) : message;
-            string timeLevel = string.Format("{0}[{1}] ",LogTime,level);
-            string logLine = string.Format("{0}[{1}] - {2}", timeLevel.PadRight(38), _owner.Name, logMessage);
+            var logMessage = args.Length > 0 ? string.Format(message, args) : message;
+            var timeLevel = string.Format("{0}[{1}] ",LogTime,level);
+            var logLine = string.Format("{0}[{1}] - {2}", timeLevel.PadRight(38), _owner.Name, logMessage);
             if (_logAction != null)
             {
                 _logAction(level, logLine);
@@ -48,11 +48,12 @@ namespace Common.Logging
         /// </summary>
         /// <param name="message">The message.</param>
         /// <param name="ex">The ex.</param>
+        /// <param name="args"></param>
         public void Exception(string message, Exception ex, params object[] args)
         {
-            string logMessage = args.Length > 0 ? string.Format(message, args) : message;
-            string timeLevel = string.Format("{0}[{1}] ", LogTime, LogLevel.Error);
-            string logLine = string.Format("{0}[{1}] - {2}{3}{4}", timeLevel.PadRight(38), _owner.Name, logMessage, Environment.NewLine, ex.ToString());
+            var logMessage = args.Length > 0 ? string.Format(message, args) : message;
+            var timeLevel = string.Format("{0}[{1}] ", LogTime, LogLevel.Error);
+            var logLine = string.Format("{0}[{1}] - {2}{3}{4}", timeLevel.PadRight(38), _owner.Name, logMessage, Environment.NewLine, ex);
             if (_logAction != null)
             {
                 _logAction(LogLevel.Error, logLine);

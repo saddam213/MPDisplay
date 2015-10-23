@@ -1,11 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Linq;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
-using Common.Logging;
+using Common.Log;
 using GUIFramework.Managers;
-using GUISkinFramework.Animations;
-using GUISkinFramework.Common;
-using GUISkinFramework.Windows;
+using GUIFramework.Repositories;
+using GUIFramework.Utils;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.GUI
 {
@@ -21,7 +22,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIWindow()
         {
-            Visibility = System.Windows.Visibility.Collapsed;
+            Visibility = Visibility.Collapsed;
             RenderTransform = new ScaleTransform(1, 1);
             RenderTransformOrigin = new Point(0.5, 0.5);
             DataContext = this;
@@ -35,6 +36,7 @@ namespace GUIFramework.GUI
         public XmlWindow BaseXml
         {
             get { return _baseXml; }
+            // ReSharper disable once RedundantArgumentDefaultValue
             set { _baseXml = value; NotifyPropertyChanged("BaseXml"); } 
         }
 
@@ -76,16 +78,13 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         public bool FirstOpen
         {
-            get { if (_firstOpen)
-                {
-                    _firstOpen = false;
-                    return true;
-                }
-                else
-                {
-                    return false;
-                }
-           }       
+            get
+            {
+                if (!_firstOpen) return false;
+
+                _firstOpen = false;
+                return true;
+            }
         }
 
         /// <summary>
@@ -93,13 +92,12 @@ namespace GUIFramework.GUI
         /// </summary>
         public override void CreateControls()
         {
-            foreach (var xmlControl in BaseXml.Controls)
+            foreach (var control in BaseXml.Controls.Select(xmlControl => GUIElementFactory.CreateControl(Id, xmlControl)))
             {
-                var control = GUIElementFactory.CreateControl(Id, xmlControl);
                 control.ParentId = Id;
                 Controls.Add(control);
             }
-         }
+        }
 
         /// <summary>
         /// Opens the window
@@ -194,7 +192,7 @@ namespace GUIFramework.GUI
                 case XmlAnimationCondition.WindowOpen:
                     break;
                 case XmlAnimationCondition.WindowClose:
-                    Visibility = System.Windows.Visibility.Collapsed;
+                    Visibility = Visibility.Collapsed;
                     foreach (var control in Controls.GetControls())
                     {
                         control.ClearInfoData();

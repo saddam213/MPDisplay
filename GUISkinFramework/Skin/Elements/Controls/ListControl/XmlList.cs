@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Styles;
-using GUISkinFramework.Skin;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "List")]
@@ -110,11 +102,11 @@ namespace GUISkinFramework.Controls
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlListStyle>(ControlStyle);
-            VerticalItemStyle = style.GetControlStyle<XmlListItemStyle>(VerticalItemStyle);
-            VerticalIconItemStyle = style.GetControlStyle<XmlListItemStyle>(VerticalIconItemStyle);
-            HorizontalItemStyle = style.GetControlStyle<XmlListItemStyle>(HorizontalItemStyle);
-            CoverFlowItemStyle = style.GetControlStyle<XmlListItemStyle>(CoverFlowItemStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
+            VerticalItemStyle = style.GetControlStyle(VerticalItemStyle);
+            VerticalIconItemStyle = style.GetControlStyle(VerticalIconItemStyle);
+            HorizontalItemStyle = style.GetControlStyle(HorizontalItemStyle);
+            CoverFlowItemStyle = style.GetControlStyle(CoverFlowItemStyle);
         }
     }
 

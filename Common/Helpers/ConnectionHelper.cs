@@ -1,49 +1,48 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Net.Security;
 using System.ServiceModel;
 
 namespace Common.Helpers
 {
     public static class ConnectHelper
     {
-        public static NetTcpBinding getServerBinding()
+        public static NetTcpBinding GetServerBinding()
         {
-            NetTcpBinding _serverBinding;
+            var serverBinding = new NetTcpBinding
+            {
+                Security =
+                {
+                    Mode = SecurityMode.None,
+                    Message = {ClientCredentialType = MessageCredentialType.None},
+                    Transport =
+                    {
+                        ClientCredentialType = TcpClientCredentialType.None,
+                        ProtectionLevel = ProtectionLevel.None
+                    }
+                },
+                Name = "NetTcpBinding_IMessage",
+                CloseTimeout = new TimeSpan(0, 0, 5),
+                OpenTimeout = new TimeSpan(0, 0, 5),
+                ReceiveTimeout = new TimeSpan(0, 1, 0),
+                SendTimeout = new TimeSpan(0, 1, 0),
+                TransferMode = TransferMode.Buffered,
+                ListenBacklog = 100,
+                MaxConnections = 100,
+                MaxReceivedMessageSize = int.MaxValue,
+                MaxBufferSize = int.MaxValue,
+                MaxBufferPoolSize = int.MaxValue,
+                ReaderQuotas =
+                {
+                    MaxArrayLength = int.MaxValue,
+                    MaxDepth = 32,
+                    MaxStringContentLength = int.MaxValue,
+                    MaxBytesPerRead = int.MaxValue,
+                    MaxNameTableCharCount = int.MaxValue
+                },
+                ReliableSession = {Enabled = true, InactivityTimeout = new TimeSpan(0, 3, 0)}
+            };
 
-            _serverBinding = new NetTcpBinding();
-
-            // Security (lol)
-            _serverBinding.Security.Mode = SecurityMode.None;
-            _serverBinding.Security.Message.ClientCredentialType = MessageCredentialType.None;
-            _serverBinding.Security.Transport.ClientCredentialType = TcpClientCredentialType.None;
-            _serverBinding.Security.Transport.ProtectionLevel = System.Net.Security.ProtectionLevel.None;
-
-            // Connection
-            _serverBinding.Name = "NetTcpBinding_IMessage";
-            _serverBinding.CloseTimeout = new TimeSpan(0, 0, 5);
-            _serverBinding.OpenTimeout = new TimeSpan(0, 0, 5);
-            _serverBinding.ReceiveTimeout = new TimeSpan(0, 1, 0);
-            _serverBinding.SendTimeout = new TimeSpan(0, 1, 0);
-            _serverBinding.TransferMode = TransferMode.Buffered;
-            _serverBinding.ListenBacklog = 100;
-            _serverBinding.MaxConnections = 100;
-            _serverBinding.MaxReceivedMessageSize = int.MaxValue;
-            _serverBinding.MaxBufferSize = int.MaxValue;
-            _serverBinding.MaxBufferPoolSize = int.MaxValue;
-
-            // Message
-            _serverBinding.ReaderQuotas.MaxArrayLength = int.MaxValue;
-            _serverBinding.ReaderQuotas.MaxDepth = 32;
-            _serverBinding.ReaderQuotas.MaxStringContentLength = int.MaxValue;
-            _serverBinding.ReaderQuotas.MaxBytesPerRead = int.MaxValue;
-            _serverBinding.ReaderQuotas.MaxNameTableCharCount = int.MaxValue;
-            _serverBinding.ReliableSession.Enabled = true;
-            _serverBinding.ReliableSession.InactivityTimeout = new TimeSpan(0, 3, 0);
-
-            return _serverBinding;
+            return serverBinding;
         }
 
     }

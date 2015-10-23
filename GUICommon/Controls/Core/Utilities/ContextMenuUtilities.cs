@@ -1,7 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MPDisplay.Common.Controls.Core.Utilities
+namespace MPDisplay.Common.Controls.Core
 {
     public class ContextMenuUtilities
     {
@@ -22,11 +21,10 @@ namespace MPDisplay.Common.Controls.Core.Utilities
             {
                 control.PreviewMouseLeftButtonDown += (s, args) =>
                 {
-                    if (control.ContextMenu != null)
-                    {
-                        control.ContextMenu.PlacementTarget = control;
-                        control.ContextMenu.IsOpen = true;
-                    }
+                    if (control.ContextMenu == null) return;
+
+                    control.ContextMenu.PlacementTarget = control;
+                    control.ContextMenu.IsOpen = true;
                 };
             }
             //TODO: remove handler when set to false

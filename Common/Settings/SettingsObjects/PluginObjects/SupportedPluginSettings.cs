@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.ObjectModel;
 using System.Xml.Serialization;
 
-namespace Common.Settings.SettingsObjects
+namespace Common.Settings
 {
     [XmlType("GenericPluginSettings")]
     public class SupportedPluginSettings
@@ -253,6 +248,7 @@ namespace Common.Settings.SettingsObjects
 
     public enum SupportedPlugin
     {
+        // ReSharper disable InconsistentNaming
         None = -1,
         MyFilms = 7986,
         MovingPictures = 96742,
@@ -265,6 +261,6 @@ namespace Common.Settings.SettingsObjects
         //PandoraMusicBox,
         //RadioTime,
         //Streamradio
-        TuneIn = 25650,
+        TuneIn = 25650
     }
 }

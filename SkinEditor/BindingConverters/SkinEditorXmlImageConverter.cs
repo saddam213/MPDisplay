@@ -1,13 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
 using System.Windows.Data;
-using System.Windows.Media;
-using GUISkinFramework.Common;
 
 namespace SkinEditor.BindingConverters
 {
@@ -15,55 +9,47 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is string)
-            {
-                var valueImage = value.ToString();
+            if (!(value is string)) return null;
+
+            var valueImage = value.ToString();
                
 
-                if (valueImage.Contains('+'))
+            if (valueImage.Contains('+'))
+            {
+                var path = string.Empty;
+                foreach (var item in valueImage.Split('+'))
                 {
-                    string path = string.Empty;
-                    foreach (var item in valueImage.Split('+'))
+                    if (item.StartsWith("@"))
                     {
-                        if (item.StartsWith("@"))
-                        {
-                            path += SkinEditorInfoManager.GetLanguageValue(item);
-                            continue;
-                        }
-
-                        else if (item.StartsWith("#"))
-                        {
-                            var prop = SkinEditorInfoManager.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item);
-                            if (prop != null)
-                            {
-                                path += prop.DesignerValue;
-                                continue;
-                            }
-                        }
-                        path += item;
+                        path += SkinEditorInfoManager.GetLanguageValue(item);
+                        continue;
                     }
-                }
-                else
-                {
-                    if (valueImage.StartsWith("#"))
+
+                    if (item.StartsWith("#"))
                     {
-                        var prop = SkinEditorInfoManager.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == valueImage);
+                        var prop = SkinEditorInfoManager.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item);
                         if (prop != null)
                         {
-                            return prop.DesignerValue;
+                            path += prop.DesignerValue;
+                            continue;
                         }
                     }
-
-                    var image = SkinEditorInfoManager.SkinInfo.Images.FirstOrDefault(i => i.XmlName.Equals(valueImage, StringComparison.OrdinalIgnoreCase) 
-                                                                       || i.FileName.Equals(valueImage, StringComparison.OrdinalIgnoreCase));
-                    if (image != null)
-                    {
-                        return image.FileName;
-                    }
+                    path += item;
                 }
-                return valueImage;
+                return path;
             }
-            return null;
+            if (valueImage.StartsWith("#"))
+            {
+                var prop = SkinEditorInfoManager.SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == valueImage);
+                if (prop != null)
+                {
+                    return prop.DesignerValue;
+                }
+            }
+
+            var image = SkinEditorInfoManager.SkinInfo.Images.FirstOrDefault(i => i.XmlName.Equals(valueImage, StringComparison.OrdinalIgnoreCase) 
+                                                                                  || i.FileName.Equals(valueImage, StringComparison.OrdinalIgnoreCase));
+            return image != null ? image.FileName : valueImage;
         }
 
 

@@ -1,13 +1,13 @@
-﻿using System;
+﻿using System.Windows;
 using System.Windows.Controls;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class TextBoxEditor : TypeEditor<WatermarkTextBox>
     {
         protected override void SetControlProperties()
         {
-            Editor.BorderThickness = new System.Windows.Thickness(0);
+            Editor.BorderThickness = new Thickness(0);
         }
 
         protected override void SetValueDependencyProperty()

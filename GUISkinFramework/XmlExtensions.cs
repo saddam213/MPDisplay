@@ -1,16 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
-using System.IO;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters.Binary;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
-using System.Reflection;
-using GUISkinFramework.Controls;
+using System.Linq;
+using GUISkinFramework.Skin;
 
 namespace GUISkinFramework
 {
@@ -24,22 +15,13 @@ namespace GUISkinFramework
             foreach (var control in controls)
             {
                 yield return control;
-                if (control is XmlGroup)
+                if (!(control is XmlGroup)) continue;
+                foreach (var grpControl in (control as XmlGroup).Controls.GetControls())
                 {
-                    foreach (var grpControl in (control as XmlGroup).Controls.GetControls())
-                    {
-                        yield return grpControl;
-                    }
+                    yield return grpControl;
                 }
             }
         }
-
-
-
-         
-     
-        
-
     
         public static void SetDefaultValues<T>(this T obj)
         {
@@ -49,16 +31,14 @@ namespace GUISkinFramework
                     .GetCustomAttributes(typeof(DefaultValueAttribute), true)
                     .Cast<DefaultValueAttribute>()
                     .FirstOrDefault();
-                if (attribute != null)
+                if (attribute == null) continue;
+                try
                 {
-                    try
-                    {
-                        property.SetValue(obj, attribute.Value, null);
-                    }
-                    catch
-                    {
-                        property.SetValue(obj,default(T), null);
-                    }
+                    property.SetValue(obj, attribute.Value, null);
+                }
+                catch
+                {
+                    property.SetValue(obj,default(T), null);
                 }
             }
         }

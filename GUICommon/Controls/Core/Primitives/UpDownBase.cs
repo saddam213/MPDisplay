@@ -1,11 +1,10 @@
 ﻿using System;
-using System.Windows.Controls;
-using MPDisplay.Common.Controls.Primitives;
-using System.Windows.Input;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
 
-namespace MPDisplay.Common.Controls.Primitives
+namespace MPDisplay.Common.Controls.Core
 {
     public abstract class UpDownBase<T> : InputBase
     {
@@ -77,7 +76,7 @@ namespace MPDisplay.Common.Controls.Primitives
 
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
-            UpDownBase<T> upDownBase = o as UpDownBase<T>;
+            var upDownBase = o as UpDownBase<T>;
             if (upDownBase != null)
                 upDownBase.OnValueChanged((T)e.OldValue, (T)e.NewValue);
         }
@@ -90,8 +89,10 @@ namespace MPDisplay.Common.Controls.Primitives
 
             SetValidSpinDirection();
 
-            RoutedPropertyChangedEventArgs<object> args = new RoutedPropertyChangedEventArgs<object>(oldValue, newValue);
-            args.RoutedEvent = ValueChangedEvent;
+            var args = new RoutedPropertyChangedEventArgs<object>(oldValue, newValue)
+            {
+                RoutedEvent = ValueChangedEvent
+            };
             RaiseEvent(args);
         }
 
@@ -160,8 +161,8 @@ namespace MPDisplay.Common.Controls.Primitives
                     {
                         if (!IsReadOnly)
                         {
-                            var binding = BindingOperations.GetBindingExpression(TextBox, System.Windows.Controls.TextBox.TextProperty);
-                            binding.UpdateSource();
+                            var binding = BindingOperations.GetBindingExpression(TextBox, TextBox.TextProperty);
+                            if (binding != null) binding.UpdateSource();
                         }
                         break;
                     }
@@ -172,24 +173,23 @@ namespace MPDisplay.Common.Controls.Primitives
         {
             base.OnMouseWheel(e);
 
-            if (!e.Handled && AllowSpin && !IsReadOnly && ((TextBox.IsFocused && MouseWheelActiveOnFocus) || !MouseWheelActiveOnFocus))
-            {
-                if (e.Delta < 0)
-                {
-                    DoDecrement();
-                }
-                else if (0 < e.Delta)
-                {
-                    DoIncrement();
-                }
+            if (e.Handled || !AllowSpin || IsReadOnly || ((!TextBox.IsFocused || !MouseWheelActiveOnFocus) && MouseWheelActiveOnFocus)) return;
 
-                e.Handled = true;
+            if (e.Delta < 0)
+            {
+                DoDecrement();
             }
+            else if (0 < e.Delta)
+            {
+                DoIncrement();
+            }
+
+            e.Handled = true;
         }
 
         protected override void OnTextChanged(string oldValue, string newValue)
         {
-            SyncTextAndValueProperties(InputBase.TextProperty, newValue);
+            SyncTextAndValueProperties(TextProperty, newValue);
         }
 
         #endregion //Base Class Overrides
@@ -260,18 +260,12 @@ namespace MPDisplay.Common.Controls.Primitives
             _isSyncingTextAndValueProperties = true;
 
             //this only occures when the user typed in the value
-            if (InputBase.TextProperty == p)
+            if (TextProperty == p)
             {
                 Value = ConvertTextToValue(text);
             }
 
             Text = ConvertValueToText();
-
-#if VS2008
-            //there is a bug in .NET 3.5 which will not correctly update the textbox text through binding.
-            if (TextBox != null)
-                TextBox.Text = Text;
-#endif
 
             _isSyncingTextAndValueProperties = false;
         }

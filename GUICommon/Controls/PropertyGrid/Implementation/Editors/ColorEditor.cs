@@ -1,12 +1,12 @@
-﻿using System;
+﻿using System.Windows;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class ColorEditor : TypeEditor<ColorPicker>
     {
         protected override void SetControlProperties()
         {
-            Editor.BorderThickness = new System.Windows.Thickness(0);
+            Editor.BorderThickness = new Thickness(0);
             Editor.DisplayColorAndName = true;
         }
         protected override void SetValueDependencyProperty()

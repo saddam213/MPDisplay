@@ -1,38 +1,29 @@
-﻿<Views:ViewModelBase x:Class="GUIConfig.ViewModels.GUISettingsView"
-             xmlns:Views="clr-namespace:GUIConfig.ViewModels"
+﻿<views:ViewModelBase x:Class="GUIConfig.ViewModels.GUISettingsView"
+             xmlns:views="clr-namespace:GUIConfig.ViewModels"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:System="clr-namespace:System;assembly=mscorlib"
-			    xmlns:Theading="clr-namespace:System.Threading;assembly=mscorlib"
-         xmlns:Cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
-		 xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-		 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-		 
-             mc:Ignorable="d" x:Name="UI" >
+			 xmlns:system="clr-namespace:System;assembly=mscorlib"
+			 xmlns:theading="clr-namespace:System.Threading;assembly=mscorlib"
+             xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
+             xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+		     mc:Ignorable="d" x:Name="UI" >
     <Grid DataContext="{Binding ElementName=UI}">
 		<Grid.Resources>
-			<ObjectDataProvider x:Key="ThreadPriorities" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
+			<ObjectDataProvider x:Key="ThreadPriorities" MethodName="GetNames" ObjectType="{x:Type system:Enum}">
 				<ObjectDataProvider.MethodParameters>
-					<x:Type TypeName="Theading:ThreadPriority"/>
+					<x:Type TypeName="theading:ThreadPriority"/>
 				</ObjectDataProvider.MethodParameters>
 			</ObjectDataProvider>
 
-		
-
-			<ObjectDataProvider x:Key="Cursors" MethodName="GetNames" ObjectType="{x:Type System:Enum}">
-				<ObjectDataProvider.MethodParameters>
-					<x:Type TypeName="Cursors:CursorType"/>
-				</ObjectDataProvider.MethodParameters>
-			</ObjectDataProvider>
 		</Grid.Resources>
 
 
 			<StackPanel>
 			<StackPanel Orientation="Horizontal">
 			
-					<Views:ConnectionSettingsView CanEditConnectionName="True" CanManageService="False" ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Width="218" />
+					<views:ConnectionSettingsView CanEditConnectionName="True" CanManageService="False" ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Width="218" />
 
 				<GroupBox Header="{Binding FallbackValue=Display, ConverterParameter=Display, Converter={StaticResource LanguageConverter}}" Width="200">
 					<StackPanel >
@@ -72,12 +63,12 @@
 						<UniformGrid Columns="2" IsEnabled="{Binding DataObject.CustomResolution}" >
 							<TextBlock Text="{Binding FallbackValue=Screen Width, ConverterParameter=Screen Width, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
 							<TextBlock Text="{Binding FallbackValue=Screen Height, ConverterParameter=Screen Height, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
-							<controls:IntegerUpDown Value="{Binding DataObject.ScreenWidth, FallbackValue=ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
-							<controls:IntegerUpDown Value="{Binding DataObject.ScreenHeight, FallbackValue=ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenWidth, FallbackValue=ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenHeight, FallbackValue=ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
 							<TextBlock Text="{Binding FallbackValue=Screen OffsetX, ConverterParameter=Screen OffsetX, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
 							<TextBlock Text="{Binding FallbackValue=Scrren OffsetY, ConverterParameter=Screen OffsetY, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
-							<controls:IntegerUpDown Value="{Binding DataObject.ScreenOffSetX, FallbackValue=ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
-							<controls:IntegerUpDown Value="{Binding DataObject.ScreenOffSetY, FallbackValue=ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenOffSetX, FallbackValue=ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenOffSetY, FallbackValue=ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
 				</UniformGrid>
 
 							
@@ -96,6 +87,8 @@
 						<ComboBox ItemsSource="{Binding Source={StaticResource LogLevels}}" SelectedItem="{Binding LogLevel, ElementName=UI}"/>
                         <TextBlock Text="{Binding ConverterParameter=User Interaction Delay, Converter={StaticResource LanguageConverter}, FallbackValue=User Interaction Delay}" VerticalAlignment="Bottom" Margin="0,10,0,0"/>
                         <TextBox Text="{Binding DataObject.UserInteractionDelay, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,80,0" />
+                        <TextBlock Text="{Binding ConverterParameter=Google API Key, Converter={StaticResource LanguageConverter}, FallbackValue=Google API Key}" VerticalAlignment="Bottom" Margin="0,10,0,0"/>
+                        <TextBox Text="{Binding DataObject.GoogleApiKey, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,0" />
                     </StackPanel>
 				</GroupBox>
 
@@ -106,4 +99,4 @@
 		</StackPanel>
 
 	</Grid>
-</Views:ViewModelBase>
+</views:ViewModelBase>

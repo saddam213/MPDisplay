@@ -1,12 +1,12 @@
-﻿using GUISkinFramework.Windows;
+﻿using GUISkinFramework.Skin;
 
-namespace GUIFramework.GUI.Windows
+namespace GUIFramework.GUI
 {
     /// <summary>
     /// Interaction logic for GUIMPDWindow.xaml
     /// </summary>
     [GUISkinElement(typeof(XmlMPDWindow))]
-    public partial class GUIMPDWindow : GUIWindow
+    public partial class GUIMPDWindow
     {
         #region Constructor
 

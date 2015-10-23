@@ -1,18 +1,18 @@
-﻿using System;
+﻿using System.Windows;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
-    public class PrimitiveTypeCollectionEditor : TypeEditor<MPDisplay.Common.Controls.PrimitiveTypeCollectionEditor>
+    public class PrimitiveTypeCollectionEditor : TypeEditor<Controls.PrimitiveTypeCollectionEditor>
     {
         protected override void SetControlProperties()
         {
-            Editor.BorderThickness = new System.Windows.Thickness(0);
+            Editor.BorderThickness = new Thickness(0);
             Editor.Content = "(Collection)";
         }
 
         protected override void SetValueDependencyProperty()
         {
-            ValueProperty = MPDisplay.Common.Controls.PrimitiveTypeCollectionEditor.ItemsSourceProperty;
+            ValueProperty = Controls.PrimitiveTypeCollectionEditor.ItemsSourceProperty;
         }
 
         protected override void ResolveValueBinding(PropertyItem propertyItem)

@@ -1,8 +1,7 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Data;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public abstract class TypeEditor<T> : ITypeEditor
         where T : FrameworkElement, new()
@@ -36,13 +35,15 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         protected virtual void ResolveValueBinding(PropertyItem propertyItem)
         {
-            var _binding = new Binding("Value");
-            _binding.Source = propertyItem;
-            _binding.ValidatesOnExceptions = true;
-            _binding.ValidatesOnDataErrors = true;
-            _binding.Mode = propertyItem.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay;
-            _binding.Converter = CreateValueConverter();
-            BindingOperations.SetBinding(Editor, ValueProperty, _binding);
+            var binding = new Binding("Value")
+            {
+                Source = propertyItem,
+                ValidatesOnExceptions = true,
+                ValidatesOnDataErrors = true,
+                Mode = propertyItem.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay,
+                Converter = CreateValueConverter()
+            };
+            BindingOperations.SetBinding(Editor, ValueProperty, binding);
         }
 
         protected virtual void SetControlProperties()

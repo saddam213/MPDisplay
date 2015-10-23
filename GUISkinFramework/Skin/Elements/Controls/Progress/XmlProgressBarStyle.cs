@@ -1,21 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "ProgressBarStyle")]
@@ -50,8 +40,8 @@ namespace GUISkinFramework.Controls
         private VerticalAlignment _labelFixedVerticalAlignment = VerticalAlignment.Center;
         private XmlBrush _labelMovingFontBrush;
         private XmlBrush _labelFixedFontBrush;
-        private bool _enableLabelMoving = false;
-        private bool _enableLabelFixed = false;
+        private bool _enableLabelMoving;
+        private bool _enableLabelFixed;
 
         [DefaultValue("0,0,0,0")]
         [PropertyOrder(60)]
@@ -331,12 +321,12 @@ namespace GUISkinFramework.Controls
         public override void LoadSubStyles(XmlStyleCollection style)
         {
             base.LoadSubStyles(style);
-            GlossBrush = style.GetStyle<XmlBrush>(GlossBrush);
-            ShadeBrush = style.GetStyle<XmlBrush>(ShadeBrush);
-            BorderBrush = style.GetStyle<XmlBrush>(BorderBrush);
-            BackgroundBrush = style.GetStyle<XmlBrush>(BackgroundBrush);
-            LabelMovingFontBrush = style.GetStyle<XmlBrush>(LabelMovingFontBrush);
-            LabelFixedFontBrush = style.GetStyle<XmlBrush>(LabelFixedFontBrush);
+            GlossBrush = style.GetStyle(GlossBrush);
+            ShadeBrush = style.GetStyle(ShadeBrush);
+            BorderBrush = style.GetStyle(BorderBrush);
+            BackgroundBrush = style.GetStyle(BackgroundBrush);
+            LabelMovingFontBrush = style.GetStyle(LabelMovingFontBrush);
+            LabelFixedFontBrush = style.GetStyle(LabelFixedFontBrush);
         }
     }
 

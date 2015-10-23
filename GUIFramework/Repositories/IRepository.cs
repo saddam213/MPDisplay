@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using GUISkinFramework;
+using Common.Helpers;
 using Common.Settings;
-using Common;
+using GUISkinFramework.Skin;
 
-namespace GUIFramework.Managers
+namespace GUIFramework.Repositories
 {
     public interface IRepository
     {
@@ -21,64 +18,56 @@ namespace GUIFramework.Managers
 
 
 
-    public class DataRepository<K, V>
+    public class DataRepository<TK, TV>
     {
-        private Dictionary<K, V> _repository = new Dictionary<K, V>();
-        private Func<V, V, bool> _valueEquals;
+        private Dictionary<TK, TV> _repository = new Dictionary<TK, TV>();
+        private Func<TV, TV, bool> _valueEquals;
 
         public DataRepository()
         {
         }
 
-        public DataRepository(Func<V, V, bool> valueEquals)
+        public DataRepository(Func<TV, TV, bool> valueEquals)
         {
-            this._valueEquals = valueEquals;
+            _valueEquals = valueEquals;
         }
 
-        public bool AddOrUpdate(K key, V value)
+        public bool AddOrUpdate(TK key, TV value)
         {
             lock (_repository)
             {
-            if (key != null)
-            {
-                V exists;
+                if (key == null) return false;
+
+                TV exists;
                 if (!_repository.TryGetValue(key, out exists))
                 {
                   
-                        _repository.Add(key, value);
+                    _repository.Add(key, value);
                  
                     return true;
                 }
-                else
-                {
-                    if (_valueEquals == null || !_valueEquals(value, exists))
-                    {
-                     
-                            _repository[key] = value;
+                if (_valueEquals != null && _valueEquals(value, exists)) return false;
+
+                _repository[key] = value;
                       
-                        return true;
-                    }
-                }
+                return true;
             }
-            return false;
-        }
         }
 
-        public V GetValue(K key)
-        {
-            return _repository.GetValueOrDefault(key, default(V));
-        }
-
-        public V GetValueOrDefault(K key, V defaultValue)
+        public TV GetValue(TK key)
         {
             lock (_repository)
             {
-                V exists;
-                if (_repository.TryGetValue(key, out exists))
-                {
-                    return exists;
-                }
-                return defaultValue;
+                return _repository.GetValueOrDefault(key, default(TV));
+            }
+        }
+
+        public TV GetValueOrDefault(TK key, TV defaultValue)
+        {
+            lock (_repository)
+            {
+                TV exists;
+                return _repository.TryGetValue(key, out exists) ? exists : defaultValue;
             }
         }
 

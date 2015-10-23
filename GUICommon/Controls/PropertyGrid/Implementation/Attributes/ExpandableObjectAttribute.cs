@@ -1,12 +1,8 @@
 ﻿using System;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class ExpandableObjectAttribute : Attribute
     {
-        public ExpandableObjectAttribute()
-        {
-
-        }
     }
 }

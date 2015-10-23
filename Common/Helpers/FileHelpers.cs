@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Windows.Forms;
-using Common.Logging;
+using Common.Log;
+using System.Net;
 
 namespace Common.Helpers
 {
     public static class FileHelpers
     {
-        private static Log Log = LoggingManager.GetLog(typeof(FileHelpers));
+        private static Log.Log _log = LoggingManager.GetLog(typeof(FileHelpers));
 
         /// <summary>
         /// Reads the bytes from file.
@@ -19,26 +18,90 @@ namespace Common.Helpers
         /// <returns></returns>
         public static byte[] ReadBytesFromFile(string filename)
         {
-            if (!string.IsNullOrEmpty(filename) && File.Exists(filename))
+            if (string.IsNullOrEmpty(filename)) return null;
+            try
             {
-
-                try
+                // get image from url
+                if (IsURL(filename) && ExistsURL(filename))
                 {
-                    using (FileStream fs = new FileStream(filename, FileMode.Open, FileAccess.Read))
+                    using (var webClient = new WebClient())
                     {
-                        byte[] fileData = new byte[fs.Length];
-                        fs.Read(fileData, 0, System.Convert.ToInt32(fs.Length));
+                        var fileData = webClient.DownloadData(filename);
+                        _log.Message(LogLevel.Verbose, "[ReadBytesFromFile] - Dowloaded data from URL {0}, received <{1}> bytes.", filename, fileData.Length);
+
                         return fileData;
                     }
                 }
-                catch(Exception ex)
+                if (File.Exists(filename))
                 {
-                    Log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File: {0}", ex, filename);
+                    using (var fs = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read))
+                    {
+                        var fileData = new byte[fs.Length];
+                        fs.Read(fileData, 0, Convert.ToInt32(fs.Length));
+                        return fileData;
+                    }
                 }
+            }
+            catch(Exception ex)
+            {
+                _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File or URL: {0}", ex, filename);
             }
             return null;
         }
 
+        /// <summary>
+		/// Checks if file points to an URL location
+		/// </summary>
+		/// <param name="file">The file.</param>
+		public static bool IsURL(string file)
+		{
+				return file.StartsWith("http");
+		}
+
+		/// <summary>
+		/// Checks if URL exists on server
+		/// </summary>
+		/// <param name="file">The file.</param>
+		public static bool ExistsURL(string file)
+		{
+			var urlCheck = new Uri(file);
+			var request = (HttpWebRequest)WebRequest.Create(urlCheck);					
+			request.Timeout = 15000;
+		    request.Method = "HEAD";
+			HttpWebResponse response = null;
+					
+			try
+			{
+				response = (HttpWebResponse)request.GetResponse();
+			    if (response.StatusCode != HttpStatusCode.OK)
+			    {
+                    _log.Message(LogLevel.Warn, "[ExistsURL] - Status for URL {0} not ok, Returned Status is <{1}>", file, response.StatusCode );
+			    }
+				return response.StatusCode == HttpStatusCode.OK;
+			}
+			catch (WebException we)
+			{
+			    if (response == null)
+			    {
+                    _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, no response received, WebException: {1}", file, we);
+			    }
+			    else
+			    {
+                    _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Status Code <{1}>, WebException: {2}", file, response.StatusCode, we);			        
+			    }
+				return false; 
+			}
+			catch (Exception ex)
+			{
+                _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Exception:{1}", file, ex);
+				return false; 
+			}
+			finally 
+			{
+			    if (response != null) response.Dispose();
+			}
+		}
+ 
         /// <summary>
         /// Tries to delete a file.
         /// </summary>
@@ -51,7 +114,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[TryDelete] - An exception occured deleting file, File: {0}", ex, file);
+                _log.Exception("[TryDelete] - An exception occured deleting file, File: {0}", ex, file);
             }
         }
 
@@ -61,12 +124,11 @@ namespace Common.Helpers
         /// <param name="files">The files.</param>
         public static void TryDelete(IEnumerable<string> files)
         {
-            if (files != null)
+            if (files == null) return;
+
+            foreach (var file in files)
             {
-                foreach (var file in files)
-                {
-                    TryDelete(file);
-                }
+                TryDelete(file);
             }
         }
 
@@ -86,7 +148,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[CopyFile] - An exception occured copying file, Source: {0}, Destination: {1}", ex, source, destination);
+                _log.Exception("[CopyFile] - An exception occured copying file, Source: {0}, Destination: {1}", ex, source, destination);
             }
         }
 
@@ -98,14 +160,8 @@ namespace Common.Helpers
         /// <returns></returns>
         public static string OpenFileDialog(string initial, string filter)
         {
-            var dialog = new OpenFileDialog();
-            dialog.Filter = filter;
-            dialog.InitialDirectory = initial;
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.FileName;
-            }
-            return string.Empty;
+            var dialog = new OpenFileDialog {Filter = filter, InitialDirectory = initial};
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.FileName : string.Empty;
         }
     }
 }

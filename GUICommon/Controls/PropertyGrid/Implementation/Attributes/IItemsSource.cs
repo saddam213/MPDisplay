@@ -1,7 +1,6 @@
-using System;
 using System.Collections.Generic;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public interface IItemsSource
     {
@@ -18,17 +17,13 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Attributes
     {
         public void Add(object value)
         {
-            Item item = new Item();
-            item.DisplayName = value.ToString();
-            item.Value = value;
+            var item = new Item {DisplayName = value.ToString(), Value = value};
             base.Add(item);
         }
 
         public void Add(object value, string displayName)
         {
-            Item newItem = new Item();
-            newItem.DisplayName = displayName;
-            newItem.Value = value;
+            var newItem = new Item {DisplayName = displayName, Value = value};
             base.Add(newItem);
         }
 

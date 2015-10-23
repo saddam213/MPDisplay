@@ -1,41 +1,32 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Common.Helpers;
-using GUIConfig.Settings.Language;
+using System.Windows.Forms;
+using Common.Log;
+using Common.Settings;
 using GUIConfig.Dialogs;
 using GUIConfig.ViewModels;
-using Common.Logging;
-using Common.Settings;
+using GUIConfig.Settings;
+using GUIConfig.SupportInfo;
+using MessageBox = System.Windows.MessageBox;
 
 namespace GUIConfig
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : INotifyPropertyChanged
     {
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(MainWindow));
+        private Log _log = LoggingManager.GetLog(typeof(MainWindow));
         private ObservableCollection<ViewModelBase> _views = new ObservableCollection<ViewModelBase>();
         private MPDisplaySettings _mpdisplaySettings;
         private AddImageSettings _addImageSettings;
-        private bool _hasChanges = false;
+        private bool _hasChanges;
 
         #endregion
 
@@ -56,22 +47,22 @@ namespace GUIConfig
             LanguageHelper.SetLanguage(RegistrySettings.ConfigLanguage);
             InitializeComponent();
 
-            Log.Message(LogLevel.Info, "Loading settings...");
+            _log.Message(LogLevel.Info, "Loading settings...");
             MPDisplaySettings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (MPDisplaySettings == null)
             {
-                Log.Message(LogLevel.Warn, "MPDisplay.xml not found!, creating new settings file.");
+                _log.Message(LogLevel.Warn, "MPDisplay.xml not found!, creating new settings file.");
                 MPDisplaySettings = new MPDisplaySettings();
             }
-            Log.Message(LogLevel.Info, "MPDisplay.xml sucessfully loaded.");
+            _log.Message(LogLevel.Info, "MPDisplay.xml sucessfully loaded.");
 
-            AddImageSettings = SettingsManager.Load<AddImageSettings>(System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            AddImageSettings = SettingsManager.Load<AddImageSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
             if (AddImageSettings == null)
             {
-                Log.Message(LogLevel.Warn, "AddImageSettings.xml not found!, creating new settings file.");
+                _log.Message(LogLevel.Warn, "AddImageSettings.xml not found!, creating new settings file.");
                 AddImageSettings = new AddImageSettings();
             }
-            Log.Message(LogLevel.Info, "AddIMageSettings.xml sucessfully loaded.");
+            _log.Message(LogLevel.Info, "AddIMageSettings.xml sucessfully loaded.");
 
             LoadViews();
         }
@@ -116,28 +107,26 @@ namespace GUIConfig
         /// </summary>
         private void LoadViews()
         {
-            Log.Message(LogLevel.Info, "Loading views for InstallType: {0}", RegistrySettings.InstallType);
+            _log.Message(LogLevel.Info, "Loading views for InstallType: {0}", RegistrySettings.InstallType);
             if (RegistrySettings.InstallType != MPDisplayInstallType.GUI)
             {
-                Log.Message(LogLevel.Info, "Adding Plugin section.");
+                _log.Message(LogLevel.Info, "Adding Plugin section.");
                 Views.Add(new PluginSettingsView { DataObject = MPDisplaySettings.PluginSettings });
                 MPDisplaySettings.PluginSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
                 MPDisplaySettings.PluginSettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
 
-                Log.Message(LogLevel.Info, "Adding AddImage section.");
+                _log.Message(LogLevel.Info, "Adding AddImage section.");
                 Views.Add(new AddImageSettingsView { DataObject = AddImageSettings });
                 AddImageSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
             }
 
-            if (RegistrySettings.InstallType != MPDisplayInstallType.Plugin)
-            {
-                Log.Message(LogLevel.Info, "Adding MPDisplay section.");
-                Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
-                Log.Message(LogLevel.Info, "Adding Skin section.");
-                Views.Add(new SkinSettingsView { DataObject = MPDisplaySettings.GUISettings });
-                MPDisplaySettings.GUISettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
-                MPDisplaySettings.GUISettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
-            }
+            if (RegistrySettings.InstallType == MPDisplayInstallType.Plugin) return;
+            _log.Message(LogLevel.Info, "Adding MPDisplay section.");
+            Views.Add(new GUISettingsView { DataObject = MPDisplaySettings.GUISettings });
+            _log.Message(LogLevel.Info, "Adding Skin section.");
+            Views.Add(new SkinSettingsView { DataObject = MPDisplaySettings.GUISettings });
+            MPDisplaySettings.GUISettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
+            MPDisplaySettings.GUISettings.ConnectionSettings.PropertyChanged += MPDisplaySettings_PropertyChanged;
         }
 
         /// <summary>
@@ -177,8 +166,8 @@ namespace GUIConfig
             {
                 view.SaveChanges();
             }
-            SettingsManager.Save<MPDisplaySettings>(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
-            SettingsManager.Save<AddImageSettings>(AddImageSettings, System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
+            SettingsManager.Save(MPDisplaySettings, RegistrySettings.MPDisplaySettingsFile);
+            SettingsManager.Save(AddImageSettings, Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
             _hasChanges = false;
         }
 
@@ -212,6 +201,46 @@ namespace GUIConfig
         {
             _hasChanges = false;
             Close();
+        }
+
+        /// <summary>
+        /// Handles the Click event of the Button_SupportInfo control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
+        private void Button_SupportFile_Click(object sender, RoutedEventArgs e)
+        {
+            var path = FileNamePicker();
+            if (string.IsNullOrEmpty(path)) return;
+
+            var supportInfoFile = new SupportInfoFile();
+            supportInfoFile.AddItem(new SupportInfoItem {FileName = "systeminfo.txt",Type = SupportInfoItemType.SystemInfo});
+            supportInfoFile.AddItem(new SupportInfoItem { Folder = "MPD Config", ItemPath = RegistrySettings.ProgramDataPath, Type = SupportInfoItemType.DataFile });
+            supportInfoFile.AddItem(new SupportInfoItem { Folder = "MPD Logs", ItemPath = RegistrySettings.ProgramDataPath + "Logs", Type = SupportInfoItemType.DataFile });
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "assemblyinfo.txt", ItemPath = RegistrySettings.MPDisplayPath, Type = SupportInfoItemType.AssemblyInfo });
+
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "assemblyinfo.txt", ItemPath = RegistrySettings.MPDPluginPath, Type = SupportInfoItemType.AssemblyInfo });
+
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "mpdregistry.txt", ItemPath = @"HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\MPDisplay", Type = SupportInfoItemType.RegistryKey});
+            supportInfoFile.AddItem(new SupportInfoItem { FileName = "mpdregistry.txt", ItemPath = @"HKEY_LOCAL_MACHINE\SOFTWARE\MPDisplay", Type = SupportInfoItemType.RegistryKey});
+            supportInfoFile.CreateZipFile(path);
+        }
+
+        /// <summary>
+        /// Launches a file name picker.
+        /// </summary>
+        private static string FileNamePicker()
+        {
+            var dlg = new SaveFileDialog
+            {
+                FileName = "MPD_SupportInfo.zip",
+                DefaultExt = "zip",
+                Filter = @"Zip files (*.zip)|*.zip",
+                CheckFileExists = false,
+                CheckPathExists = true
+            };
+            var result = dlg.ShowDialog();
+            return result == System.Windows.Forms.DialogResult.OK ? dlg.FileName : string.Empty;
         }
 
         #endregion

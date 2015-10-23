@@ -1,0 +1,184 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{851471A3-420D-4BAA-A652-9FE5D0A403FC}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GUIConfig</RootNamespace>
+    <AssemblyName>MPDisplayConfig</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>C:\Program Files %28x86%29\MPDisplay++\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\Release\MPDisplay\Config\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>false</Prefer32Bit>
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>config.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssembly.cs">
+      <Link>Properties\GlobalAssembly.cs</Link>
+    </Compile>
+    <Compile Include="Settings\ConnectionTester.cs" />
+    <Compile Include="Dialogs\LanguageDialog.xaml.cs">
+      <DependentUpon>LanguageDialog.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\Language\LanguageConverter.cs" />
+    <Compile Include="Settings\Language\LanguageHelper.cs" />
+    <Compile Include="Settings\Validators.cs" />
+    <Compile Include="ViewModels\ConnectionSettingsView.xaml.cs">
+      <DependentUpon>ConnectionSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\AddImageSettingsView.xaml.cs">
+      <DependentUpon>AddImageSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\SkinSettingsView.xaml.cs">
+      <DependentUpon>SkinSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\GUISettingsView.xaml.cs">
+      <DependentUpon>GUISettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ViewModels\PluginSettingsView.xaml.cs">
+      <DependentUpon>PluginSettingsView.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Settings\SkinInfo.cs" />
+    <Compile Include="ViewModels\ViewModelBase.cs" />
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+    <None Include="app.config" />
+    <None Include="app.manifest" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <AppDesigner Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{c6a8f1c0-8b75-425d-90ce-0e455e80844a}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\GUICommon\GUICommon.csproj">
+      <Project>{1F9ACDEE-FC03-4E2B-98DB-632D4D64BFFB}</Project>
+      <Name>GUICommon</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MessageFramework\MessageFramework.csproj">
+      <Project>{c3a683aa-2caf-4093-bf6e-0b47ff048096}</Project>
+      <Name>MessageFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <PostBuildEvent>if "$(ConfigurationName)" == "Release" (
+$(SolutionDir)Release.bat $(SolutionDir)
+)</PostBuildEvent>
+  </PropertyGroup>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\Microsoft.CSharp.dll" />
+    <ReferencePath Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\Common\bin\Debug\MPDisplay.Common.dll" />
+    <ReferencePath Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\MessageFramework\bin\Debug\MPDisplay.MessageFramework.dll" />
+    <ReferencePath Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUICommon\bin\Debug\MPDisplay.UICommon.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\mscorlib.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\PresentationCore.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\PresentationFramework.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Configuration.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Core.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.DataSetExtensions.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Data.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Drawing.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Management.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Runtime.Serialization.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.ServiceModel.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.ServiceProcess.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Windows.Forms.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xaml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\System.Xml.Linq.dll" />
+    <ReferencePath Include="C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.5\WindowsBase.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\Dialogs\LanguageDialog.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\MainWindow.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\ViewModels\ConnectionSettingsView.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\ViewModels\AddImageSettingsView.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\ViewModels\SkinSettingsView.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\ViewModels\GUISettingsView.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\ViewModels\PluginSettingsView.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\App.g.cs" />
+    <Compile Include="C:\Entwicklung\MPDisplay-Master\MPDisplay\GUIConfig\obj\Debug\GeneratedInternalTypeHelper.g.cs" />
+  </ItemGroup>
+</Project>

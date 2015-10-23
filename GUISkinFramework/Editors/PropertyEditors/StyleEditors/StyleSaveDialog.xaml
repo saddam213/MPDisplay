@@ -1,4 +1,4 @@
-﻿<Window x:Class="GUISkinFramework.Editor.PropertyEditors.StyleSaveDialog"
+﻿<Window x:Class="GUISkinFramework.Editors.StyleSaveDialog"
     
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"

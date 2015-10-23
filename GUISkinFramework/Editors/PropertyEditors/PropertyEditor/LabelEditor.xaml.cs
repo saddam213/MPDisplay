@@ -1,34 +1,17 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Controls;
+using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class LabelEditor : UserControl, ITypeEditor
+    public partial class LabelEditor : ITypeEditor
     {
     
-        private PropertyItem _Item;
+        private PropertyItem _item;
 
         public LabelEditor()
         {
@@ -70,12 +53,14 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            var editor = new LabelEditorDialog(_Item.Instance, _Item.PropertyGrid.Tag as XmlSkinInfo);
-            editor.CurrentLabel = _Item.Value.ToString();
+            var editor = new LabelEditorDialog(_item.Instance, _item.PropertyGrid.Tag as XmlSkinInfo)
+            {
+                CurrentLabel = _item.Value.ToString()
+            };
             if (editor.ShowDialog() == true)
             {
                 Value = editor.CurrentLabel;
-                _Item.Value = editor.CurrentLabel;
+                _item.Value = editor.CurrentLabel;
             }
             LabelInfo = GetText();
             LabelToolTip = GetToolTipText();
@@ -83,7 +68,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            _Item = propertyItem;
+            _item = propertyItem;
             LabelInfo = GetText();
             LabelToolTip = GetToolTipText();
             return this;
@@ -91,18 +76,18 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private string GetText()
         {
-            if (_Item != null && _Item.Value is string)
+            if (_item != null && _item.Value is string)
             {
-                return !string.IsNullOrEmpty(_Item.Value.ToString()) ? "(Label)" : "(Empty)";
+                return !string.IsNullOrEmpty(_item.Value.ToString()) ? "(Label)" : "(Empty)";
             }
             return "(Empty)";
         }
 
         private string GetToolTipText()
         {
-            if (_Item != null && _Item.Value is string && !string.IsNullOrEmpty(_Item.Value.ToString()))
+            if (_item != null && _item.Value is string && !string.IsNullOrEmpty(_item.Value.ToString()))
             {
-                return string.Format("Visible Condition(s):{0}{1}",Environment.NewLine, _Item.Value.ToString());
+                return string.Format("Visible Condition(s):{0}{1}",Environment.NewLine, _item.Value);
             }
             return "(Empty)";
         }

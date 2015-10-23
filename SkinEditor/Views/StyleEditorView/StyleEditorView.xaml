@@ -1,23 +1,15 @@
-﻿<local:EditorViewModel x:Class="SkinEditor.Views.StyleEditorView" 
+﻿<baseViews:EditorViewModel x:Class="SkinEditor.Views.StyleEditorView" 
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:propGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
-             xmlns:converters="clr-namespace:SkinEditor.BindingConverters"
-             xmlns:xmlConverters="clr-namespace:GUISkinFramework.Converters;assembly=GUISkinFramework"
-             xmlns:local="clr-namespace:SkinEditor.Views"
-             xmlns:styles="clr-namespace:GUISkinFramework.Styles;assembly=GUISkinFramework"
-             xmlns:brushes="clr-namespace:GUISkinFramework.Common.Brushes;assembly=GUISkinFramework"
-             xmlns:common="clr-namespace:GUISkinFramework.Common;assembly=GUISkinFramework"
-             xmlns:commonConve="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
-             xmlns:xmlControls="clr-namespace:GUISkinFramework.Controls;assembly=GUISkinFramework"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
-			 xmlns:skinEditorConverters="clr-namespace:SkinEditor.BindingConverters"
-             xmlns:PropertyEditors="clr-namespace:GUISkinFramework.Editor.PropertyEditors;assembly=GUISkinFramework" 
-		     xmlns:PropertyEditors2="clr-namespace:GUISkinFramework.Editors.PropertyEditors;assembly=GUISkinFramework" 
-             mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >
-	<local:EditorViewModel.Resources>
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:baseViews="clr-namespace:SkinEditor.Themes"
+		     xmlns:brushes="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+		     xmlns:brushEditor="clr-namespace:GUISkinFramework.Editors;assembly=GUISkinFramework"
+		     xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+		     xmlns:implementation1="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
+		     mc:Ignorable="d" d:DesignWidth="1280" d:DesignHeight="720" x:Name="UI"  >
+	<baseViews:EditorViewModel.Resources>
       
 
         <CollectionViewSource x:Key="controlStyles" Source="{Binding CurrentControlStyles, ElementName=UI}">
@@ -52,7 +44,7 @@
             </DrawingBrush.Drawing>
         </DrawingBrush>
 
-	</local:EditorViewModel.Resources>
+	</baseViews:EditorViewModel.Resources>
 
     <Grid DataContext="{Binding ElementName=UI}">
 
@@ -154,10 +146,10 @@
                         </Grid>
                     </Border>
                     <Grid Grid.Column="2" Margin="0,26,0,0" PreviewMouseUp="BrushTypeEditGrid_PreviewMouseUp">
-                        <Controls:ColorPickerPanel SelectedColor="{Binding SelectedBrushStyle.Color}" 
+                        <implementation:ColorPickerPanel SelectedColor="{Binding SelectedBrushStyle.Color}" 
                                                    SelectedColorChanged="ColorPickerPanel_SelectedColorChanged_1" VerticalAlignment="Top">
-                            <Controls:ColorPickerPanel.Style>
-                                <Style TargetType="{x:Type Controls:ColorPickerPanel}">
+                            <implementation:ColorPickerPanel.Style>
+                                <Style TargetType="{x:Type implementation:ColorPickerPanel}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentBrushType}" Value="{x:Type brushes:XmlColorBrush}">
@@ -165,13 +157,13 @@
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </Controls:ColorPickerPanel.Style>
-                        </Controls:ColorPickerPanel>
+                            </implementation:ColorPickerPanel.Style>
+                        </implementation:ColorPickerPanel>
                         
-                        <PropertyEditors2:GradientBrushEditor GradientBrush="{Binding SelectedBrushStyle, Mode=TwoWay}" 
+                        <brushEditor:GradientBrushEditor GradientBrush="{Binding SelectedBrushStyle, Mode=TwoWay}" 
                                                               OnGradientBrushChanged="GradientBrushEditor_OnGradientBrushChanged_1" VerticalAlignment="Top">
-                            <PropertyEditors2:GradientBrushEditor.Style>
-                                <Style TargetType="{x:Type PropertyEditors2:GradientBrushEditor}">
+                            <brushEditor:GradientBrushEditor.Style>
+                                <Style TargetType="{x:Type brushEditor:GradientBrushEditor}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentBrushType}" Value="{x:Type brushes:XmlGradientBrush}">
@@ -179,13 +171,13 @@
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </PropertyEditors2:GradientBrushEditor.Style>
-                        </PropertyEditors2:GradientBrushEditor>
+                            </brushEditor:GradientBrushEditor.Style>
+                        </brushEditor:GradientBrushEditor>
 
-                        <PropertyEditors2:ImageBrushEditor SkinInfo="{Binding SkinInfo}" ImageBrush="{Binding SelectedBrushStyle}" OnImageBrushChanged="ImageBrushEditor_OnImageBrushChanged" >
+                        <brushEditor:ImageBrushEditor SkinInfo="{Binding SkinInfo}" ImageBrush="{Binding SelectedBrushStyle}" OnImageBrushChanged="ImageBrushEditor_OnImageBrushChanged" >
                        
-                            <PropertyEditors2:ImageBrushEditor.Style>
-                                <Style TargetType="{x:Type PropertyEditors2:ImageBrushEditor}">
+                            <brushEditor:ImageBrushEditor.Style>
+                                <Style TargetType="{x:Type brushEditor:ImageBrushEditor}">
                                     <Setter Property="Visibility" Value="Collapsed" />
                                     <Style.Triggers>
                                         <DataTrigger Binding="{Binding CurrentBrushType}" Value="{x:Type brushes:XmlImageBrush}">
@@ -193,8 +185,8 @@
                                         </DataTrigger>
                                     </Style.Triggers>
                                 </Style>
-                            </PropertyEditors2:ImageBrushEditor.Style>
-                        </PropertyEditors2:ImageBrushEditor>
+                            </brushEditor:ImageBrushEditor.Style>
+                        </brushEditor:ImageBrushEditor>
 
                     </Grid>
 
@@ -257,11 +249,11 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-					<propGrid:PropertyGrid Tag="{Binding SkinInfo}" Grid.Column="2" Margin="0,26,0,0" SelectedObject="{Binding SelectedControlStyle}" PropertyValueChanged="PropertyGrid_ControlStyleValueChanged"/>
+					<implementation1:PropertyGrid Tag="{Binding SkinInfo}" Grid.Column="2" Margin="0,26,0,0" SelectedObject="{Binding SelectedControlStyle}" PropertyValueChanged="PropertyGrid_ControlStyleValueChanged"/>
                 </Grid>
             </TabItem>
         </TabControl>
     </Grid>
 
 
-</local:EditorViewModel>
+</baseViews:EditorViewModel>

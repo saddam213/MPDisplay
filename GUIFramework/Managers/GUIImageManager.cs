@@ -1,18 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using Common.Logging;
-using GUISkinFramework;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
+using Common.Helpers;
+using Common.Log;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.Managers
 {
     public class GUIImageManager
     {
-        private static Log Log = LoggingManager.GetLog(typeof(GUIImageManager));
+        private static Log _log = LoggingManager.GetLog(typeof(GUIImageManager));
         private static Dictionary<string, ImageBrush> _cache = new Dictionary<string, ImageBrush>();
         private static Dictionary<string, ImageBrush> _styleCache = new Dictionary<string, ImageBrush>();
         private static Dictionary<string, XmlImageFile> _xmlImages = new Dictionary<string, XmlImageFile>();
@@ -26,12 +26,9 @@ namespace GUIFramework.Managers
             _cache.Clear();
             _styleCache.Clear();
             _xmlImages.Clear();
-            foreach (var xmlImage in skinInfo.Images)
+            foreach (var xmlImage in skinInfo.Images.Where(xmlImage => !_xmlImages.ContainsKey(xmlImage.XmlName)))
             {
-                if (!_xmlImages.ContainsKey(xmlImage.XmlName))
-                {
-                    _xmlImages.Add(xmlImage.XmlName, xmlImage);
-                }
+                _xmlImages.Add(xmlImage.XmlName, xmlImage);
             }
         }
 
@@ -42,60 +39,53 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static ImageBrush GetSkinImage(XmlImageBrush brush)
         {
-            if (_xmlImages.ContainsKey(brush.ImageName))
-            {
-                if (!string.IsNullOrEmpty(brush.StyleId))
-                {
-                    if (!_styleCache.ContainsKey(brush.StyleId))
-                    {
-                        var imageSource = GetImage(_xmlImages[brush.ImageName].FileName);
-                        var newBrush = new ImageBrush(imageSource);
-                        newBrush.Stretch = brush.ImageStretch;
-                        _styleCache.Add(brush.StyleId, (ImageBrush)newBrush.GetAsFrozen());
-                    }
-                    return _styleCache[brush.StyleId];
-                }
+            if (!_xmlImages.ContainsKey(brush.ImageName)) return null;
 
-                string cacheKey = string.Format("{0} | {1}", brush.ImageName, brush.ImageStretch);
-                if (!_cache.ContainsKey(cacheKey))
-                {
-                    var imageSource = GetImage(_xmlImages[brush.ImageName].FileName);
-                    var newBrush = new ImageBrush(imageSource);
-                    newBrush.Stretch = brush.ImageStretch;
-                    _cache.Add(cacheKey, (ImageBrush)newBrush.GetAsFrozen());
-                }
-                return _cache[cacheKey];
+            if (!string.IsNullOrEmpty(brush.StyleId))
+            {
+                if (_styleCache.ContainsKey(brush.StyleId)) return _styleCache[brush.StyleId];
+
+                var imageSource = GetImage(_xmlImages[brush.ImageName].FileName);
+                var newBrush = new ImageBrush(imageSource) {Stretch = brush.ImageStretch};
+                _styleCache.Add(brush.StyleId, (ImageBrush)newBrush.GetAsFrozen());
+                return _styleCache[brush.StyleId];
             }
-            return null;
+
+            var cacheKey = string.Format("{0} | {1}", brush.ImageName, brush.ImageStretch);
+            if (_cache.ContainsKey(cacheKey)) return _cache[cacheKey];
+
+            var imageSource1 = GetImage(_xmlImages[brush.ImageName].FileName);
+            var newBrush1 = new ImageBrush(imageSource1) {Stretch = brush.ImageStretch};
+            _cache.Add(cacheKey, (ImageBrush)newBrush1.GetAsFrozen());
+            return _cache[cacheKey];
         }
 
         /// <summary>
-        /// Gets a BitmapImage from tshe specified filename.
+        /// Gets a BitmapImage from the specified filename.
         /// </summary>
-        /// <param name="filename">The filename.</param>
+        /// <param name="filename">The filename or URL.</param>
         /// <returns></returns>
         public static BitmapImage GetImage(string filename)
         {
-            try
-            {
-                if (!string.IsNullOrWhiteSpace(filename) && File.Exists(filename))
+               try
                 {
-                    BitmapImage bmImage = new BitmapImage();
-                    bmImage.BeginInit();
-                  //  bmImage.DecodePixelWidth = GetScaledImageWidth(filename);
-                    bmImage.CacheOption = BitmapCacheOption.None;
-                    bmImage.UriSource = new Uri(filename, UriKind.RelativeOrAbsolute);
-                    bmImage.EndInit();
-                    bmImage.Freeze();
-                    return bmImage;
+                    if (!string.IsNullOrWhiteSpace(filename) && ( (FileHelpers.IsURL(filename) && FileHelpers.ExistsURL(filename)) || File.Exists(filename)))
+                    {
+                        var bmImage = new BitmapImage();
+                        bmImage.BeginInit();
+                        bmImage.CacheOption = BitmapCacheOption.OnLoad;
+                        bmImage.UriSource = new Uri(filename);
+                        bmImage.EndInit();
+                        if( bmImage.CanFreeze) bmImage.Freeze();     
+                        return bmImage;
+                    }
                 }
-            }
-            catch (Exception ex)
-            {
-                Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
-            }
-            return new BitmapImage();
-        }
+                catch (Exception ex)
+                {
+                    _log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                }
+                return new BitmapImage();     
+         }
 
         /// <summary>
         /// Gets a BitmapImage from a set of image bytes.
@@ -108,16 +98,14 @@ namespace GUIFramework.Managers
             {
                 if (bytes != null && bytes.Length > 0)
                 {
-                    BitmapImage image = new BitmapImage();
-                    using (MemoryStream stream = new MemoryStream(bytes, false))
+                    var image = new BitmapImage();
+                    using (var stream = new MemoryStream(bytes, false))
                     {
                         image.BeginInit();
-                        // image.DecodePixelWidth = GetScaledImageWidth(bytes);
                         image.CacheOption = BitmapCacheOption.OnLoad;
                         image.StreamSource = stream;
                         image.EndInit();
-                        image.Freeze();
-                        bytes = null;
+                        if( image.CanFreeze) image.Freeze();
                         stream.Flush();
                     }
                     return image;
@@ -125,7 +113,7 @@ namespace GUIFramework.Managers
             }
             catch (Exception ex)
             {
-                Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                _log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
             }
             return new BitmapImage();
         }

@@ -1,28 +1,36 @@
-﻿<local:EditorViewModel x:Class="SkinEditor.Views.SkinEditorView"
+﻿<baseViews:EditorViewModel x:Class="SkinEditor.Views.SkinEditorView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             xmlns:propGrid="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
-           
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:converters="clr-namespace:SkinEditor.BindingConverters"
-             xmlns:local="clr-namespace:SkinEditor.Views"
-			 xmlns:xmlWindows="clr-namespace:GUISkinFramework.Windows;assembly=GUISkinFramework"
-			 xmlns:xmlControls="clr-namespace:GUISkinFramework.Controls;assembly=GUISkinFramework"
-			 xmlns:xmlDialogs="clr-namespace:GUISkinFramework.Dialogs;assembly=GUISkinFramework"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon" 
-			 xmlns:commonConverters="clr-namespace:MPDisplay.Common.BindingConverters;assembly=MPDisplay.UICommon"
-             mc:Ignorable="d" d:DesignWidth="1256" x:Name="UI"  >
-    <local:EditorViewModel.Resources>
+             xmlns:baseViews="clr-namespace:SkinEditor.Themes"
+			 xmlns:xmlWindows="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:xmlDialogs="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:xmlControls="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:button="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:guide="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:image="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:label="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:listControl="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:progress="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:rectangle="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:equalizer="clr-namespace:GUISkinFramework.Skin;assembly=GUISkinFramework"
+			 xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+			 xmlns:implementation1="clr-namespace:MPDisplay.Common.Controls.PropertyGrid;assembly=MPDisplay.UICommon"
+			 xmlns:implementation2="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+			 xmlns:implementation3="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
+			 mc:Ignorable="d" d:DesignWidth="1256" x:Name="UI"  >
+    <baseViews:EditorViewModel.Resources>
 
         <converters:TypeToImageConverter x:Key="TypeToImageConverter"/>
         <converters:TypeToFontWeightConverter x:Key="TypeToFontWeightConverter" />
 
-        <Style x:Name="txt" TargetType="TextBlock">
+        <Style TargetType="TextBlock">
             <Setter Property="Foreground" Value="Black" />
         </Style>
 
-        <Style x:Name="exp" TargetType="Expander">
+        <Style TargetType="Expander">
             <Setter Property="Foreground" Value="Black" />
         </Style>
 
@@ -30,7 +38,7 @@
             <Setter Property="Foreground" Value="Black" />
         </Style>
 
-        <Style TargetType="{x:Type Controls:MoveResizeControl}">
+        <Style TargetType="{x:Type implementation:MoveResizeControl}">
             <Setter Property="Visibility" Value="Collapsed" />
             <Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
             <Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
@@ -49,7 +57,7 @@
             </Style.Triggers>
         </Style>
 
-        <CollectionViewSource x:Key="allWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
+        <CollectionViewSource x:Key="AllWindows" Source="{Binding AllWindows, Mode=OneWay, ElementName=UI}" >
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="DisplayType" />
             </CollectionViewSource.GroupDescriptions>
@@ -65,7 +73,7 @@
             </Setter>
         </Style>
 
-    </local:EditorViewModel.Resources>
+    </baseViews:EditorViewModel.Resources>
 
     <Grid DataContext="{Binding ElementName=UI}">
         <Grid.ColumnDefinitions>
@@ -91,7 +99,7 @@
                     </Button>
                 </Grid>
 
-                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource allWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged" Grid.Row="1"  >
+                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource AllWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged">
 
                     <TreeView.Resources>
                         <!--SelectedItem with focus-->
@@ -137,28 +145,28 @@
                             <ContentControl />
                         </HierarchicalDataTemplate>
 
-                        <DataTemplate DataType="{x:Type xmlControls:XmlButton}" >
+                        <DataTemplate DataType="{x:Type button:XmlButton}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlGuide}" >
+                        <DataTemplate DataType="{x:Type guide:XmlGuide}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlImage}" >
+                        <DataTemplate DataType="{x:Type image:XmlImage}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlLabel}" >
+                        <DataTemplate DataType="{x:Type label:XmlLabel}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlList}" >
+                        <DataTemplate DataType="{x:Type listControl:XmlList}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlProgressBar}" >
+                        <DataTemplate DataType="{x:Type progress:XmlProgressBar}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlRectangle}" >
+                        <DataTemplate DataType="{x:Type rectangle:XmlRectangle}" >
                             <ContentControl />
                         </DataTemplate>
-                        <DataTemplate DataType="{x:Type xmlControls:XmlEqualizer}" >
+                        <DataTemplate DataType="{x:Type equalizer:XmlEqualizer}" >
                             <ContentControl />
                         </DataTemplate>
 
@@ -215,17 +223,17 @@
                                     <Image Source="/SkinEditor;component/Images/Add.png" />
                                 </MenuItem.Icon>
 
-                                <MenuItem Header="Label" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlLabel}" >
+                                <MenuItem Header="Label" Command="{Binding AddControlCommand}" CommandParameter="{x:Type label:XmlLabel}" >
                                     <MenuItem.Icon>
                                         <Image Source="/SkinEditor;component/Images/XmlLabel.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Button" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlButton}" >
+                                <MenuItem Header="Button" Command="{Binding AddControlCommand}" CommandParameter="{x:Type button:XmlButton}" >
                                     <MenuItem.Icon>
                                         <Image   Source="/SkinEditor;component/Images/XmlButton.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Image" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlImage}" >
+                                <MenuItem Header="Image" Command="{Binding AddControlCommand}" CommandParameter="{x:Type image:XmlImage}" >
                                     <MenuItem.Icon>
                                         <Image  Source="/SkinEditor;component/Images/XmlImage.png" />
                                     </MenuItem.Icon>
@@ -235,28 +243,28 @@
                                         <Image  Source="/SkinEditor;component/Images/XmlGroup.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Guide" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlGuide}" >
+                                <MenuItem Header="Guide" Command="{Binding AddControlCommand}" CommandParameter="{x:Type guide:XmlGuide}" >
                                     <MenuItem.Icon>
                                         <Image  Source="/SkinEditor;component/Images/XmlGuide.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="List" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlList}" >
+                                <MenuItem Header="List" Command="{Binding AddControlCommand}" CommandParameter="{x:Type listControl:XmlList}" >
                                     <MenuItem.Icon>
                                         <Image   Source="/SkinEditor;component/Images/XmlList.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="ProgressBar" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlProgressBar}" >
+                                <MenuItem Header="ProgressBar" Command="{Binding AddControlCommand}" CommandParameter="{x:Type progress:XmlProgressBar}" >
                                     <MenuItem.Icon>
                                         <Image Source="/SkinEditor;component/Images/XmlProgressBar.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
-                                <MenuItem Header="Equalizer" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlEqualizer}" >
+                                <MenuItem Header="Equalizer" Command="{Binding AddControlCommand}" CommandParameter="{x:Type equalizer:XmlEqualizer}" >
                                     <MenuItem.Icon>
                                         <Image Source="/SkinEditor;component/Images/XmlEqualizer.png" />
                                     </MenuItem.Icon>
                                 </MenuItem>
                                 <Separator/>
-                                <MenuItem Header="Rectangle" Command="{Binding AddControlCommand}" CommandParameter="{x:Type xmlControls:XmlRectangle}" >
+                                <MenuItem Header="Rectangle" Command="{Binding AddControlCommand}" CommandParameter="{x:Type rectangle:XmlRectangle}" >
                                     <MenuItem.Icon>
                                         <Image Source="/SkinEditor;component/Images/XmlRectangle.png" />
                                     </MenuItem.Icon>
@@ -321,10 +329,10 @@
                 </TreeView>
 
             </DockPanel>
-            <GridSplitter Width="5" ResizeBehavior="BasedOnAlignment" />
+            <GridSplitter Grid.Column="0" Width="5" ResizeBehavior="BasedOnAlignment" />
             <DockPanel  Margin="0,0,5,0" Grid.Column="1" MinWidth="40">
                 <TextBlock Text="{Binding SelectedTreeItem.DisplayName}" DockPanel.Dock="Top" />
-                <propGrid:PropertyGrid Tag="{Binding SkinInfo, Mode=OneWay}" 
+                <implementation1:PropertyGrid Tag="{Binding SkinInfo, Mode=OneWay}" 
 				                       SelectedObject="{Binding SelectedTreeItem,Mode=OneWay}"
 									   PropertyValueChanged="PropertyGrid_PropertyValueChanged" ShowSortOptions="False" 
 									   SelectedObjectDisplayName="{Binding SelectedTreeItem.DisplayType}"  />
@@ -333,7 +341,7 @@
 
         </Grid>
 
-        <GridSplitter Margin="0,11,0,0" Width="5" ResizeBehavior="BasedOnAlignment" />
+        <GridSplitter Grid.Column="0" Margin="0,11,0,0" Width="5" ResizeBehavior="BasedOnAlignment" />
 
         <Grid Grid.Column="1" Margin="0,0,0,0"  >
             <Grid.RowDefinitions>
@@ -344,7 +352,7 @@
             <StackPanel Grid.Row="0" Orientation="Horizontal" >
 
 
-                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
+                <Border BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
                     <Expander x:Name="skinOptExpander" Header="Skin Options" >
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid  Background="#FFE5E5E5" Height="132"  >
@@ -366,9 +374,9 @@
                 </Border>
 
 
-                <Border Margin="1,0,0,0" Grid.Column="1" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
+                <Border Margin="1,0,0,0" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
 
-                    <Expander x:Name="designOptExpander" Header="Designer Options"  Grid.Column="1" >
+                    <Expander x:Name="designOptExpander" Header="Designer Options">
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid Background="#FFE5E5E5" Height="132"  >
                                 <Grid.ColumnDefinitions>
@@ -377,11 +385,11 @@
                                 </Grid.ColumnDefinitions>
 
                                 <CheckBox Content="Show Grid" IsChecked="{Binding Settings.ShowGrid}" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top" />
-                                <StackPanel Margin="15,31,5,0"  IsEnabled="{Binding Settings.ShowGrid}">
+                                <StackPanel Grid.Column="0" Margin="15,31,5,0"  IsEnabled="{Binding Settings.ShowGrid}">
                                     <TextBlock Text="Grid Size"  />
-                                    <Controls:IntegerUpDown Value="{Binding Settings.GridSize}"  />
+                                    <implementation2:IntegerUpDown Value="{Binding Settings.GridSize}"  />
                                     <TextBlock Margin="0,3,0,0" Text="Grid Color" />
-                                    <Controls:ColorPicker SelectedColor="{Binding Settings.GridColor}" />
+                                    <implementation3:ColorPicker SelectedColor="{Binding Settings.GridColor}" />
                                     <CheckBox Margin="0,5,0,3" Content="Snap To Grid" IsChecked="{Binding Settings.SnapToGrid}" />
                                 </StackPanel>
 
@@ -389,9 +397,9 @@
                                 <CheckBox Grid.Column="1" Content="Drag Move/Size" IsChecked="{Binding Settings.DragMoveResize}" HorizontalAlignment="Left" Margin="5,10,0,0" VerticalAlignment="Top"/>
                                 <StackPanel Grid.Column="1" Margin="15,30,5,0"  IsEnabled="{Binding Settings.DragMoveResize}">
                                     <TextBlock Text="Highlight"  />
-                                    <Controls:ColorPicker SelectedColor="{Binding Settings.ResizeHiglightColor}" />
+                                    <implementation3:ColorPicker SelectedColor="{Binding Settings.ResizeHiglightColor}" />
                                     <TextBlock Margin="0,3,0,0" Text="Size Highlight" />
-                                    <Controls:ColorPicker SelectedColor="{Binding Settings.ResizeSizeInfoColor}" />
+                                    <implementation3:ColorPicker SelectedColor="{Binding Settings.ResizeSizeInfoColor}" />
                                     <!--<CheckBox Margin="0,5,0,0" Content="Snap To Grid" IsChecked="{Binding Settings.SnapToGrid}" />-->
                                 </StackPanel>
 
@@ -401,7 +409,7 @@
                 </Border>
 
 
-                <Border Grid.Column="0" BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
+                <Border BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
                     <Expander  Header="Connection" >
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid>
@@ -437,8 +445,9 @@
                                         </Style>
                                     </Rectangle.Style>
                                 </Rectangle>
-                                <Button Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="97"/>
-                                <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="112,10,0,0" VerticalAlignment="Top" Width="97" Grid.ColumnSpan="2"/>
+                                <Button Grid.Row="0" Grid.Column="0" Content="Connect" Command="{Binding ConnectCommand}" HorizontalAlignment="Left" Height="32" Margin="10,10,0,0" VerticalAlignment="Top" Width="97"/>
+                                <Button Content="Disconnect" Command="{Binding DisconnectCommand}" HorizontalAlignment="Left" Height="32" Margin="112,10,0,0" VerticalAlignment="Top" Width="97"
+                                        Grid.Row="0" Grid.ColumnSpan="2" Grid.Column="0" />
 
                                 <StackPanel Margin="10,2,41,0"   Grid.Column="0" Grid.Row="1">
                                     <TextBlock Text="SkinEditor" Height="18" Foreground="Black" />
@@ -561,20 +570,20 @@
                                         <ContentControl Content="{Binding CurrentXmlDialog}" />
 
                                     </Canvas>
-                                    <Controls:MoveResizeControl Width="{Binding CurrentXmlDialog.Width, Mode=TwoWay, ElementName=UI}"
+                                    <implementation:MoveResizeControl Width="{Binding CurrentXmlDialog.Width, Mode=TwoWay, ElementName=UI}"
 																Height="{Binding CurrentXmlDialog.Height, Mode=TwoWay, ElementName=UI}"
 																Canvas.Left="{Binding CurrentXmlDialog.PosX, Mode=TwoWay, ElementName=UI}"
 																Canvas.Top="{Binding CurrentXmlDialog.PosY, Mode=TwoWay, ElementName=UI}">
-                                        <Controls:MoveResizeControl.Style>
-                                            <Style TargetType="{x:Type Controls:MoveResizeControl}">
+                                        <implementation:MoveResizeControl.Style>
+                                            <Style TargetType="{x:Type implementation:MoveResizeControl}">
                                                 <Setter Property="Visibility" Value="{Binding CurrentXmlControl, Converter={StaticResource InverseNullToVisibilityConverter}}" />
                                                 <Setter Property="ResizeHighlightColor" Value="{Binding Settings.ResizeHiglightColor, ElementName=UI}" />
                                                 <Setter Property="ResizeSizeInfoColor" Value="{Binding Settings.ResizeSizeInfoColor, ElementName=UI}" />
                                                 <Setter Property="IsSnapToGrid" Value="{Binding Settings.SnapToGrid, ElementName=UI}" />
                                                 <Setter Property="GridSize" Value="{Binding Settings.GridSize, ElementName=UI}" />
                                             </Style>
-                                        </Controls:MoveResizeControl.Style>
-                                    </Controls:MoveResizeControl>
+                                        </implementation:MoveResizeControl.Style>
+                                    </implementation:MoveResizeControl>
                                 </Canvas>
 
                                 <!--Window-->
@@ -627,4 +636,4 @@
             </Border>
         </Grid>
     </Grid>
-</local:EditorViewModel>
+</baseViews:EditorViewModel>

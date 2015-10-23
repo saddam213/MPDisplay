@@ -1,12 +1,8 @@
-﻿using Common.Settings.SettingsObjects;
+﻿using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class OnlineVideosPlugin : PluginHelper
     {
@@ -17,11 +13,7 @@ namespace MediaPortalPlugin.PluginHelpers
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                return filename.Contains("OnlineVideo.mp4");
-            }
-            return false;
+            return IsEnabled && filename.Contains("OnlineVideo.mp4");
         }
 
         public override APIPlaybackType PlayType

@@ -6,33 +6,23 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.ServiceModel;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using GUIFramework.GUI;
-using GUIFramework.GUI.Controls;
-using GUIFramework.GUI.Windows;
-using GUIFramework.Managers;
-using GUISkinFramework;
-using GUISkinFramework.Common;
-using GUISkinFramework.Windows;
-using MessageFramework.DataObjects;
 using System.Windows.Threading;
-using GUISkinFramework.Editor.PropertyEditors;
-using Microsoft.Win32;
 using Common.Helpers;
-using Common.Logging;
+using Common.Log;
 using Common.Settings;
+using GUIFramework.GUI;
+using GUIFramework.Managers;
+using GUIFramework.Repositories;
+using GUIFramework.Utils;
+using GUISkinFramework.Editors;
+using GUISkinFramework.Skin;
+using MessageFramework.DataObjects;
+using MessageFramework.Messages;
+using Microsoft.Win32;
 
 namespace GUIFramework
 {
@@ -40,29 +30,26 @@ namespace GUIFramework
     /// Interaction logic for GUISurface.xaml
     /// </summary>
     [CallbackBehavior(ConcurrencyMode = ConcurrencyMode.Multiple, UseSynchronizationContext = false)]
-    public partial class GUISurface : UserControl, IMessageCallback, INotifyPropertyChanged 
+    public partial class GUISurface : IMessageCallback, INotifyPropertyChanged 
     {
         #region Fields
 
-        private Log Log = LoggingManager.GetLog(typeof(GUISurface));
+        private Log _log = LoggingManager.GetLog(typeof(GUISurface));
         private APIConnection _connection;
-        private EndpointAddress serverEndpoint;
-        private NetTcpBinding serverBinding;
-        private bool _isDisconnecting = false;
+        private EndpointAddress _serverEndpoint;
+        private NetTcpBinding _serverBinding;
+        private bool _isDisconnecting;
         private static MessageClient _messageBroker;
-        private XmlSkinInfo _currentSkin;
-        private GUISettings _settings;
-        private ObservableCollection<IControlHost> _surfaceElements = new ObservableCollection<IControlHost>();
         private GUIWindow _currentWindow;
         private GUIMPDialog _currentMediaPortalDialog;
-        private List<GUIMPDDialog> _currentMPDisplayDialogs = new List<GUIMPDDialog>();
         private bool _currentWindowIsLocked;
         private Stack<int> _previousWindows = new Stack<int>();
         private DispatcherTimer _secondTimer;
-        private bool _processWindow = false;
+        private bool _processWindow;
         private int _currentMPDWindowId = -1;
         private DateTime _lastUserInteraction = DateTime.MinValue;
         private DateTime _lastKeepAlive = DateTime.MinValue;
+        private int _exceptionCount;
 
         #endregion
 
@@ -73,6 +60,9 @@ namespace GUIFramework
         /// </summary>
         public GUISurface()
         {
+            SurfaceElements = new ObservableCollection<IControlHost>();
+            _processWindow = false;
+            _exceptionCount = 0;
             InitializeComponent(); 
             StartSecondTimer();
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
@@ -85,36 +75,24 @@ namespace GUIFramework
         /// <summary>
         /// Gets or sets the settings.
         /// </summary>
-        public GUISettings Settings
-        {
-            get { return _settings; }
-            set { _settings = value; }
-        }
+        public GUISettings Settings { get; set; }
 
         /// <summary>
         /// Gets or sets the current skin.
         /// </summary>
-        public XmlSkinInfo CurrentSkin
-        {
-            get { return _currentSkin; }
-            set { _currentSkin = value; }
-        }
+        public XmlSkinInfo CurrentSkin { get; set; }
 
         /// <summary>
         /// Gets or sets the surface elements.
         /// </summary>
-        public ObservableCollection<IControlHost> SurfaceElements
-        {
-            get { return _surfaceElements; }
-            set { _surfaceElements = value; }
-        }
+        public ObservableCollection<IControlHost> SurfaceElements { get; set; }
 
         /// <summary>
         /// Gets the mp display windows.
         /// </summary>
         public IEnumerable<GUIMPDWindow> MPDisplayWindows
         {
-            get { return _surfaceElements.OfType<GUIMPDWindow>(); }
+            get { return SurfaceElements.OfType<GUIMPDWindow>(); }
         }
 
         /// <summary>
@@ -122,7 +100,7 @@ namespace GUIFramework
         /// </summary>
         public IEnumerable<GUIMPWindow> MediaPortalWindows
         {
-            get { return _surfaceElements.OfType<GUIMPWindow>(); }
+            get { return SurfaceElements.OfType<GUIMPWindow>(); }
         }
 
         /// <summary>
@@ -130,7 +108,7 @@ namespace GUIFramework
         /// </summary>
         public IEnumerable<GUIPlayerWindow> PlayerWindows
         {
-            get { return _surfaceElements.OfType<GUIPlayerWindow>(); }
+            get { return SurfaceElements.OfType<GUIPlayerWindow>(); }
         }
 
         /// <summary>
@@ -138,7 +116,7 @@ namespace GUIFramework
         /// </summary>
         public IEnumerable<GUIMPDDialog> MPDisplayDialogs
         {
-            get { return _surfaceElements.OfType<GUIMPDDialog>(); }
+            get { return SurfaceElements.OfType<GUIMPDDialog>(); }
         }
 
         /// <summary>
@@ -146,7 +124,7 @@ namespace GUIFramework
         /// </summary>
         public IEnumerable<GUIMPDialog> MediaPortalDialogs
         {
-            get { return _surfaceElements.OfType<GUIMPDialog>(); }
+            get { return SurfaceElements.OfType<GUIMPDialog>(); }
         }
 
         /// <summary>
@@ -157,7 +135,7 @@ namespace GUIFramework
         /// </value>
         public bool IsUserInteracting
         {
-            get { return DateTime.Now < _lastUserInteraction.AddSeconds(_settings.UserInteractionDelay); }
+            get { return DateTime.Now < _lastUserInteraction.AddSeconds(Settings.UserInteractionDelay); }
         } 
         #endregion
 
@@ -173,11 +151,11 @@ namespace GUIFramework
             if (settings != null)
             {
                 IsSplashScreenVisible = true;
-                XmlSkinInfo skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(settings.SkinInfoXml);
+                var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(settings.SkinInfoXml);
                 if (skinInfo != null)
                 {
                     Settings = settings;
-                    skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(settings.SkinInfoXml);
+                    skinInfo.SkinFolderPath = Path.GetDirectoryName(settings.SkinInfoXml);
                     await LoadSkin(skinInfo);
                 }
             }
@@ -222,44 +200,46 @@ namespace GUIFramework
                 });
 
 
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions...");
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions...");
                 await SetSplashScreenText("Loading VisibleConditions...");
-                DateTime conditionStart = DateTime.Now;
+                var conditionStart = DateTime.Now;
                 GUIVisibilityManager.CreateVisibleConditions(CurrentSkin.Windows.Cast<IXmlControlHost>().Concat(CurrentSkin.Dialogs));
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions, LoadTime: {0}ms", (DateTime.Now - conditionStart).TotalMilliseconds);
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading VisibleConditions, LoadTime: {0}ms", (DateTime.Now - conditionStart).TotalMilliseconds);
 
 
 
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows...");
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows...");
                 await SetSplashScreenText("Loading Windows...");
-                DateTime windowsStart = DateTime.Now;
+                var windowsStart = DateTime.Now;
                 foreach (var window in CurrentSkin.Windows.OrderByDescending(x => x.IsDefault))
                 {
                     await SetSplashScreenText("Loading Window...({0})", window.Name);
+                    var window1 = window;
                     await Dispatcher.InvokeAsync(() =>
                     {
-                        DateTime start = DateTime.Now;
-                        SurfaceElements.Add(GUIElementFactory.CreateWindow(window));
-                        Log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window.Name, (DateTime.Now - start).TotalMilliseconds);
+                        var start = DateTime.Now;
+                        SurfaceElements.Add(GUIElementFactory.CreateWindow(window1));
+                        _log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIWindow {0}, Took: {1}ms", window1.Name, (DateTime.Now - start).TotalMilliseconds);
                     }, DispatcherPriority.Background);
                 }
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows Complete, LoadTime: {0}ms", (DateTime.Now - windowsStart).TotalMilliseconds);
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIWindows Complete, LoadTime: {0}ms", (DateTime.Now - windowsStart).TotalMilliseconds);
 
 
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs...");
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs...");
                 await SetSplashScreenText("Loading Dialogs...");
-                DateTime dialogsStart = DateTime.Now;
+                var dialogsStart = DateTime.Now;
                 foreach (var dialog in CurrentSkin.Dialogs)
                 {
                     await SetSplashScreenText("Loading Dialog...({0})", dialog.Name);
+                    var dialog1 = dialog;
                     await Dispatcher.InvokeAsync(() =>
                     {
-                        DateTime start = DateTime.Now;
-                        SurfaceElements.Add(GUIElementFactory.CreateDialog(dialog));
-                        Log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog.Name, (DateTime.Now - start).TotalMilliseconds);
+                        var start = DateTime.Now;
+                        SurfaceElements.Add(GUIElementFactory.CreateDialog(dialog1));
+                        _log.Message(LogLevel.Debug, "[LoadSkin] - Loading GUIDialog {0}, LoadTime: {1}ms", dialog1.Name, (DateTime.Now - start).TotalMilliseconds);
                     });
                 }
-                Log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs Complete, LoadTime: {0}ms", (DateTime.Now - dialogsStart).TotalMilliseconds);
+                _log.Message(LogLevel.Info, "[LoadSkin] - Loading GUIDialogs Complete, LoadTime: {0}ms", (DateTime.Now - dialogsStart).TotalMilliseconds);
 
 
                 await SetSplashScreenText("Connecting to service...");
@@ -303,8 +283,8 @@ namespace GUIFramework
         private void RegisterCallbacks()
         {
             GUIActionManager.RegisterAction(XmlActionType.CloseWindow, action => CloseWindow());
-            GUIActionManager.RegisterAction(XmlActionType.OpenWindow, action => OpenWindow(action.GetParam1As<int>(-1)));
-            GUIActionManager.RegisterAction(XmlActionType.OpenDialog, async action => await OpenMPDisplayDialog(action.GetParam1As<int>(-1)));
+            GUIActionManager.RegisterAction(XmlActionType.OpenWindow, action => OpenWindow(action.GetParam1As(-1)));
+            GUIActionManager.RegisterAction(XmlActionType.OpenDialog, async action => await OpenMPDisplayDialog(action.GetParam1As(-1)));
             GUIActionManager.RegisterAction(XmlActionType.PreviousWindow, action => OpenPreviousWindow());
             GUIActionManager.RegisterAction(XmlActionType.Connect, async action => await Reconnect());
             GUIActionManager.RegisterAction(XmlActionType.LockWindow, action => LockWindow());
@@ -359,14 +339,14 @@ namespace GUIFramework
         /// </summary>
         private void SetRepositories()
         {
-            Log.Message(LogLevel.Info, "[LoadSkin] - Setting repositories..");
+            _log.Message(LogLevel.Info, "[LoadSkin] - Setting repositories..");
             GUIImageManager.Initialize(CurrentSkin);
             InfoRepository.Instance.Initialize(Settings, CurrentSkin);
             PropertyRepository.Instance.Initialize(Settings, CurrentSkin);
             ListRepository.Instance.Initialize(Settings, CurrentSkin);
             GenericDataRepository.Instance.Initialize(Settings, CurrentSkin);
             TVGuideRepository.Instance.Initialize(Settings, CurrentSkin);
-            Log.Message(LogLevel.Info, "[LoadSkin] - Repositories set");
+            _log.Message(LogLevel.Info, "[LoadSkin] - Repositories set");
         }
 
         /// <summary>
@@ -374,7 +354,7 @@ namespace GUIFramework
         /// </summary>
         private void ClearRepositories(bool isExit)
         {
-            Log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
+            _log.Message(LogLevel.Info, "[CloseDown] - Clearing repositories..");
             if (isExit)
             {
                 TVGuideRepository.Instance.ResetRepository();
@@ -391,7 +371,7 @@ namespace GUIFramework
                 PropertyRepository.Instance.ClearRepository();
                 GenericDataRepository.Instance.ClearRepository();
             }
-            Log.Message(LogLevel.Info, "[CloseDown] - Repositories cleared");
+            _log.Message(LogLevel.Info, "[CloseDown] - Repositories cleared");
         }
       
         #endregion
@@ -421,40 +401,72 @@ namespace GUIFramework
                 return;
             }
 
-            if (InfoRepository.Instance.IsMediaPortalConnected && !IsUserInteracting)
+            try
             {
-                _currentMPDWindowId = -1;
-                _lastUserInteraction = DateTime.MinValue;
-            }
-
-
-            if (_currentMPDWindowId != -1 || !InfoRepository.Instance.IsMediaPortalConnected)
-            {
-                var newWindow = MPDisplayWindows.GetOrDefault(_currentMPDWindowId);
-                if (!IsWindowOpen(newWindow))
+                if (InfoRepository.Instance.IsMediaPortalConnected && !IsUserInteracting)
                 {
-                    foreach (var dialog in MPDisplayDialogs.Where(d => d.CloseOnWindowChanged && IsDialogOpen(d)))
-                    {
-                        await dialog.DialogClose();
+                    if (_currentMPDWindowId != -1)                      // if an MPD Window is open
+                    {                                                   // check if auto-close is off or on
+                        var xmlMpdWindow = _currentWindow.BaseXml as XmlMPDWindow;
+                        if (xmlMpdWindow != null)
+                        {
+                            if (xmlMpdWindow.AutoCloseWindow)           // only close if autoclose is on
+                            {
+                                _currentMPDWindowId = -1;
+                                _lastUserInteraction = DateTime.MinValue;
+
+                            }
+                        }
                     }
-                    AddPreviousWindow(_currentMPDWindowId);
-                    await ChangeWindow(newWindow);
+                    else
+                    {                                                   // all other windows (MP) always auto-close
+                        _currentMPDWindowId = -1;
+                        _lastUserInteraction = DateTime.MinValue;
+                    }
                 }
-            }
-            else
-            {
-                if (InfoRepository.Instance.PlaybackType != APIPlaybackType.None)
+
+
+                if (_currentMPDWindowId != -1 || !InfoRepository.Instance.IsMediaPortalConnected)
                 {
-                    if (InfoRepository.Instance.IsFullscreenVideo || InfoRepository.Instance.IsFullscreenMusic)
+                    var newWindow = MPDisplayWindows.GetOrDefault(_currentMPDWindowId);
+                    if (!IsWindowOpen(newWindow))
                     {
-                        await ChangeWindow(PlayerWindows.GetOrDefault());
+                        foreach (var dialog in MPDisplayDialogs.Where(d => d.CloseOnWindowChanged && IsDialogOpen(d)))
+                        {
+                            await dialog.DialogClose();
+                        }
+                        AddPreviousWindow(_currentMPDWindowId);
+                        await ChangeWindow(newWindow);
+                    }
+                }
+                else
+                {
+                    if (InfoRepository.Instance.PlaybackType != APIPlaybackType.None)
+                    {
+                        if (InfoRepository.Instance.IsFullscreenVideo || InfoRepository.Instance.IsFullscreenMusic)
+                        {
+                            await ChangeWindow(PlayerWindows.GetOrDefault());
+                            return;
+                        }
+                        await ChangeWindow(MediaPortalWindows.GetOrDefault());
                         return;
                     }
                     await ChangeWindow(MediaPortalWindows.GetOrDefault());
-                    return;
                 }
-                await ChangeWindow(MediaPortalWindows.GetOrDefault());
+
             }
+            catch (Exception ex)
+            {
+                _exceptionCount++;
+                _log.Exception("[ProcessWindow] - Exception in main window loop, exception count {0}.", ex, _exceptionCount);
+                if (_exceptionCount > 9)
+                {
+                   _log.Message(LogLevel.Error, "[ProcessWindow] - Maximum number of 9 exceptions exceeded, closing down MPD++ now");
+                   _processWindow = false;
+                    ExitMPDisplay();
+                }
+            }
+
         }
 
         /// <summary>
@@ -513,15 +525,14 @@ namespace GUIFramework
         /// </summary>
         private void LockWindow()
         {
-            if (_currentWindow is GUIMPDWindow)
+            if (!(_currentWindow is GUIMPDWindow)) return;
+
+            if (_currentWindowIsLocked)
             {
-                if (_currentWindowIsLocked)
-                {
-                    _currentWindowIsLocked = false;
-                    return;
-                }
-                _currentWindowIsLocked = true;
+                _currentWindowIsLocked = false;
+                return;
             }
+            _currentWindowIsLocked = true;
         }
 
         /// <summary>
@@ -562,7 +573,7 @@ namespace GUIFramework
         /// </summary>
         /// <param name="window">The window.</param>
         /// <returns></returns>
-        private bool IsWindowOpen(GUIWindow window)
+        private static bool IsWindowOpen(GUISurfaceElement window)
         {
             return window != null && window.IsOpen;
         }
@@ -572,7 +583,7 @@ namespace GUIFramework
         /// </summary>
         /// <param name="window">The window.</param>
         /// <returns></returns>
-        private Task RegisterWindowData(GUIWindow window)
+        private Task RegisterWindowData(IControlHost window)
         {
             return SendMediaPortalMessage(new APIMediaPortalMessage
             {
@@ -644,7 +655,7 @@ namespace GUIFramework
         /// </summary>
         /// <param name="dialog">The dialog.</param>
         /// <returns></returns>
-        private bool IsDialogOpen(GUIDialog dialog)
+        private static bool IsDialogOpen(GUISurfaceElement dialog)
         {
             return dialog != null && dialog.IsOpen;
         }
@@ -654,7 +665,8 @@ namespace GUIFramework
         /// </summary>
         /// <param name="dialog">The dialog.</param>
         /// <returns></returns>
-        private Task RegisterDialogData(GUIDialog dialog)
+        // ReSharper disable once UnusedMember.Local
+        private Task RegisterDialogData(IControlHost dialog)
         {
             return SendMediaPortalMessage(new APIMediaPortalMessage
             {
@@ -675,6 +687,7 @@ namespace GUIFramework
         /// <summary>
         /// Changes the skin style.
         /// </summary>
+        // ReSharper disable once UnusedMember.Local
         private void ChangeSkinStyle()
         {
             if (CurrentSkin != null)
@@ -686,7 +699,7 @@ namespace GUIFramework
         /// <summary>
         /// Exits the mp display.
         /// </summary>
-        private void ExitMPDisplay()
+        private static void ExitMPDisplay()
         {
             Application.Current.MainWindow.Close();
         }
@@ -706,7 +719,7 @@ namespace GUIFramework
         /// Starts the application.
         /// </summary>
         /// <param name="action">The action.</param>
-        private void StartApplication(XmlAction action)
+        private static void StartApplication(XmlAction action)
         {
             ProcessHelper.StartApplication(action.Param1, action.Param2);
         }
@@ -715,7 +728,7 @@ namespace GUIFramework
         /// Stops the application.
         /// </summary>
         /// <param name="action">The action.</param>
-        private void StopApplication(XmlAction action)
+        private static void StopApplication(XmlAction action)
         {
             ProcessHelper.KillApplication(action.Param1);
         } 
@@ -729,13 +742,11 @@ namespace GUIFramework
         /// </summary>
         private void StartSecondTimer()
         {
-            if (_secondTimer == null)
-            {
-                _secondTimer = new DispatcherTimer(DispatcherPriority.Background);
-                _secondTimer.Interval = TimeSpan.FromSeconds(1);
-                _secondTimer.Tick += SecondTimer_Tick;
-                _secondTimer.Start();
-            }
+            if (_secondTimer != null) return;
+
+            _secondTimer = new DispatcherTimer(DispatcherPriority.Background) {Interval = TimeSpan.FromSeconds(1)};
+            _secondTimer.Tick += SecondTimer_Tick;
+            _secondTimer.Start();
         }
 
         /// <summary>
@@ -743,12 +754,11 @@ namespace GUIFramework
         /// </summary>
         private void StopSecondTimer()
         {
-            if (_secondTimer != null)
-            {
-                _secondTimer.Tick -= SecondTimer_Tick;
-                _secondTimer.Stop();
-                _secondTimer = null;
-            }
+            if (_secondTimer == null) return;
+
+            _secondTimer.Tick -= SecondTimer_Tick;
+            _secondTimer.Stop();
+            _secondTimer = null;
         }
 
         /// <summary>
@@ -768,27 +778,27 @@ namespace GUIFramework
         public async Task InitializeServerConnection(ConnectionSettings settings)
         {
            // _settings = settings;
-            serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port));
-            Log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", serverEndpoint);
+            _serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port));
+            _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", _serverEndpoint);
  
-            serverBinding = ConnectHelper.getServerBinding();
+            _serverBinding = ConnectHelper.GetServerBinding();
 
-            InstanceContext site = new InstanceContext(this);
+            var site = new InstanceContext(this);
             if (_messageBroker != null)
             {
                 _messageBroker.InnerChannel.Faulted -= Channel_Faulted;
                 _messageBroker = null;
             }
-            _messageBroker = new MessageClient(site, serverBinding, serverEndpoint);
-            _messageBroker.InnerChannel.Faulted += new EventHandler(Channel_Faulted);
+            _messageBroker = new MessageClient(site, _serverBinding, _serverEndpoint);
+            _messageBroker.InnerChannel.Faulted += Channel_Faulted;
 
-            _connection = new APIConnection(settings.ConnectionName);
+            _connection = new APIConnection(ConnectionType.MPDisplay);
             await ConnectToService();
         }
 
         private void Channel_Faulted(object sender, EventArgs e)
         {
-            Log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
+            _log.Message(LogLevel.Error, "[Faulted] - Server connection has faulted");
             Disconnect();
         }
 
@@ -799,33 +809,30 @@ namespace GUIFramework
                 try
                 {
                 
-                    Log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
+                    _log.Message(LogLevel.Info, "[Connect] - Connecting to server.");
                     var result = await _messageBroker.ConnectAsync(_connection);
                     if (result != null && result.Any())
                     {
-                        Log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
-                        InfoRepository.Instance.IsMPDisplayConnected = true;
-                        InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionName.Equals("MediaPortalPlugin"));
-                        InfoRepository.Instance.IsTVServerConnected = result.Any(x => x.ConnectionName.Equals("TVServerPlugin"));
+                        _log.Message(LogLevel.Info, "[Connect] - Connection to server successful.");
+                        InfoRepository.Instance.IsMPDisplayConnected = result.Any(x => x.ConnectionType.Equals(ConnectionType.MPDisplay));
+                        InfoRepository.Instance.IsMediaPortalConnected = result.Any(x => x.ConnectionType.Equals(ConnectionType.MediaPortalPlugin));
                         _lastKeepAlive = DateTime.Now;
                     }
                 }
                 catch (Exception ex)
                 {
-                    Log.Message(LogLevel.Error, "[Connect] - Connection to server failed. Error: {0}", ex.Message);
+                    _log.Exception( "[Connect] - Connection to server failed.", ex);
                 }
             }
         }
-
-      
 
         public async Task Reconnect()
         {
             if (!_isDisconnecting)
             {
-                Log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
+                _log.Message(LogLevel.Info, "[Reconnect] - Reconnecting to server.");
                 await Disconnect();
-                await InitializeServerConnection(_settings.ConnectionSettings);
+                await InitializeServerConnection(Settings.ConnectionSettings);
             }
         }
 
@@ -833,64 +840,47 @@ namespace GUIFramework
         {
             InfoRepository.Instance.IsMPDisplayConnected = false;
             InfoRepository.Instance.IsMediaPortalConnected = false;
-            InfoRepository.Instance.IsTVServerConnected = false;
-            if (_messageBroker != null)
+            if (_messageBroker == null) return Task.FromResult<object>(null);
+
+            try
             {
-                try
-                {
-                    Log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
-                    return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
-                }
-                catch { }
+                _log.Message(LogLevel.Info, "[Disconnect] - Disconnecting from server.");
+                return Task.WhenAny(_messageBroker.DisconnectAsync(), Task.Delay(5000));
+            }
+            catch (Exception ex)
+            {
+                _log.Exception("[Disconnect] - ", ex);
             }
             return Task.FromResult<object>(null);
         }
 
         public void SessionConnected(APIConnection connection)
         {
-            if (connection != null)
+            if (connection == null) return;
+
+            if (connection.ConnectionName.Equals(_connection.ConnectionName))
             {
-                if (connection.ConnectionName.Equals(_settings.ConnectionSettings.ConnectionName))
-                {
-                    InfoRepository.Instance.IsMPDisplayConnected = true;
-                }
-
-                if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
-                    InfoRepository.Instance.IsMediaPortalConnected = true;
-                }
-
-                if (connection.ConnectionName.Equals("TVServerPlugin"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - TVServerPlugin connected to network.");
-                    InfoRepository.Instance.IsTVServerConnected = true;
-                }
+                InfoRepository.Instance.IsMPDisplayConnected = true;
             }
+
+            if (!connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin)) return;
+            _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin connected to network.");
+            InfoRepository.Instance.IsMediaPortalConnected = true;
         }
 
         public void SessionDisconnected(APIConnection connection)
         {
-            if (connection != null)
+            if (connection == null) return;
+
+            if (connection.ConnectionName.Equals(_connection.ConnectionName))
             {
-                if (connection.ConnectionName.Equals(_settings.ConnectionSettings.ConnectionName))
-                {
-                    Disconnect();
-                }
-
-                if (connection.ConnectionName.Equals("MediaPortalPlugin"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
-                    ClearRepositories(false);
-                    InfoRepository.Instance.IsMediaPortalConnected = false;
-                }
-
-                if (connection.ConnectionName.Equals("TVServerPlugin"))
-                {
-                    Log.Message(LogLevel.Info, "[Session] - TVServerPlugin disconnected from network.");
-                    InfoRepository.Instance.IsTVServerConnected = false;
-                }
+                Disconnect();
             }
+
+            if (!connection.ConnectionType.Equals(ConnectionType.MediaPortalPlugin)) return;
+            _log.Message(LogLevel.Info, "[Session] - MediaPortalPlugin disconnected from network.");
+            ClearRepositories(false);
+            InfoRepository.Instance.IsMediaPortalConnected = false;
         }
 
         private Task SendMediaPortalAction(XmlAction action)
@@ -899,8 +889,8 @@ namespace GUIFramework
             {
                 if (action.ActionType == XmlActionType.MediaPortalAction)
                 {
-                    MediaPortalActions mpAction = MediaPortalActions.ACTION_INVALID;
-                    if (Enum.TryParse<MediaPortalActions>(action.GetParam1As<string>("ACTION_INVALID"), out mpAction))
+                    MediaPortalActions mpAction;
+                    if (Enum.TryParse(action.GetParam1As("ACTION_INVALID"), out mpAction))
                     {
                         return SendMediaPortalMessage(new APIMediaPortalMessage
                         {
@@ -929,7 +919,7 @@ namespace GUIFramework
                             ActionType = APIActionMessageType.MediaPortalWindow,
                             MediaPortalAction = new APIMediaPortalAction
                             {
-                                ActionId = action.GetParam1As<int>(-1)
+                                ActionId = action.GetParam1As(-1)
                             }
                         }
                     });
@@ -938,7 +928,7 @@ namespace GUIFramework
             }
             catch (Exception ex)
             {
-                Log.Exception("[SendMediaPortalAction] - ", ex);
+                _log.Exception("[SendMediaPortalAction] - ", ex);
             }
             return Task.FromResult<object>(null);
         }
@@ -952,9 +942,9 @@ namespace GUIFramework
                    return _messageBroker.SendMediaPortalMessageAsync(message);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                
+                _log.Exception("[SendMediaPortalMessage] - ", ex);               
             }
             return Task.FromResult<object>(null);
         }
@@ -1001,7 +991,7 @@ namespace GUIFramework
             });
         }
 
-        private void ScheduleEPGAction()
+        private static void ScheduleEPGAction()
         {
             TVGuideRepository.NotifyListeners(TVGuideMessageType.EPGItemSelected);
         }
@@ -1017,7 +1007,7 @@ namespace GUIFramework
 
                 if (DateTime.Now > _lastKeepAlive.AddSeconds(30))
                 {
-                    Log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
+                    _log.Message(LogLevel.Debug, "[KeepAlive] - Sending KeepAlive message.");
                     await SendKeepAliveMessage();
                 }
             }
@@ -1032,9 +1022,9 @@ namespace GUIFramework
                     return _messageBroker.SendDataMessageAsync(new APIDataMessage { DataType = APIDataMessageType.KeepAlive });
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
+                _log.Exception("[SendKeepAliveMessage] - ", ex);
             }
             return Task.FromResult<object>(null);
         }
@@ -1043,14 +1033,15 @@ namespace GUIFramework
         {
             if (e.Mode == PowerModes.Resume)
             {
-              await Task.Delay(_settings.ConnectionSettings.ResumeDelay);
-              await InitializeServerConnection(_settings.ConnectionSettings);
+                _log.Message(LogLevel.Info, "[PowerModeChanged] - Resume event");
+                await Task.Delay(Settings.ConnectionSettings.ResumeDelay);
+                await InitializeServerConnection(Settings.ConnectionSettings);
             }
 
-            if (e.Mode == PowerModes.Suspend)
-            {
-               await Disconnect();
-            }
+            if (e.Mode != PowerModes.Suspend) return;
+
+            _log.Message(LogLevel.Info, "[PowerModeChanged] - Suspend event");
+            await Disconnect();
         }
 
 
@@ -1091,11 +1082,6 @@ namespace GUIFramework
         public void ReceiveMediaPortalMessage(APIMediaPortalMessage message)
         {
             //  Repository<APIMediaPortalMessage>.Instance.Add(message);
-        }
-
-        public void ReceiveTVServerMessage(APITVServerMessage message)
-        {
-            // Repository<APITVServerMessage>.Instance.Add(message);
         }
 
         #endregion

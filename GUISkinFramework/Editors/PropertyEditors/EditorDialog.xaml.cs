@@ -1,24 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
-namespace GUISkinFramework.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for EditorDialog.xaml
     /// </summary>
-    public partial class EditorDialog : Window, INotifyPropertyChanged
+    public partial class EditorDialog : INotifyPropertyChanged
     {
         private UserControl _editorContent;
         private bool _hasCancelButton = true;

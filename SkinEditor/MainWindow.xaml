@@ -1,8 +1,6 @@
 ﻿<Window x:Class="SkinEditor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:CustomControls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-        xmlns:Views="clr-namespace:SkinEditor.Views"
         UseLayoutRounding="True"  TextOptions.TextRenderingMode="ClearType" TextOptions.TextFormattingMode="Display"
         Height="630" Width="1256" Name="UI" 
         Title="{Binding FallbackValue=MPDisplay SkinEditor, Path=CurrentSkinInfo.SkinInfoPath, Mode=OneWay, RelativeSource={RelativeSource Self}, StringFormat={}MPDisplay SkinEditor:  {0}}" >

@@ -1,14 +1,12 @@
-﻿using System;
-using System.Windows;
-using System.Windows.Controls;
+﻿using System.Windows;
 using System.Windows.Data;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     /// <summary>
     /// Interaction logic for CollectionEditor.xaml
     /// </summary>
-    public partial class CollectionEditor : UserControl, ITypeEditor
+    public partial class CollectionEditor : ITypeEditor
     {
         PropertyItem _item;
 
@@ -19,10 +17,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            CollectionEditorDialog editor = new CollectionEditorDialog(_item.PropertyType);
-            Binding binding = new Binding("Value");
-            binding.Source = _item;
-            binding.Mode = _item.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay;
+            var editor = new CollectionEditorDialog(_item.PropertyType);
+            var binding = new Binding("Value")
+            {
+                Source = _item,
+                Mode = _item.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay
+            };
             BindingOperations.SetBinding(editor, CollectionEditorDialog.ItemsSourceProperty, binding);
             editor.ShowDialog();
         }

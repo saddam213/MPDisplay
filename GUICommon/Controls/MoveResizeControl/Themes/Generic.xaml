@@ -1,38 +1,33 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:MPDisplay.Common.Controls"
-                    xmlns:chrome="clr-namespace:MPDisplay.Common.Controls.Chromes"
-                    xmlns:coreConverters="clr-namespace:MPDisplay.Common.BindingConverters"
-					xmlns:MoveResize="clr-namespace:MPDisplay.Common.Controls">
-
-	
+                    xmlns:moveResize="clr-namespace:MPDisplay.Common.Controls">
 
 
-	<Style TargetType="{x:Type MoveResize:MoveResizeControl}">
+	<Style TargetType="{x:Type moveResize:MoveResizeControl}">
 		<Setter Property="Visibility" Value="Visible" />
 		<Setter Property="Template">
 			<Setter.Value>
-				<ControlTemplate TargetType="{x:Type MoveResize:MoveResizeControl}">
+				<ControlTemplate TargetType="{x:Type moveResize:MoveResizeControl}">
 					<Grid DataContext="{Binding RelativeSource={RelativeSource TemplatedParent}}">
-						<MoveResize:MoveThumb  Cursor="SizeAll" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}">
-							<MoveResize:MoveThumb.Template>
-								<ControlTemplate TargetType="{x:Type MoveResize:MoveThumb}">
+						<moveResize:MoveThumb  Cursor="SizeAll" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}">
+							<moveResize:MoveThumb.Template>
+								<ControlTemplate TargetType="{x:Type moveResize:MoveThumb}">
 									<Rectangle Fill="Transparent" />
 								</ControlTemplate>
-							</MoveResize:MoveThumb.Template>
-						</MoveResize:MoveThumb>
+							</moveResize:MoveThumb.Template>
+						</moveResize:MoveThumb>
 						<ContentControl x:Name="resizer">
 							<Grid>
 								<Grid Opacity="0" Margin="-3">
 									
-									<MoveResize:ResizeThumb Height="3" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Width="3" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Width="3" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Height="3" Cursor="SizeNS" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNWSE" VerticalAlignment="Top" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNESW" VerticalAlignment="Top" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNESW" VerticalAlignment="Bottom" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
-									<MoveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNWSE" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Height="3" Cursor="SizeNS" VerticalAlignment="Top" HorizontalAlignment="Stretch" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Width="3" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Width="3" Cursor="SizeWE" VerticalAlignment="Stretch" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Height="3" Cursor="SizeNS" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNWSE" VerticalAlignment="Top" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNESW" VerticalAlignment="Top" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNESW" VerticalAlignment="Bottom" HorizontalAlignment="Left" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
+									<moveResize:ResizeThumb Width="7" Height="7" Margin="-2" Cursor="SizeNWSE" VerticalAlignment="Bottom" HorizontalAlignment="Right" IsSnapToGrid="{TemplateBinding IsSnapToGrid}" GridSize="{TemplateBinding GridSize}"/>
 								</Grid>
 								<Grid IsHitTestVisible="False" Opacity="1" Margin="-3">
 									<Rectangle SnapsToDevicePixels="True" StrokeThickness="2" Margin="0" Stroke="{TemplateBinding ResizeHighlightColor}" />

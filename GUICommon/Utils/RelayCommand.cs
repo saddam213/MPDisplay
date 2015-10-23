@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Input;
 
 namespace MPDisplay.Common.Utils
@@ -68,7 +64,7 @@ namespace MPDisplay.Common.Utils
        [DebuggerStepThrough]
        public bool CanExecute(object parameter)
        {
-           return _canExecute == null ? true : _canExecute();
+           return _canExecute == null || _canExecute();
        }
 
        /// <summary>
@@ -143,7 +139,7 @@ namespace MPDisplay.Common.Utils
                return true;
            }
 
-           return parameter == null ? false : _canExecute((T)parameter);
+           return parameter != null && _canExecute((T)parameter);
        }
 
        /// <summary>

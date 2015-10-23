@@ -1,33 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework;
 using Common.Helpers;
+using GUISkinFramework.Skin;
 
 namespace SkinEditor.Dialogs
 {
     /// <summary>
     /// Interaction logic for SkinInfoEditorDialog.xaml
     /// </summary>
-    public partial class SkinInfoEditorDialog : Window, INotifyPropertyChanged
+    public partial class SkinInfoEditorDialog : INotifyPropertyChanged
     {
         private XmlSkinInfo _skinInfo;
 
         public SkinInfoEditorDialog(XmlSkinInfo info)
         {
             Owner = Application.Current.MainWindow;
-            WindowStartupLocation = System.Windows.WindowStartupLocation.CenterOwner;
+            WindowStartupLocation = WindowStartupLocation.CenterOwner;
             InitializeComponent();
             SkinInfo = info.CreateCopy();
         }

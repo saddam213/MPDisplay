@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using Common.Log;
 
 namespace GUISkinFramework
 {
     public  static class DirectoryHelpers
     {
+        static Log _log = LoggingManager.GetLog(typeof(DirectoryHelpers));
+
         public static void CreateIfNotExists(string folder)
         {
             try
@@ -19,19 +20,16 @@ namespace GUISkinFramework
                     Directory.CreateDirectory(folder);
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-            
+                _log.Message(LogLevel.Error, string.Format("Error creating folder <{0}>, exception: {1}", folder, ex));
+
             }
         }
 
         public static List<string> GetFiles(string folder, string ext)
         {
-            if (Directory.Exists(folder))
-            {
-                return Directory.GetFiles(folder, ext, SearchOption.TopDirectoryOnly).ToList();
-            }
-            return new List<string>();
+            return Directory.Exists(folder) ? Directory.GetFiles(folder, ext, SearchOption.TopDirectoryOnly).ToList() : new List<string>();
         }
 
         public static void TryDelete(string folder)
@@ -40,22 +38,16 @@ namespace GUISkinFramework
             {
                 Directory.Delete(folder, true);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-              
+                _log.Message(LogLevel.Error, string.Format("Error deleting folder <{0}>, exception: {1}", folder, ex));
             }
         }
 
         public static string FolderBrowserDialog()
         {
             var dialog = new FolderBrowserDialog();
-            if (dialog.ShowDialog() == DialogResult.OK)
-            {
-                return dialog.SelectedPath;
-            }
-            return string.Empty;
+            return dialog.ShowDialog() == DialogResult.OK ? dialog.SelectedPath : string.Empty;
         }
-    }
-
-  
+    } 
 }

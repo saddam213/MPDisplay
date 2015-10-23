@@ -1,10 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Globalization;
 using System.Windows.Data;
-using GUISkinFramework.Controls;
+using GUISkinFramework.Skin;
 using MPDisplay.Common.Controls;
 
 namespace GUISkinFramework.Converters
@@ -13,7 +10,7 @@ namespace GUISkinFramework.Converters
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             if (value is XmlEQStyle)
             {
@@ -22,7 +19,7 @@ namespace GUISkinFramework.Converters
             return EQStyle.SingleBar;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return null;
         }

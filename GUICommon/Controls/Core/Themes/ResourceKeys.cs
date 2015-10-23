@@ -1,7 +1,6 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
-namespace MPDisplay.Common.Controls.Themes
+namespace MPDisplay.Common.Controls.Core
 {
     public static class ResourceKeys
     {

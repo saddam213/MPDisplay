@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
-using GUISkinFramework;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Windows;
+using GUISkinFramework.Skin;
 
 namespace SkinEditor.BindingConverters
 {
@@ -18,11 +11,7 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
-            {
-                return new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", value.GetType().Name), UriKind.Relative));
-            }
-            return null;
+            return value != null ? new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", value.GetType().Name), UriKind.Relative)) : null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
@@ -35,12 +24,9 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value != null)
+            if (value is IXmlControlHost)
             {
-                if (value is IXmlControlHost)
-                {
-                    return FontWeights.Bold;
-                }
+                return FontWeights.Bold;
             }
             return FontWeights.Normal;
         }

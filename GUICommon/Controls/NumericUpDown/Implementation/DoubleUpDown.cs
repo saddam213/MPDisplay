@@ -22,12 +22,9 @@ namespace MPDisplay.Common.Controls
 
         protected override double? CoerceValue(double? value)
         {
-            if (value < Minimum)
-                return Minimum;
-            else if (value > Maximum)
-                return Maximum;
-            else
-                return value;
+            if (value < Minimum) return Minimum;
+
+            return value > Maximum ? Maximum : value;
         }
 
         protected override void OnIncrement()
@@ -48,10 +45,10 @@ namespace MPDisplay.Common.Controls
 
         protected override double? ConvertTextToValue(string text)
         {
-            double? result = null;
+            double? result;
 
             if (String.IsNullOrEmpty(text))
-                return result;
+                return null;
 
             try
             {
@@ -69,15 +66,12 @@ namespace MPDisplay.Common.Controls
 
         protected override string ConvertValueToText()
         {
-            if (Value == null)
-                return string.Empty;
-
-            return Value.Value.ToString(FormatString, CultureInfo);
+            return Value == null ? string.Empty : Value.Value.ToString(FormatString, CultureInfo);
         }
 
         protected override void SetValidSpinDirection()
         {
-            ValidSpinDirections validDirections = ValidSpinDirections.None;
+            var validDirections = ValidSpinDirections.None;
 
             if (Value < Maximum || !Value.HasValue)
                 validDirections = validDirections | ValidSpinDirections.Increase;

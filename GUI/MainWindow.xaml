@@ -2,8 +2,9 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 		xmlns:guiFramework="clr-namespace:GUIFramework;assembly=GUIFramework"
-        Title="MPDisplay++" Height="350" Width="525" Name="UI" Background="Black" Loaded="Window_Loaded">
+        Title="MPDisplay++" Height="350" Width="525" Name="Ui" Background="Black" Loaded="Window_Loaded">
+    <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
 	<Viewbox Stretch="Fill" Cursor="{Binding Settings.CursorStyle}">
-			<guiFramework:GUISurface x:Name="surface" />
+			<guiFramework:GUISurface x:Name="Surface" />
 	</Viewbox>
 </Window>

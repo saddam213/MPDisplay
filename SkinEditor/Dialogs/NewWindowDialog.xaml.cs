@@ -1,30 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Dialogs;
-using GUISkinFramework.Styles;
-using GUISkinFramework.Windows;
+using GUISkinFramework.Skin;
 
 namespace SkinEditor.Dialogs
 {
     /// <summary>
     /// Interaction logic for NewWindowDialog.xaml
     /// </summary>
-    public partial class NewWindowDialog : Window, INotifyPropertyChanged
+    public partial class NewWindowDialog : INotifyPropertyChanged
     {
         private XmlSkinInfo _skinInfo;
         private IXmlControlHost _newElement;
@@ -39,8 +24,8 @@ namespace SkinEditor.Dialogs
         {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
-            this.SkinInfo = skinInfo;
-            this._designerStyle = designerStyle;
+            SkinInfo = skinInfo;
+            _designerStyle = designerStyle;
         }
 
         public XmlSkinInfo SkinInfo
@@ -104,20 +89,20 @@ namespace SkinEditor.Dialogs
                 case WindowOption.PlayerWindow:
                     NewWindow = CreateWindow<XmlPlayerWindow>();
                     break;
-                default:
-                    break;
             }
 
-            if (NewWindow is XmlWindow)
+            var xmlWindow = NewWindow as XmlWindow;
+            if (xmlWindow != null)
             {
-                var window = NewWindow as XmlWindow;
+                var window = xmlWindow;
                 window.BackgroundBrush = _designerStyle.GetDesignerBrushStyle("WindowBackground") ?? new XmlBrush();
                 SkinInfo.AddWindow(window);
             }
 
-            if (NewWindow is XmlDialog)
+            var xmlDialog = NewWindow as XmlDialog;
+            if (xmlDialog != null)
             {
-                var dialog = NewWindow as XmlDialog;
+                var dialog = xmlDialog;
                 dialog.BackgroundBrush = _designerStyle.GetDesignerBrushStyle("WindowBackground") ?? new XmlBrush();
                 dialog.BorderBrush = _designerStyle.GetDesignerBrushStyle("DialogBorder") ?? new XmlBrush();
                 dialog.CornerRadius = "5";
@@ -147,8 +132,8 @@ namespace SkinEditor.Dialogs
                 Name = _windowName,
                 Height = SkinInfo.SkinHeight ,
                 Width = SkinInfo.SkinWidth ,
-                Animations = new ObservableCollection<GUISkinFramework.Animations.XmlAnimation>(),
-                Controls = new System.Collections.ObjectModel.ObservableCollection<GUISkinFramework.Controls.XmlControl>(),
+                Animations = new ObservableCollection<XmlAnimation>(),
+                Controls = new ObservableCollection<XmlControl>()
             };
         }
 
@@ -165,8 +150,8 @@ namespace SkinEditor.Dialogs
                 Name = _windowName,
                 Height = 300,
                 Width = 500,
-                Animations = new ObservableCollection<GUISkinFramework.Animations.XmlAnimation>(),
-                Controls = new System.Collections.ObjectModel.ObservableCollection<GUISkinFramework.Controls.XmlControl>(),
+                Animations = new ObservableCollection<XmlAnimation>(),
+                Controls = new ObservableCollection<XmlControl>()
             };
         }
 

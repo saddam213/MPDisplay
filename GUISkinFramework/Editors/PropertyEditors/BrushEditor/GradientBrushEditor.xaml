@@ -1,12 +1,11 @@
-﻿<UserControl x:Class="GUISkinFramework.Editors.PropertyEditors.GradientBrushEditor"
+﻿<UserControl x:Class="GUISkinFramework.Editors.GradientBrushEditor"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
                xmlns:sys="clr-namespace:System;assembly=mscorlib"
-               xmlns:local="clr-namespace:GUISkinFramework.Editor.PropertyEditors"
-             xmlns:Controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-			 xmlns:brushes="clr-namespace:GUISkinFramework.Common.Brushes"
+             xmlns:brushes="clr-namespace:GUISkinFramework.Skin"
+             xmlns:implementation="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
              mc:Ignorable="d"  Name="UI">
     <UserControl.Resources>
         <ObjectDataProvider MethodName="GetValues" ObjectType="{x:Type sys:Enum}" x:Key="GradientAngleValues">
@@ -52,13 +51,14 @@
         </StackPanel>
 
 
-        <ListView x:Name="gradientList"  ItemsSource="{Binding GradientBrush.GradientStops}" SelectedItem="{Binding SelectedGradientStop}"  Margin="0,43,0,0" Grid.ColumnSpan="2" >
+        <ListView x:Name="gradientList"  ItemsSource="{Binding GradientBrush.GradientStops}" SelectedItem="{Binding SelectedGradientStop}"  Margin="0,43,0,0"
+                  Grid.Row="0" Grid.ColumnSpan="2" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Color"  >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
-                                <Controls:ColorPicker Width="100" SelectedColor="{Binding Color}" SelectedColorChanged="ColorPicker_SelectedColorChanged_1"/>
+                                <implementation:ColorPicker Width="100" SelectedColor="{Binding Color}" SelectedColorChanged="ColorPicker_SelectedColorChanged_1"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
                     </GridViewColumn>

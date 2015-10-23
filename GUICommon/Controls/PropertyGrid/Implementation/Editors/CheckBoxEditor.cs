@@ -1,7 +1,8 @@
 ﻿using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Editors
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class CheckBoxEditor : TypeEditor<CheckBox>
     {
@@ -12,7 +13,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Editors
 
         protected override void SetValueDependencyProperty()
         {
-            ValueProperty = CheckBox.IsCheckedProperty;
+            ValueProperty = ToggleButton.IsCheckedProperty;
         }
     }
 }

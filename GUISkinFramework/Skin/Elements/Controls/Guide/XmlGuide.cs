@@ -1,17 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "Guide")]
@@ -25,8 +18,8 @@ namespace GUISkinFramework.Controls
         private int _guideItemHeight;
         private int _timelineHeight;
         private string _guideItemMargin = "0,0,0,0";
-        private int _createDialogId = 0;
-        private int _cancelDialogId = 0;
+        private int _createDialogId;
+        private int _cancelDialogId;
 
         public XmlGuide()
         {
@@ -136,9 +129,9 @@ namespace GUISkinFramework.Controls
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlGuideStyle>(ControlStyle);
-            ChannelStyle = style.GetControlStyle<XmlGuideChannelStyle>(ChannelStyle);
-            ProgramStyle = style.GetControlStyle<XmlGuideProgramStyle>(ProgramStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
+            ChannelStyle = style.GetControlStyle(ChannelStyle);
+            ProgramStyle = style.GetControlStyle(ProgramStyle);
         }
     }
 }

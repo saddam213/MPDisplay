@@ -1,20 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.ServiceProcess;
-using System.Text;
-using Common.Logging;
+using Common.Log;
 
 namespace Common.Helpers
 {
     public static class ServiceHelper
     {
-        private static Log Log = LoggingManager.GetLog(typeof(ServiceHelper));
+        private static Log.Log _log = LoggingManager.GetLog(typeof(ServiceHelper));
 
         /// <summary>
         /// Starts the customers interface if its not running
         /// </summary>
-        /// <param name="customerName">The customer name of the interface to start</param>
+        /// <param name="serviceName">Name of service</param>
+        /// <param name="timeout">Timeout in seconds</param>
         /// <returns>true if started, else false</returns>
         public static bool StartService(string serviceName, int timeout)
         {
@@ -50,7 +49,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[StartService] - An exception occured starting service, Service: "+serviceName, ex);
+                _log.Exception("[StartService] - An exception occured starting service, Service: "+serviceName, ex);
             }
             return false;
         }
@@ -59,16 +58,12 @@ namespace Common.Helpers
         {
             using (var service = ServiceController.GetServices().FirstOrDefault(s => s.ServiceName == serviceName))
             {
-                if (service != null)
-                {
-                    if (service.Status != ServiceControllerStatus.Stopped)
-                    {
-                        service.Stop();
-                        service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, timeout));
-                        return service.Status == ServiceControllerStatus.Stopped;
-                    }
-                }
-                return true;
+                if (service == null) return true;
+                if (service.Status == ServiceControllerStatus.Stopped) return true;
+
+                service.Stop();
+                service.WaitForStatus(ServiceControllerStatus.Stopped, new TimeSpan(0, 0, timeout));
+                return service.Status == ServiceControllerStatus.Stopped;
             }
         }
 
@@ -76,7 +71,7 @@ namespace Common.Helpers
         /// <summary>
         /// Check if the customers interface is running
         /// </summary>
-        /// <param name="customerName">The customer name to check</param>
+        /// <param name="serviceName">The service name to check</param>
         /// <returns>true if running, else false</returns>
         public static bool IsServiceRunning(string serviceName)
         {
@@ -92,7 +87,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[IsServiceRunning] - An exception occured checking service status, Service: " + serviceName, ex);
+                _log.Exception("[IsServiceRunning] - An exception occured checking service status, Service: " + serviceName, ex);
             }
             return false;
         }
@@ -111,7 +106,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[GetServiceStatus] - An exception occured fetching service status, Service: " + serviceName, ex);
+                _log.Exception("[GetServiceStatus] - An exception occured fetching service status, Service: " + serviceName, ex);
             }
             return ServiceStatus.Stopped;
         }
@@ -122,7 +117,7 @@ namespace Common.Helpers
         /// <summary>
         /// Check if the customer has an interface instace installed
         /// </summary>
-        /// <param name="customerName">The customer name to check</param>
+        /// <param name="serviceName">The service name to check</param>
         /// <returns>True if interface exists, else false</returns>
         public static bool CheckIfServiceExists(string serviceName)
         {
@@ -132,7 +127,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Exception("[CheckIfServiceExists] - An exception occured checking service, Service: " + serviceName, ex);
+                _log.Exception("[CheckIfServiceExists] - An exception occured checking service, Service: " + serviceName, ex);
             }
             return false;
         }
@@ -178,6 +173,6 @@ namespace Common.Helpers
         // Summary:
         //     The service is paused. This corresponds to the Win32 SERVICE_PAUSED constant,
         //     which is defined as 0x00000007.
-        Paused = 7,
+        Paused = 7
     }
 }

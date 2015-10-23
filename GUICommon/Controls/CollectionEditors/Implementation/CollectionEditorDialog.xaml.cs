@@ -1,14 +1,14 @@
 ﻿using System;
-using System.Windows;
 using System.Collections;
 using System.Collections.Generic;
+using System.Windows;
 
 namespace MPDisplay.Common.Controls
 {
     /// <summary>
     /// Interaction logic for CollectionEditorDialog.xaml
     /// </summary>
-    public partial class CollectionEditorDialog : Window
+    public partial class CollectionEditorDialog
     {
         #region Properties
 
@@ -54,7 +54,7 @@ namespace MPDisplay.Common.Controls
 
         private void OkButton_Click(object sender, RoutedEventArgs e)
         {
-            _propertyGrid.PersistChanges();
+            PropertyGrid.PersistChanges();
             Close();
         }
 

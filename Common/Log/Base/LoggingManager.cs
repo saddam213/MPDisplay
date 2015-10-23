@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Reflection;
-using System.Windows;
 using System.Linq;
 using Common.Settings;
 
-namespace Common.Logging
+namespace Common.Log
 {
     /// <summary>
     /// Logging manager class for easy handling of logs across classes
@@ -35,12 +33,11 @@ namespace Common.Logging
                 AddLog(new ConsoleLogger(RegistrySettings.LogLevel));
             }
 
-            if (_loggers.ContainsKey(logName) && _logs.ContainsKey(logName))
+            if (!_loggers.ContainsKey(logName) || !_logs.ContainsKey(logName)) return _logs[logName][owner];
+
+            if (!_logs[logName].ContainsKey(owner))
             {
-                if (!_logs[logName].ContainsKey(owner))
-                {
-                    _logs[logName].Add(owner, new Log(owner, _loggers[logName].QueueLogMessage));
-                }
+                _logs[logName].Add(owner, new Log(owner, _loggers[logName].QueueLogMessage));
             }
             return _logs[logName][owner];
         }
@@ -50,15 +47,13 @@ namespace Common.Logging
         /// </summary>
         public static void Destroy()
         {
-            if (_loggers.Any())
+            if (!_loggers.Any()) return;
+            foreach (var logger in _loggers.Values)
             {
-                foreach (var logger in _loggers.Values)
-                {
-                    logger.Dispose();
-                }
-                _loggers.Clear();
-                _logs.Clear();
+                logger.Dispose();
             }
+            _loggers.Clear();
+            _logs.Clear();
         }
     }
 }

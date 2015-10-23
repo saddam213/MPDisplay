@@ -1,18 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Media;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using GUISkinFramework.Styles;
 
-namespace GUISkinFramework.Common
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "Action")]
@@ -64,11 +54,9 @@ namespace GUISkinFramework.Common
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-                PropertyChanged(this, new PropertyChangedEventArgs("DisplayName"));
-            }
+            if (PropertyChanged == null) return;
+            PropertyChanged(this, new PropertyChangedEventArgs(property));
+            PropertyChanged(this, new PropertyChangedEventArgs("DisplayName"));
         }
     }
 
@@ -123,29 +111,29 @@ namespace GUISkinFramework.Common
         Connect,
 
         [XmlActionTypeDetails("ScheduleEPGAction", "Creates or cancels the currently selected EPG schedule.")]
-        ScheduleEPGAction,
+        ScheduleEPGAction
     }
 
-    [AttributeUsage(AttributeTargets.Field, AllowMultiple = false, Inherited = false)]
+    [AttributeUsage(AttributeTargets.Field)]
     public class XmlActionTypeDetailsAttribute : Attribute
     {
-        protected string _displayName;
-        protected string _paramName;
+        protected string DdisplayName;
+        protected string PparamName;
 
         public XmlActionTypeDetailsAttribute(string displayName, string paramName)
         {
-            this._displayName = displayName;
-            this._paramName = paramName;
+            DdisplayName = displayName;
+            PparamName = paramName;
         }
 
         public string DisplayName
         {
-            get { return this._displayName; }
+            get { return DdisplayName; }
         }
 
         public string ParamName
         {
-            get { return this._paramName; }
+            get { return PparamName; }
         }
     }
 }

@@ -1,16 +1,11 @@
-﻿using Common.Helpers;
-using Common.Settings.SettingsObjects;
+﻿using System.Collections;
+using System.Linq;
+using Common.Helpers;
+using Common.Settings;
 using MediaPortal.GUI.Library;
 using MessageFramework.DataObjects;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 
-namespace MediaPortalPlugin.PluginHelpers
+namespace MediaPortalPlugin.Plugins
 {
     public class RockStarPlugin : PluginHelper
     {
@@ -21,38 +16,18 @@ namespace MediaPortalPlugin.PluginHelpers
       
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
-            if (IsEnabled)
-            {
-                var playerManager = ReflectionHelper.GetFieldValue(PluginWindow, "playerManager");
-                if (playerManager != null)
-                {
-                    var players = ReflectionHelper.GetFieldValue<IDictionary>(playerManager, "players", null);
-                    if (players != null)
-                    {
-                        foreach (var item in players.Values)
-                        {
-                            if (ReflectionHelper.GetPropertyValue<string>(item, "CurrentFile", string.Empty) == filename)
-                            {
-                                return true;
-                            }
-                        }
-                    }
-                }
-            }
-            return false;
+            if (!IsEnabled) return false;
+            var playerManager = ReflectionHelper.GetFieldValue(PluginWindow, "playerManager");
+            if (playerManager == null) return false;
+            var players = ReflectionHelper.GetFieldValue<IDictionary>(playerManager, "players", null);
+            return players != null && players.Values.Cast<object>().Any(item => ReflectionHelper.GetPropertyValue(item, "CurrentFile", string.Empty) == filename);
         }
 
         public override APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {
-            if (item != null)
-            {
-                var image = ImageHelper.CreateImage(item.IconImage);
-                if (!image.IsEmpty)
-                {
-                    return image;
-                }
-            }
-            return base.GetListItemImage1(item, layout);
+            if (item == null) return base.GetListItemImage1(null, layout);
+            var image = ImageHelper.CreateImage(item.IconImage);
+            return !image.IsEmpty ? image : base.GetListItemImage1(item, layout);
         }
 
         public override APIPlaybackType PlayType

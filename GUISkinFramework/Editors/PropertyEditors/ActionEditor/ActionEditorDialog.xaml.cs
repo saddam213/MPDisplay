@@ -1,28 +1,21 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Common;
-using MPDisplay.Common.Utils;
 using GUISkinFramework.ExtensionMethods;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Utils;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
     /// </summary>
-    public partial class ActionEditorDialog : Window, INotifyPropertyChanged
+    public partial class ActionEditorDialog : INotifyPropertyChanged
     {
         private object _instance;
         private XmlAction _selectedAction;
@@ -34,7 +27,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
             ItemMoveDown = new RelayCommand<int>(XmlActions.MoveItemDown,XmlActions.CanItemMoveDown);
             ItemAdd= new RelayCommand(() => XmlActions.Add(new XmlAction { ActionType = XmlActionType.Empty }));
             ItemRemove = new RelayCommand(() => XmlActions.Remove(SelectedAction),() => SelectedAction != null);
-            ResultOK = new RelayCommand(() => DialogResult = true);
+            ResultOk = new RelayCommand(() => DialogResult = true);
             ResultCancel = new RelayCommand(() => DialogResult = false);
             Owner = Application.Current.MainWindow;
             InitializeComponent();
@@ -45,7 +38,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         public ICommand ItemMoveDown { get; internal set; }
         public ICommand ItemAdd { get; internal set; }
         public ICommand ItemRemove { get; internal set; }
-        public ICommand ResultOK { get; internal set; }
+        public ICommand ResultOk { get; internal set; }
         public ICommand ResultCancel { get; internal set; }
 
         public object Instance
@@ -69,12 +62,10 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         public void SetItems(ObservableCollection<XmlAction> items)
         {
-            if (items != null)
+            if (items == null) return;
+            foreach (var xmlaction in items)
             {
-                foreach (var xmlaction in items)
-                {
-                    XmlActions.Add(new XmlAction { ActionType = xmlaction.ActionType, Param1 = xmlaction.Param1, Param2 = xmlaction.Param2 });
-                }
+                XmlActions.Add(new XmlAction { ActionType = xmlaction.ActionType, Param1 = xmlaction.Param1, Param2 = xmlaction.Param2 });
             }
         }
 
@@ -103,34 +94,29 @@ namespace GUISkinFramework.Editor.PropertyEditors
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            bool isCombo = false;
-            if (value is XmlActionType && bool.TryParse(parameter.ToString(), out isCombo))
+            bool isCombo;
+            if (!(value is XmlActionType) || !bool.TryParse(parameter.ToString(), out isCombo)) return Visibility.Collapsed;
+
+            var action = (XmlActionType)value;
+
+            switch (action)
             {
-              
-                var action = (XmlActionType)value;
-
-                switch (action)
-                {
-                    case XmlActionType.MediaPortalWindow:
-                    case XmlActionType.ControlVisible:
-                    case XmlActionType.OpenWindow:
-                    case XmlActionType.OpenDialog:
-                    case XmlActionType.RunProgram:
-                    case XmlActionType.KillProgram:
-                        return !isCombo ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                    case XmlActionType.MediaPortalAction:
-                        return isCombo ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed;
-                    default:
-                        break;
-                }
-
+                case XmlActionType.MediaPortalWindow:
+                case XmlActionType.ControlVisible:
+                case XmlActionType.OpenWindow:
+                case XmlActionType.OpenDialog:
+                case XmlActionType.RunProgram:
+                case XmlActionType.KillProgram:
+                    return !isCombo ? Visibility.Visible : Visibility.Collapsed;
+                case XmlActionType.MediaPortalAction:
+                    return isCombo ? Visibility.Visible : Visibility.Collapsed;
             }
-            return System.Windows.Visibility.Collapsed;
+            return Visibility.Collapsed;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -142,20 +128,19 @@ namespace GUISkinFramework.Editor.PropertyEditors
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is XmlActionType)
-            {
-              var attribute = (XmlActionTypeDetailsAttribute)typeof(XmlActionType)
-                    .GetMember(value.ToString()).FirstOrDefault()
-                    .GetCustomAttributes(typeof(XmlActionTypeDetailsAttribute), false).FirstOrDefault();
-              return attribute == null ? value.ToString() : attribute.ParamName;
+            if (!(value is XmlActionType)) return string.Empty;
 
-            }
-            return string.Empty;
+            var firstOrDefault = typeof(XmlActionType)
+                .GetMember(value.ToString()).FirstOrDefault();
+            if (firstOrDefault == null) return string.Empty;
+
+            var attribute = (XmlActionTypeDetailsAttribute)firstOrDefault.GetCustomAttributes(typeof(XmlActionTypeDetailsAttribute), false).FirstOrDefault();
+            return attribute == null ? value.ToString() : attribute.ParamName;
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }
@@ -327,6 +312,6 @@ namespace GUISkinFramework.Editor.PropertyEditors
         ACTION_TVGUIDE_NEXT_GROUP = 9995,
         ACTION_TVGUIDE_PREV_GROUP = 9996,
         ACTION_ROTATE_PICTURE_180 = 9997,
-        ACTION_ROTATE_PICTURE_270 = 9998,
+        ACTION_ROTATE_PICTURE_270 = 9998
     }
 }

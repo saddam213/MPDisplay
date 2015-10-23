@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Xml.Serialization;
-using GUISkinFramework.Common;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Editor.PropertyEditors;
-using MPDisplay.Common.Controls.PropertyGrid.Attributes;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
-using GUISkinFramework.Skin;
-using GUISkinFramework.Styles;
+using GUISkinFramework.Editors;
+using MPDisplay.Common.Controls.PropertyGrid;
 
-namespace GUISkinFramework.Controls
+namespace GUISkinFramework.Skin
 {
     [Serializable]
     [XmlType(TypeName = "Label")]
@@ -23,11 +14,11 @@ namespace GUISkinFramework.Controls
         private string _labelText = "";
         private string _defaultLabelText = "";
         private string _labelNumberFormat = "";
-        private int _lineHeight = 0;
+        private int _lineHeight;
         private TextAlignment _labelTextAlignment = TextAlignment.Left;
         private bool _isScrollingEnabled = true;
         private XmlLabelStyle _controlStyle;
-        private bool _isScrollWrapEnabled = false;
+        private bool _isScrollWrapEnabled;
         private int _scrollDelay = 3;
         private int _scrollSpeed = 2;
         private string _scrollSeperator = " | ";
@@ -154,7 +145,7 @@ namespace GUISkinFramework.Controls
         public override void ApplyStyle(XmlStyleCollection style)
         {
             base.ApplyStyle(style);
-            ControlStyle = style.GetControlStyle<XmlLabelStyle>(ControlStyle);
+            ControlStyle = style.GetControlStyle(ControlStyle);
         }
     }
 }

@@ -1,21 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-using System.ServiceProcess;
-
+﻿using System.ServiceProcess;
 
 namespace MessageServer
 {
     class Program
     {
-        static void Main(string[] args)
+        static void Main()
         {
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[] 
-			{ 
-				new CommsService() 
-			};
-            ServiceBase.Run(ServicesToRun);
+            var servicesToRun = new ServiceBase[] 
+            { 
+                new CommsService() 
+            };
+            ServiceBase.Run(servicesToRun);
         }
     }
 }

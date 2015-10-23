@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Runtime.Serialization;
-using System.Text;
+using MessageFramework.DataObjects;
 
-namespace MessageFramework.DataObjects
+namespace MessageFramework.Messages
 {
     [DataContract]
     public class APIInfoMessage
@@ -47,7 +45,7 @@ namespace MessageFramework.DataObjects
     public enum APIWindowMessageType
     {
         WindowId,
-        FocusedControlId,
+        FocusedControlId
     }
 
     public class APIPlayerMessage
@@ -64,13 +62,8 @@ namespace MessageFramework.DataObjects
                 return false;
             }
 
-            if (PlayerPluginType == msg.PlayerPluginType && PlaybackType == msg.PlaybackType 
-                && PlaybackState == msg.PlaybackState && PlayerFullScreen == msg.PlayerFullScreen)
-            {
-                return true;
-            }
-            return false;
-
+            return PlayerPluginType == msg.PlayerPluginType && PlaybackType == msg.PlaybackType 
+                   && PlaybackState == msg.PlaybackState && PlayerFullScreen == msg.PlayerFullScreen;
         }
     }
 

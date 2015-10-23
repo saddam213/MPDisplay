@@ -2,27 +2,30 @@
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
-using GUISkinFramework;
-using Common.Logging;
-using SkinEditor.Dialogs;
-using SkinEditor.ConnectionHelpers;
-using SkinEditor.Views;
-using System.Linq;
-using System.Windows.Input;
-using MPDisplay.Common.Utils;
-using Common.Settings;
+using System.Windows.Threading;
 using Common.Helpers;
+using Common.Log;
+using Common.Settings;
+using GUISkinFramework.Skin;
+using MPDisplay.Common.Utils;
+using SkinEditor.BindingConverters;
+using SkinEditor.Dialogs;
+using SkinEditor.Helpers;
+using SkinEditor.Themes;
+using SkinEditor.Views;
 
 namespace SkinEditor
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window, INotifyPropertyChanged
+    public partial class MainWindow : INotifyPropertyChanged
     {
         private string _settingsFile;
         private XmlSkinInfo _currentSkinInfo;
@@ -32,8 +35,8 @@ namespace SkinEditor
         public MainWindow()
         {
            
-            AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CurrentDomain_UnhandledException);
-            Application.Current.DispatcherUnhandledException += new System.Windows.Threading.DispatcherUnhandledExceptionEventHandler(Current_DispatcherUnhandledException);
+            AppDomain.CurrentDomain.UnhandledException += CurrentDomain_UnhandledException;
+            Application.Current.DispatcherUnhandledException += Current_DispatcherUnhandledException;
 
             Timeline.DesiredFrameRateProperty.OverrideMetadata(typeof(Timeline), new FrameworkPropertyMetadata { DefaultValue = 24 });
             TextOptions.TextFormattingModeProperty.OverrideMetadata(typeof(TextBlock), new FrameworkPropertyMetadata { DefaultValue = TextFormattingMode.Display });
@@ -41,7 +44,7 @@ namespace SkinEditor
 
            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "SkinEditor", RegistrySettings.LogLevel));
 
-            _settingsFile = System.IO.Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\Settings.xml");
+            _settingsFile = Path.Combine(RegistrySettings.ProgramDataPath, "SkinEditor\\Settings.xml");
 
             InitializeComponent();
             CreateContextMenuCommands();
@@ -55,12 +58,12 @@ namespace SkinEditor
             SkinOpenRecent(App.StartupSkinInfoFilename);
         }
 
-        private void Current_DispatcherUnhandledException(object sender, System.Windows.Threading.DispatcherUnhandledExceptionEventArgs e)
+        private static void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
           
         }
 
-        private void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
+        private static void CurrentDomain_UnhandledException(object sender, UnhandledExceptionEventArgs e)
         {
            
         }
@@ -97,15 +100,14 @@ namespace SkinEditor
 
         private void LoadViews()
         {
-            if (EditorViews.Count == 0)
-            {
-                EditorViews.Add(new SkinEditorView( _connectionHelper){ EditorSettings = Settings.SkinEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
-                EditorViews.Add(new StyleEditorView { EditorSettings = Settings.StyleEditorViewSettings });
-                EditorViews.Add(new ImageEditorView { EditorSettings = Settings.ImageEditorViewSettings });
-                EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
-                EditorViews.Add(new InfoEditorView(_connectionHelper) { EditorSettings = Settings.InfoEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
-                EditorViews.Add(new TestEditorView {  });
-            }
+            if (EditorViews.Count != 0) return;
+
+            EditorViews.Add(new SkinEditorView( _connectionHelper){ EditorSettings = Settings.SkinEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
+            EditorViews.Add(new StyleEditorView { EditorSettings = Settings.StyleEditorViewSettings });
+            EditorViews.Add(new ImageEditorView { EditorSettings = Settings.ImageEditorViewSettings });
+            EditorViews.Add(new SkinInfoEditorView { EditorSettings = Settings.SkinInfoEditorViewSettings });
+            EditorViews.Add(new InfoEditorView(_connectionHelper) { EditorSettings = Settings.InfoEditorViewSettings, ConnectSettings = Settings.InfoEditorViewSettings});
+            EditorViews.Add(new TestEditorView());
         }
 
         private void LoadSkin(XmlSkinInfo skinInfo)
@@ -115,8 +117,7 @@ namespace SkinEditor
             foreach (var editorView in EditorViews)
             {
                 editorView.SkinInfo = skinInfo;
-            }
-            
+            }  
         }
 
         private void ClearPendingChanges()
@@ -129,21 +130,19 @@ namespace SkinEditor
 
         private bool SavePendingChanges()
         {
-            if (HasPendingChanges)
+            if (!HasPendingChanges) return true;
+
+            var result = MessageBox.Show(string.Format("There are unsaved changes in the current skin{0}{0}Would you like to save changes now?",
+                Environment.NewLine), "Save Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
+            switch (result)
             {
-                MessageBoxResult result = MessageBox.Show(string.Format("There are unsaved changes in the current skin{0}{0}Would you like to save changes now?", Environment.NewLine), "Save Changes?", MessageBoxButton.YesNoCancel, MessageBoxImage.Question);
-                switch (result)
-                {
-                    case MessageBoxResult.Cancel:
-                        return false;
-                    case MessageBoxResult.No:
-                        return true;
-                    case MessageBoxResult.Yes:
-                        SkinSave();
-                        return true;
-                    default:
-                        break;
-                }
+                case MessageBoxResult.Cancel:
+                    return false;
+                case MessageBoxResult.No:
+                    return true;
+                case MessageBoxResult.Yes:
+                    SkinSave();
+                    return true;
             }
             return true;
         }
@@ -184,22 +183,20 @@ namespace SkinEditor
         {
             try
             {
-                if (SavePendingChanges())
-                {
-                    ClearPendingChanges();
-                    var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
-                    if (newSkinDialog.ShowDialog() == true)
-                    {
-                        Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
-                        CurrentSkinInfo = newSkinDialog.NewSkinInfo;
-                        Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                        LoadSkin(CurrentSkinInfo);
-                    }
-                }
+                if (!SavePendingChanges()) return;
+
+                ClearPendingChanges();
+                var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
+                if (newSkinDialog.ShowDialog() != true) return;
+
+                Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
+                CurrentSkinInfo = newSkinDialog.NewSkinInfo;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                LoadSkin(CurrentSkinInfo);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("An exception occured creating skin:{0}{0}{1}", Environment.NewLine, ex.ToString()), "Error!");
+                MessageBox.Show(string.Format("An exception occured creating skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
             }
         }
 
@@ -207,27 +204,25 @@ namespace SkinEditor
         {
             try
             {
-                if (SavePendingChanges())
-                {
-                    ClearPendingChanges();
-                    var skinInfoFile = FileSystemHelper.OpenFileDialog(Settings.GlobalSettings.LastSkinDirectory, "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
-                    if (!string.IsNullOrEmpty(skinInfoFile))
-                    {
-                        var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(skinInfoFile);
-                        if (skinInfo != null)
-                        {
-                            skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(skinInfoFile);
-                            Settings.GlobalSettings.LastSkinDirectory = Directory.GetParent(skinInfo.SkinFolderPath).FullName;
-                            CurrentSkinInfo = skinInfo;
-                            Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                            LoadSkin(CurrentSkinInfo);
-                        }
-                    }
-                }
+                if (!SavePendingChanges()) return;
+
+                ClearPendingChanges();
+                var skinInfoFile = FileSystemHelper.OpenFileDialog(Settings.GlobalSettings.LastSkinDirectory, "SkinInfo (SkinInfo.xml)|SkinInfo.xml");
+                if (string.IsNullOrEmpty(skinInfoFile)) return;
+
+                var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(skinInfoFile);
+                if (skinInfo == null) return;
+
+                skinInfo.SkinFolderPath = Path.GetDirectoryName(skinInfoFile);
+                var folderPath = skinInfo.SkinFolderPath;
+                if( folderPath != null) Settings.GlobalSettings.LastSkinDirectory = Directory.GetParent(folderPath).FullName;
+                CurrentSkinInfo = skinInfo;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                LoadSkin(CurrentSkinInfo);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("An exception occured opening skin:{0}{0}{1}", Environment.NewLine, ex.ToString()), "Error!");
+                MessageBox.Show(string.Format("An exception occured opening skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
             }
         }
 
@@ -235,15 +230,14 @@ namespace SkinEditor
         {
             try
             {
-                if (CurrentSkinInfo != null)
-                {
-                    CurrentSkinInfo.SaveSkin();
-                    ClearPendingChanges();
-                }
+                if (CurrentSkinInfo == null) return;
+
+                CurrentSkinInfo.SaveSkin();
+                ClearPendingChanges();
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("An exception occured saving skin:{0}{0}{1}", Environment.NewLine, ex.ToString()), "Error!");
+                MessageBox.Show(string.Format("An exception occured saving skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
             }
         }
 
@@ -251,23 +245,23 @@ namespace SkinEditor
         {
             try
             {
-                var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory);
-                newSkinDialog.IsNewSkin = false;
-                newSkinDialog.SkinName = CurrentSkinInfo.SkinName;
-                if (newSkinDialog.ShowDialog() == true)
+                var newSkinDialog = new NewSkinDialog(Settings.GlobalSettings.LastSkinDirectory)
                 {
+                    IsNewSkin = false,
+                    SkinName = CurrentSkinInfo.SkinName
+                };
+                if (newSkinDialog.ShowDialog() != true) return;
 
-                    CurrentSkinInfo.SaveSkinAs(newSkinDialog.SkinName, newSkinDialog.SkinFolder);
-                    CurrentSkinInfo = newSkinDialog.NewSkinInfo;
-                    Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
-                    Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                    ClearPendingChanges();
-                    LoadSkin(CurrentSkinInfo);
-                }
+                CurrentSkinInfo.SaveSkinAs(newSkinDialog.SkinName, newSkinDialog.SkinFolder);
+                CurrentSkinInfo = newSkinDialog.NewSkinInfo;
+                Settings.GlobalSettings.LastSkinDirectory = newSkinDialog.SkinFolder;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                ClearPendingChanges();
+                LoadSkin(CurrentSkinInfo);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(string.Format("An exception occured saving skin:{0}{0}{1}", Environment.NewLine, ex.ToString()), "Error!");
+                MessageBox.Show(string.Format("An exception occured saving skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
             }
         }
 
@@ -275,40 +269,35 @@ namespace SkinEditor
 
         private void SkinOpenRecent(string recentSkin)
         {
-            if (!string.IsNullOrEmpty(recentSkin) && File.Exists(recentSkin))
+            if (string.IsNullOrEmpty(recentSkin) || !File.Exists(recentSkin)) return;
+
+            if (CurrentSkinInfo != null && CurrentSkinInfo.SkinInfoPath.Equals(recentSkin)) return;
+
+            if (!SavePendingChanges()) return;
+
+            ClearPendingChanges();
+            try
             {
-                if (CurrentSkinInfo == null || !CurrentSkinInfo.SkinInfoPath.Equals(recentSkin))
-                {
-                    if (SavePendingChanges())
-                    {
-                        ClearPendingChanges();
-                        try
-                        {
-                            var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(recentSkin);
-                            if (skinInfo != null)
-                            {
-                                skinInfo.SkinFolderPath = System.IO.Path.GetDirectoryName(recentSkin);
-                                CurrentSkinInfo = skinInfo;
-                                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
-                                LoadSkin(CurrentSkinInfo);
-                            }
-                        }
-                        catch (Exception ex)
-                        {
-                           MessageBox.Show(string.Format("An exception occured opening recent skin:{0}{0}{1}", Environment.NewLine, ex.ToString()), "Error!");
-                        }
-                    }
-                }
+                var skinInfo = SerializationHelper.Deserialize<XmlSkinInfo>(recentSkin);
+                if (skinInfo == null) return;
+
+                skinInfo.SkinFolderPath = Path.GetDirectoryName(recentSkin);
+                CurrentSkinInfo = skinInfo;
+                Settings.GlobalSettings.AddToRecentList(CurrentSkinInfo.SkinInfoPath);
+                LoadSkin(CurrentSkinInfo);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("An exception occured opening recent skin:{0}{0}{1}", Environment.NewLine, ex), "Error!");
             }
         }
 
         private void SkinEditorExit()
         {
-            if (SavePendingChanges())
-            {
-                ClearPendingChanges();
-                Close();
-            }
+            if (!SavePendingChanges()) return;
+
+            ClearPendingChanges();
+            Close();
         }
 
 

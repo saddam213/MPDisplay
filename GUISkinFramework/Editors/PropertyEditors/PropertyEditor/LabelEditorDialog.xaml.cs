@@ -1,48 +1,30 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using GUISkinFramework.Editor.PropertyEditors.PropertyEditor;
-using GUISkinFramework.Language;
-using GUISkinFramework.Property;
-using GUISkinFramework.PropertyEditors;
 using GUISkinFramework.Skin;
-using MPDisplay.Common.Controls;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for VisibleConditionEditorDialog.xaml
     /// </summary>
-    public partial class LabelEditorDialog : Window, INotifyPropertyChanged
+    public partial class LabelEditorDialog : INotifyPropertyChanged
     {
         private object _instance;
         private string _currentLabel = string.Empty;
-        private ObservableCollection<AutoCompleteEntry> _autoCompleteList = new ObservableCollection<AutoCompleteEntry>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="VisibleConditionEditorDialog"/> class.
         /// </summary>
         /// <param name="instance">The instance.</param>
+        /// <param name="skinInfo">The skin XML</param>
         public LabelEditorDialog(object instance, XmlSkinInfo skinInfo)
         {
             Owner = Application.Current.MainWindow;
             InitializeComponent();
             Instance = instance;
             SkinInfo = skinInfo;
-          //  LanguageEntries = CollectionViewSource.GetDefaultView(skinInfo.Language.LanguageEntries);
         }
 
         private void SetLabel(string label)
@@ -181,7 +163,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
                         continue;
                     }
 
-                    else if (item.StartsWith("#"))
+                    if (item.StartsWith("#"))
                     {
                         var prop = SkinInfo.Properties.FirstOrDefault(x => x.SkinTag == item);
                         if (prop != null)
@@ -264,7 +246,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         {
             if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= (LabelItems.Count - 1))
             {
-                int index = SelectedLabelItemIndex;
+                var index = SelectedLabelItemIndex;
                 if (LabelItems.ElementAtOrDefault(index) == "+")
                 {
                     return;
@@ -304,7 +286,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
 
         private void Button_PropertyEdit_Click(object sender, RoutedEventArgs e)
         {
-            var editor = new PropertyEditor.PropertyEditor(SkinInfo);
+            var editor = new PropertyEditor(SkinInfo);
             if (SelectedPropertyEntry != null)
             {
                 editor.SelectedProperty = SelectedPropertyEntry;

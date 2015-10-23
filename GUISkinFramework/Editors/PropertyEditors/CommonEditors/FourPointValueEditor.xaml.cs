@@ -1,16 +1,17 @@
-﻿using System.Linq;
+﻿using System.Globalization;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
+using GUISkinFramework.ExtensionMethods;
 using MPDisplay.Common.Controls.PropertyGrid;
-using MPDisplay.Common.Controls.PropertyGrid.Editors;
 
-namespace GUISkinFramework.Editor.PropertyEditors
+namespace GUISkinFramework.Editors
 {
     /// <summary>
     /// Interaction logic for BrushEditor.xaml
     /// </summary>
-    public partial class FourPointValueEditor : UserControl, ITypeEditor
+    public partial class FourPointValueEditor : ITypeEditor
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="FourPointValueEditor"/> class.
@@ -42,9 +43,11 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <returns></returns>
         public FrameworkElement ResolveEditor(PropertyItem propertyItem)
         {
-            Binding binding = new Binding("Value");
-            binding.Source = propertyItem;
-            binding.Mode = propertyItem.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay;
+            var binding = new Binding("Value")
+            {
+                Source = propertyItem,
+                Mode = propertyItem.IsReadOnly ? BindingMode.OneWay : BindingMode.TwoWay
+            };
             BindingOperations.SetBinding(this, ValueProperty, binding);
             return this;
         }
@@ -56,7 +59,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <param name="e">The <see cref="RoutedEventArgs"/> instance containing the event data.</param>
         private void ValueTextBox_LostFocus(object sender, RoutedEventArgs e)
         {
-            int singleValue = 0;
+            var singleValue = 0;
             if (string.IsNullOrEmpty(Value) || int.TryParse(Value, out singleValue))
             {
                 Value = string.Format("{0},{0},{0},{0}", singleValue);
@@ -70,7 +73,7 @@ namespace GUISkinFramework.Editor.PropertyEditors
     /// </summary>
     public class FourPointValidationRule : ValidationRule
     {
-        private string _message = "Value must declare a single numeric value or 4(Left, Top, Right, Bottom) numeric values in format: X,X,X,X";
+        private const string Message = "Value must declare a single numeric value or 4(Left, Top, Right, Bottom) numeric values in format: X,X,X,X";
 
         /// <summary>
         /// When overridden in a derived class, performs validation checks on a value.
@@ -80,25 +83,23 @@ namespace GUISkinFramework.Editor.PropertyEditors
         /// <returns>
         /// A <see cref="T:System.Windows.Controls.ValidationResult" /> object.
         /// </returns>
-        public override ValidationResult Validate(object value, System.Globalization.CultureInfo cultureInfo)
+        public override ValidationResult Validate(object value, CultureInfo cultureInfo)
         {
             var fourPointString = value as string;
-            if (!string.IsNullOrEmpty(fourPointString))
+            if (string.IsNullOrEmpty(fourPointString)) return new ValidationResult(false, Message);
+
+            if (fourPointString.Contains(','))
             {
-                if (fourPointString.Contains(','))
+                if (fourPointString.Count(c => c == ',') != 3 || !fourPointString.Split(',').All(s => s.IsNumber()))
                 {
-                    if (fourPointString.Count(c => c == ',') != 3 || !fourPointString.Split(',').All(s => s.IsNumber()))
-                    {
-                        return new ValidationResult(false, _message);
-                    }
+                    return new ValidationResult(false, Message);
                 }
-                else if (!fourPointString.IsNumber())
-                {
-                    return new ValidationResult(false, _message);
-                }
-                return new ValidationResult(true, null);
             }
-            return new ValidationResult(false, _message);
+            else if (!fourPointString.IsNumber())
+            {
+                return new ValidationResult(false, Message);
+            }
+            return new ValidationResult(true, null);
         }
     }
 

@@ -1,20 +1,21 @@
 ﻿using System;
+using System.Globalization;
 using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media.Imaging;
 
-namespace MPDisplay.Common.Controls.PropertyGrid.Converters
+namespace MPDisplay.Common.Controls.PropertyGrid
 {
     public class ValueSourceToImagePathConverter : IValueConverter
     {
         #region IValueConverter Members
 
-        public object Convert(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            BaseValueSource bvs = (BaseValueSource)value;
+            var bvs = (BaseValueSource)value;
 
-            string uriPrefix = "/GUISkinFramework;component/Editor/WPFControls/PropertyGrid/Images/";
-            string imageName = "AdvancedProperties11";
+            const string uriPrefix = "/GUISkinFramework;component/Editor/WPFControls/PropertyGrid/Images/";
+            var imageName = "AdvancedProperties11";
 
             switch (bvs)
             {
@@ -38,7 +39,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid.Converters
             return new BitmapImage(new Uri(String.Format("{0}{1}.png", uriPrefix, imageName), UriKind.RelativeOrAbsolute));
         }
 
-        public object ConvertBack(object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
             throw new NotImplementedException();
         }

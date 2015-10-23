@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using MediaPortal.GUI.Library;
-using System.Collections;
-using Common.Helpers;
-using System.Reflection;
-using Common.Settings.SettingsObjects;
-using MediaPortalPlugin.PluginHelpers;
 using Common.Settings;
+using MediaPortal.GUI.Library;
+using MediaPortalPlugin.Plugins;
 using MessageFramework.DataObjects;
+using Action = System.Action;
 
-namespace MediaPortalPlugin
+namespace MediaPortalPlugin.InfoManagers
 {
     public static class SupportedPluginManager
     {
@@ -24,31 +19,25 @@ namespace MediaPortalPlugin
         {
             _supportedPluginSettings = settings;
 
-            foreach (var plugin in  PluginManager.GUIPlugins.Cast<GUIWindow>())
+            foreach (var plugin in PluginManager.GUIPlugins.Cast<GUIWindow>().Where(plugin => !_installedPlugins.ContainsKey(plugin.GetID)))
             {
-                if (!_installedPlugins.ContainsKey(plugin.GetID))
-                {
-                    _installedPlugins.Add(plugin.GetID, plugin);
-                }
+                _installedPlugins.Add(plugin.GetID, plugin);
             }
 
             if (_supportedPluginSettings != null)
             {
                 foreach (var plugin in _supportedPluginSettings.SupportedPlugins)
                 {
-                    foreach (var id in plugin.WindowIds)
+                    foreach (var id in plugin.WindowIds.Where(id => !_supportedPluginMap.ContainsKey(id)))
                     {
-                        if (!_supportedPluginMap.ContainsKey(id))
-                        {
-                            _supportedPluginMap.Add(id, plugin.PluginType);
-                        }
+                        _supportedPluginMap.Add(id, plugin.PluginType);
                     }
                 }
             }
 
             _supportedPlugins.Add(SupportedPlugin.MovingPictures, new MovingPicturesPlugin(GetPluginWindow(SupportedPlugin.MovingPictures), GetPluginSettings(SupportedPlugin.MovingPictures)));
             _supportedPlugins.Add(SupportedPlugin.MyFilms, new MyFilmsPlugin(GetPluginWindow(SupportedPlugin.MyFilms), GetPluginSettings(SupportedPlugin.MyFilms)));
-            _supportedPlugins.Add(SupportedPlugin.MPTVSeries, new MPTvSeriesPlugin(GetPluginWindow(SupportedPlugin.MPTVSeries), GetPluginSettings(SupportedPlugin.MPTVSeries)));
+            _supportedPlugins.Add(SupportedPlugin.MPTVSeries, new MpTvSeriesPlugin(GetPluginWindow(SupportedPlugin.MPTVSeries), GetPluginSettings(SupportedPlugin.MPTVSeries)));
             _supportedPlugins.Add(SupportedPlugin.mvCentral, new MvCentralPlugin(GetPluginWindow(SupportedPlugin.mvCentral), GetPluginSettings(SupportedPlugin.mvCentral)));
             _supportedPlugins.Add(SupportedPlugin.OnlineVideos, new OnlineVideosPlugin(GetPluginWindow(SupportedPlugin.OnlineVideos), GetPluginSettings(SupportedPlugin.OnlineVideos)));
             _supportedPlugins.Add(SupportedPlugin.MyAnime, new MyAnimePlugin(GetPluginWindow(SupportedPlugin.MyAnime), GetPluginSettings(SupportedPlugin.MyAnime)));
@@ -59,13 +48,9 @@ namespace MediaPortalPlugin
 
         public static SupportedPluginSettings GetPluginSettings(SupportedPlugin plugin)
         {
-            if (_supportedPluginSettings != null)
-            {
-              return   _supportedPluginSettings.SupportedPlugins.FirstOrDefault(s => s.PluginType == plugin);
-            }
-            return null;
+            return _supportedPluginSettings != null ? _supportedPluginSettings.SupportedPlugins.FirstOrDefault(s => s.PluginType == plugin) : null;
         }
-     
+
 
         public static PluginHelper GetPluginHelper(SupportedPlugin plugin)
         {
@@ -74,20 +59,12 @@ namespace MediaPortalPlugin
 
         public static PluginHelper GetPluginHelper(int windowId)
         {
-            if (_supportedPluginMap.ContainsKey(windowId))
-            {
-                return _supportedPlugins[_supportedPluginMap[windowId]];
-            }
-            return null;
+            return _supportedPluginMap.ContainsKey(windowId) ? _supportedPlugins[_supportedPluginMap[windowId]] : null;
         }
 
         public static GUIWindow GetPluginWindow(int plugin)
         {
-            if (_installedPlugins.ContainsKey(plugin))
-            {
-                return _installedPlugins[plugin];
-            }
-            return null;
+            return _installedPlugins.ContainsKey(plugin) ? _installedPlugins[plugin] : null;
         }
 
         public static GUIWindow GetPluginWindow(SupportedPlugin plugin)
@@ -98,20 +75,19 @@ namespace MediaPortalPlugin
         public static APIPlaybackType GetPluginPlayerType(APIPlaybackType playtype, string filename)
         {
             var plugin = _supportedPlugins.Values.FirstOrDefault(p => p.IsPlaying(filename, playtype));
-            if (plugin != null)
-            {
-                return plugin.PlayType;
-            }
-            return playtype;
+            return plugin != null ? plugin.PlayType : playtype;
         }
 
-        public static void GUISafeInvoke(System.Action action)
+        public static void GuiSafeInvoke(Action action)
         {
             try
             {
                 GUIGraphicsContext.form.Invoke(action);
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
         }
 
      

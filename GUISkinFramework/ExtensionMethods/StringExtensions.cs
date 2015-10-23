@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 
-namespace GUISkinFramework
+namespace GUISkinFramework.ExtensionMethods
 {
     public static class StringExtensions
     {
@@ -20,13 +16,13 @@ namespace GUISkinFramework
         /// </returns>
         public static bool IsNumber(this string str)
         {
-            int value = 0;
+            int value;
             return int.TryParse(str, out value);
         }
 
         public static bool IsDouble(this string str)
         {
-            double value = 0;
+            double value;
             return double.TryParse(str, out value);
         }
 
@@ -37,20 +33,18 @@ namespace GUISkinFramework
         /// <returns></returns>
         public static Thickness ToThickness(this string value)
         {
-            if (!string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value)) return new Thickness(0);
+            if (value.Contains(','))
             {
-                if (value.Contains(','))
+                var values = value.Split(',');
+                if (values.Count() == 4 && values.All(s => s.IsNumber()))
                 {
-                    var values = value.Split(',');
-                    if (values.Count() == 4 && !values.Any(s => !s.IsNumber()))
-                    {
-                        return new Thickness(double.Parse(values[0]), double.Parse(values[1]), double.Parse(values[2]), double.Parse(values[3]));
-                    }
+                    return new Thickness(double.Parse(values[0]), double.Parse(values[1]), double.Parse(values[2]), double.Parse(values[3]));
                 }
-                else if (IsNumber(value))
-                {
-                    return new Thickness(double.Parse(value));
-                }
+            }
+            else if (IsNumber(value))
+            {
+                return new Thickness(double.Parse(value));
             }
             return new Thickness(0);
         }
@@ -62,20 +56,19 @@ namespace GUISkinFramework
         /// <returns></returns>
         public static CornerRadius ToCornerRadius(this string value)
         {
-            if (!string.IsNullOrEmpty(value))
+            if (string.IsNullOrEmpty(value)) return new CornerRadius(0);
+
+            if (value.Contains(','))
             {
-                if (value.Contains(','))
+                var values = value.Split(',');
+                if (values.Count() == 4 && values.All(s => s.IsNumber()))
                 {
-                    var values = value.Split(',');
-                    if (values.Count() == 4 && !values.Any(s => !s.IsNumber()))
-                    {
-                        return new CornerRadius(double.Parse(values[0]), double.Parse(values[1]), double.Parse(values[2]), double.Parse(values[3]));
-                    }
+                    return new CornerRadius(double.Parse(values[0]), double.Parse(values[1]), double.Parse(values[2]), double.Parse(values[3]));
                 }
-                else if (IsNumber(value))
-                {
-                    return new CornerRadius(double.Parse(value));
-                }
+            }
+            else if (IsNumber(value))
+            {
+                return new CornerRadius(double.Parse(value));
             }
             return new CornerRadius(0);
         }
@@ -85,25 +78,28 @@ namespace GUISkinFramework
             var getcolor = Colors.Transparent;
             try
             {
-                getcolor = (Color)ColorConverter.ConvertFromString(color);
+                var convertFromString = ColorConverter.ConvertFromString(color);
+                if (convertFromString != null)
+                    getcolor = (Color)convertFromString;
             }
-            catch { }
+            catch
+            {
+                // ignored
+            }
             return getcolor;
         }
 
         public static Point ToPoint(this string value)
         {
-            return (Point)new PointConverter().ConvertFromInvariantString(value);
+            var convertFromInvariantString = new PointConverter().ConvertFromInvariantString(value);
+            if (convertFromInvariantString != null)
+                return (Point)convertFromInvariantString;
+            return new Point();
         }
 
         public static string ToXmlString(this Point value)
         {
-
-            if (value != null)
-            {
-                return value.ToString(CultureInfo.CurrentCulture);// string.Format("{0},{1}", value.X, value.Y);
-            }
-            return new Point().ToString(CultureInfo.CurrentCulture);
+            return value.ToString(CultureInfo.CurrentCulture);
         }
     }
 }

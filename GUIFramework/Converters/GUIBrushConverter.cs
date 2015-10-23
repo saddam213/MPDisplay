@@ -1,18 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Windows.Data;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using GUISkinFramework.Common.Brushes;
-using GUISkinFramework.Styles;
-using GUISkinFramework;
 using GUIFramework.Managers;
-using System.Windows;
+using GUISkinFramework.ExtensionMethods;
+using GUISkinFramework.Skin;
 
 namespace GUIFramework.Converters
 {
@@ -33,13 +26,15 @@ namespace GUIFramework.Converters
         /// </returns>
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value is XmlColorBrush)
+            var brush = value as XmlColorBrush;
+            if (brush != null)
             {
-                return new SolidColorBrush((value as XmlColorBrush).Color.ToColor());
+                return new SolidColorBrush(brush.Color.ToColor());
             }
-            else if (value is XmlGradientBrush)
+            var gradientBrush = value as XmlGradientBrush;
+            if (gradientBrush != null)
             {
-                var background = value as XmlGradientBrush;
+                var background = gradientBrush;
                 var gradient = new LinearGradientBrush();
                 switch (background.Angle)
                 {
@@ -51,8 +46,6 @@ namespace GUIFramework.Converters
                         gradient.StartPoint = new Point(0, 0.5);
                         gradient.EndPoint = new Point(1, 0.5);
                         break;
-                    default:
-                        break;
                 }
 
                 foreach (var stop in background.GradientStops)
@@ -61,9 +54,10 @@ namespace GUIFramework.Converters
                 }
                 return gradient;
             }
-            else if (value is XmlImageBrush)
+            var imageBrush = value as XmlImageBrush;
+            if (imageBrush != null)
             {
-                return GUIImageManager.GetSkinImage(value as XmlImageBrush);
+                return GUIImageManager.GetSkinImage(imageBrush);
             }
             return new SolidColorBrush(Colors.Transparent);
         }

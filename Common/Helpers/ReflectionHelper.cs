@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using Common.Logging;
+using Common.Log;
 
 namespace Common.Helpers
 {
     public static class ReflectionHelper
     {
 
-        private static Log Log = LoggingManager.GetLog(typeof(ReflectionHelper));
-
+        private static Log.Log _log = LoggingManager.GetLog(typeof(ReflectionHelper));
 
 
         #region Method Invoke
@@ -32,7 +29,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                _log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
         }
 
@@ -53,7 +50,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                _log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
             return defalutValue;
         }
@@ -75,7 +72,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                _log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
             return defalutValue;
         }
@@ -85,7 +82,6 @@ namespace Common.Helpers
         /// </summary>
         /// <param name="obj">The obj.</param>
         /// <param name="methodName">Name of the method.</param>
-        /// <param name="defalutValue">The defalut value.</param>
         /// <param name="args">The args.</param>
         /// <returns></returns>
         public static void InvokeStaticMethod(Type obj, string methodName, params object[] args)
@@ -96,7 +92,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                _log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
         }
 
@@ -111,6 +107,7 @@ namespace Common.Helpers
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="property">The Property Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <param name="index"></param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static T GetPropertyValue<T>(object obj, string property, T defaultValue, object[] index = null)
         {
@@ -118,45 +115,46 @@ namespace Common.Helpers
             {
                 if (obj != null)
                 {
-                    PropertyInfo _prop = obj.GetType().GetProperty(property);
-                    if (_prop != null ) return (T)(_prop.GetValue(obj, index));
+                    var prop = obj.GetType().GetProperty(property);
+                    if (prop != null ) return (T)(prop.GetValue(obj, index));
                 }
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[GetPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
+                _log.Message(LogLevel.Debug, "[GetPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
             }
             return defaultValue;
         }
 
-       /// <summary>
+        /// <summary>
         /// Sets a property value to an object
         /// </summary>
         /// <typeparam name="T">Property Type</typeparam>
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="property">The Property Name To Find</param>
+        /// <param name="value">Index of Property</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static void SetPropertyValue<T>(object obj, string property, T value)
         {
             try
             {
-                if (obj != null)
-                {
-                    PropertyInfo _prop = obj.GetType().GetProperty(property);
-                    if (_prop != null ) _prop.SetValue(obj, value);
-                }
+                if (obj == null) return;
+                var prop = obj.GetType().GetProperty(property);
+                if (prop != null ) prop.SetValue(obj, value);
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[SetPropertyValue] - An exception occured setting property value, property: {1} - {0}", ex, property);
+                _log.Message(LogLevel.Debug, "[SetPropertyValue] - An exception occured setting property value, property: {1} - {0}", ex, property);
             }
         }
+
         /// <summary>
         /// Gets a property value from an object
         /// </summary>
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="property">The Property Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <param name="index">Index of Property</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static object GetPropertyValue(object obj, string property, object defaultValue, object[] index = null)
         {
@@ -170,6 +168,7 @@ namespace Common.Helpers
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="property">The Property Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <param name="index">Index of property</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static T GetStaticPropertyValue<T>(object obj, string property, T defaultValue, object[] index = null)
         {
@@ -177,13 +176,13 @@ namespace Common.Helpers
             {
                 if (obj != null)
                 {
-                    PropertyInfo _prop = obj.GetType().GetProperty(property);
-                    if (_prop != null) return (T)(_prop.GetValue(obj, index));
+                    var prop = obj.GetType().GetProperty(property);
+                    if (prop != null) return (T)(prop.GetValue(obj, index));
                 }
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[GetStaticPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
+                _log.Message(LogLevel.Debug, "[GetStaticPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
             }
             return defaultValue;
         }
@@ -194,6 +193,7 @@ namespace Common.Helpers
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="property">The Property Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <param name="index">Index of property</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static object GetStaticPropertyValue(object obj, string property, object defaultValue, object[] index = null)
         {
@@ -211,6 +211,7 @@ namespace Common.Helpers
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="field">The Field Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <param name="bindingFlags">Binding flags</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static T GetFieldValue<T>(object obj, string field, T defaultValue, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic)
         {
@@ -218,13 +219,13 @@ namespace Common.Helpers
             {
                 if (obj != null)
                 {
-                    FieldInfo _field = obj.GetType().GetField(field, bindingFlags);
-                    if (_field != null) return (T)(_field.GetValue(obj));
+                    var fieldinfo = obj.GetType().GetField(field, bindingFlags);
+                    if (fieldinfo != null) return (T)(fieldinfo.GetValue(obj));
                 }
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[GetFieldValue] - An exception occured getting field value, Field: {1} - {0}", ex, field);
+                _log.Message(LogLevel.Debug, "[GetFieldValue] - An exception occured getting field value, Field: {1} - {0}", ex, field);
             }
             return defaultValue;
         }
@@ -235,6 +236,7 @@ namespace Common.Helpers
         /// <param name="obj">The Object To Find Property In</param>
         /// <param name="field">The Field Name To Find</param>
         /// <param name="defaultValue">Default Value If Property Not Found or Can't Be Accessed</param>
+        /// <param name="bindingFlags">Binding flags</param>
         /// <returns>The Property Value If Found and Can Be Accessed, Else returns 'defaultValue'</returns>
         public static object GetFieldValue(object obj, string field, object defaultValue = null, BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.NonPublic)
         {
@@ -253,12 +255,12 @@ namespace Common.Helpers
         {
             try
             {
-                FieldInfo _field = obj.GetType().GetField(field);
-                if (_field != null) return (T)(_field.GetValue(null));
+                var fieldinfo = obj.GetType().GetField(field);
+                if (fieldinfo != null) return (T)(fieldinfo.GetValue(null));
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[GetStaticField] - An exception occured getting field value, Field: {1} - {0}", ex, field);
+                _log.Message(LogLevel.Debug, "[GetStaticField] - An exception occured getting field value, Field: {1} - {0}", ex, field);
             }
             return defaultValue;
         }
@@ -293,16 +295,12 @@ namespace Common.Helpers
             {
                 if (!string.IsNullOrEmpty(property))
                 {
-                    object returnValue = obj;
+                    var returnValue = obj;
                     if (property.Contains('.'))
                     {
                         var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
 
-                        foreach (var prop in path)
-                        {
-                            returnValue = GetPropertyValue<object>(returnValue, prop, null)
-                                       ?? GetFieldValue<object>(returnValue, prop, null);
-                        }
+                        returnValue = path.Aggregate(returnValue, (current, prop) => GetPropertyValue<object>(current, prop, null) ?? GetFieldValue<object>(current, prop, null));
                         return (T)returnValue;
                     }
                     returnValue = GetPropertyValue<object>(obj, property, null)
@@ -315,7 +313,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting property value, PropertyPath: {1} - {0}", ex, property);
+                _log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting property value, PropertyPath: {1} - {0}", ex, property);
             }
             return defaultValue;
         }
@@ -330,35 +328,20 @@ namespace Common.Helpers
         {
             try
             {
-
                 if (!string.IsNullOrEmpty(property))
                 {
-                    object returnValue = obj;
-                    if (property.Contains('.'))
-                    {
-                        var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
+                    var returnValue = obj;
+                    if (!property.Contains('.')) return obj.GetType().GetProperty(property);
+                    var path = property.Split(new[] { "." }, StringSplitOptions.RemoveEmptyEntries);
 
-                        foreach (var prop in path)
-                        {
-                            if (prop != path.Last())
-                            {
-                                returnValue = GetPropertyValue<object>(returnValue, prop, null);
-                            }
-                        }
+                    returnValue = path.Where(prop => prop != path.Last()).Aggregate(returnValue, (current, prop) => GetPropertyValue<object>(current, prop, null));
 
-                        if (returnValue != null)
-                        {
-                            return returnValue.GetType().GetProperty(path.Last());
-                        }
-                    }
-
-
-                    return obj.GetType().GetProperty(property);
+                    return returnValue != null ? returnValue.GetType().GetProperty(path.Last()) : obj.GetType().GetProperty(property);
                 }
             }
             catch (Exception ex)
             {
-                Log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting PropertyInfo, PropertyPath: {1} - {0}", ex, property);
+                _log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting PropertyInfo, PropertyPath: {1} - {0}", ex, property);
             }
             return null;
         }
@@ -373,19 +356,19 @@ namespace Common.Helpers
             return _FindStringValues(obj, new List<object>());
         }
 
-        private static IEnumerable<string> _FindStringValues(object obj, IList<object> visitedObjects)
+        private static IEnumerable<string> _FindStringValues(object obj, ICollection<object> visitedObjects)
         {
             if (obj == null)
                 yield break;
 
             // Console.WriteLine(string.Join("; ", visitedObjects.Select(i => i.ToString()).ToArray()));
-            if (visitedObjects.Any(item => Object.ReferenceEquals(item, obj)))
+            if (visitedObjects.Any(item => ReferenceEquals(item, obj)))
                 yield break;
 
             if (!(obj is string))
                 visitedObjects.Add(obj);
 
-            Type type = obj.GetType();
+            var type = obj.GetType();
 
             if (type == typeof(string))
             {
@@ -396,29 +379,26 @@ namespace Common.Helpers
             if (typeof(IEnumerable).IsAssignableFrom(type))
             {
                 var array = obj as IEnumerable;
-                foreach (var item in array)
-                    foreach (var str in _FindStringValues(item, visitedObjects))
-                        yield return str;
+                if (array == null) yield break;
+                foreach (var str in array.Cast<object>().SelectMany(item => _FindStringValues(item, visitedObjects)))
+                    yield return str;
 
                 yield break;
             }
 
-            if (type.IsClass)
+            if (!type.IsClass) yield break;
+
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+            // ReSharper disable once LoopCanBePartlyConvertedToQuery
+            foreach (var field in fields)
             {
-                FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                foreach (FieldInfo field in fields)
-                {
-                    object item = field.GetValue(obj);
+                var item = field.GetValue(obj);
 
-                    if (item == null)
-                        continue;
+                if (item == null)
+                    continue;
 
-
-                    foreach (var str in _FindStringValues(item, visitedObjects))
-                        yield return str;
-                }
-
-                yield break;
+                foreach (var str in _FindStringValues(item, visitedObjects))
+                    yield return str;
             }
         }
     }

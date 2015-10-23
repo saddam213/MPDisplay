@@ -1,16 +1,9 @@
-﻿<Views:ViewModelBase x:Class="GUIConfig.ViewModels.AddImageSettingsView"
-             xmlns:Views="clr-namespace:GUIConfig.ViewModels"
+﻿<views:ViewModelBase x:Class="GUIConfig.ViewModels.AddImageSettingsView"
+             xmlns:views="clr-namespace:GUIConfig.ViewModels"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-			 xmlns:System="clr-namespace:System;assembly=mscorlib"
-			    xmlns:Theading="clr-namespace:System.Threading;assembly=mscorlib"
-         xmlns:Cursors="clr-namespace:System.Windows.Input;assembly=PresentationCore"
-		 xmlns:forms="clr-namespace:System.Windows.Forms;assembly=System.Windows.Forms"
-		 xmlns:controls="clr-namespace:MPDisplay.Common.Controls;assembly=MPDisplay.UICommon"
-		 	  xmlns:ComponentModel="clr-namespace:System.ComponentModel;assembly=WindowsBase"
-		 xmlns:skin="clr-namespace:GUIConfig.ViewModels"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              mc:Ignorable="d" x:Name="UI" >
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
@@ -20,13 +13,13 @@
 
 		<GroupBox Header="{Binding FallbackValue=Images, ConverterParameter=Images, Converter={StaticResource LanguageConverter}}" Margin="0,0,0,0" >
 			<StackPanel Orientation="Horizontal" Margin="0,0,0,9">
-                <DockPanel Grid.Column="1" Margin="5,0,0,0" Width="250">
+                <DockPanel Margin="5,0,0,0" Width="250">
                     <ListBox ItemsSource="{Binding DataObject.AddImagePropertySettings}"
                              SelectedItem="{Binding SelectedAddImageProperty}"
                              DisplayMemberPath="ImageName"/>
                 </DockPanel>
 
-				<StackPanel Grid.Column="2" Margin="5,0,0,0" Width="250" MinHeight="250">
+				<StackPanel Margin="5,0,0,0" Width="250" MinHeight="250">
                     <Grid Margin="0,5,0,0">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="1*" />
@@ -92,4 +85,4 @@
 
 
 	</Grid>
-</Views:ViewModelBase>
+</views:ViewModelBase>

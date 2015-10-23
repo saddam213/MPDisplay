@@ -1,19 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Xml.Serialization;
-using GUISkinFramework;
-using GUISkinFramework.Controls;
-using GUISkinFramework.Styles;
-using SkinEditor.Views;
-using Common.Settings;
 using Common.Helpers;
+using Common.Settings;
+using SkinEditor.Views;
 
 namespace SkinEditor
 {
@@ -89,7 +81,7 @@ namespace SkinEditor
 
         public void Save(string settingsFile)
         {
-            SerializationHelper.Serialize<SkinEditorSettings>(this, settingsFile);
+            SerializationHelper.Serialize(this, settingsFile);
         }
 
        
@@ -134,7 +126,7 @@ namespace SkinEditor
         public override void InitializeSettings()
         {
             base.InitializeSettings();
-            RecentSkins = new ObservableCollection<string>(RecentSkins.Where(f => File.Exists(f)).Take(10));
+            RecentSkins = new ObservableCollection<string>(RecentSkins.Where(File.Exists).Take(10));
         }
 
         public void AddToRecentList(string skinInfoFile)

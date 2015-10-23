@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
 
@@ -13,23 +10,17 @@ namespace GUISkinFramework.Converters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            int intValue = 0;
-            string pointValue = value == null ? string.Empty : value.ToString();
-            if (pointValue.Contains(','))
+            int intValue;
+            var pointValue = value == null ? string.Empty : value.ToString();
+            if (!pointValue.Contains(',')) return int.TryParse(pointValue, out intValue) ? new Thickness(intValue) : new Thickness(0);
+
+            var points = pointValue.Split(',');
+            if (points.Count() == 4 && points.All(v => int.TryParse(v, out intValue)))
             {
-                var points = pointValue.Split(',');
-                if (points.Count() == 4 && points.All(v => int.TryParse(v, out intValue)))
-                {
-                    return new Thickness(double.Parse(points[0]), double.Parse(points[1]), double.Parse(points[2]), double.Parse(points[3]));
-                }
+                return new Thickness(double.Parse(points[0]), double.Parse(points[1]), double.Parse(points[2]), double.Parse(points[3]));
             }
 
-            if (int.TryParse(pointValue, out intValue))
-            {
-                return new Thickness(intValue);
-            }
-
-            return new Thickness(0);
+            return int.TryParse(pointValue, out intValue) ? new Thickness(intValue) : new Thickness(0);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

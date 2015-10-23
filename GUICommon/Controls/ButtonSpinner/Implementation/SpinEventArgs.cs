@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 
 namespace MPDisplay.Common.Controls
 {
@@ -20,7 +19,6 @@ namespace MPDisplay.Common.Controls
         /// </summary>
         /// <param name="direction">Spin direction.</param>
         public SpinEventArgs(SpinDirection direction)
-            : base()
         {
             Direction = direction;
         }
