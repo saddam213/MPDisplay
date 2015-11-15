@@ -18,7 +18,7 @@ namespace GUISkinFramework.Editors
     /// </summary>
     public partial class AnimationEditorDialog : INotifyPropertyChanged
     {
-        private object _instance;
+        private readonly object _instance;
         private object _animatedElement;
         private XmlAnimationCondition _selectedAnimationCondition;
         private XmlAnimation _selectedAnimation;
@@ -182,10 +182,7 @@ namespace GUISkinFramework.Editors
     
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion
@@ -193,34 +190,34 @@ namespace GUISkinFramework.Editors
         private void Button_Play_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedAnimation == null) return;
-            var storyboard = CreateAnimation(animatedControl, new List<XmlAnimation> { SelectedAnimation });
-            storyboard.Begin(animatedControl, HandoffBehavior.SnapshotAndReplace);
+            var storyboard = CreateAnimation(AnimatedControl, new List<XmlAnimation> { SelectedAnimation });
+            storyboard.Begin(AnimatedControl, HandoffBehavior.SnapshotAndReplace);
         }
 
         private void Button_PlayAll_Click(object sender, RoutedEventArgs e)
         {
             if (!FilteredList.Any()) return;
-            var storyboard = CreateAnimation(animatedControl, FilteredList);
-            storyboard.Begin(animatedControl, HandoffBehavior.SnapshotAndReplace);
+            var storyboard = CreateAnimation(AnimatedControl, FilteredList);
+            storyboard.Begin(AnimatedControl, HandoffBehavior.SnapshotAndReplace);
         }
 
         private void Button_Reset_Click(object sender, RoutedEventArgs e)
         {
-            animatedControl.BeginAnimation(OpacityProperty, null);
-            animatedControl.BeginAnimation(Canvas.LeftProperty, null);
-            animatedControl.BeginAnimation(Canvas.TopProperty, null);
-            animatedControl.BeginAnimation(WidthProperty, null);
-            animatedControl.BeginAnimation(HeightProperty, null);
-            animatedControl.BeginAnimation(Surface3D.RotationXProperty, null);
-            animatedControl.BeginAnimation(Surface3D.RotationYProperty, null);
-            animatedControl.BeginAnimation(Surface3D.RotationXProperty, null);
-            animatedControl.BeginAnimation(Surface3D.RotationCenterXProperty, null);
-            animatedControl.BeginAnimation(Surface3D.RotationCenterYProperty, null);
-            animatedControl.BeginAnimation(Surface3D.RotationCenterZProperty, null);
-            animatedControl.BeginAnimation(ScaleTransform.ScaleXProperty, null);
-            animatedControl.BeginAnimation(ScaleTransform.ScaleYProperty, null);
-            animatedControl.RenderTransform = new ScaleTransform(1, 1);
-            animatedControl.RenderTransformOrigin = new Point(0.5, 0.5);
+            AnimatedControl.BeginAnimation(OpacityProperty, null);
+            AnimatedControl.BeginAnimation(Canvas.LeftProperty, null);
+            AnimatedControl.BeginAnimation(Canvas.TopProperty, null);
+            AnimatedControl.BeginAnimation(WidthProperty, null);
+            AnimatedControl.BeginAnimation(HeightProperty, null);
+            AnimatedControl.BeginAnimation(Surface3D.RotationXProperty, null);
+            AnimatedControl.BeginAnimation(Surface3D.RotationYProperty, null);
+            AnimatedControl.BeginAnimation(Surface3D.RotationXProperty, null);
+            AnimatedControl.BeginAnimation(Surface3D.RotationCenterXProperty, null);
+            AnimatedControl.BeginAnimation(Surface3D.RotationCenterYProperty, null);
+            AnimatedControl.BeginAnimation(Surface3D.RotationCenterZProperty, null);
+            AnimatedControl.BeginAnimation(ScaleTransform.ScaleXProperty, null);
+            AnimatedControl.BeginAnimation(ScaleTransform.ScaleYProperty, null);
+            AnimatedControl.RenderTransform = new ScaleTransform(1, 1);
+            AnimatedControl.RenderTransformOrigin = new Point(0.5, 0.5);
         }
 
 

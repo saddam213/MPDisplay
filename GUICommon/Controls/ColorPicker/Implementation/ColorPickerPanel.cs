@@ -111,8 +111,7 @@ namespace MPDisplay.Common.Controls
         private static void OnSelectedColorPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var colorPickerPanel = (ColorPickerPanel)d;
-            if (colorPickerPanel != null)
-                colorPickerPanel.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
+            colorPickerPanel?.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
         }
 
         private void OnSelectedColorChanged(Color oldValue, Color newValue)

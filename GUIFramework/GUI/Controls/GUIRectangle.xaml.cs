@@ -25,10 +25,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlRectangle SkinXml
-        {
-            get { return BaseXml as XmlRectangle; }
-        }
+        public XmlRectangle SkinXml => BaseXml as XmlRectangle;
 
         #endregion
     }

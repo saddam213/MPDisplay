@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Data;
 using GUISkinFramework.ExtensionMethods;
@@ -14,14 +13,14 @@ namespace GUIFramework.Converters
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)
         {
             var margin = new Thickness(0);
-            if (values == null || values.Count() != 5) return margin;
+            if (values == null || values.Length != 5) return margin;
 
             try
             {
                 var percentage = (double)values[1];
                 var width = values[0] != null ? double.Parse(values[0].ToString()) : 0.0;
-                var barmargin = values[2] != null ? values[2].ToString().ToThickness() : new Thickness(0);
-                margin = values[3] != null ? values[3].ToString().ToThickness() : new Thickness(0);
+                var barmargin = values[2]?.ToString().ToThickness() ?? new Thickness(0);
+                margin = values[3]?.ToString().ToThickness() ?? new Thickness(0);
                 var labelwidth = values[4] != null ? double.Parse(values[4].ToString()) : 0.0;
 
                 var actualWidth = (width - (barmargin.Left + barmargin.Right));

@@ -6,13 +6,17 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300" x:Name="Surface">
 	<UserControl.Resources>
-		<ResourceDictionary>
-			<ResourceDictionary.MergedDictionaries>
-				<ResourceDictionary Source="/GUIFramework;component/Themes/Generic.xaml" />
-			</ResourceDictionary.MergedDictionaries>
-		</ResourceDictionary>
-	</UserControl.Resources>
-	<Grid DataContext="{Binding ElementName=Surface}">
+
+
+ 
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/GUIFramework;component/Themes/Generic.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+
+    <Grid DataContext="{Binding ElementName=Surface}">
         <ItemsControl ItemsSource="{Binding SurfaceElements}" Background="Transparent"  >
 			<ItemsControl.ItemsPanel>
 				<ItemsPanelTemplate>
@@ -20,12 +24,31 @@
 				</ItemsPanelTemplate>
 			</ItemsControl.ItemsPanel>
 		</ItemsControl>
+        <!-- Splash screen overlay -->
 		<Grid Visibility="{Binding IsSplashScreenVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
 		 <Image Source="{Binding SplashScreenImage}" Stretch="Fill" />
 		 <TextBlock Text="{Binding SplashScreenText}" VerticalAlignment="Center" HorizontalAlignment="Center" Foreground="White" FontSize="32" />
 			<TextBlock Text="{Binding SplashScreenVersionText, StringFormat=Version: {0}}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Foreground="White" FontSize="18" Margin="0,0,5,5" />
 			<TextBlock Text="{Binding SplashScreenSkinText, StringFormat=Skin: {0}}" VerticalAlignment="Bottom" HorizontalAlignment="Left" Foreground="White" FontSize="18" Margin="5,0,0,5" />
 		</Grid>
-	</Grid>
+        <!-- Screen saver overlay -->
+        <Grid x:Name="ScreenSaverOverlay" Panel.ZIndex="1000" Visibility="{Binding ScreenSaverActive, Converter={StaticResource BooleanToVisibilityConverter}}" Background="Black" Opacity="0.0" MouseDown="ScreenSaverOverlay_OnMouseDown">
+            <Image x:Name="ScreenSaverImage1" Stretch="UniformToFill" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="0" Y="0" />
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <Image x:Name="ScreenSaverImage2" Stretch="UniformToFill" RenderTransformOrigin="0.5,0.5">
+                <Image.RenderTransform>
+                    <TransformGroup>
+                        <TranslateTransform X="0" Y="0" />
+                    </TransformGroup>
+                </Image.RenderTransform>
+            </Image>
+            <TextBlock TextWrapping="Wrap" x:Name="ScreenSaverErrorText" HorizontalAlignment="Stretch" VerticalAlignment="Center" TextAlignment="Center" Visibility="Collapsed" Text="No picture files exist in configured folder" FontSize="20" />
+        </Grid>
+    </Grid>
 	
 </UserControl>

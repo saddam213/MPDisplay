@@ -14,9 +14,6 @@ namespace GUISkinFramework.Skin
 
    
 
-        public override string DisplayType
-        {
-            get { return "MediaPortal Dialog"; }
-        }
+        public override string DisplayType => "MediaPortal Dialog";
     }
 }

@@ -20,7 +20,6 @@ namespace GUIFramework.GUI
 
         protected Log Log = LoggingManager.GetLog(typeof(GUIControl));
         private XmlControl _baseXml;
-        private bool _isWindowOpenVisible = true;
         private bool _isVisibleToggled;
         private bool _isControlfocused;
         private GUIVisibleCondition _visibleCondition;
@@ -78,18 +77,12 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets a value indicating whether this instance is window open visible.
         /// </summary>
-        public bool IsWindowOpenVisible
-        {
-            get { return _isWindowOpenVisible; }
-        }
+        public bool IsWindowOpenVisible { get; private set; } = true;
 
         /// <summary>
         /// Gets the last user interaction time.
         /// </summary>
-        public DateTime LastUserInteraction
-        {
-            get { return _lastUserInteraction; }
-        }
+        public DateTime LastUserInteraction => _lastUserInteraction;
 
         /// <summary>
         /// Gets the animations.
@@ -123,7 +116,7 @@ namespace GUIFramework.GUI
             BaseXml = skinXml;
             Id = BaseXml.Id;
             ParentId = parentId;
-            _isWindowOpenVisible = BaseXml.IsWindowOpenVisible;
+            IsWindowOpenVisible = BaseXml.IsWindowOpenVisible;
             _focusedControlIds = skinXml.MediaPortalFocusControls.ToList();
             CreateControl();
             _visibleCondition = new GUIVisibleCondition(this);
@@ -160,7 +153,7 @@ namespace GUIFramework.GUI
         public virtual void OnWindowOpen()
         {
             _isVisibleToggled = false;
-            IsControlVisible = _isWindowOpenVisible;
+            IsControlVisible = IsWindowOpenVisible;
             NotifyPropertyChanged("IsControlVisible");
 
             if (!IsControlVisible) return;
@@ -361,7 +354,7 @@ namespace GUIFramework.GUI
             {
                 SetControlVisibility(_visibleCondition.HasCondition
                     ? _visibleCondition.ShouldBeVisible()
-                    : _isWindowOpenVisible);
+                    : IsWindowOpenVisible);
             }
         }
 
@@ -391,7 +384,7 @@ namespace GUIFramework.GUI
             _isVisibleToggled = false;
             IsControlVisible = _visibleCondition.HasCondition
                     ? _visibleCondition.ShouldBeVisible()
-                    : _isWindowOpenVisible;
+                    : IsWindowOpenVisible;
             GUIVisibilityManager.UpdateControlVisibility(this);
             if (IsControlVisible)
             {

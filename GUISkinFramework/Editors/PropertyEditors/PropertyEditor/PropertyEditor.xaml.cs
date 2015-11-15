@@ -75,10 +75,7 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         private void Button_PropertyAdd_Click(object sender, RoutedEventArgs e)
@@ -109,10 +106,7 @@ namespace GUISkinFramework.Editors
 
         private void Button_MediaPortalTagAdd_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedProperty != null)
-            {
-                SelectedProperty.MediaPortalTags.Add(new XmlMediaPortalTag { Tag = "New..." });
-            }
+            SelectedProperty?.MediaPortalTags.Add(new XmlMediaPortalTag { Tag = "New..." });
         }
 
         private void Button_MediaPortalTagRemove_Click(object sender, RoutedEventArgs e)

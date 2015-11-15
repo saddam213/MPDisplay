@@ -36,7 +36,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             }
 
 
-            return new BitmapImage(new Uri(String.Format("{0}{1}.png", uriPrefix, imageName), UriKind.RelativeOrAbsolute));
+            return new BitmapImage(new Uri($"{uriPrefix}{imageName}.png", UriKind.RelativeOrAbsolute));
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

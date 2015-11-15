@@ -35,7 +35,7 @@ namespace MPDisplay.Common.ExtensionMethods
         private static void OnHorizontalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var viewer = d as ScrollViewer;
-            if (viewer != null) viewer.ScrollToHorizontalOffset((double)e.NewValue);
+            viewer?.ScrollToHorizontalOffset((double)e.NewValue);
         }
 
 
@@ -61,7 +61,7 @@ namespace MPDisplay.Common.ExtensionMethods
         private static void OnVerticalChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var viewer = d as ScrollViewer;
-            if (viewer != null) viewer.ScrollToVerticalOffset((double)e.NewValue);
+            viewer?.ScrollToVerticalOffset((double)e.NewValue);
         }
 
         #endregion
@@ -105,10 +105,9 @@ namespace MPDisplay.Common.ExtensionMethods
         {
             // Find the container
             var container = itemsControl.ItemContainerGenerator.ContainerFromItem(item) as UIElement;
-            if (container == null) return null;
 
             // Find the ScrollContentPresenter
-            var presenter = container.GetAscendantByType<ScrollContentPresenter>();
+            var presenter = container?.GetAscendantByType<ScrollContentPresenter>();
             if (presenter == null) return null;
 
             // Find the IScrollInfo

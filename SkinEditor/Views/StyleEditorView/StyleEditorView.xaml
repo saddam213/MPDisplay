@@ -12,19 +12,20 @@
 	<baseViews:EditorViewModel.Resources>
       
 
-        <CollectionViewSource x:Key="controlStyles" Source="{Binding CurrentControlStyles, ElementName=UI}">
+        <CollectionViewSource x:Key="ControlStyles" Source="{Binding CurrentControlStyles, ElementName=UI}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="StyleType" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
+	    <!-- ReSharper disable once InconsistentNaming -->
         <CollectionViewSource x:Key="brushStyles" Source="{Binding CurrentBrushStyles, ElementName=UI}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="StyleType" />
             </CollectionViewSource.GroupDescriptions>
         </CollectionViewSource>
 
-        <DrawingBrush x:Key="transparentBrush"  Viewport="0,0,10,10" ViewportUnits="Absolute" TileMode="Tile">
+        <DrawingBrush x:Key="TransparentBrush"  Viewport="0,0,10,10" ViewportUnits="Absolute" TileMode="Tile">
             <DrawingBrush.Drawing>
                 <DrawingGroup>
                     <GeometryDrawing Brush="White">
@@ -60,7 +61,7 @@
                 <Button Margin="2"  ToolTip="Create new Style" Click="Button_NewStyle_Click">
                     <Image Margin="2" Stretch="Uniform"  Source="/SkinEditor;component/Images/Add.png"  />
                 </Button>
-                <Button x:Name="delete" Margin="2" ToolTip="Delete current style" Click="Button_DeleteStyle_Click">
+                <Button x:Name="Delete" Margin="2" ToolTip="Delete current style" Click="Button_DeleteStyle_Click">
                     <Button.Style>
                         <Style TargetType="{x:Type Button}">
                             <Setter Property="IsEnabled" Value="True" />
@@ -125,27 +126,28 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="42"/>
                             </Grid.RowDefinitions>
-                            <Grid x:Name="brushSurface" Grid.Row="0"  Background="{StaticResource transparentBrush}">
+                            <Grid x:Name="BrushSurface" Grid.Row="0"  Background="{StaticResource TransparentBrush}">
 
-                                <Rectangle x:Name="brushHost" Width="400" Height="400" Fill="{Binding SelectedBrushStyle, Converter={StaticResource BrushConverter}}"/>
+                                <Rectangle x:Name="BrushHost" Width="400" Height="400" Fill="{Binding SelectedBrushStyle, Converter={StaticResource BrushConverter}}"/>
                             </Grid>
-                            <StackPanel x:Name="sliderPanel" Grid.Row="1" Orientation="Horizontal">
+                            <StackPanel x:Name="SliderPanel" Grid.Row="1" Orientation="Horizontal">
                                 <StackPanel Margin="5,0,0,0">
                                     <TextBlock Text="Width" />
                                     <Slider VerticalAlignment="Top" Width="168" Height="29" 
-                                        Value="{Binding Width, ElementName=brushHost}"
-                                        Maximum="{Binding ActualWidth, ElementName=brushSurface}"/>
+                                        Value="{Binding Width, ElementName=BrushHost}"
+                                        Maximum="{Binding ActualWidth, ElementName=BrushSurface}"/>
                                 </StackPanel>
                                 <StackPanel Margin="5,0,0,0">
                                     <TextBlock Text="Height" />
                                     <Slider VerticalAlignment="Top" Width="168" Height="29"
-                                        Value="{Binding Height, ElementName=brushHost}"
-                                        Maximum="{Binding ActualHeight, ElementName=brushSurface}"/>
+                                        Value="{Binding Height, ElementName=BrushHost}"
+                                        Maximum="{Binding ActualHeight, ElementName=BrushSurface}"/>
                                 </StackPanel>
                             </StackPanel>
                         </Grid>
                     </Border>
                     <Grid Grid.Column="2" Margin="0,26,0,0" PreviewMouseUp="BrushTypeEditGrid_PreviewMouseUp">
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                         <implementation:ColorPickerPanel SelectedColor="{Binding SelectedBrushStyle.Color}" 
                                                    SelectedColorChanged="ColorPickerPanel_SelectedColorChanged_1" VerticalAlignment="Top">
                             <implementation:ColorPickerPanel.Style>
@@ -206,7 +208,7 @@
 
                     <DockPanel Margin="0,10,0,0">
                         <TextBlock Text="{Binding SelectedStyle, StringFormat=\{0\} Style}" DockPanel.Dock="Top"/>
-                        <ListBox ItemsSource="{Binding Source={StaticResource controlStyles}}" SelectedItem="{Binding SelectedControlStyle}" DisplayMemberPath="StyleId" VerticalAlignment="Stretch" >
+                        <ListBox ItemsSource="{Binding Source={StaticResource ControlStyles}}" SelectedItem="{Binding SelectedControlStyle}" DisplayMemberPath="StyleId" VerticalAlignment="Stretch" >
                             <ListBox.ContextMenu>
                                 <ContextMenu ItemsSource="{Binding ControlContextMenuItems}" />
                             </ListBox.ContextMenu>
@@ -229,21 +231,21 @@
                                 <RowDefinition/>
                                 <RowDefinition Height="42"/>
                             </Grid.RowDefinitions>
-                            <Grid x:Name="controlSurface" Grid.Row="0"  Background="{StaticResource transparentBrush}">
+                            <Grid x:Name="ControlSurface" Grid.Row="0"  Background="{StaticResource TransparentBrush}">
 								<ContentControl Content="{Binding ControlHost}" />
                             </Grid>
 							<StackPanel Grid.Row="1" Orientation="Horizontal" >
 								<StackPanel Margin="5,0,0,0" IsEnabled="{Binding ShowControlResize}">
                                     <TextBlock Text="Width" />
-                                    <Slider x:Name="controlSliderPanel" VerticalAlignment="Top" Width="168" Height="29" 
+                                    <Slider x:Name="ControlSliderPanel" VerticalAlignment="Top" Width="168" Height="29" 
                                         Value="{Binding ControlHost.Width, Mode=TwoWay}"
-                                        Maximum="{Binding ActualWidth, ElementName=controlSurface}"/>
+                                        Maximum="{Binding ActualWidth, ElementName=ControlSurface}"/>
                                 </StackPanel>
 								<StackPanel Margin="5,0,0,0" IsEnabled="{Binding ShowControlResize}">
                                     <TextBlock Text="Height" />
                                     <Slider VerticalAlignment="Top" Width="168" Height="29"
                                         Value="{Binding ControlHost.Height}"
-                                        Maximum="{Binding ActualHeight, ElementName=controlSurface}"/>
+                                        Maximum="{Binding ActualHeight, ElementName=ControlSurface}"/>
                                 </StackPanel>
 								<CheckBox Margin="10,15,0,0" Content="Highlight Inner Controls" IsChecked="{Binding ShowInnerControls}"/>
                             </StackPanel>

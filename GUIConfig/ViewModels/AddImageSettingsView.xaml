@@ -14,6 +14,7 @@
 		<GroupBox Header="{Binding FallbackValue=Images, ConverterParameter=Images, Converter={StaticResource LanguageConverter}}" Margin="0,0,0,0" >
 			<StackPanel Orientation="Horizontal" Margin="0,0,0,9">
                 <DockPanel Margin="5,0,0,0" Width="250">
+                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                     <ListBox ItemsSource="{Binding DataObject.AddImagePropertySettings}"
                              SelectedItem="{Binding SelectedAddImageProperty}"
                              DisplayMemberPath="ImageName"/>
@@ -26,15 +27,15 @@
 						</Grid.ColumnDefinitions>
 						<StackPanel Grid.Column="0" Margin="0,0,2,0">
                             <TextBlock Margin="0,5,0,0" Text="{Binding FallbackValue=Image Name, Converter={StaticResource LanguageConverter}, ConverterParameter=Image Name}" />
-                            <TextBox Text="{Binding SelectedAddImageProperty.ImageName}" IsEnabled="{Binding Path=IsChecked, ElementName=checkAdvanced}"  />
+                            <TextBox Text="{Binding SelectedAddImageProperty.ImageName}" IsEnabled="{Binding Path=IsChecked, ElementName=CheckAdvanced}"  />
                             <TextBlock Margin="0,5,0,0" Text="{Binding FallbackValue=MPDisplay Skin Tag, Converter={StaticResource LanguageConverter}, ConverterParameter=MPDisplay Skin Tag}"
-                                       Visibility="{Binding Path=IsChecked, ElementName=checkAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                       Visibility="{Binding Path=IsChecked, ElementName=CheckAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
 						    <TextBox Text="{Binding SelectedAddImageProperty.MPDSkinTag}"
-                                     Visibility="{Binding Path=IsChecked, ElementName=checkAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding Path=IsChecked, ElementName=CheckAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             <TextBlock Margin="0,5,0,0" Text="{Binding FallbackValue=Property String, Converter={StaticResource LanguageConverter}, ConverterParameter=Property String}"
-                                       Visibility="{Binding Path=IsChecked, ElementName=checkAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                       Visibility="{Binding Path=IsChecked, ElementName=CheckAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             <TextBox Text="{Binding SelectedAddImageProperty.PropertyString}" 
-                                     Visibility="{Binding Path=IsChecked, ElementName=checkAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+                                     Visibility="{Binding Path=IsChecked, ElementName=CheckAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}"/>
                             <TextBlock Margin="0,5,0,0" Text="{Binding FallbackValue=Path, Converter={StaticResource LanguageConverter}, ConverterParameter=Path}" />
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -42,8 +43,8 @@
                                     <ColumnDefinition Width="Auto"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBox Text="{Binding SelectedAddImageProperty.Path}"  />
-                                <Button Grid.Column="1" Width="22" Command="{Binding SelectPathCommand}" Name="btn">
-                                    <Image Margin="2,3,2,1"  Stretch="Uniform" Source="/MPDisplayConfig;component/Images/Edit.png" IsEnabled="{Binding IsEnabled, ElementName=btn}" >
+                                <Button Grid.Column="1" Width="22" Command="{Binding SelectPathCommand}" Name="Btn">
+                                    <Image Margin="2,3,2,1"  Stretch="Uniform" Source="/MPDisplayConfig;component/Images/Edit.png" IsEnabled="{Binding IsEnabled, ElementName=Btn}" >
                                         <Image.Style>
                                             <Style TargetType="Image">
                                                 <Setter Property="Opacity" Value="1" />
@@ -57,8 +58,8 @@
                                     </Image>
                                 </Button>
                             </Grid>
-                            <CheckBox Margin="0,10,0,0" Content="{Binding FallbackValue=Advanced Settings, ConverterParameter=Advanced Settings, Converter={StaticResource LanguageConverter}}" Name="checkAdvanced"/>
-                            <Grid Margin="0,10,0,10" Visibility="{Binding Path=IsChecked, ElementName=checkAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <CheckBox Margin="0,10,0,0" Content="{Binding FallbackValue=Advanced Settings, ConverterParameter=Advanced Settings, Converter={StaticResource LanguageConverter}}" Name="CheckAdvanced"/>
+                            <Grid Margin="0,10,0,10" Visibility="{Binding Path=IsChecked, ElementName=CheckAdvanced, Converter={StaticResource BooleanToVisibilityConverter}}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="1*"/>
                                     <ColumnDefinition Width="1*"/>

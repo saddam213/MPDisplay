@@ -28,7 +28,7 @@ namespace GUIConfig.Settings
         {
             get
             {
-                if (_languageXmlFile != null && _languageXmlFile.Languages != null && _languageXmlFile.Languages.Any())
+                if (_languageXmlFile?.Languages != null && _languageXmlFile.Languages.Any())
                 {
                     return _languageXmlFile.Languages.Select(x => x.LanguageName);
                 }
@@ -39,7 +39,7 @@ namespace GUIConfig.Settings
 
         public static void SetLanguage(string language)
         {
-            if (_languageXmlFile != null && _languageXmlFile.Languages != null && _languageXmlFile.Languages.Any())
+            if (_languageXmlFile?.Languages != null && _languageXmlFile.Languages.Any())
             {
                 _currentLanguage = _languageXmlFile.Languages.FirstOrDefault(x => x.LanguageName == language) ?? _languageXmlFile.Languages.FirstOrDefault();
                 return;

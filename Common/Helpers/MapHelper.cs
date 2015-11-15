@@ -7,8 +7,8 @@ namespace Common.Helpers
     {
 
         // map related variables
-        private int _mapHeight;
-        private int _mapWidth;
+        private readonly int _mapHeight;
+        private readonly int _mapWidth;
         private string _googleApiKey;
         private int _zoom ;
 
@@ -18,7 +18,7 @@ namespace Common.Helpers
 
         public string GoogleApiKey
         {
-            get { return string.IsNullOrWhiteSpace(_googleApiKey) ? string.Empty : string.Format("&key={0}", _googleApiKey); }
+            get { return string.IsNullOrWhiteSpace(_googleApiKey) ? string.Empty : $"&key={_googleApiKey}"; }
             set { _googleApiKey = value; }
         }
 

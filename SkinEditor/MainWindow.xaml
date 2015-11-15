@@ -28,6 +28,7 @@
 				<!--File Menu-->
 			<MenuItem Header="_File">
                 <MenuItem.Resources>
+                    <!-- ReSharper disable once InconsistentNaming -->
 					<CollectionViewSource x:Key="recent" Source="{Binding Settings.GlobalSettings.RecentSkins}"  />
 					<Style TargetType="MenuItem">
 						<Setter Property="Command" Value="{Binding RecentSkinCommand, ElementName=UI}"  />
@@ -78,6 +79,7 @@
 				<Style TargetType="TabItem">
 					<Setter Property="Header" Value="{Binding Title}"/>
 					<Setter Property="Content" Value="{Binding}"/>
+				    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 					<Setter Property="IsSelected" Value="{Binding IsSelected}" />
 				</Style>
 

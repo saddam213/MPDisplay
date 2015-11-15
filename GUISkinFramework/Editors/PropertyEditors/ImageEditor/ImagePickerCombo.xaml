@@ -5,6 +5,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" d:DesignWidth="276" Height="Auto" Name="UI">
     <UserControl.Resources>
+        <!-- ReSharper disable once InconsistentNaming -->
 		<CollectionViewSource x:Key="images" Source="{Binding SkinInfo.Images, ElementName=UI}">
             <CollectionViewSource.GroupDescriptions>
                 <PropertyGroupDescription PropertyName="SubFolder" />
@@ -17,6 +18,7 @@
                     <GroupStyle.HeaderTemplate>
                         <DataTemplate>
                             <Border Margin="10,5,0,0" >
+                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                 <Label FontSize="18" FontWeight="Bold" Margin="2" Content="{Binding Name}"/>
                             </Border>
                         </DataTemplate>

@@ -2,7 +2,7 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "1.0.0.0"
+!define VERSION "1.0.1.0"
 !define BUILD_FOLDER "C:\Entwicklung\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"

@@ -53,10 +53,7 @@ namespace GUISkinFramework.Skin
 
         [XmlIgnore]
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return Name; }
-        }
+        public string DisplayName => Name;
 
         [XmlIgnore]
         [Browsable(false)]
@@ -239,12 +236,7 @@ namespace GUISkinFramework.Skin
 
         public virtual void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-       
     }
 }

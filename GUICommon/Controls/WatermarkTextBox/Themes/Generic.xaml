@@ -8,20 +8,20 @@
         <GradientStop Color="#E3E9EF" Offset="1"/>
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="TextBox_MouseOver" EndPoint="0,1" StartPoint="0,0">
+    <LinearGradientBrush x:Key="TextBoxMouseOver" EndPoint="0,1" StartPoint="0,0">
         <GradientStop Color="#5794BF" Offset="0.05"/>
         <GradientStop Color="#B7D5EA" Offset="0.07"/>
         <GradientStop Color="#C7E2F1" Offset="1"/>
     </LinearGradientBrush>
 
-    <LinearGradientBrush x:Key="TextBox_Focused" EndPoint="0,1" StartPoint="0,0">
+    <LinearGradientBrush x:Key="TextBoxFocused" EndPoint="0,1" StartPoint="0,0">
         <GradientStop Color="#3D7BAD" Offset="0.05"/>
         <GradientStop Color="#A4C9E3" Offset="0.07"/>
         <GradientStop Color="#B7D9ED" Offset="1"/>
     </LinearGradientBrush>
 
-    <SolidColorBrush x:Key="TextBox_DisabledBorder" Color="#ADB2B5" />
-    <SolidColorBrush x:Key="TextBox_DisabledBackground" Color="#F4F4F4" />
+    <SolidColorBrush x:Key="TextBoxDisabledBorder" Color="#ADB2B5" />
+    <SolidColorBrush x:Key="TextBoxDisabledBackground" Color="#F4F4F4" />
 
     <DataTemplate x:Key="DefaultWatermarkTemplate">
         <ContentControl Content="{Binding}" Foreground="Gray" Focusable="False" />
@@ -43,17 +43,11 @@
                 <ControlTemplate TargetType="{x:Type local:WatermarkTextBox}">
                     <Grid>
 
-                        <Border x:Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="1" Background="{TemplateBinding Background}">
-                            
-                        </Border>
+                        <Border x:Name="Border" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{TemplateBinding BorderBrush}" CornerRadius="1" Background="{TemplateBinding Background}" />
 
-                        <Border x:Name="MouseOverVisual" Opacity="0" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource TextBox_MouseOver}" CornerRadius="1" >
-                            
-                        </Border>
+                        <Border x:Name="MouseOverVisual" Opacity="0" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource TextBoxMouseOver}" CornerRadius="1" />
 
-                        <Border x:Name="FocusVisual" Opacity="0" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource TextBox_Focused}" CornerRadius="1" >
-                           
-                        </Border>
+                        <Border x:Name="FocusVisual" Opacity="0" BorderThickness="{TemplateBinding BorderThickness}" BorderBrush="{StaticResource TextBoxFocused}" CornerRadius="1" />
 
                         <ScrollViewer x:Name="PART_ContentHost" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
                         
@@ -70,11 +64,11 @@
                     <ControlTemplate.Triggers>
                         <MultiTrigger>
                             <MultiTrigger.Conditions>
-                                <Condition Property="IsFocused" Value="False"></Condition>
-                                <Condition Property="Text" Value=""></Condition>
+                                <Condition Property="IsFocused" Value="False" />
+                                <Condition Property="Text" Value="" />
                             </MultiTrigger.Conditions>
                             <MultiTrigger.Setters>
-                                <Setter Property="Visibility" TargetName="PART_WatermarkHost" Value="Visible"></Setter>
+                                <Setter Property="Visibility" TargetName="PART_WatermarkHost" Value="Visible" />
                             </MultiTrigger.Setters>
                         </MultiTrigger>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -84,8 +78,8 @@
                             <Setter TargetName="FocusVisual" Property="Opacity"  Value="1" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="false">
-                            <Setter TargetName="Border"  Property="BorderBrush" Value="{StaticResource TextBox_DisabledBorder}"/>
-                            <Setter TargetName="Border"  Property="Background" Value="{StaticResource TextBox_DisabledBackground}"/>
+                            <Setter TargetName="Border"  Property="BorderBrush" Value="{StaticResource TextBoxDisabledBorder}"/>
+                            <Setter TargetName="Border"  Property="Background" Value="{StaticResource TextBoxDisabledBackground}"/>
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
                         </Trigger>
                     </ControlTemplate.Triggers>

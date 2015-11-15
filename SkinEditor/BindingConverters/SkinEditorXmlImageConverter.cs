@@ -11,8 +11,7 @@ namespace SkinEditor.BindingConverters
         {
             if (!(value is string)) return null;
 
-            var valueImage = value.ToString();
-               
+            var valueImage = value.ToString();              
 
             if (valueImage.Contains('+'))
             {

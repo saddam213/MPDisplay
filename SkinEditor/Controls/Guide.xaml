@@ -124,7 +124,7 @@
 				<ColumnDefinition  />
 			</Grid.ColumnDefinitions>
 
-			<Border x:Name="timelineBorder" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
+			<Border x:Name="TimelineBorder" Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" 
 			        BorderBrush="{Binding BaseXml.ControlStyle.TimelineBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}"
 					BorderThickness="{Binding BaseXml.ControlStyle.TimelineBorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 					CornerRadius="{Binding BaseXml.ControlStyle.TimelineCornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}"
@@ -132,11 +132,11 @@
 				    Height="{Binding BaseXml.TimelineHeight}"/>
 
 			<Border Grid.Row="0" Grid.Column="0" Style="{StaticResource TimelineBorder}" >
-				<TextBlock x:Name="timelineDate" Style="{StaticResource TimelineTextblock}" Text="{Binding TimelineInfo}" />
+				<TextBlock x:Name="TimelineDate" Style="{StaticResource TimelineTextblock}" Text="{Binding TimelineInfo}" />
 			</Border>
 
 			<!--Timeline List-->
-			<ListBox x:Name="timelineListBox" Grid.Row="0" Grid.Column="1" Padding="0"
+			<ListBox x:Name="TimelineListBox" Grid.Row="0" Grid.Column="1" Padding="0"
 			         Height="{Binding BaseXml.TimelineHeight}"  
 			         ItemContainerStyle="{StaticResource TimelineItem}"  
 					 ItemsSource="{Binding Timeline}" 
@@ -152,6 +152,7 @@
 					<DataTemplate>
 						<Grid Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type ListBoxItem}}}" >
 							<Border Style="{StaticResource TimelineBorder}" >
+							    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 								<TextBlock Text="{Binding Title}" Style="{StaticResource TimelineTextblock}" />
 							</Border>
 						</Grid>
@@ -165,7 +166,7 @@
 					BorderThickness="{Binding BaseXml.ControlStyle.ChannelListBorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 					CornerRadius="{Binding BaseXml.ControlStyle.ChannelListCornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}"
 			        Background="{Binding BaseXml.ControlStyle.ChannelListBackgroundBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}">
-			<ListBox Margin="0,1,0,0" x:Name="channelListBox"  
+			<ListBox Margin="0,1,0,0" x:Name="ChannelListBox"  
 			         SelectedItem="{Binding SelectedChannel}" 
 					 ItemsSource="{Binding ChannelData, Mode=OneWay}"  
 					 ScrollViewer.HorizontalScrollBarVisibility="Disabled" 
@@ -200,10 +201,10 @@
 											<commonControls:RoundedImage 
 													      Stretch="{Binding BaseXml.ChannelStyle.ImageStretch,Mode=OneWay, ElementName=UI}"
 														
-														  CornerRadius="{Binding BaseXml.ChannelStyle.ImageCornerRadius,Mode=OneWay, ElementName=UI}"  >
-											</commonControls:RoundedImage>
+														  CornerRadius="{Binding BaseXml.ChannelStyle.ImageCornerRadius,Mode=OneWay, ElementName=UI}" />
 										</Border>
 
+									    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 										<TextBlock Text="{Binding Name, Mode=OneWay}"
 													HorizontalAlignment="{Binding BaseXml.ChannelStyle.LabelHorizontalAlignment,Mode=OneWay, ElementName=UI}"
 													VerticalAlignment="{Binding BaseXml.ChannelStyle.LabelVerticalAlignment,Mode=OneWay, ElementName=UI}"
@@ -240,12 +241,13 @@
 					BorderThickness="{Binding BaseXml.ControlStyle.ProgramListBorderThickness, Converter={StaticResource GUIThicknessConverter},Mode=OneWay, ElementName=UI}"
 					CornerRadius="{Binding BaseXml.ControlStyle.ProgramListCornerRadius, Converter={StaticResource GUICornerRadiusConverter},Mode=OneWay, ElementName=UI}"
 			        Background="{Binding BaseXml.ControlStyle.ProgramListBackgroundBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}">
-			<ListBox x:Name="programListBox" 
+			<ListBox x:Name="ProgramListBox" 
 			         SelectedItem="{Binding SelectedChannel}" 
 					 ItemsSource="{Binding ChannelData, Mode=OneWay}"  
 					 ScrollViewer.ScrollChanged="ListBox_ScrollChanged" >					
 				<ListBox.ItemTemplate>
 					<DataTemplate>
+					    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 						<ItemsControl Background="Brown" Padding="0" Margin="1" 
 						              Width="{Binding TimelineLength, ElementName=UI}" 
 									  ItemContainerStyle="{StaticResource ProgramItem}"  
@@ -268,6 +270,7 @@
 												<Setter Property="Background" Value="{Binding BaseXml.ProgramStyle.NoFocusBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
 												<Setter Property="BorderBrush" Value="{Binding BaseXml.ProgramStyle.NoFocusBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
 												<Style.Triggers>
+												    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 													<DataTrigger Binding="{Binding IsCurrent}" Value="True">
 														<Setter Property="Background" Value="{Binding BaseXml.ProgramStyle.OnNowBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
 														<Setter Property="BorderBrush" Value="{Binding BaseXml.ProgramStyle.OnNowBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
@@ -284,7 +287,8 @@
 														<Setter Property="Background" Value="{Binding BaseXml.ProgramStyle.FocusBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
 														<Setter Property="BorderBrush" Value="{Binding BaseXml.ProgramStyle.FocusBorderBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
 													</DataTrigger>
-												</Style.Triggers>
+                                                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+                                                </Style.Triggers>
 											</Style>
 										</Border.Style>
 										<Grid>
@@ -292,7 +296,8 @@
                                         Background="{Binding BaseXml.ProgramStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" 
                                         CornerRadius="{Binding ElementName=focusp, Path=CornerRadius,Mode=OneWay}">
 												<Grid>
-													<TextBlock Text="{Binding Title, Mode=OneWay}"
+												    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+													<TextBlock Text="{Binding Title, Mode=OneWay}"                                                               
 													HorizontalAlignment="{Binding BaseXml.ProgramStyle.LabelHorizontalAlignment,Mode=OneWay, ElementName=UI}"
 													VerticalAlignment="{Binding BaseXml.ProgramStyle.LabelVerticalAlignment,Mode=OneWay, ElementName=UI}"
 													FontFamily="{Binding BaseXml.ProgramStyle.FontType, Converter={StaticResource GUIFontConverter},Mode=OneWay, ElementName=UI}" 
@@ -315,7 +320,8 @@
 																	<DataTrigger Binding="{Binding IsSelected}" Value="True">
 																		<Setter Property="Foreground" Value="{Binding BaseXml.ProgramStyle.FocusFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay, ElementName=UI}" />
 																	</DataTrigger>
-																</Style.Triggers>
+                                                                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+                                                                </Style.Triggers>
 															</Style>
 														</TextBlock.Style>
 													</TextBlock>
@@ -338,13 +344,12 @@
 			</ListBox>
 			</Border>
 
-			<ScrollViewer x:Name="markerScrollviewer" Grid.Row="1" Grid.Column="1" IsHitTestVisible="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
-				<Canvas x:Name="c" Width="{Binding TimelineLength}" Height="{Binding ActualHeight, ElementName=programListBox}" >
-					<Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=c}" Width="10" Height="{Binding ActualHeight, ElementName=c}" 
+			<ScrollViewer x:Name="MarkerScrollviewer" Grid.Row="1" Grid.Column="1" IsHitTestVisible="False" HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Disabled">
+				<Canvas x:Name="C" Width="{Binding TimelineLength}" Height="{Binding ActualHeight, ElementName=ProgramListBox}" >
+					<Line X1="0" X2="0" Y1="0" Y2="{Binding ActualHeight, ElementName=C}" Width="10" Height="{Binding ActualHeight, ElementName=C}" 
 			 		      Canvas.Left="{Binding TimelineCenterPosition}" 
 						  Stroke="{Binding BaseXml.ControlStyle.TimelineMarkerBrush, Converter={StaticResource GUIBrushConverter}}" 
-						  StrokeThickness="{Binding BaseXml.ControlStyle.TimelineMarkerThickness}">
-					</Line>
+						  StrokeThickness="{Binding BaseXml.ControlStyle.TimelineMarkerThickness}" />
 				</Canvas>
 			</ScrollViewer>
 			

@@ -14,10 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public virtual string DisplayName
-        {
-            get { return "Resolution Unit"; }
-        }
+        public virtual string DisplayName => "Resolution Unit";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value

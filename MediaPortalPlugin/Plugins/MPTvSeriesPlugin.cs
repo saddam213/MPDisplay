@@ -13,10 +13,7 @@ namespace MediaPortalPlugin.Plugins
         {
         }
 
-        public TvSeriesPluginSettings CustomSettings
-        {
-            get { return (Settings as TvSeriesPluginSettings); }
-        }
+        public TvSeriesPluginSettings CustomSettings => (Settings as TvSeriesPluginSettings);
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
@@ -32,10 +29,7 @@ namespace MediaPortalPlugin.Plugins
             return true;
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.MPTVSeries; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.MPTVSeries;
 
         public override APIImage GetListItemImage1(GUIListItem item, APIListLayout layout)
         {

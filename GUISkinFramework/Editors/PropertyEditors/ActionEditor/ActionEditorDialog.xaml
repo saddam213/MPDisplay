@@ -31,17 +31,17 @@
 
 
 		<TextBlock HorizontalAlignment="Left" Margin="6,5,0,0" TextWrapping="Wrap" Text="Actions" VerticalAlignment="Top" Height="16" Width="39"/>
-		<ListBox Grid.Column="0" x:Name="list" ItemsSource="{Binding XmlActions}" SelectedItem="{Binding SelectedAction}" DisplayMemberPath="DisplayName" Margin="6,22,5,37"/>
+		<ListBox Grid.Column="0" x:Name="List" ItemsSource="{Binding XmlActions}" SelectedItem="{Binding SelectedAction}" DisplayMemberPath="DisplayName" Margin="6,22,5,37"/>
 		<Button Grid.Column="0" Margin="6,0,0,10" Height="22" VerticalAlignment="Bottom" HorizontalAlignment="Left" Width="30"  Command="{Binding ItemAdd}" >
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Add2.png" Stretch="Uniform" />
 		</Button>
 		<Button Grid.Column="0" Margin="41,0,0,10" HorizontalAlignment="Left" Width="30" Height="22" VerticalAlignment="Bottom"  Command="{Binding ItemRemove}" >
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Delete16.png" Stretch="Uniform" />
 		</Button>
-		<Button Grid.Column="0" Margin="0,0,40,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveUp}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
+		<Button Grid.Column="0" Margin="0,0,40,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveUp}" CommandParameter="{Binding SelectedIndex, ElementName=List}">
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Up.png" Stretch="Uniform" />
 		</Button>
-		<Button Grid.Column="0" Margin="0,0,5,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveDown}" CommandParameter="{Binding SelectedIndex, ElementName=list}">
+		<Button Grid.Column="0" Margin="0,0,5,10" HorizontalAlignment="Right" Width="30" Height="22" VerticalAlignment="Bottom" Command="{Binding ItemMoveDown}" CommandParameter="{Binding SelectedIndex, ElementName=List}">
 			<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Down.png" Stretch="Uniform" />
 		</Button>
 

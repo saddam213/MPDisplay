@@ -72,7 +72,7 @@ namespace GUISkinFramework.Editors
         {
             _item = propertyItem;
             SkinInfo = propertyItem.PropertyGrid.Tag as XmlSkinInfo;
-            if (_item == null || _item.Value == null) return this;
+            if (_item?.Value == null) return this;
 
             var style = _item.Value as XmlControlStyle;
             if (style == null) return this;
@@ -89,7 +89,7 @@ namespace GUISkinFramework.Editors
 
             if (style == "None")
             {
-                if (Value != null && !string.IsNullOrEmpty(Value.StyleId))
+                if (!string.IsNullOrEmpty(Value?.StyleId))
                 {
                     Value = Value != null ? Value.CreateCopy() : (XmlControlStyle)Activator.CreateInstance(Value.GetType());
                     Value.StyleId = string.Empty;
@@ -125,12 +125,8 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
     }
 
 

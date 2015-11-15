@@ -51,7 +51,7 @@ namespace MPDisplay.Common.Controls
         private static void OnContentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var source = d as ButtonSpinner;
-            if (source != null) source.OnContentChanged(e.OldValue, e.NewValue);
+            source?.OnContentChanged(e.OldValue, e.NewValue);
         }
 
         #endregion //Content

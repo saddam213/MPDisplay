@@ -7,9 +7,9 @@ namespace Common.Log
     /// </summary>
     public class FileLogger : Logger
     {
-        private string _filename;
-        private string _directory;
-        private string _fullPath;
+        private readonly string _filename;
+        private readonly string _directory;
+        private readonly string _fullPath;
         private int _linesLogged;
 
         /// <summary>
@@ -64,20 +64,20 @@ namespace Common.Log
                 // if any older files exist cycle the file number
                 for (var i = 10; i > 0; i--)
                 {
-                    var current = string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i);
+                    var current = $"{Path.Combine(_directory, _filename)}_{i}.log";
                     if (!File.Exists(current)) continue;
                     if (i == 10)
                     {
                         File.Delete(current);
                         continue;
                     }
-                    File.Move(current, string.Format("{0}_{1}.log", Path.Combine(_directory, _filename), i + 1));
+                    File.Move(current, $"{Path.Combine(_directory, _filename)}_{i + 1}.log");
                 }
 
                 // If the current log exists cycle its number
                 if (File.Exists(_fullPath))
                 {
-                    File.Move(_fullPath, string.Format("{0}_1.log", Path.Combine(_directory, _filename)));
+                    File.Move(_fullPath, $"{Path.Combine(_directory, _filename)}_1.log");
                 }
             }
             catch 

@@ -22,8 +22,7 @@ namespace GUIConfig
     {
         #region Fields
 
-        private Log _log = LoggingManager.GetLog(typeof(MainWindow));
-        private ObservableCollection<ViewModelBase> _views = new ObservableCollection<ViewModelBase>();
+        private readonly Log _log = LoggingManager.GetLog(typeof(MainWindow));
         private MPDisplaySettings _mpdisplaySettings;
         private AddImageSettings _addImageSettings;
         private bool _hasChanges;
@@ -74,11 +73,7 @@ namespace GUIConfig
         /// <summary>
         /// Gets or sets the views.
         /// </summary>
-        public ObservableCollection<ViewModelBase> Views
-        {
-            get { return _views; }
-            set { _views = value; }
-        }
+        public ObservableCollection<ViewModelBase> Views { get; set; } = new ObservableCollection<ViewModelBase>();
 
         /// <summary>
         /// Gets or sets the mp display settings.
@@ -250,10 +245,7 @@ namespace GUIConfig
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged([CallerMemberName]string property = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

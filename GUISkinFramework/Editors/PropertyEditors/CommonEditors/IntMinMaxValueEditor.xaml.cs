@@ -55,7 +55,7 @@ namespace GUISkinFramework.Editors
         {
             _propertyItem = propertyItem;
 
-            if (_propertyItem == null || _propertyItem.Instance == null) return this;
+            if (_propertyItem?.Instance == null) return this;
             var propertyRange = ReflectionHelper.GetPropertyPath(_propertyItem.Instance, _propertyItem.BindingPath)
                 .GetCustomAttributes(typeof(PropertyRangeAttribute), true)
                 .FirstOrDefault() as PropertyRangeAttribute;

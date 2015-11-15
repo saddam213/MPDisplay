@@ -18,8 +18,7 @@ namespace MPDisplay.Common.Controls
         private static void OnCornerRadiusChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnCornerRadiusChanged((CornerRadius)e.OldValue, (CornerRadius)e.NewValue);
+            buttonChrome?.OnCornerRadiusChanged((CornerRadius)e.OldValue, (CornerRadius)e.NewValue);
         }
 
         protected virtual void OnCornerRadiusChanged(CornerRadius oldValue, CornerRadius newValue)
@@ -47,8 +46,7 @@ namespace MPDisplay.Common.Controls
         private static void OnInnerCornerRadiusChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnInnerCornerRadiusChanged((CornerRadius)e.OldValue, (CornerRadius)e.NewValue);
+            buttonChrome?.OnInnerCornerRadiusChanged((CornerRadius)e.OldValue, (CornerRadius)e.NewValue);
         }
 
         protected virtual void OnInnerCornerRadiusChanged(CornerRadius oldValue, CornerRadius newValue)
@@ -70,8 +68,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRenderCheckedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnRenderCheckedChanged((bool)e.OldValue, (bool)e.NewValue);
+            buttonChrome?.OnRenderCheckedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnRenderCheckedChanged(bool oldValue, bool newValue)
@@ -93,8 +90,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRenderEnabledChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnRenderEnabledChanged((bool)e.OldValue, (bool)e.NewValue);
+            buttonChrome?.OnRenderEnabledChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnRenderEnabledChanged(bool oldValue, bool newValue)
@@ -116,8 +112,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRenderFocusedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnRenderFocusedChanged((bool)e.OldValue, (bool)e.NewValue);
+            buttonChrome?.OnRenderFocusedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnRenderFocusedChanged(bool oldValue, bool newValue)
@@ -139,8 +134,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRenderMouseOverChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnRenderMouseOverChanged((bool)e.OldValue, (bool)e.NewValue);
+            buttonChrome?.OnRenderMouseOverChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnRenderMouseOverChanged(bool oldValue, bool newValue)
@@ -162,8 +156,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRenderNormalChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnRenderNormalChanged((bool)e.OldValue, (bool)e.NewValue);
+            buttonChrome?.OnRenderNormalChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnRenderNormalChanged(bool oldValue, bool newValue)
@@ -185,8 +178,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRenderPressedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var buttonChrome = o as ButtonChrome;
-            if (buttonChrome != null)
-                buttonChrome.OnRenderPressedChanged((bool)e.OldValue, (bool)e.NewValue);
+            buttonChrome?.OnRenderPressedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnRenderPressedChanged(bool oldValue, bool newValue)

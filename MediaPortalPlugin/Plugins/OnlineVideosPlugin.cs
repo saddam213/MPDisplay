@@ -16,9 +16,6 @@ namespace MediaPortalPlugin.Plugins
             return IsEnabled && filename.Contains("OnlineVideo.mp4");
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.OnlineVideos; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.OnlineVideos;
     }
 }

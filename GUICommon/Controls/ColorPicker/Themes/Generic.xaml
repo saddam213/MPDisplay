@@ -88,8 +88,10 @@
                 <Rectangle Width="14" Height="14">
                     <Rectangle.Style>
                         <Style TargetType="Rectangle">
+                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                             <Setter Property="Fill" Value="{Binding Color, Converter={StaticResource ColorToSolidColorBrushConverter}}" />
                             <Style.Triggers>
+                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                 <DataTrigger Binding="{Binding Name}" Value="Transparent">
                                     <Setter Property="Fill" Value="{StaticResource CheckerBrush}" />
                                 </DataTrigger>
@@ -365,9 +367,7 @@
 
 
                     <ControlTemplate.Triggers>
-                        <Trigger Property="DisplayColorAndName" Value="True">
-
-                        </Trigger>
+                        <Trigger Property="DisplayColorAndName" Value="True" />
                         <!--<Trigger SourceName="_colorMode" Property="IsChecked" Value="True">
                             <Setter TargetName="_colorMode" Property="Content" Value="Standard" />
                             <Setter TargetName="_colorCanvasHost" Property="Visibility" Value="Visible" />

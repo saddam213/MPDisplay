@@ -53,7 +53,7 @@
             <ColumnDefinition Width="17"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Column="0" Margin="1" IsReadOnly="True"  Name="txtbx" Text="{Binding ElementName=UI, Path=ActionInfo}" />
-        <Button Grid.Column="1" Click="Button_Click" Style="{StaticResource ButtonStyle}" HorizontalAlignment="Right"></Button>
+        <TextBox Grid.Column="0" Margin="1" IsReadOnly="True"  Name="Txtbx" Text="{Binding ElementName=UI, Path=ActionInfo}" />
+        <Button Grid.Column="1" Click="Button_Click" Style="{StaticResource ButtonStyle}" HorizontalAlignment="Right" />
     </Grid>
 </UserControl>

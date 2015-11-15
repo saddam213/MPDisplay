@@ -16,7 +16,7 @@
             </Style.Triggers>
         </Style>
 
-		<CollectionViewSource x:Key="languageEntries" Source="{Binding  SkinInfo.Language.LanguageEntries, ElementName=UI}">
+		<CollectionViewSource x:Key="LanguageEntries" Source="{Binding  SkinInfo.Language.LanguageEntries, ElementName=UI}">
 			<CollectionViewSource.SortDescriptions>
 				<cmp:SortDescription Direction="Ascending" PropertyName="SkinTag" />
 			</CollectionViewSource.SortDescriptions>
@@ -30,7 +30,7 @@
         </Grid.ColumnDefinitions>
         <StackPanel >
             <TextBlock Text="Language Entries" />
-			<ListBox SelectedIndex="0" ItemsSource="{Binding Source={StaticResource languageEntries}}" SelectedItem="{Binding SelectedEntry}" Height="356"  >
+			<ListBox SelectedIndex="0" ItemsSource="{Binding Source={StaticResource LanguageEntries}}" SelectedItem="{Binding SelectedEntry}" Height="356"  >
             <ListBox.Resources>
                 <DataTemplate DataType="{x:Type language:XmlLanguageEntry}">
                     <StackPanel Orientation="Horizontal">

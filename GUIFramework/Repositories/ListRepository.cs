@@ -26,11 +26,7 @@ namespace GUIFramework.Repositories
 
         private static ListRepository _instance;
 
-        public static ListRepository Instance
-        {
-            get { return _instance ?? (_instance = new ListRepository()); }
-        }
-
+        public static ListRepository Instance => _instance ?? (_instance = new ListRepository());
 
         public static void RegisterMessage<T>(ListServiceMessage message, Action<T> callback)
         {
@@ -69,11 +65,11 @@ namespace GUIFramework.Repositories
 
         #endregion
 
-        private MessengerService<ListServiceMessage> _listService = new MessengerService<ListServiceMessage>();
+        private readonly MessengerService<ListServiceMessage> _listService = new MessengerService<ListServiceMessage>();
         private DataRepository<XmlListType, List<APIListItem>> _listRepository;
         private DataRepository<XmlListType, APIListAction> _listSelectionRepository;
         private APIListLayout _mediaPortalListLayout;
-        private Log _log;
+        private readonly Log _log;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -152,9 +148,9 @@ namespace GUIFramework.Repositories
             }
         }
 
-        private SortedDictionary<int, List<APIListItem>> _data = new SortedDictionary<int, List<APIListItem>>();
+        private readonly SortedDictionary<int, List<APIListItem>> _data = new SortedDictionary<int, List<APIListItem>>();
         private int _currentBatchId = -1;
-        private object _syncObject = new object();
+        private readonly object _syncObject = new object();
 
         private void ProcessBatch(APIList message)
         {
@@ -188,7 +184,8 @@ namespace GUIFramework.Repositories
             }
             catch( Exception ex)
             {
-                _log.Message(LogLevel.Error, string.Format("Error sending list, BatchId: {0}, Count: {1}, Exception: {2}", message.BatchId, message.BatchCount, ex));
+                _log.Message(LogLevel.Error,
+                    $"Error sending list, BatchId: {message.BatchId}, Count: {message.BatchCount}, Exception: {ex}");
             }
         }
 
@@ -202,7 +199,7 @@ namespace GUIFramework.Repositories
         {
             if (!_listRepository.AddOrUpdate(listType, list)) return;
 
-            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Count", list != null ? list.Count.ToString() : "0");
+            PropertyRepository.Instance.AddProperty("#MPD.ListControl.Count", list?.Count.ToString() ?? "0");
             PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem", string.Empty);
             PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem2", string.Empty);
             PropertyRepository.Instance.AddProperty("#MPD.ListControl.Selecteditem3", string.Empty);
@@ -474,7 +471,7 @@ namespace GUIFramework.Repositories
  
         public static List<APIListType> GetRegisteredLists(IControlHost window)
         {
-            return window != null ? window.Controls.GetControls().OfType<GUIList>().Select(l => l.ListType.ToAPIType()).ToList() : new List<APIListType>();
+            return window?.Controls.GetControls().OfType<GUIList>().Select(l => l.ListType.ToAPIType()).ToList() ?? new List<APIListType>();
         }
     }
 

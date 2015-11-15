@@ -29,10 +29,10 @@ namespace Common.MessengerService
         internal void AddAction(T message, object target, MethodInfo method, Type[] parameterTypes)
         {
             if (message == null)
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException(nameof(message));
 
             if (method == null)
-                throw new ArgumentNullException("method");
+                throw new ArgumentNullException(nameof(method));
 
             lock (_map)
             {
@@ -46,7 +46,7 @@ namespace Common.MessengerService
         internal void RemoveAction(T message, object owner)
         {
             if (message == null)
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException(nameof(message));
 
 
             lock (_map)
@@ -74,7 +74,7 @@ namespace Common.MessengerService
         internal List<Delegate> GetActions(T message)
         {
             if (message == null)
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException(nameof(message));
 
             List<Delegate> actions;
             lock (_map)
@@ -121,7 +121,7 @@ namespace Common.MessengerService
         internal bool TryGetParameterTypes(T message, out Type[] parameterTypes)
         {
             if (message == null)
-                throw new ArgumentNullException("message");
+                throw new ArgumentNullException(nameof(message));
 
             parameterTypes = null;
             List<WeakAction> weakActions;

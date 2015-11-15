@@ -25,10 +25,7 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(DialogManager));
         }
 
-        public static DialogManager Instance
-        {
-            get { return _instance ?? (_instance = new DialogManager()); }
-        }
+        public static DialogManager Instance => _instance ?? (_instance = new DialogManager());
 
         #endregion
 
@@ -75,21 +72,18 @@ namespace MediaPortalPlugin.InfoManagers
         {
             try
             {
-                if (action == null || action.ListAction == null) return;
+                if (action?.ListAction == null) return;
                 if (_currentDialog == null) return;
                 switch (_currentDialogType)
                 {
                     case DialogType.List:
                         var currentList = _listControls.FirstOrDefault(f => f.Focus);
-                        if (currentList != null)
+                        if (action.ListAction.ItemIndex <= currentList?.Count)
                         {
-                            if (action.ListAction.ItemIndex <= currentList.Count)
+                            currentList.SelectedListItemIndex = action.ListAction.ItemIndex;
+                            if (action.ListAction.ActionType == APIListActionType.SelectedItem)
                             {
-                                currentList.SelectedListItemIndex = action.ListAction.ItemIndex;
-                                if (action.ListAction.ActionType == APIListActionType.SelectedItem)
-                                {
-                                    GUIGraphicsContext.OnAction(new Action((Action.ActionType)7, 0f, 0f));
-                                }
+                                GUIGraphicsContext.OnAction(new Action((Action.ActionType)7, 0f, 0f));
                             }
                         }
                         break;
@@ -200,7 +194,7 @@ namespace MediaPortalPlugin.InfoManagers
                         var label = ReflectionHelper.GetPropertyValue<string>(control, "Label", null);
                         if (label != null)
                         {
-                            var tag = string.Format("#Dialog.Label{0}", control.GetID);
+                            var tag = $"#Dialog.Label{control.GetID}";
                             PropertyManager.Instance.SendLabelProperty(tag, label);
                             SendEditorData(APISkinEditorDataType.Property, tag, label);
                         }
@@ -210,7 +204,7 @@ namespace MediaPortalPlugin.InfoManagers
                     var imagepath = ReflectionHelper.GetPropertyValue<string>(control, "FileName", null);
                     if (imagepath == null) continue;
 
-                    var tag1 = string.Format("#Dialog.Image{0}", control.GetID);
+                    var tag1 = $"#Dialog.Image{control.GetID}";
                     PropertyManager.Instance.SendImageProperty(tag1, imagepath);
                     SendEditorData(APISkinEditorDataType.Property, tag1, imagepath);
                 }
@@ -254,7 +248,7 @@ namespace MediaPortalPlugin.InfoManagers
                 {
                     case DialogType.List:
                         var currentList = _listControls.FirstOrDefault(f => f.Focus);
-                        if (currentList != null && currentList.SelectedListItem != null)
+                        if (currentList?.SelectedListItem != null)
                         {
                             SendSelectedItem(currentList.SelectedListItem.Label, currentList.SelectedListItemIndex);
                             SendSkinEditorData(currentList.SelectedListItem);

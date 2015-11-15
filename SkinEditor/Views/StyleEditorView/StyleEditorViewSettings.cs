@@ -5,12 +5,7 @@ namespace SkinEditor.Views
 {
     public class StyleEditorViewSettings : EditorViewModelSettings
     {
-        private List<DesignerStyleSetting> _styleItemSettings = new List<DesignerStyleSetting>();
-        public List<DesignerStyleSetting> StyleItemSettings
-        {
-            get { return _styleItemSettings; }
-            set { _styleItemSettings = value; }
-        }
+        public List<DesignerStyleSetting> StyleItemSettings { get; set; } = new List<DesignerStyleSetting>();
     }
 
     public class DesignerStyleSetting

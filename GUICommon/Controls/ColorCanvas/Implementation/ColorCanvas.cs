@@ -10,7 +10,7 @@ namespace MPDisplay.Common.Controls
     {
         #region Private Members
 
-        private TranslateTransform _colorShadeSelectorTransform = new TranslateTransform();
+        private readonly TranslateTransform _colorShadeSelectorTransform = new TranslateTransform();
         private Canvas _colorShadingCanvas;
         private Canvas _colorShadeSelector;
         private ColorSpectrumSlider _spectrumSlider;
@@ -33,8 +33,7 @@ namespace MPDisplay.Common.Controls
         private static void OnSelectedColorChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var colorCanvas = o as ColorCanvas;
-            if (colorCanvas != null)
-                colorCanvas.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
+            colorCanvas?.OnSelectedColorChanged((Color)e.OldValue, (Color)e.NewValue);
         }
 
         protected virtual void OnSelectedColorChanged(Color oldValue, Color newValue)
@@ -66,8 +65,7 @@ namespace MPDisplay.Common.Controls
         private static void OnAChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var colorCanvas = o as ColorCanvas;
-            if (colorCanvas != null)
-                colorCanvas.OnAChanged((byte)e.OldValue, (byte)e.NewValue);
+            colorCanvas?.OnAChanged((byte)e.OldValue, (byte)e.NewValue);
         }
 
         protected virtual void OnAChanged(byte oldValue, byte newValue)
@@ -90,8 +88,7 @@ namespace MPDisplay.Common.Controls
         private static void OnRChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var colorCanvas = o as ColorCanvas;
-            if (colorCanvas != null)
-                colorCanvas.OnRChanged((byte)e.OldValue, (byte)e.NewValue);
+            colorCanvas?.OnRChanged((byte)e.OldValue, (byte)e.NewValue);
         }
 
         protected virtual void OnRChanged(byte oldValue, byte newValue)
@@ -114,8 +111,7 @@ namespace MPDisplay.Common.Controls
         private static void OnGChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var colorCanvas = o as ColorCanvas;
-            if (colorCanvas != null)
-                colorCanvas.OnGChanged((byte)e.OldValue, (byte)e.NewValue);
+            colorCanvas?.OnGChanged((byte)e.OldValue, (byte)e.NewValue);
         }
 
         protected virtual void OnGChanged(byte oldValue, byte newValue)
@@ -138,8 +134,7 @@ namespace MPDisplay.Common.Controls
         private static void OnBChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var colorCanvas = o as ColorCanvas;
-            if (colorCanvas != null)
-                colorCanvas.OnBChanged((byte)e.OldValue, (byte)e.NewValue);
+            colorCanvas?.OnBChanged((byte)e.OldValue, (byte)e.NewValue);
         }
 
         protected virtual void OnBChanged(byte oldValue, byte newValue)
@@ -164,8 +159,7 @@ namespace MPDisplay.Common.Controls
         private static void OnHexadecimalStringChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var colorCanvas = o as ColorCanvas;
-            if (colorCanvas != null)
-                colorCanvas.OnHexadecimalStringChanged((string)e.OldValue, (string)e.NewValue);
+            colorCanvas?.OnHexadecimalStringChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnHexadecimalStringChanged(string oldValue, string newValue)
@@ -237,7 +231,7 @@ namespace MPDisplay.Common.Controls
             if (e.Key != Key.Enter || !(e.OriginalSource is TextBox)) return;
 
             var be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
-            if (be != null) be.UpdateSource();
+            be?.UpdateSource();
         }
 
         #endregion //Base Class Overrides

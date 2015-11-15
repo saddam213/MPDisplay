@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of SceneCaptureType names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _sensingMethodMap = new Dictionary<ushort, string>
+        private readonly Dictionary<ushort, string> _sensingMethodMap = new Dictionary<ushort, string>
         {
             { 1, "Not defined" },
             { 2, "One-chip color area sensor" },
@@ -28,13 +28,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public override string DisplayName
-        {
-            get
-            {
-                return "Sensing Method";
-            }
-        }
+        public override string DisplayName => "Sensing Method";
 
         /// <summary>
         /// Gets a dictionary that maps values to named strings

@@ -32,6 +32,7 @@ namespace GUISkinFramework.Skin
         private string _borderCornerRadius;
         private XmlBrush _borderBrush;
         private XmlBrush _backgroundBrush;
+        private bool _designerVisible = true;
 
         public XmlDialog()
         {
@@ -41,16 +42,18 @@ namespace GUISkinFramework.Skin
 
         [XmlIgnore]
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return Name; }
-        }
+        public string DisplayName => Name;
 
         [XmlIgnore]
         [Browsable(false)]
-        public virtual string DisplayType
+        public virtual string DisplayType => "Dialog";
+
+        [XmlIgnore]
+        [Browsable(false)]
+        public bool DesignerVisible
         {
-            get { return "Dialog"; }
+            get { return _designerVisible; }
+            set { _designerVisible = value; NotifyPropertyChanged("DesignerVisible"); }
         }
 
         [PropertyOrder(0)]
@@ -282,12 +285,7 @@ namespace GUISkinFramework.Skin
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-     
     }
 }

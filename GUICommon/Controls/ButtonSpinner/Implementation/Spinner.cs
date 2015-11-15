@@ -53,10 +53,7 @@ namespace MPDisplay.Common.Controls
             if ((ValidSpinDirection & valid) != valid) return;
 
             var handler = Spin;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            handler?.Invoke(this, e);
         }
 
         /// <summary>

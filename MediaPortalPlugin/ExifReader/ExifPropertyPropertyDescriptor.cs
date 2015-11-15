@@ -26,31 +26,22 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Gets the ExifProperty associated with this instance
         /// </summary>
-        public ExifProperty ExifProperty { get; private set; }
+        public ExifProperty ExifProperty { get; }
 
         /// <summary>
         /// Gets the type of the component this property is bound to
         /// </summary>
-        public override Type ComponentType
-        {
-            get { return typeof(ExifReader); }
-        }
+        public override Type ComponentType => typeof(ExifReader);
 
         /// <summary>
         /// Gets a value indicating whether this property is read-only
         /// </summary>
-        public override bool IsReadOnly
-        {
-            get { return true; }
-        }
+        public override bool IsReadOnly => true;
 
         /// <summary>
         /// Gets the type of the property.
         /// </summary>
-        public override Type PropertyType
-        {
-            get { return typeof(string); }
-        }
+        public override Type PropertyType => typeof(string);
 
         /// <summary>
         /// Indicates if the component can be reset

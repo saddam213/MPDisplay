@@ -25,10 +25,10 @@ namespace GUIFramework.GUI
         #region Fields
 
         private ICollectionView _channelData;
-        private ScrollViewer _channelScrollViewer;
-        private ScrollViewer _programScrollViewer;
-        private ScrollViewer _timelineScrollViewer;
-        private DispatcherTimer _updateTimer;
+        private readonly ScrollViewer _channelScrollViewer;
+        private readonly ScrollViewer _programScrollViewer;
+        private readonly ScrollViewer _timelineScrollViewer;
+        private readonly DispatcherTimer _updateTimer;
         private List<TvGuideProgram> _timeline = new List<TvGuideProgram>();
         private TvGuideChannel _selectedChannel;
         private TvGuideProgram _selectedProgram;
@@ -53,16 +53,16 @@ namespace GUIFramework.GUI
         public GUIGuide()
         {
             InitializeComponent();
-            _channelScrollViewer = channelListBox.GetDescendantByType<ScrollViewer>();
-            _programScrollViewer = programListBox.GetDescendantByType<ScrollViewer>();
-            _timelineScrollViewer = timelineListBox.GetDescendantByType<ScrollViewer>();
+            _channelScrollViewer = ChannelListBox.GetDescendantByType<ScrollViewer>();
+            _programScrollViewer = ProgramListBox.GetDescendantByType<ScrollViewer>();
+            _timelineScrollViewer = TimelineListBox.GetDescendantByType<ScrollViewer>();
 
             _channelScrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             _programScrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             _timelineScrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
-            MouseTouchDevice.RegisterEvents(channelListBox.GetDescendantByType<VirtualizingStackPanel>());
-            MouseTouchDevice.RegisterEvents(programListBox.GetDescendantByType<VirtualizingStackPanel>());
-            MouseTouchDevice.RegisterEvents(timelineListBox.GetDescendantByType<Canvas>());
+            MouseTouchDevice.RegisterEvents(ChannelListBox.GetDescendantByType<VirtualizingStackPanel>());
+            MouseTouchDevice.RegisterEvents(ProgramListBox.GetDescendantByType<VirtualizingStackPanel>());
+            MouseTouchDevice.RegisterEvents(TimelineListBox.GetDescendantByType<Canvas>());
 
             _updateTimer = new DispatcherTimer {Interval = TimeSpan.FromSeconds(5)};
             _updateTimer.Tick += (s, e) => UpdateTimeline();
@@ -84,10 +84,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlGuide SkinXml
-        {
-            get { return BaseXml as XmlGuide; }
-        }
+        public XmlGuide SkinXml => BaseXml as XmlGuide;
 
         /// <summary>
         /// Gets or sets the length of the timeline.
@@ -110,26 +107,17 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the timeline multiplier.
         /// </summary>
-        public double TimelineMultiplier
-        {
-            get { return SkinXml.TimelineMultiplier; }
-        }
+        public double TimelineMultiplier => SkinXml.TimelineMultiplier;
 
         /// <summary>
         /// Gets the timeline start.
         /// </summary>
-        public DateTime TimelineStart
-        {
-            get { return TVGuideRepository.Instance.GuideDataStart; }
-        }
+        public DateTime TimelineStart => TVGuideRepository.Instance.GuideDataStart;
 
         /// <summary>
         /// Gets the timeline end.
         /// </summary>
-        public DateTime TimelineEnd
-        {
-            get { return TVGuideRepository.Instance.GuideDataEnd; }
-        }
+        public DateTime TimelineEnd => TVGuideRepository.Instance.GuideDataEnd;
 
         /// <summary>
         /// Gets or sets the timeline info.
@@ -291,17 +279,16 @@ namespace GUIFramework.GUI
             if (programId <= 0 || channelId <= 0) return;
 
             var channel = TVGuideRepository.Instance.GuideData.FirstOrDefault(p => p.Id == channelId);
-            if (channel == null) return;
 
-            var program = channel.Programs.FirstOrDefault(p => p.ChannelId == channelId && p.Id == programId);
+            var program = channel?.Programs.FirstOrDefault(p => p.ChannelId == channelId && p.Id == programId);
             if (program == null) return;
 
             _lastMediaportalAction = DateTime.Now;
             SelectedProgram = program;
             TimelinePosition = (TimelineLength - ((TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-            programListBox.Dispatcher.BeginInvoke(new Action(delegate
+            ProgramListBox.Dispatcher.BeginInvoke(new Action(delegate
             {
-                programListBox.ScrollIntoView(channel);
+                ProgramListBox.ScrollIntoView(channel);
                 _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
             }));
         }
@@ -366,7 +353,7 @@ namespace GUIFramework.GUI
         private void UpdateGuideProperties()
         {
             PropertyRepository.AddLabelProperty("#TV.Guide.ChannelName", SelectedChannel != null ? SelectedChannel.Name : string.Empty);
-            PropertyRepository.AddImageProperty("#TV.Guide.thumb", SelectedChannel != null ? SelectedChannel.Logo : null);
+            PropertyRepository.AddImageProperty("#TV.Guide.thumb", SelectedChannel?.Logo);
             PropertyRepository.AddLabelProperty("#TV.Guide.Title", SelectedProgram != null ? SelectedProgram.Title : string.Empty);
             PropertyRepository.AddLabelProperty("#TV.Guide.Description", SelectedProgram != null ? SelectedProgram.Description : string.Empty);
             PropertyRepository.AddLabelProperty("#TV.Guide.Time", SelectedProgram != null ? SelectedProgram.StartTime.ToString("HH:mm d/M") + " - " + SelectedProgram.EndTime.ToString("HH:mm d/M") : string.Empty);
@@ -386,32 +373,32 @@ namespace GUIFramework.GUI
             var voffset = (int)e.VerticalOffset;
             var hoffset = (int)e.HorizontalOffset;
 
-            if (!Equals(sender, timelineListBox))
+            if (!Equals(sender, TimelineListBox))
             {
-                if (Equals(sender, channelListBox) && (int)_programScrollViewer.VerticalOffset != voffset)
+                if (Equals(sender, ChannelListBox) && (int)_programScrollViewer.VerticalOffset != voffset)
                 {
                     _programScrollViewer.ScrollToVerticalOffset(voffset);
                 }
 
-                if (Equals(sender, programListBox) && (int)_channelScrollViewer.VerticalOffset != voffset)
+                if (Equals(sender, ProgramListBox) && (int)_channelScrollViewer.VerticalOffset != voffset)
                 {
                     _channelScrollViewer.ScrollToVerticalOffset(voffset);
                 }
             }
 
-            if (!Equals(sender, channelListBox))
+            if (!Equals(sender, ChannelListBox))
             {
-                if (Equals(sender, timelineListBox) && (int)_programScrollViewer.HorizontalOffset != hoffset)
+                if (Equals(sender, TimelineListBox) && (int)_programScrollViewer.HorizontalOffset != hoffset)
                 {
                     _programScrollViewer.ScrollToHorizontalOffset(hoffset);
-                    markerScrollviewer.ScrollToHorizontalOffset(hoffset);
+                    MarkerScrollviewer.ScrollToHorizontalOffset(hoffset);
                     TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");
                  }
 
-                if (Equals(sender, programListBox) && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
+                if (Equals(sender, ProgramListBox) && (int)_timelineScrollViewer.HorizontalOffset != hoffset)
                 {
                     _timelineScrollViewer.ScrollToHorizontalOffset(hoffset);
-                    markerScrollviewer.ScrollToHorizontalOffset(hoffset);
+                    MarkerScrollviewer.ScrollToHorizontalOffset(hoffset);
                     TimelineInfo = TimelineStart.AddMinutes(hoffset / TimelineMultiplier).ToString("dddd d/M");                       
                 }
             }

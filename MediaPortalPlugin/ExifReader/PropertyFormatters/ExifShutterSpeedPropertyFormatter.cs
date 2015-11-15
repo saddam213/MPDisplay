@@ -16,13 +16,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                return "Shutter Speed";
-            }
-        }
+        public string DisplayName => "Shutter Speed";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value
@@ -36,15 +30,15 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
             var rational32S = values as IList<Rational32> ?? values.ToList();
             if (!rational32S.Any())
             {
-                return String.Empty;
+                return string.Empty;
             }
 
             var apexValue = (double)rational32S.First();
             var shutterSpeed = 1 / Math.Pow(2, apexValue);
 
             return shutterSpeed > 1 ?
-                String.Format("{0} sec.", (int)Math.Round(shutterSpeed)) :
-                String.Format("{0}/{1} sec.", 1, (int)Math.Round(1 / shutterSpeed));            
+                $"{(int) Math.Round(shutterSpeed)} sec."
+                : $"{1}/{(int) Math.Round(1/shutterSpeed)} sec.";            
         }
     }
 }

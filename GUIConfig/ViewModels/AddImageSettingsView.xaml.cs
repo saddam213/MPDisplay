@@ -62,10 +62,7 @@ namespace GUIConfig.ViewModels
         /// <summary>
         /// Gets the tabs title.
         /// </summary>
-        public override string Title
-        {
-            get { return "AddImage Settings"; }
-        }
+        public override string Title => "AddImage Settings";
 
         #endregion 
 

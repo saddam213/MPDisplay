@@ -2,7 +2,6 @@
 // Copyright (c) Nish Sivakumar. All rights reserved.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,13 +15,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                return "ISO Speed";
-            }
-        } 
+        public string DisplayName => "ISO Speed";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value
@@ -33,7 +26,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         {
             var values = exifValue.Values.Cast<ushort>();
             var enumerable = values as IList<ushort> ?? values.ToList();
-            return !enumerable.Any() ? String.Empty : String.Format("ISO-{0}", enumerable.First());
+            return !enumerable.Any() ? string.Empty : $"ISO-{enumerable.First()}";
         }
     }
 }

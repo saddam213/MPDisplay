@@ -1,6 +1,5 @@
 ﻿<!-- ReSharper disable Xaml.RedundantAttachedProperty -->
 <!-- ReSharper disable Xaml.StaticResourceNotResolved -->
-<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
 <base:GUIControl x:Class="GUIFramework.GUI.GUIButton"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -24,6 +23,7 @@
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
 			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
 			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <!-- ReSharper disable once InconsistentNaming -->
 	<Border x:Name="focus"  
 		        Width="{Binding BaseXml.Width,Mode=OneWay}" 
 			    Height="{Binding BaseXml.Height,Mode=OneWay}"
@@ -51,15 +51,14 @@
                     CornerRadius="{Binding ElementName=focus, Path=CornerRadius,Mode=OneWay}">
 
 				<Grid>
-					<Border Margin="{Binding BaseXml.ControlStyle.ImageMargin,Converter={StaticResource GUIThicknessConverter},Mode=OneWay}" x:Name="imgBorder"
+					<Border Margin="{Binding BaseXml.ControlStyle.ImageMargin,Converter={StaticResource GUIThicknessConverter},Mode=OneWay}" x:Name="ImgBorder"
 						        HorizontalAlignment="{Binding BaseXml.ControlStyle.ImageHorizontalAlignment,Mode=OneWay}" 
 						        VerticalAlignment="{Binding BaseXml.ControlStyle.ImageVerticalAlignment,Mode=OneWay}" 
 								Visibility="{Binding BaseXml.ControlStyle.EnableImage, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
 						<implementation:RoundedImage 
 													      Stretch="{Binding BaseXml.ControlStyle.ImageStretch,Mode=OneWay}"
 														  Source="{Binding Image, Mode=OneWay}"
-														  CornerRadius="{Binding BaseXml.ControlStyle.ImageCornerRadius,Mode=OneWay}"  >
-						</implementation:RoundedImage>
+														  CornerRadius="{Binding BaseXml.ControlStyle.ImageCornerRadius,Mode=OneWay}" />
 					</Border>
 
 					<TextBlock Text="{Binding Label, Mode=OneWay}"
@@ -95,11 +94,11 @@
 	<base:GUIControl.Style>
 		<Style TargetType="{x:Type base:GUIControl}">
 			<Style.Resources>
-				<Storyboard x:Key="scaleDown" >
+				<Storyboard x:Key="ScaleDown" >
 					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleX" To="0.98" />
 					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleY" To="0.98" />
 				</Storyboard>
-				<Storyboard x:Key="scaleUp" >
+				<Storyboard x:Key="ScaleUp" >
 					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleX" To="1" />
 					<DoubleAnimation Duration="0:0:0.15" Storyboard.TargetProperty="RenderTransform.ScaleY" To="1" />
 				</Storyboard>
@@ -108,20 +107,20 @@
 				<Style.Triggers>
 				<Trigger Property="IsMouseDown" Value="True">
 					<Trigger.EnterActions>
-						<BeginStoryboard Storyboard="{StaticResource scaleDown}" HandoffBehavior="SnapshotAndReplace" />
+						<BeginStoryboard Storyboard="{StaticResource ScaleDown}" HandoffBehavior="SnapshotAndReplace" />
 					</Trigger.EnterActions>
 					<Trigger.ExitActions>
-						<BeginStoryboard Storyboard="{StaticResource scaleUp}" HandoffBehavior="SnapshotAndReplace" />
+						<BeginStoryboard Storyboard="{StaticResource ScaleUp}" HandoffBehavior="SnapshotAndReplace" />
 					</Trigger.ExitActions>
 				</Trigger>
 
 
 				<DataTrigger Binding="{Binding IsControlFocused, ElementName=UI}" Value="True">
 					<DataTrigger.EnterActions>
-						<BeginStoryboard Storyboard="{StaticResource scaleDown}" HandoffBehavior="SnapshotAndReplace" />
+						<BeginStoryboard Storyboard="{StaticResource ScaleDown}" HandoffBehavior="SnapshotAndReplace" />
 					</DataTrigger.EnterActions>
 					<DataTrigger.ExitActions>
-						<BeginStoryboard Storyboard="{StaticResource scaleUp}" HandoffBehavior="SnapshotAndReplace" />
+						<BeginStoryboard Storyboard="{StaticResource ScaleUp}" HandoffBehavior="SnapshotAndReplace" />
 					</DataTrigger.ExitActions>
 				</DataTrigger>
 

@@ -25,10 +25,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlMPDDialog SkinXml
-        {
-            get { return BaseXml as XmlMPDDialog; }
-        }
+        public XmlMPDDialog SkinXml => BaseXml as XmlMPDDialog;
 
         #endregion
     }

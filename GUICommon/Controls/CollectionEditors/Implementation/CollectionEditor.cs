@@ -31,8 +31,7 @@ namespace MPDisplay.Common.Controls
         private static void OnItemsSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var collectionEditor = (CollectionEditor)d;
-            if (collectionEditor != null)
-                collectionEditor.OnItemSourceChanged((IList)e.OldValue, (IList)e.NewValue);
+            collectionEditor?.OnItemSourceChanged((IList)e.OldValue, (IList)e.NewValue);
         }
 
         public void OnItemSourceChanged(IList oldValue, IList newValue)
@@ -53,8 +52,7 @@ namespace MPDisplay.Common.Controls
         private static void ItemsSourceTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var collectionEditor = (CollectionEditor)d;
-            if (collectionEditor != null)
-                collectionEditor.ItemsSourceTypeChanged((Type)e.OldValue, (Type)e.NewValue);
+            collectionEditor?.ItemsSourceTypeChanged((Type)e.OldValue, (Type)e.NewValue);
         }
 
         protected virtual void ItemsSourceTypeChanged(Type oldValue, Type newValue)
@@ -108,7 +106,7 @@ namespace MPDisplay.Common.Controls
         private static void CanAddNew(object sender, CanExecuteRoutedEventArgs e)
         {
             var t = e.Parameter as Type;
-            if (t != null && t.GetConstructor(Type.EmptyTypes) != null)
+            if (t?.GetConstructor(Type.EmptyTypes) != null)
                 e.CanExecute = true;
         }
 

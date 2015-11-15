@@ -37,7 +37,7 @@ namespace GUISkinFramework.ExtensionMethods
             if (value.Contains(','))
             {
                 var values = value.Split(',');
-                if (values.Count() == 4 && values.All(s => s.IsNumber()))
+                if (values.Length == 4 && values.All(s => s.IsNumber()))
                 {
                     return new Thickness(double.Parse(values[0]), double.Parse(values[1]), double.Parse(values[2]), double.Parse(values[3]));
                 }
@@ -61,7 +61,7 @@ namespace GUISkinFramework.ExtensionMethods
             if (value.Contains(','))
             {
                 var values = value.Split(',');
-                if (values.Count() == 4 && values.All(s => s.IsNumber()))
+                if (values.Length == 4 && values.All(s => s.IsNumber()))
                 {
                     return new CornerRadius(double.Parse(values[0]), double.Parse(values[1]), double.Parse(values[2]), double.Parse(values[3]));
                 }

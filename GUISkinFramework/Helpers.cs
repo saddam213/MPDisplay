@@ -9,7 +9,7 @@ namespace GUISkinFramework
 {
     public  static class DirectoryHelpers
     {
-        static Log _log = LoggingManager.GetLog(typeof(DirectoryHelpers));
+        static readonly Log Log = LoggingManager.GetLog(typeof(DirectoryHelpers));
 
         public static void CreateIfNotExists(string folder)
         {
@@ -22,7 +22,7 @@ namespace GUISkinFramework
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, string.Format("Error creating folder <{0}>, exception: {1}", folder, ex));
+                Log.Message(LogLevel.Error, $"Error creating folder <{folder}>, exception: {ex}");
 
             }
         }
@@ -40,7 +40,7 @@ namespace GUISkinFramework
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Error, string.Format("Error deleting folder <{0}>, exception: {1}", folder, ex));
+                Log.Message(LogLevel.Error, $"Error deleting folder <{folder}>, exception: {ex}");
             }
         }
 

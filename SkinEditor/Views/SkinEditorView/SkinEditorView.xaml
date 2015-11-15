@@ -99,7 +99,7 @@
                     </Button>
                 </Grid>
 
-                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource AllWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="skinTree" SelectedItemChanged="TreeView_SelectedItemChanged">
+                <TreeView Margin="0,0,0,0" Tag="{Binding ElementName=UI}" ItemsSource="{Binding Source={StaticResource AllWindows}, IsAsync=True}" ContextMenuOpening="SkinContextMenuOpening" x:Name="SkinTree" SelectedItemChanged="TreeView_SelectedItemChanged">
 
                     <TreeView.Resources>
                         <!--SelectedItem with focus-->
@@ -119,6 +119,7 @@
                                     <ControlTemplate TargetType="ContentControl">
                                         <StackPanel Orientation="Horizontal" Margin="0,0,4,0" >
                                             <Image MaxHeight="16" MaxWidth="16" Margin="2,2,2,2" Stretch="Uniform" Source="{Binding ., Converter={StaticResource TypeToImageConverter}, Mode=OneWay}" />
+                                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                             <TextBlock Text="{Binding DisplayName}" Margin="2,1,0,0" FontWeight="{Binding ., Converter={StaticResource TypeToFontWeightConverter}, Mode=OneWay}" />
                                         </StackPanel>
                                     </ControlTemplate>
@@ -183,6 +184,7 @@
                     <TreeView.ItemContainerStyle>
                         <Style TargetType="TreeViewItem">
                             <Style.Triggers>
+                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                 <DataTrigger Binding="{Binding DesignerVisible}" Value="false">
                                     <Setter Property="Background" Value="Salmon" />
                                 </DataTrigger>                         
@@ -204,6 +206,7 @@
 
                     <TreeView.ContextMenu>
 
+                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                         <ContextMenu DataContext="{Binding Path=PlacementTarget.Tag, RelativeSource={RelativeSource Self}}"  >
                             <ContextMenu.Resources>
                                 <Style TargetType="Image">
@@ -331,7 +334,9 @@
             </DockPanel>
             <GridSplitter Grid.Column="0" Width="5" ResizeBehavior="BasedOnAlignment" />
             <DockPanel  Margin="0,0,5,0" Grid.Column="1" MinWidth="40">
+                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                 <TextBlock Text="{Binding SelectedTreeItem.DisplayName}" DockPanel.Dock="Top" />
+                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                 <implementation1:PropertyGrid Tag="{Binding SkinInfo, Mode=OneWay}" 
 				                       SelectedObject="{Binding SelectedTreeItem,Mode=OneWay}"
 									   PropertyValueChanged="PropertyGrid_PropertyValueChanged" ShowSortOptions="False" 
@@ -353,7 +358,7 @@
 
 
                 <Border BorderBrush="Black" BorderThickness="1" Width="234" VerticalAlignment="Top">
-                    <Expander x:Name="skinOptExpander" Header="Skin Options" >
+                    <Expander x:Name="SkinOptExpander" Header="Skin Options" >
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid  Background="#FFE5E5E5" Height="132"  >
                                 <Grid.ColumnDefinitions>
@@ -376,7 +381,7 @@
 
                 <Border Margin="1,0,0,0" BorderBrush="Black" BorderThickness="1" Width="234" HorizontalAlignment="Left" VerticalAlignment="Top" >
 
-                    <Expander x:Name="designOptExpander" Header="Designer Options">
+                    <Expander x:Name="DesignOptExpander" Header="Designer Options">
                         <Border BorderBrush="Black" BorderThickness="1" Margin="2">
                             <Grid Background="#FFE5E5E5" Height="132"  >
                                 <Grid.ColumnDefinitions>
@@ -481,6 +486,7 @@
                                                     <Style TargetType="DataGridCell">
                                                         <Setter Property="ToolTip">
                                                             <Setter.Value>
+                                                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                                                 <Image Source="{Binding Value}" MaxWidth="300" />
                                                             </Setter.Value>
                                                         </Setter>
@@ -506,6 +512,7 @@
                                                                     <Style TargetType="Image">
                                                                         <Setter Property="Source" Value="/SkinEditor;component/Images/Plus.png" />
                                                                         <Style.Triggers>
+                                                                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                                                             <DataTrigger Binding="{Binding IsDefined}" Value="True" >
                                                                                 <Setter Property="Source" Value="/SkinEditor;component/Images/Tick.png" />
                                                                             </DataTrigger>
@@ -523,6 +530,7 @@
                                                     <Style TargetType="DataGridCell">
                                                         <Setter Property="ToolTip">
                                                             <Setter.Value>
+                                                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                                                 <Image Source="{Binding Value}" MaxWidth="300" />
                                                             </Setter.Value>
                                                         </Setter>
@@ -557,7 +565,7 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" Text="{Binding CurrentXmlWindow.DisplayName}" FontSize="14" FontWeight="Bold" />
-                    <Viewbox MaxWidth="1280" MaxHeight="720" Grid.Row="1" Margin="5" x:Name="veiw" StretchDirection="Both"  >
+                    <Viewbox MaxWidth="1280" MaxHeight="720" Grid.Row="1" Margin="5" x:Name="View" StretchDirection="Both"  >
                         <Border BorderBrush="Black" BorderThickness="1"  Height="{Binding SkinInfo.SkinHeight,FallbackValue=720}" Width="{Binding SkinInfo.SkinWidth,FallbackValue=1280}">
                             <Grid >
 
@@ -588,7 +596,7 @@
 
                                 <!--Window-->
                                 <Canvas Visibility="{Binding CurrentXmlWindow, Converter={StaticResource NullToVisibilityConverter}}">
-                                    <ContentControl x:Name="windowContent" Content="{Binding CurrentXmlWindow}"  />
+                                    <ContentControl x:Name="WindowContent" Content="{Binding CurrentXmlWindow}"  />
                                 </Canvas>
 
 

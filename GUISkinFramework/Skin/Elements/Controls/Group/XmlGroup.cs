@@ -13,10 +13,7 @@ namespace GUISkinFramework.Skin
     {
         [XmlIgnore]
         [Browsable(false)]
-        public string DisplayType
-        {
-            get { return "Group"; }
-        }
+        public string DisplayType => "Group";
 
         private XmlGroupStyle _controlStyle;
 

@@ -136,21 +136,18 @@ namespace MessageServer
 
     public static class ConnectionManager
     {
-        private static Log _log = LoggingManager.GetLog(typeof(ConnectionManager));
-        private static Dictionary<APIConnection, Action<MessageEventArgs>> _activeConnections = new Dictionary<APIConnection, Action<MessageEventArgs>>();
-        public static Dictionary<APIConnection, Action<MessageEventArgs>> ActiveConnections
-        {
-            get { return _activeConnections; }
-        }
-        private static object _syncObj = new object();
+        private static readonly Log Log = LoggingManager.GetLog(typeof(ConnectionManager));
+        public static Dictionary<APIConnection, Action<MessageEventArgs>> ActiveConnections { get; } = new Dictionary<APIConnection, Action<MessageEventArgs>>();
+
+        private static readonly object SyncObj = new object();
 
         public static void AddConnection(APIConnection connection, Action<MessageEventArgs> callback)
         {
             RemoveConnection(connection);
             if (connection == null || callback == null) return;
 
-            _log.Message(LogLevel.Info, "Adding new connection, Connection: {0}", connection.ConnectionName);
-            lock (_syncObj)
+            Log.Message(LogLevel.Info, "Adding new connection, Connection: {0}", connection.ConnectionName);
+            lock (SyncObj)
             {
                 ActiveConnections.Add(connection, callback);
             }
@@ -163,8 +160,8 @@ namespace MessageServer
             var existing = ActiveConnections.Keys.FirstOrDefault(x => x.ConnectionName == connection.ConnectionName);
             if (existing == null) return;
 
-            _log.Message(LogLevel.Info, "Removing existing connection, Connection: {0}", connection.ConnectionName);
-            lock (_syncObj)
+            Log.Message(LogLevel.Info, "Removing existing connection, Connection: {0}", connection.ConnectionName);
+            lock (SyncObj)
             {
                 ActiveConnections.Remove(existing);
             }
@@ -177,7 +174,7 @@ namespace MessageServer
 
         public static IEnumerable<Action<MessageEventArgs>> GetAllCallbacksExcept(APIConnection exception)
         {
-            return from connection in _activeConnections where exception == null || connection.Key.ConnectionName != exception.ConnectionName select connection.Value;
+            return from connection in ActiveConnections where exception == null || connection.Key.ConnectionName != exception.ConnectionName select connection.Value;
         }
 
         public static Task ToTask(this Action<MessageEventArgs> callback, MessageEventArgs message)
@@ -187,7 +184,7 @@ namespace MessageServer
 
         public static Action<MessageEventArgs> GetCallbackForConnection(string connectionName)
         {
-            return _activeConnections.FirstOrDefault(kv => kv.Key.ConnectionName == connectionName).Value;
+            return ActiveConnections.FirstOrDefault(kv => kv.Key.ConnectionName == connectionName).Value;
         }
     }
 
@@ -197,7 +194,7 @@ namespace MessageServer
         #region Vars
 
    
-        private Log _log = LoggingManager.GetLog(typeof(MessageService));
+        private readonly Log _log = LoggingManager.GetLog(typeof(MessageService));
         private IMessageCallback _messageCallback;
         private APIConnection _apiConnection;
        

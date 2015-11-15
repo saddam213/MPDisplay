@@ -56,13 +56,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Gets a value indicating whether the value of this struct is signed or not
         /// </summary>
-        public bool IsSigned
-        {
-            get
-            {
-                return isSigned;
-            }
-        }
+        public bool IsSigned => isSigned;
 
         /// <summary>
         /// Explicit operator overload to int

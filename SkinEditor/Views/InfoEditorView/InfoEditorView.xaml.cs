@@ -28,10 +28,7 @@ namespace SkinEditor.Views
         }
 
 
-        public override string Title
-        {
-            get { return "Info Browser"; }
-        }
+        public override string Title => "Info Browser";
 
         public override void Initialize()
         {
@@ -41,16 +38,10 @@ namespace SkinEditor.Views
             ConnectionHelper.StartSecondTimer();
         }
 
-        public InfoEditorViewSettings ConnectionSettings
-        {
-            get { return ConnectSettings as InfoEditorViewSettings; }
-        }
+        public InfoEditorViewSettings ConnectionSettings => ConnectSettings as InfoEditorViewSettings;
 
 
-         public InfoEditorViewSettings Settings
-        {
-            get { return EditorSettings as InfoEditorViewSettings; }
-        }
+        public InfoEditorViewSettings Settings => EditorSettings as InfoEditorViewSettings;
 
         public ICommand ConnectCommand { get; internal set; }
         public ICommand DisconnectCommand { get; internal set; }
@@ -58,40 +49,19 @@ namespace SkinEditor.Views
         public ICommand PropertyEditCommand { get; internal set; }
         public ICommand ClearListItemCommand { get; internal set; }
 
-        public bool IsConnected
-        {
-            get { return ConnectionHelper.IsConnected; }
-        }
+        public bool IsConnected => ConnectionHelper.IsConnected;
 
-        public bool IsMediaPortalConnected
-        {
-            get { return ConnectionHelper.IsMediaPortalConnected; }
-        }
+        public bool IsMediaPortalConnected => ConnectionHelper.IsMediaPortalConnected;
 
-        public ObservableCollection<SkinPropertyItem> PropertyData
-        {
-            get { return ConnectionHelper.PropertyData; }
-        }
+        public ObservableCollection<SkinPropertyItem> PropertyData => ConnectionHelper.PropertyData;
 
-        public ObservableCollection<SkinPropertyItem> ListItemData
-        {
-            get { return ConnectionHelper.ListItemData; }
-        }
+        public ObservableCollection<SkinPropertyItem> ListItemData => ConnectionHelper.ListItemData;
 
-        public int WindowId
-        {
-            get { return ConnectionHelper.WindowId; }
-        }
+        public int WindowId => ConnectionHelper.WindowId;
 
-        public int DialogId
-        {
-            get { return ConnectionHelper.DialogId; }
-        }
+        public int DialogId => ConnectionHelper.DialogId;
 
-        public int FocusedControlId
-        {
-            get { return ConnectionHelper.FocusedControlId; }
-        }
+        public int FocusedControlId => ConnectionHelper.FocusedControlId;
 
         public override void OnModelOpen()
         {

@@ -109,13 +109,7 @@ namespace MPDisplay.Common.Controls
                 new FrameworkPropertyMetadata(typeof(LoadingAdorner)));
         }
 
-        protected override int VisualChildrenCount
-        {
-            get
-            {
-                return Child != null ? 2 : 1;
-            }
-        }
+        protected override int VisualChildrenCount => Child != null ? 2 : 1;
 
         protected override IEnumerator LogicalChildren
         {
@@ -161,6 +155,7 @@ namespace MPDisplay.Common.Controls
 
         private void SetBinding(DependencyObject obj, DependencyProperty source, DependencyProperty target)
         {
+            if (obj == null) return;
             var b = new Binding {Source = this, Path = new PropertyPath(source)};
             BindingOperations.SetBinding(obj, target, b);
         }

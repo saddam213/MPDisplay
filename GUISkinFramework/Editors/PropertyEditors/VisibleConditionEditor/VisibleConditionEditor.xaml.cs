@@ -76,7 +76,7 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_item != null && _item.Value is string)
+            if (_item?.Value is string)
             {
                 return !string.IsNullOrEmpty(_item.Value.ToString()) ? "(Visible Condition)" : "(Empty)";
             }
@@ -85,9 +85,9 @@ namespace GUISkinFramework.Editors
 
         private string GetToolTipText()
         {
-            if (_item != null && _item.Value is string && !string.IsNullOrEmpty(_item.Value.ToString()))
+            if (_item?.Value is string && !string.IsNullOrEmpty(_item.Value.ToString()))
             {
-                return string.Format("Visible Condition(s):{0}{1}",Environment.NewLine, _item.Value);
+                return $"Visible Condition(s):{Environment.NewLine}{_item.Value}";
             }
             return "(Empty)";
         }

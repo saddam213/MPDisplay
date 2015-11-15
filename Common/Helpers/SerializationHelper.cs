@@ -7,7 +7,7 @@ namespace Common.Helpers
 {
     public static class SerializationHelper
     {
-        private static Log.Log _log = LoggingManager.GetLog(typeof(SerializationHelper));
+        private static readonly Log.Log Log = LoggingManager.GetLog(typeof(SerializationHelper));
 
         /// <summary>
         /// Serializes the specified object.
@@ -33,7 +33,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[Serialize] - An exception occured serializing file, FileName: " + filename, ex);
+                Log.Exception("[Serialize] - An exception occured serializing file, FileName: " + filename, ex);
             }
             return false;
         }
@@ -59,7 +59,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[Deserialize] - An exception occured deserializing file, FileName: " + filename, ex);
+                Log.Exception("[Deserialize] - An exception occured deserializing file, FileName: " + filename, ex);
             }
             return default(T);
         }
@@ -90,7 +90,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                 _log.Exception("[CreateCopy] - An exception occured creating object copy", ex);
+                 Log.Exception("[CreateCopy] - An exception occured creating object copy", ex);
             }
             return default(T);
         }

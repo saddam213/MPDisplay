@@ -27,18 +27,12 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlEqualizer SkinXml
-        {
-            get { return BaseXml as XmlEqualizer; }
-        }
+        public XmlEqualizer SkinXml => BaseXml as XmlEqualizer;
 
         /// <summary>
         /// Gets the length of the eq data.
         /// </summary>
-        public int EQDataLength
-        {
-            get { return SkinXml != null ? SkinXml.BandCount : 0; }
-        }
+        public int EQDataLength => SkinXml?.BandCount ?? 0;
 
         #endregion
 

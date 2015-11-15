@@ -6,10 +6,7 @@ namespace SkinEditor.BindingConverters
     public static class SkinEditorInfoManager
     {
         private static XmlSkinInfo _skinInfo = new XmlSkinInfo();
-        public static XmlSkinInfo SkinInfo
-        {
-            get { return _skinInfo; }
-        }
+        public static XmlSkinInfo SkinInfo => _skinInfo;
 
         public static void LoadSkinInfo(XmlSkinInfo skinInfo)
         {
@@ -18,7 +15,7 @@ namespace SkinEditor.BindingConverters
 
         public static string GetLanguageValue(string skinTag)
         {
-            if (_skinInfo == null || _skinInfo.Language == null) return skinTag;
+            if (_skinInfo?.Language == null) return skinTag;
 
             var entry = _skinInfo.Language.LanguageEntries.FirstOrDefault(x => x.SkinTag == skinTag);
             if (entry == null) return skinTag;

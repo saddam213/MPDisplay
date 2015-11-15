@@ -14,13 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                return "Color Space";
-            }
-        }
+        public string DisplayName => "Color Space";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value

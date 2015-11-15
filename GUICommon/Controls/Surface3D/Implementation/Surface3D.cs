@@ -247,7 +247,7 @@ namespace MPDisplay.Common.Controls.Surface3D
             typeof(Surface3D),
             new PropertyMetadata(0.0, (sender, e) =>
             {
-                if (sender == null) throw new ArgumentNullException("sender");
+                if (sender == null) throw new ArgumentNullException(nameof(sender));
                 ((Surface3D) sender).UpdateRotationCenter();
             }));
 
@@ -354,10 +354,7 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// </summary>
         public void RefreshSurface()
         {
-            if (_content != null)
-            {
-                _content.InvalidateVisual();
-            }
+            _content?.InvalidateVisual();
         }
 
         /// <summary>
@@ -537,13 +534,8 @@ namespace MPDisplay.Common.Controls.Surface3D
       
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-
 
 
         public bool Is3DControl

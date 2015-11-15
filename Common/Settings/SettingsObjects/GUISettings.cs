@@ -20,6 +20,13 @@ namespace Common.Settings
         private bool _isSystemInfoEnabled;
         private int _userInteractionDelay = 10;
         private string _googleApiKey = "";
+        private bool _screenSaverEnabledMP;
+        private bool _screenSaverEnabledMPD;
+        private bool _screenSaverEnabledPlayer;
+        private int _screenSaverDelay = -1;
+        private int _screenSaverDarkness = 50;
+        private string _screenSaverPicturePath = "";
+        private int _screenSaverPictureChange;
 
         public string SkinName
         {
@@ -91,6 +98,42 @@ namespace Common.Settings
         {
             get { return _googleApiKey;}
             set { _googleApiKey = value; NotifyPropertyChanged("GoogleApiKey"); }
+        }
+
+       public bool ScreenSaverEnabledMP
+        {
+            get { return _screenSaverEnabledMP; }
+            set { _screenSaverEnabledMP = value; NotifyPropertyChanged("ScreenSaverEnabledMP"); }
+        }
+       public bool ScreenSaverEnabledMPD
+        {
+            get { return _screenSaverEnabledMPD; }
+            set { _screenSaverEnabledMPD = value; NotifyPropertyChanged("ScreenSaverEnabledMPD"); }
+        }
+       public bool ScreenSaverEnabledPlayer
+        {
+            get { return _screenSaverEnabledPlayer; }
+            set { _screenSaverEnabledPlayer = value; NotifyPropertyChanged("ScreenSaverEnabledPlayer"); }
+        }
+      public int ScreenSaverDelay
+        {
+            get { return _screenSaverDelay; }
+            set { _screenSaverDelay = value; NotifyPropertyChanged("ScreenSaverDelay"); }
+        }
+       public int ScreenSaverDarkness
+        {
+            get { return _screenSaverDarkness; }
+            set { _screenSaverDarkness = value; NotifyPropertyChanged("ScreenSaverDarkness"); }
+        }
+       public string ScreenSaverPicturePath
+        {
+            get { return _screenSaverPicturePath; }
+            set { _screenSaverPicturePath = value; NotifyPropertyChanged("ScreenSaverPicturePath"); }
+        }
+      public int ScreenSaverPictureChange
+        {
+            get { return _screenSaverPictureChange; }
+            set { _screenSaverPictureChange = value; NotifyPropertyChanged("ScreenSaverPictureChange"); }
         }
 
         public ConnectionSettings ConnectionSettings

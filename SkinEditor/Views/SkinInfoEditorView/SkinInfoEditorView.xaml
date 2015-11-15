@@ -47,8 +47,8 @@
 		<!--Text Settings-->
 		<GroupBox DataContext="{Binding SkinInfo}" Header="Text Settings" HorizontalAlignment="Left" Margin="225,10,0,0" VerticalAlignment="Top" Width="293">
 			<StackPanel Margin="5">
-				<CheckBox x:Name="enableScroll" Content="Enable Text Scrolling" IsChecked="{Binding TextEnableScrolling}" />
-				<UniformGrid Margin="10,3,0,0" Columns="3" Rows="5" IsEnabled="{Binding IsChecked, ElementName=enableScroll}"  >
+				<CheckBox x:Name="EnableScroll" Content="Enable Text Scrolling" IsChecked="{Binding TextEnableScrolling}" />
+				<UniformGrid Margin="10,3,0,0" Columns="3" Rows="5" IsEnabled="{Binding IsChecked, ElementName=EnableScroll}"  >
 					<TextBlock Text="" />
 					<TextBlock Text="Horizontal" VerticalAlignment="Bottom"/>
 					<TextBlock Text="Vertical" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
@@ -62,12 +62,12 @@
 					<implementation:IntegerUpDown Value="{Binding TextVerticalScrollDelay}" Margin="2,0,0,0"/>
 					<!--ScrollWrap-->
 					<TextBlock Text="Scroll Wrap" />
-					<CheckBox x:Name="scrollWrapHorz" IsChecked="{Binding TextHorizontalScrollWrap}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-					<CheckBox x:Name="scrollWrapVert" IsChecked="{Binding TextVerticalScrollWrap}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					<CheckBox x:Name="ScrollWrapHorz" IsChecked="{Binding TextHorizontalScrollWrap}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+					<CheckBox x:Name="ScrollWrapVert" IsChecked="{Binding TextVerticalScrollWrap}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
 					<!--ScrollSeparator-->
 					<TextBlock Text="Scroll Separator" />
-					<TextBox Margin="0,0,2,0" Text="{Binding TextHorizontalScrollSeperator}" IsEnabled="{Binding IsChecked, ElementName=scrollWrapHorz}"/>
-					<TextBox Margin="2,0,0,0" Text="{Binding TextVerticalScrollSeperator}" IsEnabled="{Binding IsChecked, ElementName=scrollWrapVert}"/>
+					<TextBox Margin="0,0,2,0" Text="{Binding TextHorizontalScrollSeperator}" IsEnabled="{Binding IsChecked, ElementName=ScrollWrapHorz}"/>
+					<TextBox Margin="2,0,0,0" Text="{Binding TextVerticalScrollSeperator}" IsEnabled="{Binding IsChecked, ElementName=ScrollWrapVert}"/>
 				</UniformGrid>
 			</StackPanel>
 		</GroupBox>
@@ -91,15 +91,15 @@
 							</Button>
 						</StackPanel>
 						<StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-							<Button Margin="0,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveUp, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=skinOptionList}">
+							<Button Margin="0,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveUp, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=SkinOptionList}">
 								<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Up.png" Stretch="Uniform" />
 							</Button>
-							<Button Margin="2,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveDown, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=skinOptionList}">
+							<Button Margin="2,2,0,0"  HorizontalAlignment="Right" Width="22" Height="22" Command="{Binding SkinOptionItemMoveDown, ElementName=UI}" CommandParameter="{Binding SelectedIndex, ElementName=SkinOptionList}">
 								<Image Margin="2" Source="/MPDisplay.UICommon;component/Controls/Images/Down.png" Stretch="Uniform" />
 							</Button>
 						</StackPanel>
 					</Grid>
-					<ListBox x:Name="skinOptionList" ItemsSource="{Binding SkinOptions}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedSkinOption, ElementName=UI}"/>
+					<ListBox x:Name="SkinOptionList" ItemsSource="{Binding SkinOptions}" DisplayMemberPath="Name" SelectedItem="{Binding SelectedSkinOption, ElementName=UI}"/>
 				</DockPanel>
 
 				<Grid Grid.Column="1" Margin="5,20,5,5">
@@ -135,18 +135,19 @@
 
 						<TextBlock Text="Description" Margin="0,3,0,0" />
 						<TextBox Text="{Binding SelectedSkinOption.Description, ElementName=UI,UpdateSourceTrigger=PropertyChanged}" MinHeight="100"/>
-						<CheckBox x:Name="previewImageEnabled" IsChecked="{Binding SelectedSkinOption.IsPreviewImageEnabled,ElementName =UI}" Margin="0,3,0,0" Content="Enable Preview Image" />
-						<StackPanel Margin="10,0,0,0" IsEnabled="{Binding IsChecked, ElementName=previewImageEnabled}">
+						<CheckBox x:Name="PreviewImageEnabled" IsChecked="{Binding SelectedSkinOption.IsPreviewImageEnabled,ElementName =UI}" Margin="0,3,0,0" Content="Enable Preview Image" />
+						<StackPanel Margin="10,0,0,0" IsEnabled="{Binding IsChecked, ElementName=PreviewImageEnabled}">
 							<TextBlock Text="PreviewImage" Margin="0,3,0,0" />
-							<ComboBox x:Name="imageCombo" ItemsSource="{Binding Images}" DisplayMemberPath="DisplayName" SelectedValuePath="XmlName" SelectedValue="{Binding SelectedSkinOption.PreviewImage, ElementName=UI}" />
+							<ComboBox x:Name="ImageCombo" ItemsSource="{Binding Images}" DisplayMemberPath="DisplayName" SelectedValuePath="XmlName" SelectedValue="{Binding SelectedSkinOption.PreviewImage, ElementName=UI}" />
 						</StackPanel>
-						<Image Margin="5" MaxHeight="100" Source="{Binding SelectedItem.FileName, ElementName=imageCombo}" Stretch="Uniform"/>
+					    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+						<Image Margin="5" MaxHeight="100" Source="{Binding SelectedItem.FileName, ElementName=ImageCombo}" Stretch="Uniform"/>
 					</StackPanel>
 					<Grid.Style>
 						<Style TargetType="Grid">
 							<Setter Property="IsEnabled" Value="True" />
 							<Style.Triggers>
-								<DataTrigger Binding="{Binding SelectedItem, ElementName=skinOptionList}" Value="{x:Null}">
+								<DataTrigger Binding="{Binding SelectedItem, ElementName=SkinOptionList}" Value="{x:Null}">
 									<Setter Property="IsEnabled" Value="False" />
 								</DataTrigger>
 							</Style.Triggers>

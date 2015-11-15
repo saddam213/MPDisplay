@@ -25,10 +25,7 @@ namespace SkinEditor.Views
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get { return "Skin Settings"; }
-        }
+        public override string Title => "Skin Settings";
 
         public override void Initialize()
         {
@@ -49,11 +46,7 @@ namespace SkinEditor.Views
             HasPendingChanges = true;
         }
 
-        public SkinInfoEditorViewSettings Settings 
-        {
-            get { return EditorSettings as SkinInfoEditorViewSettings; }
-        }
-
+        public SkinInfoEditorViewSettings Settings => EditorSettings as SkinInfoEditorViewSettings;
 
         public ICommand SkinOptionItemMoveUp { get; internal set; }
         public ICommand SkinOptionItemMoveDown { get; internal set; }

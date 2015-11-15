@@ -58,13 +58,13 @@
             <ColumnDefinition Width="17"/>
         </Grid.ColumnDefinitions>
 
-        <TextBox Grid.Column="0" Margin="1" IsReadOnly="True"  Name="txtbx" Text="{Binding ElementName=UI, Path=ImageInfo, Mode=OneWay}" ToolTipService.IsEnabled="True" >
+        <TextBox Grid.Column="0" Margin="1" IsReadOnly="True"  Name="Txtbx" Text="{Binding ElementName=UI, Path=ImageInfo, Mode=OneWay}" ToolTipService.IsEnabled="True" >
             <TextBox.ToolTip>
                 <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
                     <Image Height="100" Width="100" MaxHeight="100" MaxWidth="100" 
                            Source="{Binding Value, Converter={StaticResource ImageConverter}, ConverterParameter=100, Mode=OneWay}" />
             </TextBox.ToolTip>
         </TextBox>
-        <Button Grid.Column="1" Click="Button_Click" Style="{StaticResource ButtonStyle}" HorizontalAlignment="Right"></Button>
+        <Button Grid.Column="1" Click="Button_Click" Style="{StaticResource ButtonStyle}" HorizontalAlignment="Right" />
     </Grid>
 </UserControl>

@@ -76,8 +76,7 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_item == null || _item.Value == null) return "(Empty)";
-            var list = _item.Value as IList;
+            var list = _item?.Value as IList;
             if (list != null)
             {
                 return list.Count > 0 ? "(Collection)" : "(Empty)";
@@ -87,7 +86,7 @@ namespace GUISkinFramework.Editors
 
         private string GetToolTipText()
         {
-            if (_item == null || !(_item.Value is IList) || ((IList) _item.Value).Count <= 0) return "(Empty)";
+            if (!(_item?.Value is IList) || ((IList) _item.Value).Count <= 0) return "(Empty)";
             var returnValue = "Actions:" + Environment.NewLine;
             return ((IList) _item.Value).OfType<XmlAction>().Aggregate(returnValue, (current, xmlAction) => current + (xmlAction.DisplayName + Environment.NewLine));
         }

@@ -32,10 +32,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlLabel SkinXml
-        {
-            get { return BaseXml as XmlLabel; }
-        }
+        public XmlLabel SkinXml => BaseXml as XmlLabel;
 
         /// <summary>
         /// Gets or sets the label.

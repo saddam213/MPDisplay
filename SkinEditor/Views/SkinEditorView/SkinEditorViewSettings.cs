@@ -18,14 +18,8 @@ namespace SkinEditor.Views
         private string _resizeHiglightColor = "#FF0074FF";
         private bool _dragMoveResize = true;
 
-        private XmlStyleCollection _designerStyle = new XmlStyleCollection();
-
         [XmlIgnore]
-        public XmlStyleCollection DesignerStyle
-        {
-            get { return _designerStyle; }
-            set { _designerStyle = value; }
-        }
+        public XmlStyleCollection DesignerStyle { get; set; } = new XmlStyleCollection();
 
         public override void InitializeSettings()
         {
@@ -88,11 +82,6 @@ namespace SkinEditor.Views
             set { _resizeHiglightColor = value; NotifyPropertyChanged("ResizeHiglightColor"); }
         }
 
-
-
-        public Rect GridSizeRect
-        {
-            get { return new Rect(0, 0, Math.Max(GridSize, 0), Math.Max(GridSize, 0)); }
-        }
+        public Rect GridSizeRect => new Rect(0, 0, Math.Max(GridSize, 0), Math.Max(GridSize, 0));
     }
 }

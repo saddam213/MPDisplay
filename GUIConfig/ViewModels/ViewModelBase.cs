@@ -75,10 +75,7 @@ namespace GUIConfig.ViewModels
         /// <summary>
         /// Gets the tabs title.
         /// </summary>
-        public virtual string Title
-        {
-            get { return "ViewModel"; }
-        }
+        public virtual string Title => "ViewModel";
 
         #endregion
 
@@ -112,10 +109,7 @@ namespace GUIConfig.ViewModels
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged([CallerMemberName]string property = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

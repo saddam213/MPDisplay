@@ -11,11 +11,11 @@ namespace GUISkinFramework.Converters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             int intValue;
-            var pointValue = value == null ? string.Empty : value.ToString();
+            var pointValue = value?.ToString() ?? string.Empty;
             if (!pointValue.Contains(','))
                 return int.TryParse(pointValue, out intValue) ? new CornerRadius(intValue) : new CornerRadius(0);
             var points = pointValue.Split(',');
-            if (points.Count() == 4 && points.All(v => int.TryParse(v, out intValue)))
+            if (points.Length == 4 && points.All(v => int.TryParse(v, out intValue)))
             {
                 return new CornerRadius(double.Parse(points[0]), double.Parse(points[1]), double.Parse(points[2]), double.Parse(points[3]));
             }

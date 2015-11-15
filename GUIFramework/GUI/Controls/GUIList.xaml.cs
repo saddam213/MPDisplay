@@ -47,7 +47,7 @@ namespace GUIFramework.GUI
         {
             InitializeComponent();
             AddHandler(MouseDownEvent, new MouseButtonEventHandler(GUIList_MouseButtonDown), true);
-             ScrollViewer = listbox.GetDescendantByType<ScrollViewer>();
+             ScrollViewer = Listbox.GetDescendantByType<ScrollViewer>();
             ScrollViewer.ManipulationBoundaryFeedback += (s, e) => e.Handled = true;
             // Check for page updates if ScrollChanged event fires
 
@@ -62,10 +62,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlList SkinXml
-        {
-            get { return BaseXml as XmlList; }
-        }
+        public XmlList SkinXml => BaseXml as XmlList;
 
         /// <summary>
         /// Gets the type of the list.
@@ -73,10 +70,7 @@ namespace GUIFramework.GUI
         /// <value>
         /// The type of the list.
         /// </value>
-        public XmlListType ListType
-        {
-            get { return SkinXml != null ? SkinXml.ListType : XmlListType.None; }
-        }
+        public XmlListType ListType => SkinXml?.ListType ?? XmlListType.None;
 
         /// <summary>
         /// Gets or sets the list items.
@@ -239,10 +233,7 @@ namespace GUIFramework.GUI
         /// Gets the drag threshold.
         /// </summary>
         // ReSharper disable once UnusedMember.Local
-        private double DragThreshold
-        {
-            get { return IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width; }
-        }
+        private double DragThreshold => IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width;
 
         /// <summary>
         /// Gets a value indicating whether the layout is vertical.
@@ -250,10 +241,7 @@ namespace GUIFramework.GUI
         /// <value>
         /// <c>true</c> if the layout is vertical; otherwise, <c>false</c>.
         /// </value>
-        private bool IsLayoutVertical
-        {
-            get { return _currentListLayout == XmlListLayout.Vertical || _currentListLayout == XmlListLayout.VerticalIcon; }
-        }
+        private bool IsLayoutVertical => _currentListLayout == XmlListLayout.Vertical || _currentListLayout == XmlListLayout.VerticalIcon;
 
         #endregion
 
@@ -261,8 +249,8 @@ namespace GUIFramework.GUI
 
         protected override void SelectListItem()
         {
-            ScrollItemToCenter(listbox.SelectedItem as APIListItem);
-            ListRepository.Instance.SelectListControlItem(this, listbox.SelectedItem as APIListItem);
+            ScrollItemToCenter(Listbox.SelectedItem as APIListItem);
+            ListRepository.Instance.SelectListControlItem(this, Listbox.SelectedItem as APIListItem);
         }
 
         /// <summary>
@@ -271,9 +259,9 @@ namespace GUIFramework.GUI
         /// <param name="item">The item.</param>
         private void SelectItem(APIListItem item)
         {
-            listbox.ScrollIntoView(item);
+            Listbox.ScrollIntoView(item);
             ScrollItemToCenter(item);
-            listbox.SelectedItem = item;
+            Listbox.SelectedItem = item;
         }
 
         /// <summary>
@@ -284,7 +272,7 @@ namespace GUIFramework.GUI
         {
             if (item == null) return;
 
-            var positionFromCenter = listbox.GetItemOffsetFromCenterOfView(item);
+            var positionFromCenter = Listbox.GetItemOffsetFromCenterOfView(item);
             if (positionFromCenter != null)
             {
                 var newpos = positionFromCenter.Value;
@@ -328,10 +316,10 @@ namespace GUIFramework.GUI
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
                 {
-                    if ((listbox.SelectedItem as APIListItem) == GetCenterItem()) return;
+                    if ((Listbox.SelectedItem as APIListItem) == GetCenterItem()) return;
 
-                    listbox.ScrollIntoView(listbox.SelectedItem);
-                    ScrollItemToCenter(listbox.SelectedItem as APIListItem);
+                    Listbox.ScrollIntoView(Listbox.SelectedItem);
+                    ScrollItemToCenter(Listbox.SelectedItem as APIListItem);
                 }, DispatcherPriority.Background);
             });
         }
@@ -366,7 +354,7 @@ namespace GUIFramework.GUI
 
             _currentListLayout = layout;
 
-            listbox.Items.Refresh();
+            Listbox.Items.Refresh();
             SetZoomAnimation(CurrentLayout.SelectionZoomX, CurrentLayout.SelectionZoomY);
         }
 
@@ -421,12 +409,10 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         private APIListItem GetCenterItem()
         {
-            var element = listbox.InputHitTest(new Point((listbox.ActualWidth / 2.0), (listbox.ActualHeight / 2.0))) as Border;
-            if (element == null) return null;
+            var element = Listbox.InputHitTest(new Point((Listbox.ActualWidth / 2.0), (Listbox.ActualHeight / 2.0))) as Border;
 
-            var contentPresenter = element.Child as ContentPresenter;
-            if (contentPresenter != null) return contentPresenter.Content as APIListItem;
-            return null;
+            var contentPresenter = element?.Child as ContentPresenter;
+            return contentPresenter?.Content as APIListItem;
         }
 
         #endregion
@@ -488,9 +474,8 @@ namespace GUIFramework.GUI
             if (IsScrolling || IsMouseDoubleClick) return;
 
             var listBoxItem = sender as ListBoxItem;
-            if (listBoxItem == null) return;
 
-            var item = listBoxItem.Content as APIListItem;
+            var item = listBoxItem?.Content as APIListItem;
             if (item != null)
             {
                 ListRepository.Instance.FocusListControlItem(this, item);
@@ -499,8 +484,8 @@ namespace GUIFramework.GUI
 
         private void OnListItem_PreviewMouseDoubleClick(object sender, RoutedEventArgs e)
         {
-            ScrollItemToCenter(listbox.SelectedItem as APIListItem);
-            ListRepository.Instance.SelectListControlItem(this, listbox.SelectedItem as APIListItem);
+            ScrollItemToCenter(Listbox.SelectedItem as APIListItem);
+            ListRepository.Instance.SelectListControlItem(this, Listbox.SelectedItem as APIListItem);
         }
 
         #endregion

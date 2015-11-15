@@ -25,10 +25,7 @@ namespace GUIFramework.Repositories
         }
 
         private static PropertyRepository _instance;
-        public static PropertyRepository Instance
-        {
-            get { return _instance ?? (_instance = new PropertyRepository()); }
-        }
+        public static PropertyRepository Instance => _instance ?? (_instance = new PropertyRepository());
 
         public static void RegisterPropertyMessage(GUIControl control, string property)
         {
@@ -102,10 +99,10 @@ namespace GUIFramework.Repositories
 
 
         private List<APIPropertyMessage> _skinProperties = new List<APIPropertyMessage>();
-        private MessengerService<string> _propertyService = new MessengerService<string>();
+        private readonly MessengerService<string> _propertyService = new MessengerService<string>();
         private DataRepository<string, APIPropertyMessage> _propertyRepository;
         private SystemStatusInfo _systemInfo;
-        private Log _log;
+        private readonly Log _log;
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
@@ -276,7 +273,7 @@ namespace GUIFramework.Repositories
             {
                 if (control.RegisteredProperties == null || !control.RegisteredProperties.Any()) continue;
 
-                foreach (var property in control.RegisteredProperties.Where(property => property != null && !string.IsNullOrEmpty(property.SkinTag) && !skinTags.Contains(property.SkinTag)))
+                foreach (var property in control.RegisteredProperties.Where(property => !string.IsNullOrEmpty(property?.SkinTag) && !skinTags.Contains(property.SkinTag)))
                 {
                     skinTags.Add(property.SkinTag);
                 }
@@ -293,17 +290,13 @@ namespace GUIFramework.Repositories
         private byte[] GetPropertyImageValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            if (result != null && result.Image != null)
-            {
-                return result.Image.ToImageBytes();
-            }
-            return null;
+            return result?.Image?.ToImageBytes();
         }
 
         private double GetPropertyNumberValue(string tag)
         {
             var result = _propertyRepository.GetValueOrDefault(tag, null);
-            return result != null ? result.Number : 0;
+            return result?.Number ?? 0;
         }
 
         private static bool HasProperties(string xmlString)

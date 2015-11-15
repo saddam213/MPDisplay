@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of SceneCaptureType names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _sharpnessTypeMap = new Dictionary<ushort, string>
+        private readonly Dictionary<ushort, string> _sharpnessTypeMap = new Dictionary<ushort, string>
         {
             { 0, "Normal" },
             { 1, "Soft" },
@@ -24,13 +24,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public override string DisplayName
-        {
-            get
-            {
-                return "Sharpness";
-            }
-        }
+        public override string DisplayName => "Sharpness";
 
         /// <summary>
         /// Gets a dictionary that maps values to named strings

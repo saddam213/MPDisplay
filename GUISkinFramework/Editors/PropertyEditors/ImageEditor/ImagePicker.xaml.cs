@@ -23,12 +23,10 @@ namespace GUISkinFramework.Editors
     /// </summary>
     public partial class ImagePicker : INotifyPropertyChanged
     {
-        private List<string> _allowedsExtensions = new List<string>(new[] { ".BMP", ".JPG", ".GIF", ".PNG" });
+        private readonly List<string> _allowedsExtensions = new List<string>(new[] { ".BMP", ".JPG", ".GIF", ".PNG" });
         private const string ImageFilter = "Image Files(*.BMP;*.JPG;*.GIF;*.PNG)|*.BMP;*.JPG;*.GIF;*.PNG";
         private FileSystemWatcher _imageWatcher;
         private ObservableCollection<ImageFile> _imageFiles = new ObservableCollection<ImageFile>();
-        private ObservableCollection<object> _folderMenu = new ObservableCollection<object>();
-        private ObservableCollection<object> _imageMenu = new ObservableCollection<object>();
         private ImageFile _selectedImage;
 
         public ImagePicker()
@@ -79,11 +77,10 @@ namespace GUISkinFramework.Editors
 
             if (xmlImage != null)
             {
-                if (_this != null) _this.GetFolderImages(Path.GetDirectoryName(xmlImage.FileName));
+                _this?.GetFolderImages(Path.GetDirectoryName(xmlImage.FileName));
             }
 
-            if (_this == null) return;
-            var image = _this.ImageFiles.Where(f => !f.IsFolder).FirstOrDefault(f => xmlImage != null && f.File.FullName == xmlImage.FileName);
+            var image = _this?.ImageFiles.Where(f => !f.IsFolder).FirstOrDefault(f => xmlImage != null && f.File.FullName == xmlImage.FileName);
 
             if (image == null) return;
 
@@ -106,7 +103,7 @@ namespace GUISkinFramework.Editors
             {
                 _selectedImage = value;
                 SetXmlImage(_selectedImage);
-                listBox.ScrollIntoView(_selectedImage);
+                ListBox.ScrollIntoView(_selectedImage);
                 NotifyPropertyChanged("SelectedImage");
             }
         }
@@ -122,22 +119,11 @@ namespace GUISkinFramework.Editors
         }
 
 
-        public ObservableCollection<object> FolderMenu
-        {
-            get { return _folderMenu; }
-            set { _folderMenu = value; }
-        }
+        public ObservableCollection<object> FolderMenu { get; set; } = new ObservableCollection<object>();
 
-        public ObservableCollection<object> ImageMenu
-        {
-            get { return _imageMenu; }
-            set { _imageMenu = value; }
-        }
+        public ObservableCollection<object> ImageMenu { get; set; } = new ObservableCollection<object>();
 
-        public string ImageRootPath
-        {
-            get { return GetDirectoryPath(SkinInfo.SkinImageFolder); }
-        } 
+        public string ImageRootPath => GetDirectoryPath(SkinInfo.SkinImageFolder);
 
         private string _currentFolder = string.Empty;
 
@@ -197,10 +183,7 @@ namespace GUISkinFramework.Editors
 
         public void CreateFileWatcher()
         {
-            if (_imageWatcher != null)
-            {
-                _imageWatcher.Dispose();
-            }
+            _imageWatcher?.Dispose();
 
             if (!Directory.Exists(SkinInfo.SkinImageFolder)) return;
             _imageWatcher = new FileSystemWatcher(SkinInfo.SkinImageFolder)
@@ -254,7 +237,7 @@ namespace GUISkinFramework.Editors
                         Width = 16,
                         Height = 16,
                         Source =
-                            new BitmapImage(new Uri(string.Format(@"/GUISkinFramework;component/Images/{0}.png", icon),
+                            new BitmapImage(new Uri($@"/GUISkinFramework;component/Images/{icon}.png",
                                 UriKind.RelativeOrAbsolute))
                     }
             };
@@ -298,8 +281,7 @@ namespace GUISkinFramework.Editors
         {
             if (SelectedImage == null) return;
             if (MessageBox.Show(
-                string.Format("Are you sure you want to permanently delete this {0}?",
-                    isfolder ? "folder" : "image"), "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) !=
+                $"Are you sure you want to permanently delete this {(isfolder ? "folder" : "image")}?", "Confirm", MessageBoxButton.YesNo, MessageBoxImage.Question) !=
                 MessageBoxResult.Yes) return;
             if (isfolder)
             {
@@ -317,10 +299,7 @@ namespace GUISkinFramework.Editors
      
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion
@@ -358,16 +337,10 @@ namespace GUISkinFramework.Editors
             set { NotifyPropertyChanged("DisplayName"); }
         }
 
-        public string ToolTip
-        {
-            get
-            {
-                return IsBack ? "Previous Folder" : IsFolder ?
-                    string.Format("Folder:{1}{0}", Directory.FullName, Environment.NewLine)
-                  : string.Format("Image Type: {1} Image{0}Size: {2:0.##} KB{0}FileName: {3}",
-                    Environment.NewLine, File.Extension.Replace(".", "").ToUpper(), (File.Length / 1024.0), File.FullName);
-            }
-        }
+        public string ToolTip => IsBack ? "Previous Folder" : IsFolder ?
+            string.Format("Folder:{1}{0}", Directory.FullName, Environment.NewLine)
+            : string.Format("Image Type: {1} Image{0}Size: {2:0.##} KB{0}FileName: {3}",
+                Environment.NewLine, File.Extension.Replace(".", "").ToUpper(), (File.Length / 1024.0), File.FullName);
 
         public string FileName
         {
@@ -386,10 +359,7 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

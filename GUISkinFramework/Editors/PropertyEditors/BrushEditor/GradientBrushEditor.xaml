@@ -41,6 +41,7 @@
                     <Style TargetType="{x:Type StackPanel}">
                         <Setter Property="IsEnabled" Value="False" />
                         <Style.Triggers>
+                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                             <DataTrigger Binding="{Binding SelectedGradientAngle}" Value="Custom">
                                 <Setter Property="IsEnabled" Value="True" />
                             </DataTrigger>
@@ -51,13 +52,14 @@
         </StackPanel>
 
 
-        <ListView x:Name="gradientList"  ItemsSource="{Binding GradientBrush.GradientStops}" SelectedItem="{Binding SelectedGradientStop}"  Margin="0,43,0,0"
+        <ListView x:Name="GradientList"  ItemsSource="{Binding GradientBrush.GradientStops}" SelectedItem="{Binding SelectedGradientStop}"  Margin="0,43,0,0"
                   Grid.Row="0" Grid.ColumnSpan="2" >
             <ListView.View>
                 <GridView>
                     <GridViewColumn Header="Color"  >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
+                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                 <implementation:ColorPicker Width="100" SelectedColor="{Binding Color}" SelectedColorChanged="ColorPicker_SelectedColorChanged_1"/>
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -65,6 +67,7 @@
                     <GridViewColumn Header="Offset" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
+                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                 <TextBox Width="45"  Text="{Binding Offset, StringFormat=0.000, UpdateSourceTrigger=PropertyChanged}"  />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>
@@ -72,6 +75,7 @@
                     <GridViewColumn Header="Offset" >
                         <GridViewColumn.CellTemplate>
                             <DataTemplate>
+                                <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                 <Slider Width="150" LargeChange=".1" Maximum="1" Minimum="0" SmallChange=".01" Value="{Binding Offset}" ValueChanged="GradientStopOffset_ValueChanged" />
                             </DataTemplate>
                         </GridViewColumn.CellTemplate>

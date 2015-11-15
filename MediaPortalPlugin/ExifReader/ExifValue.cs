@@ -17,7 +17,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Array of values
         /// </summary>
-        private T[] _values;
+        private readonly T[] _values;
 
         /// <summary>
         /// Initializes a new instance of the ExifValue class.
@@ -31,25 +31,16 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Gets the type of the Exif property value or values
         /// </summary>
-        public Type ValueType
-        {
-            get { return typeof(T); }
-        }
+        public Type ValueType => typeof(T);
 
         /// <summary>
         /// Gets the number of values
         /// </summary>
-        public int Count
-        {
-            get { return _values.Length; }
-        }
+        public int Count => _values.Length;
 
         /// <summary>
         /// Gets a type-unsafe collection of values of a specific Exif tag data type
         /// </summary>
-        public IEnumerable Values
-        {
-            get { return _values.AsEnumerable(); }
-        }
+        public IEnumerable Values => _values.AsEnumerable();
     }
 }

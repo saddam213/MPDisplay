@@ -16,10 +16,7 @@ namespace GUIFramework.Repositories
 
         private GenericDataRepository() { }
         private static GenericDataRepository _instance;
-        public static GenericDataRepository Instance
-        {
-            get { return _instance ?? (_instance = new GenericDataRepository()); }
-        }
+        public static GenericDataRepository Instance => _instance ?? (_instance = new GenericDataRepository());
 
 
         public static void RegisterEQData(Action<byte[]> callback)
@@ -55,14 +52,10 @@ namespace GUIFramework.Repositories
 
         #endregion
 
-        public MessengerService<GenericDataMessageType> DataService
-        {
-            get { return _dataService; }
-        }
+        public MessengerService<GenericDataMessageType> DataService { get; } = new MessengerService<GenericDataMessageType>();
 
         public GUISettings Settings { get; set; }
         public XmlSkinInfo SkinInfo { get; set; }
-        private MessengerService<GenericDataMessageType> _dataService = new MessengerService<GenericDataMessageType>();
 
         public void Initialize(GUISettings settings, XmlSkinInfo skininfo)
         {

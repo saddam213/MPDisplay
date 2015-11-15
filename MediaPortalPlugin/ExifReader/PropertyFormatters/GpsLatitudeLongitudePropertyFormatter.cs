@@ -32,7 +32,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         {
             var values = exifValue.Values.Cast<Rational32>();
             var rational32S = values as IList<Rational32> ?? values.ToList();
-            if (rational32S.Count() != 3)
+            if (rational32S.Count != 3)
             {
                 return String.Empty;
             }

@@ -21,7 +21,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         #region Properties
 
-        public string BindingPath { get; private set; }
+        public string BindingPath { get; }
 
         #region Category
 
@@ -43,10 +43,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         #region Description
 
-        public string Description
-        {
-            get { return PropertyDescriptor.Description; }
-        }
+        public string Description => PropertyDescriptor.Description;
 
         #endregion //Description
 
@@ -73,8 +70,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnEditorChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyItem = o as PropertyItem;
-            if (propertyItem != null)
-                propertyItem.OnEditorChanged((FrameworkElement)e.OldValue, (FrameworkElement)e.NewValue);
+            propertyItem?.OnEditorChanged((FrameworkElement)e.OldValue, (FrameworkElement)e.NewValue);
         }
 
         protected virtual void OnEditorChanged(FrameworkElement oldValue, FrameworkElement newValue)
@@ -129,9 +125,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             get
             {
                 var markupProperty = _markupObject.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
-                if (markupProperty != null)
-                    return markupProperty.Value is DynamicResourceExtension;
-                return false;
+                return markupProperty?.Value is DynamicResourceExtension;
             }
         }
 
@@ -149,8 +143,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnIsExpandedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyItem = o as PropertyItem;
-            if (propertyItem != null)
-                propertyItem.OnIsExpandedChanged((bool)e.OldValue, (bool)e.NewValue);
+            propertyItem?.OnIsExpandedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsExpandedChanged(bool oldValue, bool newValue)
@@ -185,10 +178,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             get
             {
                 var markupProperty = _markupObject.Properties.FirstOrDefault(p => p.Name == PropertyDescriptor.Name);
-                if (markupProperty != null)
-                    return markupProperty.Value is Style;
-
-                return false;
+                return markupProperty?.Value is Style;
             }
         }
 
@@ -208,8 +198,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnIsSelectedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyItem = o as PropertyItem;
-            if (propertyItem != null)
-                propertyItem.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
+            propertyItem?.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsSelectedChanged(bool oldValue, bool newValue)
@@ -260,16 +249,13 @@ namespace MPDisplay.Common.Controls.PropertyGrid
 
         #endregion //PropertyDescriptor
 
-        public PropertyGrid PropertyGrid { get; private set; }
+        public PropertyGrid PropertyGrid { get; }
 
         public int PropertyOrder { get; set; } //maybe make a DP
 
         #region PropertyType
 
-        public Type PropertyType
-        {
-            get { return PropertyDescriptor.PropertyType; }
-        }
+        public Type PropertyType => PropertyDescriptor.PropertyType;
 
         #endregion //PropertyType
 
@@ -288,8 +274,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyItem = o as PropertyItem;
-            if (propertyItem != null)
-                propertyItem.OnValueChanged(e.OldValue, e.NewValue);
+            propertyItem?.OnValueChanged(e.OldValue, e.NewValue);
         }
 
         protected virtual void OnValueChanged(object oldValue, object newValue)
@@ -388,7 +373,8 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             {
                 var descriptors = PropertyGridUtilities.GetPropertyDescriptors(Value);
 
-                propertyItems.AddRange(from PropertyDescriptor descriptor in descriptors where descriptor.IsBrowsable select PropertyGridUtilities.CreatePropertyItem(descriptor, Instance, PropertyGrid, String.Format("{0}.{1}", BindingPath, descriptor.Name), Level + 1));
+                propertyItems.AddRange(from PropertyDescriptor descriptor in descriptors where descriptor.IsBrowsable select PropertyGridUtilities.CreatePropertyItem(descriptor, Instance, PropertyGrid,
+                    $"{BindingPath}.{descriptor.Name}", Level + 1));
             }
             catch (Exception)
             {
@@ -420,7 +406,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             DisplayName = PropertyDescriptor.DisplayName;
             Category = PropertyDescriptor.Category;
             var order = (EditorCategoryAttribute)PropertyDescriptor.Attributes[typeof(EditorCategoryAttribute)];
-            CategoryOrder = order == null ? int.MaxValue : order.Order;
+            CategoryOrder = order?.Order ?? int.MaxValue;
             IsReadOnly = PropertyDescriptor.IsReadOnly;
         }
 

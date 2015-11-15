@@ -15,9 +15,6 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public override string DisplayName
-        {
-            get { return "Focal Plane Resolution Unit"; }
-        }
+        public override string DisplayName => "Focal Plane Resolution Unit";
     }
 }

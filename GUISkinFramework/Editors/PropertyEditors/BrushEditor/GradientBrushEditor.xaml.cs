@@ -36,7 +36,7 @@ public static readonly DependencyProperty GradientBrushProperty =
         {
             var value = e.NewValue as XmlGradientBrush;
             var _this = d as GradientBrushEditor;
-            if (_this != null) _this.SetBackgroundValues(value);
+            _this?.SetBackgroundValues(value);
         }
 
         private void SetBackgroundValues(XmlGradientBrush value)
@@ -78,25 +78,18 @@ public static readonly DependencyProperty GradientBrushProperty =
         {
             UpdateDisplayBrush();
         }
-
-      
+     
 
         private void UpdateDisplayBrush()
         {
-            if (OnGradientBrushChanged != null)
-            {
-                OnGradientBrushChanged(GradientBrush);
-            }
+            OnGradientBrushChanged?.Invoke(GradientBrush);
         }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         private void ColorPicker_SelectedColorChanged_1(object sender, RoutedPropertyChangedEventArgs<Color> e)

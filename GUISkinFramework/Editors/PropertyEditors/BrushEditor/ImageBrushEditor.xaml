@@ -13,7 +13,7 @@
             </ObjectDataProvider.MethodParameters>
         </ObjectDataProvider>
 	
-			<CollectionViewSource x:Key="images" Source="{Binding SkinInfo.Images, ElementName=UI}">
+			<CollectionViewSource x:Key="Images" Source="{Binding SkinInfo.Images, ElementName=UI}">
 				<CollectionViewSource.GroupDescriptions>
 					<PropertyGroupDescription PropertyName="SubFolder" />
 				</CollectionViewSource.GroupDescriptions>
@@ -37,7 +37,7 @@
 			<TextBlock Text="SkinImage" Height="17" />
         </StackPanel>
 
-		<ListBox SelectedIndex="-1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource images}}" SelectedValuePath="XmlName" SelectedValue="{Binding ImageName,Mode=TwoWay}" 
+		<ListBox SelectedIndex="-1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource Images}}" SelectedValuePath="XmlName" SelectedValue="{Binding ImageName,Mode=TwoWay}" 
 		ScrollViewer.HorizontalScrollBarVisibility="Disabled" extensions:ItemsControlExtensions.ScrollItemIntoView="True" >
 			<ListBox.Resources>
 
@@ -73,9 +73,11 @@
 											<RowDefinition Height="*" />
 											<RowDefinition Height="Auto" />
 										</Grid.RowDefinitions>
+									    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 										<Image Grid.Row="0" Margin="2" Source="{Binding FileName}" Stretch="Uniform" />
 										<TextBlock VerticalAlignment="Bottom" Grid.Row="1" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" Margin="2" />
-									</Grid>
+                                        <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+                                    </Grid>
 									<Border.Style>
 										<Style TargetType="Border">
 											<Setter Property="Background" Value="LightGray" />

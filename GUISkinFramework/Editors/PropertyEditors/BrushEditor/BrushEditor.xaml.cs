@@ -80,7 +80,7 @@ namespace GUISkinFramework.Editors
         {
             if (_item == null) return "(Empty)";
             var brush = _item.Value as XmlBrush;
-            if (brush != null && !string.IsNullOrEmpty(brush.StyleId))
+            if (!string.IsNullOrEmpty(brush?.StyleId))
             {
                 return brush.StyleId;
             }
@@ -112,10 +112,10 @@ namespace GUISkinFramework.Editors
                 var sb = new StringBuilder();
                 if (!string.IsNullOrEmpty(brush.StyleId))
                 {
-                    sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
+                    sb.AppendLine($"Style: {brush.StyleId}");
                     sb.AppendLine("-----------------------");
                 }
-                sb.AppendLine(string.Format("Color: {0}", colorBrush.Color));
+                sb.AppendLine($"Color: {colorBrush.Color}");
                 return sb.ToString();
             }
 
@@ -126,16 +126,16 @@ namespace GUISkinFramework.Editors
                 var sb = new StringBuilder();
                 if (!string.IsNullOrEmpty(brush.StyleId))
                 {
-                    sb.AppendLine(string.Format("Style: {0}", brush.StyleId));
+                    sb.AppendLine($"Style: {brush.StyleId}");
                     sb.AppendLine("-----------------------");
                 }
                 sb.AppendLine("Gradient:");
-                sb.AppendLine(string.Format("Angle: {0}", brush.Angle));
+                sb.AppendLine($"Angle: {brush.Angle}");
                 //  sb.AppendLine(string.Format("EndPoint: {0}", brush.EndPoint));
                 var count = 1;
                 foreach (var stop in brush.GradientStops)
                 {
-                    sb.AppendLine(string.Format("Color{0}: {1}, Offset: {2}", count, stop.Color, stop.Offset));
+                    sb.AppendLine($"Color{count}: {stop.Color}, Offset: {stop.Offset}");
                     count++;
                 }
                 return sb.ToString();
@@ -148,12 +148,12 @@ namespace GUISkinFramework.Editors
             var sb1 = new StringBuilder();
             if (!string.IsNullOrEmpty(brush1.StyleId))
             {
-                sb1.AppendLine(string.Format("Style: {0}", brush1.StyleId));
+                sb1.AppendLine($"Style: {brush1.StyleId}");
                 sb1.AppendLine("-----------------------");
             }
             sb1.AppendLine("Image:");
-            sb1.AppendLine(string.Format("Filename: {0}", brush1.ImageName));
-            sb1.AppendLine(string.Format("Stretch: {0}", brush1.ImageStretch));
+            sb1.AppendLine($"Filename: {brush1.ImageName}");
+            sb1.AppendLine($"Stretch: {brush1.ImageStretch}");
             return "(Empty)";
         }
 

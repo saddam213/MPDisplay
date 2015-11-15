@@ -11,7 +11,7 @@ namespace SkinEditor.BindingConverters
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return value != null ? new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", value.GetType().Name), UriKind.Relative)) : null;
+            return value != null ? new BitmapImage(new Uri($@"/Images/{value.GetType().Name}.png", UriKind.Relative)) : null;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

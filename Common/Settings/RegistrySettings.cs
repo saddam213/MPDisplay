@@ -33,10 +33,7 @@ namespace Common.Settings
         /// <summary>
         /// Gets the program data path.
         /// </summary>
-        public static string ProgramDataPath
-        {
-            get { return _programDataPath ?? (_programDataPath = GetRegistryValue("ProgramDataPath")); }
-        }
+        public static string ProgramDataPath => _programDataPath ?? (_programDataPath = GetRegistryValue("ProgramDataPath"));
 
 
         public static string MPDisplaySettingsFile
@@ -78,60 +75,37 @@ namespace Common.Settings
         /// <summary>
         /// Gets the MP display exe path.
         /// </summary>
-        public static string MPDisplayExePath
-        {
-            get { return _mpdisplayExePath ?? (_mpdisplayExePath = GetRegistryValue("MPDisplayExePath")); }
-        }
+        public static string MPDisplayExePath => _mpdisplayExePath ?? (_mpdisplayExePath = GetRegistryValue("MPDisplayExePath"));
 
-       /// <summary>
+        /// <summary>
         /// Gets the MP display exe path.
         /// </summary>
-        public static string MPDisplayPath
-        {
-            get { return _mpdisplayPath ?? (_mpdisplayPath = GetRegistryValue("MPDisplayPath")); }
-        }
+        public static string MPDisplayPath => _mpdisplayPath ?? (_mpdisplayPath = GetRegistryValue("MPDisplayPath"));
 
         /// <summary>
         /// Gets the MP display config exe path.
         /// </summary>
-        public static string MPDisplayConfigExePath
-        {
-            get {
-                return _mpdisplayConfigExePath ?? (_mpdisplayConfigExePath = GetRegistryValue("MPDisplayConfigExePath"));
-            }
-        }
+        public static string MPDisplayConfigExePath => _mpdisplayConfigExePath ?? (_mpdisplayConfigExePath = GetRegistryValue("MPDisplayConfigExePath"));
 
         /// <summary>
         /// Gets the MPD server exe path. 
         /// </summary>
-        public static string MPDServerExePath
-        {
-            get { return _mpdServerExePath ?? (_mpdServerExePath = GetRegistryValue("MPDServerExePath")); }
-        }
+        public static string MPDServerExePath => _mpdServerExePath ?? (_mpdServerExePath = GetRegistryValue("MPDServerExePath"));
 
         /// <summary>
         /// Gets the MPD plugin path. 
         /// </summary>
-        public static string MPDPluginPath
-        {
-            get { return _mpdPluginPath ?? (_mpdPluginPath = GetRegistryValue("MPDPluginPath")); }
-        }
+        public static string MPDPluginPath => _mpdPluginPath ?? (_mpdPluginPath = GetRegistryValue("MPDPluginPath"));
 
         /// <summary>
         /// Gets the skin editror exe path.
         /// </summary>
-        public static string SkinEditorExePath
-        {
-            get { return _skinEditorExePath ?? (_skinEditorExePath = GetRegistryValue("SkinEditorExePath")); }
-        }
+        public static string SkinEditorExePath => _skinEditorExePath ?? (_skinEditorExePath = GetRegistryValue("SkinEditorExePath"));
 
         /// <summary>
         /// Gets the language file.
         /// </summary>
-        public static string ConfigLanguage
-        {
-            get { return GetRegistryValue("LanguageFile"); }
-        }
+        public static string ConfigLanguage => GetRegistryValue("LanguageFile");
 
         /// <summary>
         /// Gets the type of the install.

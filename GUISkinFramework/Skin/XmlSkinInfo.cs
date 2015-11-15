@@ -182,79 +182,49 @@ namespace GUISkinFramework.Skin
 
           [XmlIgnore]
           [Browsable(false)]
-          public string SkinInfoPath
-          {
-              get { return SkinFolderPath + "\\SkinInfo.xml"; }
-          }
+          public string SkinInfoPath => SkinFolderPath + "\\SkinInfo.xml";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinXmlFolder 
-        {
-            get { return SkinFolderPath + "\\SkinFiles\\"; }
-        }
+        public string SkinXmlFolder => SkinFolderPath + "\\SkinFiles\\";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinXmlWindowFolder
-        {
-            get { return SkinXmlFolder + "Windows\\"; }
-        }
+        public string SkinXmlWindowFolder => SkinXmlFolder + "Windows\\";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinXmlDialogFolder
-        {
-            get { return SkinXmlFolder + "Dialogs\\"; }
-        }
+        public string SkinXmlDialogFolder => SkinXmlFolder + "Dialogs\\";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinImageFolder
-        {
-            get { return SkinFolderPath + "\\Images\\"; }
-        }
+        public string SkinImageFolder => SkinFolderPath + "\\Images\\";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinStyleFolder
-        {
-            get { return SkinFolderPath + "\\Styles\\"; }
-        }
+        public string SkinStyleFolder => SkinFolderPath + "\\Styles\\";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string SplashScreenImage
-        {
-            get { return SkinImageFolder + "SplashScreen.png"; }
-        }
+        public string SplashScreenImage => SkinImageFolder + "SplashScreen.png";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string ErrorScreenImage
-        {
-            get { return SkinImageFolder + "ErrorScreen.png"; }
-        }
+        public string ErrorScreenImage => SkinImageFolder + "ErrorScreen.png";
 
         [XmlIgnore]
         [Browsable(false)]
-        public string PreviewImage
-        {
-            get { return SkinImageFolder + "Preview.png"; }
-        }
+        public string PreviewImage => SkinImageFolder + "Preview.png";
 
         public event PropertyChangedEventHandler PropertyChanged;
     
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-        private Log _log = LoggingManager.GetLog(typeof(XmlSkinInfo));
-        private ObservableCollection<XmlImageFile> _images = new ObservableCollection<XmlImageFile>();
+        private readonly Log _log = LoggingManager.GetLog(typeof(XmlSkinInfo));
+        private readonly ObservableCollection<XmlImageFile> _images = new ObservableCollection<XmlImageFile>();
 
         private Dictionary<string, XmlStyleCollection> _styles = new Dictionary<string, XmlStyleCollection>();
         private XmlStyleCollection _style = new XmlStyleCollection();
@@ -281,42 +251,24 @@ namespace GUISkinFramework.Skin
 
         [XmlIgnore]
         [Browsable(false)]
-        public ObservableCollection<XmlImageFile> Images
-        {
-            get { return _images; }
-        }
+        public ObservableCollection<XmlImageFile> Images => _images;
 
         [XmlIgnore]
         [Browsable(false)]
-        public ObservableCollection<XmlProperty> Properties
-        {
-            get { return _propertyInfo.AllProperties; }
-        }
+        public ObservableCollection<XmlProperty> Properties => _propertyInfo.AllProperties;
 
         [XmlIgnore]
         [Browsable(false)]
-        public XmlLanguage Language
-        {
-            get { return _language; }
-        }
-
-
-
+        public XmlLanguage Language => _language;
 
 
         [XmlIgnore]
         [Browsable(false)]
-        public ObservableCollection<XmlWindow> Windows
-        {
-            get { return _windows; }
-        }
+        public ObservableCollection<XmlWindow> Windows => _windows;
 
         [XmlIgnore]
         [Browsable(false)]
-        public ObservableCollection<XmlDialog> Dialogs
-        {
-            get { return _dialogs; }
-        }
+        public ObservableCollection<XmlDialog> Dialogs => _dialogs;
 
         private void LoadWindows()
         {
@@ -456,17 +408,11 @@ namespace GUISkinFramework.Skin
 
         [XmlIgnore]
         [Browsable(false)]
-        public XmlStyleCollection Style
-        {
-            get { return _style; }
-        }
+        public XmlStyleCollection Style => _style;
 
         [XmlIgnore]
         [Browsable(false)]
-        public Dictionary<string, XmlStyleCollection> Styles
-        {
-            get { return _styles; }
-        }
+        public Dictionary<string, XmlStyleCollection> Styles => _styles;
 
         public void LoadStyles()
         {
@@ -495,7 +441,7 @@ namespace GUISkinFramework.Skin
             DirectoryHelpers.CreateIfNotExists(SkinStyleFolder);
             foreach (var styleCollection in _styles)
             {
-                var filename = Path.Combine(SkinStyleFolder, string.Format("{0}.xml", styleCollection.Key));
+                var filename = Path.Combine(SkinStyleFolder, $"{styleCollection.Key}.xml");
                 var newCollection = styleCollection.Value.CreateCopy();
                 if (newCollection == null) continue;
 
@@ -625,8 +571,7 @@ namespace GUISkinFramework.Skin
 
         public byte[] GetImageValue(string xmlname)
         {
-            if (_images == null) return null;
-            var image = _images.FirstOrDefault(x => x.XmlName.Equals(xmlname, StringComparison.OrdinalIgnoreCase));
+            var image = _images?.FirstOrDefault(x => x.XmlName.Equals(xmlname, StringComparison.OrdinalIgnoreCase));
             if (image != null && File.Exists(image.FileName))
             {
                 return FileHelpers.ReadBytesFromFile(image.FileName);
@@ -726,7 +671,7 @@ namespace GUISkinFramework.Skin
         {
             get
             {
-                return _language != null ? _language.LanguageEntries.SelectMany(x => x.Values).Select(x => x.Language).Distinct() : null;
+                return _language?.LanguageEntries.SelectMany(x => x.Values).Select(x => x.Language).Distinct();
             }
         }
 

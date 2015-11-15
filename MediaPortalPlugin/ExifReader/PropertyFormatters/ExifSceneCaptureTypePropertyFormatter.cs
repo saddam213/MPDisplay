@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of SceneCaptureType names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _sceneCaptureTypeMap = new Dictionary<ushort, string>
+        private readonly Dictionary<ushort, string> _sceneCaptureTypeMap = new Dictionary<ushort, string>
         {
             { 0, "Standard" },
             { 1, "Landscape" },
@@ -25,13 +25,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public override string DisplayName
-        {
-            get
-            {
-                return "Scene Capture Type";
-            }
-        }
+        public override string DisplayName => "Scene Capture Type";
 
         /// <summary>
         /// Gets a dictionary that maps values to named strings

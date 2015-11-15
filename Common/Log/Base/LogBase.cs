@@ -10,11 +10,11 @@ namespace Common.Log
     /// </summary>
     public abstract class Logger : IDisposable
     {
-        private Queue<Action> _queue = new Queue<Action>();
-        private ManualResetEvent _hasNewItems = new ManualResetEvent(false);
-        private ManualResetEvent _terminate = new ManualResetEvent(false);
-        private ManualResetEvent _waiting = new ManualResetEvent(false);
-        private Thread _loggingThread;
+        private readonly Queue<Action> _queue = new Queue<Action>();
+        private readonly ManualResetEvent _hasNewItems = new ManualResetEvent(false);
+        private readonly ManualResetEvent _terminate = new ManualResetEvent(false);
+        private readonly ManualResetEvent _waiting = new ManualResetEvent(false);
+        private readonly Thread _loggingThread;
         private volatile LogLevel _logLevel;
 
         /// <summary>

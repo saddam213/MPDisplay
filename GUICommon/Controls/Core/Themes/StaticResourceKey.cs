@@ -8,7 +8,7 @@ namespace MPDisplay.Common.Controls.Core
     {
         public string Key { get; private set; }
 
-        public Type Type { get; private set; }
+        public Type Type { get; }
 
         public StaticResourceKey(Type type, string key)
         {
@@ -16,9 +16,6 @@ namespace MPDisplay.Common.Controls.Core
             Key = key;
         }
 
-        public override Assembly Assembly
-        {
-            get { return Type.Assembly; }
-        }
+        public override Assembly Assembly => Type.Assembly;
     }
 }

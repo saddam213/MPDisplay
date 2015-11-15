@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows;
 using Common.Log;
@@ -12,9 +11,7 @@ namespace GUIConfig.Dialogs
     /// </summary>
     public partial class LanguageDialog : INotifyPropertyChanged
     {
-        private Log _log = LoggingManager.GetLog(typeof(LanguageDialog));
-
-        private string _selectedLanguage = "English";
+        private readonly Log _log = LoggingManager.GetLog(typeof(LanguageDialog));
 
         /// <summary>
         /// Initializes a new instance of the DialogLanguagePicker class.
@@ -34,19 +31,12 @@ namespace GUIConfig.Dialogs
         ///<summary>
          ///Gets the languages.
         ///</summary>
-        public IEnumerable<string> Languages
-        {
-            get { return LanguageHelper.Languages; }
-        }
+        public IEnumerable<string> Languages => LanguageHelper.Languages;
 
         /// <summary>
         /// Gets or sets the selected language.
         /// </summary>
-        public string SelectedLanguage
-        {
-            get { return _selectedLanguage; }
-            set { _selectedLanguage = value; }
-        }
+        public string SelectedLanguage { get; set; } = "English";
 
         /// <summary>
         /// Handles the Click event of the Button_OK control.
@@ -63,12 +53,9 @@ namespace GUIConfig.Dialogs
         /// Notifies the property changed.
         /// </summary>
         /// <param name="info">The info.</param>
-        public void NotifyPropertyChanged(String info)
+        public void NotifyPropertyChanged(string info)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
     }
 }

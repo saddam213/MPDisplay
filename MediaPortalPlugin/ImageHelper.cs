@@ -11,7 +11,7 @@ namespace MediaPortalPlugin
         {
             if( string.IsNullOrEmpty(filename)) return new APIImage();
 
-            if (FileHelpers.IsURL(filename) && FileHelpers.ExistsURL(filename)) // check for url to prevent exception
+            if (FileHelpers.IsUrl(filename) && FileHelpers.ExistsUrl(filename)) // check for url to prevent exception
 				return new APIImage(FileHelpers.ReadBytesFromFile(filename));
             var imageFile = File.Exists(filename) ? filename : GUIGraphicsContext.GetThemedSkinFile("\\media\\" + filename);
             return new APIImage(FileHelpers.ReadBytesFromFile(imageFile));

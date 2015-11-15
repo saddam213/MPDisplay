@@ -7,7 +7,7 @@
         <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter" />
     </Window.Resources>
 
-    <StackPanel Name="grid" DataContext="{Binding ElementName=UI}">
+    <StackPanel Name="Grid" DataContext="{Binding ElementName=UI}">
         <ContentPresenter Content="{Binding EditorContent}" Margin="5" />
         <StackPanel MinHeight="40" Orientation="Horizontal" HorizontalAlignment="Right">
             <Button Margin="5" Content="Cancel" Width="75" Click="Button_Cancel_Click" Visibility="{Binding HasCancelButton, Converter={StaticResource BoolToVisibilityConverter}}"/>

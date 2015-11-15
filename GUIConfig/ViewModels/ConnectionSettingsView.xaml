@@ -5,20 +5,14 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:settings="clr-namespace:GUIConfig.Settings;assembly="
              mc:Ignorable="d" 
-             Name="UI" MinWidth="241" Width="241" Height="260">
+             Name="UI" MinWidth="241" Width="241" >
 	<UserControl.Style>
 		<Style TargetType="UserControl">
 			<Setter Property="MinHeight" Value="260" />
-			<Style.Triggers>
-			    <!-- ReSharper disable once Xaml.BindingWithoutContextNotResolved -->
-				<DataTrigger Binding="{Binding CanEditConnectionName}" Value="True">
-					<Setter Property="MinHeight" Value="180" />
-				</DataTrigger>
-            </Style.Triggers>
 		</Style>
 	</UserControl.Style>
 
-	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}" Height="260" VerticalAlignment="Top">
+	<GroupBox DataContext="{Binding ElementName=UI}" Header="{Binding ConverterParameter=Connection, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Top">
 			<StackPanel Margin="0,0,0,5">
 			<Grid Margin="0,5,0,0">
 				<Grid.ColumnDefinitions>

@@ -1,26 +1,24 @@
 ﻿using System;
 using System.Globalization;
 using System.Windows.Data;
-using System.Windows.Media;
 
-namespace MPDisplay.Common.BindingConverters
+namespace GUIFramework.Converters
 {
-    public class SolidColorBrushToColorConverter : IValueConverter
+    public class GUILineHeightConverter : IValueConverter
     {
         #region IValueConverter Members
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var brush = value as SolidColorBrush;
-            return brush?.Color ?? default(Color);
+            var height = (double)value;
+            if (height < 0.0034) height = double.NaN;
+            if (height > 160000.0) height = 160000.0;
+            return height;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            if (value == null) return default(SolidColorBrush);
-
-            var color = (Color)value;
-            return new SolidColorBrush(color);
+            throw new NotImplementedException();
         }
 
         #endregion

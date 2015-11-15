@@ -23,7 +23,8 @@
 			<StackPanel>
 			<StackPanel Orientation="Horizontal">
 			
-					<views:ConnectionSettingsView CanEditConnectionName="True" CanManageService="False" ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Width="218" />
+			    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+					<views:ConnectionSettingsView CanManageService="False" ConnectionSettings="{Binding DataObject.ConnectionSettings}" HorizontalAlignment="Left" Width="218" VerticalAlignment="Stretch" />
 
 				<GroupBox Header="{Binding FallbackValue=Display, ConverterParameter=Display, Converter={StaticResource LanguageConverter}}" Width="200">
 					<StackPanel >
@@ -63,16 +64,52 @@
 						<UniformGrid Columns="2" IsEnabled="{Binding DataObject.CustomResolution}" >
 							<TextBlock Text="{Binding FallbackValue=Screen Width, ConverterParameter=Screen Width, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
 							<TextBlock Text="{Binding FallbackValue=Screen Height, ConverterParameter=Screen Height, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
-							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenWidth, FallbackValue=ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
-							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenHeight, FallbackValue=ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenWidth, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenHeight, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
 							<TextBlock Text="{Binding FallbackValue=Screen OffsetX, ConverterParameter=Screen OffsetX, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
-							<TextBlock Text="{Binding FallbackValue=Scrren OffsetY, ConverterParameter=Screen OffsetY, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
-							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenOffSetX, FallbackValue=ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
-							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenOffSetY, FallbackValue=ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+							<TextBlock Text="{Binding FallbackValue=Screen OffsetY, ConverterParameter=Screen OffsetY, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenOffSetX, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenOffSetY, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
 				</UniformGrid>
+                        
+                <CheckBox Content="{Binding FallbackValue=Screen Saver MP Windows , Converter={StaticResource LanguageConverter}, ConverterParameter=Screen Saver MP Windows}" IsChecked="{Binding Path=DataObject.ScreenSaverEnabledMP}" Margin="0,10,2,0" />
+                <CheckBox Content="{Binding FallbackValue=Screen Saver MPD Windows , Converter={StaticResource LanguageConverter}, ConverterParameter=Screen Saver MPD Windows}" IsChecked="{Binding Path=DataObject.ScreenSaverEnabledMPD}" Margin="0,2,2,0" />
+                <CheckBox Content="{Binding FallbackValue=Darken Player Windows , Converter={StaticResource LanguageConverter}, ConverterParameter=Darken Player Windows}" IsChecked="{Binding Path=DataObject.ScreenSaverEnabledPlayer}" Margin="0,2,2,0" />
 
-							
-							</StackPanel>
+                <UniformGrid Columns="2" >
+							<TextBlock Text="{Binding FallbackValue=Delay [s], ConverterParameter=Delay [s], Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="0,0,2,0"/>
+                            <TextBlock Text="{Binding FallbackValue=Darkness %, ConverterParameter=Darkness %, Converter={StaticResource LanguageConverter}}" VerticalAlignment="Bottom" Margin="2,0,0,0"/>
+                            <implementation:IntegerUpDown Value="{Binding DataObject.ScreenSaverDelay, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,0,2,0"/>
+							<implementation:IntegerUpDown Value="{Binding DataObject.ScreenSaverDarkness, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="2,0,0,0"/>
+				</UniformGrid>
+                        <TextBlock Margin="0,5,0,0" Text="{Binding FallbackValue=Slideshow Picture Path, Converter={StaticResource LanguageConverter}, ConverterParameter=Slideshow Picture Path}" IsEnabled="{Binding DataObject.ScreenSaverEnabled}"/>
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBox Text="{Binding DataObject.ScreenSaverPicturePath}"  />
+                            <Button Grid.Column="1" Width="22" Command="{Binding SelectPathCommand}" Name="Btn">
+                                <Image Margin="2,3,2,1"  Stretch="Uniform" Source="/MPDisplayConfig;component/Images/Edit.png" IsEnabled="{Binding IsEnabled, ElementName=Btn}" >
+                                    <Image.Style>
+                                        <Style TargetType="Image">
+                                            <Setter Property="Opacity" Value="1" />
+                                            <Style.Triggers>
+                                                <Trigger Property="IsEnabled" Value="False">
+                                                    <Setter Property="Opacity" Value="0.4" />
+                                                </Trigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                </Image>
+                            </Button>
+
+                        </Grid>
+                        <StackPanel Orientation="Horizontal" >
+                            <TextBlock Text="{Binding FallbackValue=Interval [s], ConverterParameter=Interval [s], Converter={StaticResource LanguageConverter}}" VerticalAlignment="Center" Margin="2,2,5,0"/>
+                            <implementation:IntegerUpDown  Value="{Binding DataObject.ScreenSaverPictureChange, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Margin="0,2,2,0"/>
+                        </StackPanel>
+                    </StackPanel>
 				</GroupBox>
 
 

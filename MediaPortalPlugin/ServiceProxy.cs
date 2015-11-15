@@ -107,7 +107,7 @@ namespace MediaPortalPlugin
     public class ConnectCompletedEventArgs : AsyncCompletedEventArgs
     {
 
-        private object[] _results;
+        private readonly object[] _results;
 
         public ConnectCompletedEventArgs(object[] results, Exception exception, bool cancelled, object userState) :
             base(exception, cancelled, userState)

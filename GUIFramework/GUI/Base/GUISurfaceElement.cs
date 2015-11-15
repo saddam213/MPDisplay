@@ -27,10 +27,7 @@ namespace GUIFramework.GUI
         /// <value>
         ///   <c>true</c> if [is open]; otherwise, <c>false</c>.
         /// </value>
-        public bool IsOpen
-        {
-            get { return Visibility == Visibility.Visible; }
-        }
+        public bool IsOpen => Visibility == Visibility.Visible;
 
         /// <summary>
         /// Gets or sets the controls.
@@ -63,11 +60,8 @@ namespace GUIFramework.GUI
         /// <param name="property">The property.</param>
         public void NotifyPropertyChanged([CallerMemberName]string property = "")
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
-        } 
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
 
         #endregion
     }

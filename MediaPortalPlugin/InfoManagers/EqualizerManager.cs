@@ -20,17 +20,14 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(EqualizerManager));
         }
 
-        public static EqualizerManager Instance
-        {
-            get { return _instance ?? (_instance = new EqualizerManager()); }
-        }
+        public static EqualizerManager Instance => _instance ?? (_instance = new EqualizerManager());
 
         #endregion
 
 
-        private Log _log;
+        private readonly Log _log;
         private bool _isEqRunning;
-        private float[] _eqFftData = new float[4096];
+        private readonly float[] _eqFftData = new float[4096];
         private Timer _eqThread;
         private int _eqDataLength = 50;
         private const int RefreshRate = 60;

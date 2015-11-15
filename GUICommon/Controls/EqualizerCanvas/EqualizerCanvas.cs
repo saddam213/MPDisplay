@@ -31,7 +31,7 @@ namespace MPDisplay.Common.Controls
         #region Vars
 
         private bool _rendering;
-        private EQData[] _fftData = new EQData[100];
+        private readonly EQData[] _fftData = new EQData[100];
 
         const int MaxRangeValue = 255;
         private Pen _borderPen;

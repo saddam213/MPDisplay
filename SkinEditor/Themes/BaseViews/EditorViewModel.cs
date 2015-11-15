@@ -9,10 +9,7 @@ namespace SkinEditor.Themes
     public class EditorViewModel : UserControl, INotifyPropertyChanged
     {
 
-        public virtual string Title
-        {
-            get { return "Editor"; }
-        }
+        public virtual string Title => "Editor";
 
         private bool _isSelected;
 
@@ -107,13 +104,9 @@ namespace SkinEditor.Themes
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-  
         #endregion
     }
 
@@ -139,11 +132,7 @@ namespace SkinEditor.Themes
             public event PropertyChangedEventHandler PropertyChanged;
             public void NotifyPropertyChanged(string property)
             {
-                if (PropertyChanged != null)
-                {
-                    PropertyChanged(this, new PropertyChangedEventArgs(property));
-                }
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
             }
-
         }
 }

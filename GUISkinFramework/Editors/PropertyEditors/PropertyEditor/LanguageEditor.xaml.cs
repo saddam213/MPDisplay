@@ -29,11 +29,7 @@ namespace GUISkinFramework.Editors
             get { return _skinInfo; }
             set { _skinInfo = value; NotifyPropertyChanged("SkinInfo"); }
         }
-        
-
-       
-
-
+ 
         public XmlLanguageEntry SelectedEntry
         { 
             get { return _selectedLanguage; }
@@ -52,10 +48,7 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         private void Button_LanguageAdd_Click(object sender, RoutedEventArgs e)

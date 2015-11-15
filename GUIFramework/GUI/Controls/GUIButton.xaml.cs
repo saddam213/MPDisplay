@@ -35,10 +35,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlButton SkinXml
-        {
-            get { return BaseXml as XmlButton; }
-        }
+        public XmlButton SkinXml => BaseXml as XmlButton;
 
         /// <summary>
         /// Gets or sets the action collection.

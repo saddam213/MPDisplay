@@ -10,7 +10,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             var valueSourceInterface = type.GetInterface("MPDisplay.Common.Controls.PropertyGrid.Attributes.IItemsSource");
             if (valueSourceInterface == null)
-                throw new ArgumentException(@"Type must implement the IItemsSource interface.", "type");
+                throw new ArgumentException(@"Type must implement the IItemsSource interface.", nameof(type));
 
             Type = type;
         }

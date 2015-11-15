@@ -32,8 +32,7 @@ namespace MPDisplay.Common.Controls
         private static void OnFormatStringChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericUpDown = o as NumericUpDown<T>;
-            if (numericUpDown != null)
-                numericUpDown.OnFormatStringChanged((string)e.OldValue, (string)e.NewValue);
+            numericUpDown?.OnFormatStringChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnFormatStringChanged(string oldValue, string newValue)
@@ -67,8 +66,7 @@ namespace MPDisplay.Common.Controls
         private static void OnMaximumChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericUpDown = o as NumericUpDown<T>;
-            if (numericUpDown != null)
-                numericUpDown.OnMaximumChanged((T)e.OldValue, (T)e.NewValue);
+            numericUpDown?.OnMaximumChanged((T)e.OldValue, (T)e.NewValue);
         }
 
         protected virtual void OnMaximumChanged(T oldValue, T newValue)
@@ -90,8 +88,7 @@ namespace MPDisplay.Common.Controls
         private static void OnMinimumChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var numericUpDown = o as NumericUpDown<T>;
-            if (numericUpDown != null)
-                numericUpDown.OnMinimumChanged((T)e.OldValue, (T)e.NewValue);
+            numericUpDown?.OnMinimumChanged((T)e.OldValue, (T)e.NewValue);
         }
 
         protected virtual void OnMinimumChanged(T oldValue, T newValue)

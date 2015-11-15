@@ -14,7 +14,6 @@ namespace Common.Settings
         private string _path;
 
         private bool _pathExists;
-        private List<String> _extensions = new List<string> { ".png", ".jpg", ".bmp", ".tif" };
         private List<String> _mpProperties;
 
         public string ImageName
@@ -60,10 +59,7 @@ namespace Common.Settings
         }
 
         [XmlIgnore]
-        public List<string> Extensions
-        {
-            get { return _extensions; }
-        }
+        public List<string> Extensions { get; } = new List<string> { ".png", ".jpg", ".bmp", ".tif" };
 
         [XmlIgnore]
         public List<string> MPProperties

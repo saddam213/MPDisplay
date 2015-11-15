@@ -25,10 +25,7 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(ListManager));
         }
 
-        public static ListManager Instance
-        {
-            get { return _instance ?? (_instance = new ListManager()); }
-        }
+        public static ListManager Instance => _instance ?? (_instance = new ListManager());
 
         #endregion
 
@@ -379,7 +376,7 @@ namespace MediaPortalPlugin.InfoManagers
         private void SendFacadeSelectedItem()
         {
             var currentFacade = _facadeControls.FirstOrDefault(f => f.Focus);
-            if (currentFacade == null || currentFacade.SelectedListItem == null) return;
+            if (currentFacade?.SelectedListItem == null) return;
 
             SendSelectedItem(APIListType.List, currentFacade.SelectedListItem.Label, currentFacade.SelectedListItemIndex);
 
@@ -491,7 +488,7 @@ namespace MediaPortalPlugin.InfoManagers
         private void SendListSelectedItem()
         {
             var currentList = _listControls.FirstOrDefault(f => f.Focus);
-            if (currentList == null || currentList.SelectedListItem == null) return;
+            if (currentList?.SelectedListItem == null) return;
 
             SendSelectedItem(APIListType.List, currentList.SelectedListItem.Label, currentList.SelectedListItemIndex);
 
@@ -892,7 +889,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void SendList(APIListType listType, APIListLayout layout, List<APIListItem> items)
         {
-            var count = items != null ? items.Count() : 0;
+            var count = items?.Count ?? 0;
             _currentBatchId++;
             if (listType == APIListType.List && count >= _settings.ListBatchThreshold)
             {

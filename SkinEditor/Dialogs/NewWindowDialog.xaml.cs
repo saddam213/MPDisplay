@@ -13,7 +13,7 @@ namespace SkinEditor.Dialogs
     {
         private XmlSkinInfo _skinInfo;
         private IXmlControlHost _newElement;
-        private XmlStyleCollection _designerStyle;
+        private readonly XmlStyleCollection _designerStyle;
         public enum WindowOption { None, MPDWindow, MPDDialog, MPWindow, MPDialog, PlayerWindow }
         private WindowOption _currentOption;
         private int _windowId;
@@ -62,13 +62,13 @@ namespace SkinEditor.Dialogs
         {
             if (SkinInfo.Windows.Any(w => w.Id == _windowId) || SkinInfo.Dialogs.Any(w => w.Id == _windowId))
             {
-                MessageBox.Show(string.Format("Window/Dialog Id '{0}' is already in-use, Please select a new Id.", _windowId), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Window/Dialog Id '{_windowId}' is already in-use, Please select a new Id.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             if (SkinInfo.Windows.Any(w => w.Name == _windowName) || SkinInfo.Dialogs.Any(w => w.Name == _windowName))
             {
-                MessageBox.Show(string.Format("Window/Dialog Name '{0}' is already in-use, Please select a new name.", _windowName), "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Window/Dialog Name '{_windowName}' is already in-use, Please select a new name.", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -162,10 +162,7 @@ namespace SkinEditor.Dialogs
       
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

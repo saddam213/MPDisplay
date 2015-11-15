@@ -9,7 +9,7 @@ namespace Common.Helpers
 {
     public static class FileHelpers
     {
-        private static Log.Log _log = LoggingManager.GetLog(typeof(FileHelpers));
+        private static readonly Log.Log Log = LoggingManager.GetLog(typeof(FileHelpers));
 
         /// <summary>
         /// Reads the bytes from file.
@@ -22,12 +22,12 @@ namespace Common.Helpers
             try
             {
                 // get image from url
-                if (IsURL(filename) && ExistsURL(filename))
+                if (IsUrl(filename) && ExistsUrl(filename))
                 {
                     using (var webClient = new WebClient())
                     {
                         var fileData = webClient.DownloadData(filename);
-                        _log.Message(LogLevel.Verbose, "[ReadBytesFromFile] - Dowloaded data from URL {0}, received <{1}> bytes.", filename, fileData.Length);
+                        Log.Message(LogLevel.Verbose, "[ReadBytesFromFile] - Dowloaded data from URL {0}, received <{1}> bytes.", filename, fileData.Length);
 
                         return fileData;
                     }
@@ -44,7 +44,7 @@ namespace Common.Helpers
             }
             catch(Exception ex)
             {
-                _log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File or URL: {0}", ex, filename);
+                Log.Exception("[ReadBytesFromFile] - An exception occured reading file bytes, File or URL: {0}", ex, filename);
             }
             return null;
         }
@@ -53,7 +53,7 @@ namespace Common.Helpers
 		/// Checks if file points to an URL location
 		/// </summary>
 		/// <param name="file">The file.</param>
-		public static bool IsURL(string file)
+		public static bool IsUrl(string file)
 		{
 				return file.StartsWith("http");
 		}
@@ -62,7 +62,7 @@ namespace Common.Helpers
 		/// Checks if URL exists on server
 		/// </summary>
 		/// <param name="file">The file.</param>
-		public static bool ExistsURL(string file)
+		public static bool ExistsUrl(string file)
 		{
 			var urlCheck = new Uri(file);
 			var request = (HttpWebRequest)WebRequest.Create(urlCheck);					
@@ -75,7 +75,7 @@ namespace Common.Helpers
 				response = (HttpWebResponse)request.GetResponse();
 			    if (response.StatusCode != HttpStatusCode.OK)
 			    {
-                    _log.Message(LogLevel.Warn, "[ExistsURL] - Status for URL {0} not ok, Returned Status is <{1}>", file, response.StatusCode );
+                    Log.Message(LogLevel.Warn, "[ExistsURL] - Status for URL {0} not ok, Returned Status is <{1}>", file, response.StatusCode );
 			    }
 				return response.StatusCode == HttpStatusCode.OK;
 			}
@@ -83,22 +83,22 @@ namespace Common.Helpers
 			{
 			    if (response == null)
 			    {
-                    _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, no response received, WebException: {1}", file, we);
+                    Log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, no response received, WebException: {1}", file, we);
 			    }
 			    else
 			    {
-                    _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Status Code <{1}>, WebException: {2}", file, response.StatusCode, we);			        
+                    Log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Status Code <{1}>, WebException: {2}", file, response.StatusCode, we);			        
 			    }
 				return false; 
 			}
 			catch (Exception ex)
 			{
-                _log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Exception:{1}", file, ex);
+                Log.Message(LogLevel.Error, "[ExistsURL] - An exception occurred checking URL {0}, Exception:{1}", file, ex);
 				return false; 
 			}
-			finally 
+			finally
 			{
-			    if (response != null) response.Dispose();
+			    response?.Dispose();
 			}
 		}
  
@@ -114,7 +114,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[TryDelete] - An exception occured deleting file, File: {0}", ex, file);
+                Log.Exception("[TryDelete] - An exception occured deleting file, File: {0}", ex, file);
             }
         }
 
@@ -148,7 +148,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[CopyFile] - An exception occured copying file, Source: {0}, Destination: {1}", ex, source, destination);
+                Log.Exception("[CopyFile] - An exception occured copying file, Source: {0}, Destination: {1}", ex, source, destination);
             }
         }
 

@@ -4,10 +4,7 @@
     {
         private string[] _keywordStrings;
 
-        public string[] KeywordStrings
-        {
-            get { return _keywordStrings ?? (_keywordStrings = new[] {DisplayName}); }
-        }
+        public string[] KeywordStrings => _keywordStrings ?? (_keywordStrings = new[] {DisplayName});
 
         public string DisplayName { get; set; }
 

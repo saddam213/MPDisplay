@@ -12,12 +12,6 @@ namespace GUISkinFramework.Skin
             this.SetDefaultValues();
         }
 
-   
-
-
-        public override string DisplayType
-        {
-            get { return "MediaPortal Window"; }
-        }
+        public override string DisplayType => "MediaPortal Window";
     }
 }

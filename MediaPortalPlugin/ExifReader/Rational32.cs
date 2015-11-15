@@ -57,18 +57,12 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Gets the numerator
         /// </summary>
-        public CommonInt32 Numerator
-        {
-            get { return _numerator; }
-        }
+        public CommonInt32 Numerator => _numerator;
 
         /// <summary>
         /// Gets the denominator
         /// </summary>
-        public CommonInt32 Denominator
-        {
-            get { return _denominator; }
-        }
+        public CommonInt32 Denominator => _denominator;
 
         /// <summary>
         /// Explicit conversion operator to double
@@ -133,8 +127,8 @@ namespace MediaPortalPlugin.ExifReader
         public override string ToString()
         {
             return _denominator.IsSigned ?
-                String.Format("{0} {1} {2}", (int)_numerator, Separator, (int)_denominator) :
-                String.Format("{0} {1} {2}", (uint)_numerator, Separator, (uint)_denominator);
+                $"{(int) _numerator} {Separator} {(int) _denominator}"
+                : $"{(uint) _numerator} {Separator} {(uint) _denominator}";
         }
 
         /// <summary>

@@ -212,40 +212,28 @@ namespace GUIConfig.Settings
         /// </summary>
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinInfoPath
-        {
-            get { return SkinFolderPath + "\\SkinInfo.xml"; }
-        }
+        public string SkinInfoPath => SkinFolderPath + "\\SkinInfo.xml";
 
         /// <summary>
         /// Gets the skin language path.
         /// </summary>
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinLanguagePath
-        {
-            get { return SkinFolderPath + "\\Language.xml"; }
-        }
+        public string SkinLanguagePath => SkinFolderPath + "\\Language.xml";
 
         /// <summary>
         /// Gets the skin image folder.
         /// </summary>
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinImageFolder
-        {
-            get { return SkinFolderPath + "\\Images"; }
-        }
+        public string SkinImageFolder => SkinFolderPath + "\\Images";
 
         /// <summary>
         /// Gets the skin style folder.
         /// </summary>
         [XmlIgnore]
         [Browsable(false)]
-        public string SkinStyleFolder
-        {
-            get { return SkinFolderPath + "\\Styles\\"; }
-        }
+        public string SkinStyleFolder => SkinFolderPath + "\\Styles\\";
 
         /// <summary>
         /// Gets the preview image.
@@ -256,7 +244,7 @@ namespace GUIConfig.Settings
         {
             get
             { 
-                var filename = string.Format("{0}\\Preview_{1}.png",SkinImageFolder, CurrentStyle);
+                var filename = $"{SkinImageFolder}\\Preview_{CurrentStyle}.png";
                 if (File.Exists(filename))
                 {
                     return filename;
@@ -268,13 +256,7 @@ namespace GUIConfig.Settings
         /// <summary>
         /// Gets the styles.
         /// </summary>
-        public IEnumerable<string> Styles
-        {
-            get
-            {
-                return Directory.Exists(SkinStyleFolder) ? Directory.GetFiles(SkinStyleFolder, "*.xml").Select(Path.GetFileNameWithoutExtension) : null;
-            }
-        }
+        public IEnumerable<string> Styles => Directory.Exists(SkinStyleFolder) ? Directory.GetFiles(SkinStyleFolder, "*.xml").Select(Path.GetFileNameWithoutExtension) : null;
 
         /// <summary>
         /// Gets the languages.
@@ -303,10 +285,7 @@ namespace GUIConfig.Settings
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion
@@ -410,10 +389,7 @@ namespace GUIConfig.Settings
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

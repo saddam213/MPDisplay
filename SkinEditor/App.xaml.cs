@@ -10,10 +10,7 @@ namespace SkinEditor
     public partial class App
     {
         private static string _startupSkinInfoFilename = string.Empty;
-        public static string StartupSkinInfoFilename
-        {
-            get { return _startupSkinInfoFilename; }
-        }
+        public static string StartupSkinInfoFilename => _startupSkinInfoFilename;
 
         protected override void OnStartup(StartupEventArgs e)
         {

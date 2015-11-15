@@ -60,6 +60,7 @@
 
 				<ListBox.ItemTemplate>
 						<DataTemplate>
+						    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 							<TextBlock Text="{Binding SkinTag}" />
 						</DataTemplate>
 				</ListBox.ItemTemplate>
@@ -85,11 +86,12 @@
             <TextBlock TextWrapping="Wrap" Text="Designer Value"/>
             <TextBox TextWrapping="Wrap" Text="{Binding SelectedProperty.DesignerValue}"/>
             <TextBlock TextWrapping="Wrap" Text="MediaPortal Property Tags" />
-			<ListBox SelectedIndex="{Binding MediaPortalTagSelectedIndex}" x:Name="mpTagList" ItemsSource="{Binding SelectedProperty.MediaPortalTags}"  DisplayMemberPath="Tag"  Height="150" IsSynchronizedWithCurrentItem="True" />
+			<ListBox SelectedIndex="{Binding MediaPortalTagSelectedIndex}" x:Name="MPTagList" ItemsSource="{Binding SelectedProperty.MediaPortalTags}"  DisplayMemberPath="Tag"  Height="150" IsSynchronizedWithCurrentItem="True" />
             <TextBlock TextWrapping="Wrap" Text="Tag"/>
             <TextBox TextWrapping="Wrap" >
                 <TextBox.Text>
-                    <Binding ElementName="mpTagList" Path="SelectedItem.Tag" UpdateSourceTrigger="PropertyChanged" >
+                    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+                    <Binding ElementName="MPTagList" Path="SelectedItem.Tag" UpdateSourceTrigger="PropertyChanged" >
                         <Binding.ValidationRules>
                             <propertyEditor:PropertyTagValidationRule ValidatesOnTargetUpdated="True" />
                         </Binding.ValidationRules>
@@ -99,7 +101,7 @@
                     <Style TargetType="TextBox">
                         <Setter Property="IsEnabled" Value="True" />
                         <Style.Triggers>
-                            <DataTrigger Binding="{Binding SelectedItem, ElementName=mpTagList}" Value="{x:Null}">
+                            <DataTrigger Binding="{Binding SelectedItem, ElementName=MPTagList}" Value="{x:Null}">
                                 <Setter Property="IsEnabled" Value="False" />
                             </DataTrigger>
 						</Style.Triggers>

@@ -51,7 +51,7 @@
 		</Style.Triggers>
 	</Style>
 
-	<Style x:Key="itemsControl" TargetType="ListBox">
+	<Style x:Key="ItemsControl" TargetType="ListBox">
 		<Setter Property="BorderBrush" Value="{x:Null}" />
 		<Setter Property="BorderThickness" Value="0" />
 	</Style>
@@ -70,8 +70,7 @@
 		           			Width="{Binding Width, Mode=TwoWay}"
 							Height="{Binding Height, Mode=TwoWay}"
 							Canvas.Left="{Binding PosX, Mode=TwoWay}"
-							Canvas.Top="{Binding PosY, Mode=TwoWay}" >
-						</commonControls:MoveResizeControl>
+							Canvas.Top="{Binding PosY, Mode=TwoWay}" />
 					</Grid>
 				</ControlTemplate>
 			</Setter.Value>
@@ -79,21 +78,20 @@
 	</Style>
 
 	<ItemsPanelTemplate x:Key="CanvasItemsPanel">
-		<Canvas IsItemsHost="True" >
-		</Canvas>
+		<Canvas IsItemsHost="True" />
 	</ItemsPanelTemplate>
 
 	<DataTemplate DataType="{x:Type skinWindows:XmlMPWindow}" >
 		<Border Width="{Binding Width, Mode=OneWay}" 
 		        Height="{Binding Height, Mode=OneWay}"
                 Background="{Binding BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" >
-			<ListBox Style="{StaticResource itemsControl}" 
+		    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+			<ListBox Style="{StaticResource ItemsControl}" 
 			         ItemContainerStyle="{StaticResource PositionHost}"
 			         ItemsPanel="{StaticResource CanvasItemsPanel}"
 		             ItemsSource="{Binding Controls}"
 					 Background="Transparent" 
-					 SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" >
-			</ListBox>
+					 SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" />
 		</Border>
 	</DataTemplate>
 
@@ -101,13 +99,13 @@
 		<Border Width="{Binding Width, Mode=OneWay}" 
 		        Height="{Binding Height, Mode=OneWay}"
                 Background="{Binding BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" >
-			<ListBox Style="{StaticResource itemsControl}" 
+		    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+			<ListBox Style="{StaticResource ItemsControl}" 
 			         ItemContainerStyle="{StaticResource PositionHost}"
 			         ItemsPanel="{StaticResource CanvasItemsPanel}"
 		             ItemsSource="{Binding Controls}"
 				     Background="Transparent"
-				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" >
-			</ListBox>
+				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" />
 		</Border>
 	</DataTemplate>
 
@@ -115,13 +113,13 @@
 		<Border Width="{Binding Width, Mode=OneWay}" 
 		        Height="{Binding Height, Mode=OneWay}"
                 Background="{Binding BackgroundBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" >
-			<ListBox Style="{StaticResource itemsControl}" 
+		    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+			<ListBox Style="{StaticResource ItemsControl}" 
 			         ItemContainerStyle="{StaticResource PositionHost}"
 			         ItemsPanel="{StaticResource CanvasItemsPanel}"
 		             ItemsSource="{Binding Controls}"
 				     Background="Transparent"
-				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" >
-			</ListBox>
+				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" />
 		</Border>
 	</DataTemplate>
 
@@ -132,13 +130,13 @@
                 BorderBrush="{Binding BorderBrush, Converter={StaticResource BrushConverter},Mode=OneWay}"
                 BorderThickness="{Binding BorderThickness, Converter={StaticResource ThicknessConverter},Mode=OneWay}"
                 CornerRadius="{Binding CornerRadius, Converter={StaticResource CornerRadiusConverter},Mode=OneWay}" >
-			<ListBox Style="{StaticResource itemsControl}" 
+		    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+			<ListBox Style="{StaticResource ItemsControl}" 
 			         ItemContainerStyle="{StaticResource PositionHost}"
 			         ItemsPanel="{StaticResource CanvasItemsPanel}"
 		             ItemsSource="{Binding Controls}"
 				     Background="Transparent"
-				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" >
-			</ListBox>
+				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" />
 		</Border>
 	</DataTemplate>
 
@@ -149,13 +147,13 @@
                 BorderBrush="{Binding BorderBrush, Converter={StaticResource BrushConverter}}"
                 BorderThickness="{Binding BorderThickness, Converter={StaticResource ThicknessConverter},Mode=OneWay}"
                 CornerRadius="{Binding CornerRadius, Converter={StaticResource CornerRadiusConverter}}" >
-			<ListBox Style="{StaticResource itemsControl}" 
+		    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+			<ListBox Style="{StaticResource ItemsControl}" 
 			         ItemContainerStyle="{StaticResource PositionHost}"
 			         ItemsPanel="{StaticResource CanvasItemsPanel}"
 		             ItemsSource="{Binding Controls}"
 				     Background="Transparent" 
-				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" >
-			</ListBox>
+				     SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" />
 		</Border>
 	</DataTemplate>
 
@@ -199,8 +197,7 @@
 								<commonControls:RoundedImage 
 													      Stretch="{Binding ControlStyle.ImageStretch,Mode=OneWay}"
 														  Source="{Binding Image,Converter={StaticResource ImageConverter}, Mode=OneWay}"
-														  CornerRadius="{Binding ControlStyle.ImageCornerRadius,Mode=OneWay}"  >
-								</commonControls:RoundedImage>
+														  CornerRadius="{Binding ControlStyle.ImageCornerRadius,Mode=OneWay}" />
 							</Border>
 
 							<TextBlock Text="{Binding LabelText, Converter={StaticResource LabelConverter},Mode=OneWay}"
@@ -232,6 +229,7 @@
 			<commonControlsS3D:Surface3D.Style>
 				<Style TargetType="{x:Type commonControlsS3D:Surface3D}">
 					<Style.Triggers>
+					    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 						<DataTrigger  Binding="{Binding IsMouseDown, RelativeSource={RelativeSource Self}}" Value="True">
 							<DataTrigger.EnterActions>
 								<BeginStoryboard HandoffBehavior="SnapshotAndReplace" >
@@ -274,14 +272,14 @@
 
 			<Border x:Name="focusShading" Background="{Binding ControlStyle.ShadeBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
 				<Border x:Name="focusgloss" Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-						<ListBox Style="{StaticResource itemsControl}" 
+				    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+						<ListBox Style="{StaticResource ItemsControl}" 
 						  ItemContainerStyle="{StaticResource PositionHost}"
 			              ItemsPanel="{StaticResource CanvasItemsPanel}"
 		                  ItemsSource="{Binding Controls}"
 						  Background="Transparent"
-						  SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" >
-						</ListBox>
-					</Border>
+						  SelectedItem="{Binding CurrentXmlControl, RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type views:EditorViewModel}}}" />
+				</Border>
             </Border>
         </Border>
 		</commonControlsS3D:Surface3D>
@@ -335,8 +333,7 @@
 											   IsVertical="{Binding IsVertical, Mode=OneWay}"
 											   ScrollDelay="{Binding ScrollDelay, Mode=OneWay}"
 											   ScrollSpeed="{Binding ScrollSpeed, Mode=OneWay}"
-											   ScrollSeperator="{Binding ScrollSeperator, Mode=OneWay}">
-			</commonControls:ScrollingTextBlock>
+											   ScrollSeperator="{Binding ScrollSeperator, Mode=OneWay}" />
 		</commonControlsS3D:Surface3D>
 	</DataTemplate>
 
@@ -359,6 +356,7 @@
                     BorderThickness="{Binding ControlStyle.BorderThickness, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                     CornerRadius="{Binding ControlStyle.CornerRadius, Converter={StaticResource CornerRadiusConverter}, Mode=OneWay}" >
                 <Grid>
+                    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
 					<commonControls:RoundedImage x:Name="image"
                                                   Margin="{Binding ImageMargin, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                                                   Source="{Binding Image, Converter={StaticResource ImageConverter}, Mode=OneWay}" 
@@ -366,7 +364,8 @@
                                                   Stretch="{Binding ImageStretch, Mode=OneWay}"
                                                   HorizontalAlignment="{Binding BaseXml.ControlStyle.ImageHorizontalAlignment,Mode=OneWay}" 
 						                          VerticalAlignment="{Binding BaseXml.ControlStyle.ImageVerticalAlignment,Mode=OneWay}" />
-				<Border Margin="{Binding ImageMargin, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
+                    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+                    <Border Margin="{Binding ImageMargin, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                         Background="{Binding CoverImage, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
                         CornerRadius="{Binding CoverCornerRadius, Converter={StaticResource CornerRadiusConverter}, Mode=OneWay}"/>
                     <Grid Visibility="{Binding ShowMapControls, Converter={StaticResource BooleanToVisibilityConverter}}">
@@ -613,8 +612,7 @@
                                FontWeight="{Binding ControlStyle.LabelFixedFontWeight, Converter={StaticResource GUIFontConverter},Mode=OneWay}"
                                Foreground="{Binding ControlStyle.LabelFixedFontBrush, Converter={StaticResource GUIBrushConverter},Mode=OneWay}"
 							   Margin="{Binding ControlStyle.LabelFixedMargin}" 
-							   Visibility="{Binding ControlStyle.EnableLabelFixed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-                        </TextBlock>
+							   Visibility="{Binding ControlStyle.EnableLabelFixed, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}" />
 
                         <TextBlock x:Name="labelmoving" Text="{Binding LabelMovingText, Converter={StaticResource LabelConverter},Mode=OneWay}"
                                HorizontalAlignment="Left"
@@ -759,9 +757,8 @@
 								<commonControls:RoundedImage 
 														  Stretch="{Binding CurrentLayout.ImageStretch,Mode=OneWay, ElementName=UI}"
 														  Source="{Binding Image, Converter={StaticResource GUIImageConverter}}"
-														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" >
-								</commonControls:RoundedImage>
-							
+														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" />
+
 							</Border>
 
 							<!--Image2-->

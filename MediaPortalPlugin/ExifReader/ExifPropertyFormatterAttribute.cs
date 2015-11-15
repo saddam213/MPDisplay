@@ -20,7 +20,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// The type of the IExifPropertyFormatter
         /// </summary>
-        private Type _exifPropertyFormatterType;
+        private readonly Type _exifPropertyFormatterType;
 
         /// <summary>
         /// Initializes a new instance of the ExifPropertyFormatterAttribute class

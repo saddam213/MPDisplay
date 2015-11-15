@@ -22,6 +22,7 @@ namespace GUISkinFramework.Skin
         private string _description;
         private XmlBrush _backgroundBrush;
         private int _defaultMediaPortalFocusedControlId;
+        private bool _designerVisible = true;
 
         public XmlWindow()
         {
@@ -30,18 +31,19 @@ namespace GUISkinFramework.Skin
 
         [XmlIgnore]
         [Browsable(false)]
-        public string DisplayName
-        {
-            get { return Name; }
-        }
+        public string DisplayName => Name;
 
         [XmlIgnore]
         [Browsable(false)]
-        public virtual string DisplayType
-        {
-            get { return "Window"; }
-        }
+        public virtual string DisplayType => "Window";
 
+        [XmlIgnore]
+        [Browsable(false)]
+        public bool DesignerVisible
+        {
+            get { return _designerVisible; }
+            set { _designerVisible = value; NotifyPropertyChanged("DesignerVisible"); }
+        }
 
         public bool IsDefault { get; set; }
     
@@ -150,10 +152,7 @@ namespace GUISkinFramework.Skin
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
     }
 }

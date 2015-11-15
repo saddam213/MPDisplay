@@ -12,7 +12,6 @@
 				<Style TargetType="TabItem">
 					<Setter Property="Header" Value="{Binding Title}"/>
 					<Setter Property="Content" Value="{Binding}"/>
-					<Setter Property="IsSelected" Value="{Binding IsSelected}" />
 				</Style>
 			</TabControl.ItemContainerStyle>
 		</TabControl>

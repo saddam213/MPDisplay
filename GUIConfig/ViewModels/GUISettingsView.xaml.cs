@@ -1,7 +1,9 @@
 ﻿using System.Windows;
 using System.Windows.Forms;
+using System.Windows.Input;
 using Common.Log;
 using Common.Settings;
+using MPDisplay.Common.Utils;
 
 namespace GUIConfig.ViewModels
 {
@@ -24,12 +26,19 @@ namespace GUIConfig.ViewModels
         /// </summary>
         public GUISettingsView()
         {
+            SelectPathCommand = new RelayCommand(LaunchPathPicker);
+
             InitializeComponent();
         }
 
         #endregion
 
         #region Properties
+
+        /// <summary>
+        /// Gets or sets the select path command.
+        /// </summary>
+        public ICommand SelectPathCommand { get; set; }
 
         /// <summary>
         /// Gets or sets the log level.
@@ -52,14 +61,25 @@ namespace GUIConfig.ViewModels
         /// <summary>
         /// Gets the tabs title.
         /// </summary>
-        public override string Title
-        {
-            get { return "MPDisplay"; }
-        }
+        public override string Title => "MPDisplay";
 
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Launches path picker.
+        /// </summary>
+        private void LaunchPathPicker()
+        {
+            var dlg = new FolderBrowserDialog();
+            var result = dlg.ShowDialog();
+            if (result != DialogResult.OK) return;
+
+            var guiSettings = DataObject as GUISettings;
+            if (guiSettings != null)
+                guiSettings.ScreenSaverPicturePath = dlg.SelectedPath;
+        }
 
         /// <summary>
         /// Saves the changes.

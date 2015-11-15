@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of light source names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _lightSourceNameMap = new Dictionary<ushort, string>
+        private readonly Dictionary<ushort, string> _lightSourceNameMap = new Dictionary<ushort, string>
         {
             { 0, "Unknown" },
             { 1, "Daylight" },
@@ -42,13 +42,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public override string DisplayName
-        {
-            get
-            {
-                return "Light Source";
-            }
-        }
+        public override string DisplayName => "Light Source";
 
         /// <summary>
         /// Gets a dictionary that maps values to named strings

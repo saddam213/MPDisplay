@@ -12,7 +12,7 @@
              d:DesignHeight="300" d:DesignWidth="300" Name="UI" >
 
 	<Grid DataContext="{Binding ElementName=UI}">
-		<ListBox x:Name="listbox" ItemsSource="{Binding ListItems}"
+		<ListBox x:Name="Listbox" ItemsSource="{Binding ListItems}"
 		         VirtualizingPanel.VirtualizationMode="Recycling" 
 				 VirtualizingPanel.IsContainerVirtualizable="True" 
 				 VirtualizingPanel.IsVirtualizing="True" 
@@ -257,8 +257,7 @@
 										
 														  Stretch="{Binding CurrentLayout.ImageStretch,Mode=OneWay, ElementName=UI}"
 														  Source="{Binding Image}"
-														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" >
-											</controls:RoundedImage>
+														  CornerRadius="{Binding CurrentLayout.ImageCornerRadius,Mode=OneWay, ElementName=UI}" />
 										</Border>
 
 										<TextBlock Text="{Binding Label}"

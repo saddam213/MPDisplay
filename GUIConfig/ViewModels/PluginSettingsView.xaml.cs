@@ -32,10 +32,7 @@ namespace GUIConfig.ViewModels
         /// <summary>
         /// Gets the tabs title.
         /// </summary>
-        public override string Title
-        {
-            get { return "Plugin"; }
-        }
+        public override string Title => "Plugin";
 
         /// <summary>
         /// Gets or sets the log level.

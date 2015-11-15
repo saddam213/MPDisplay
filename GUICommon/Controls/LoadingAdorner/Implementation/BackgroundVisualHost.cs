@@ -82,10 +82,7 @@ namespace MPDisplay.Common.Controls
         } 
         #endregion
 
-        protected override int VisualChildrenCount
-        {
-            get { return _hostVisual != null ? 1 : 0; }
-        }
+        protected override int VisualChildrenCount => _hostVisual != null ? 1 : 0;
 
         protected override Visual GetVisualChild(int index)
         {
@@ -127,7 +124,7 @@ namespace MPDisplay.Common.Controls
 
         protected override Size MeasureOverride(Size availableSize)
         {
-            return _threadedHelper != null ? _threadedHelper.DesiredSize : base.MeasureOverride(availableSize);
+            return _threadedHelper?.DesiredSize ?? base.MeasureOverride(availableSize);
         }
 
         private class ThreadedVisualHelper
@@ -137,7 +134,7 @@ namespace MPDisplay.Common.Controls
             private readonly CreateContentFunction _createContent;
             private readonly Action _invalidateMeasure;
 
-            public HostVisual HostVisual { get { return _hostVisual; } }
+            public HostVisual HostVisual => _hostVisual;
             public Size DesiredSize { get; private set; }
             private Dispatcher Dispatcher { get; set; }
 

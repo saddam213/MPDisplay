@@ -33,10 +33,7 @@ namespace GUISkinFramework.Skin
     
         [XmlIgnore]
         [Browsable(false)]
-        public string DisplayType
-        {
-            get { return "Equalizer"; }
-        }
+        public string DisplayType => "Equalizer";
 
         [DefaultValue(null)]
         [PropertyOrder(100)]

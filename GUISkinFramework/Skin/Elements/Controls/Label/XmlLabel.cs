@@ -14,7 +14,7 @@ namespace GUISkinFramework.Skin
         private string _labelText = "";
         private string _defaultLabelText = "";
         private string _labelNumberFormat = "";
-        private int _lineHeight;
+        private double _lineHeight;
         private TextAlignment _labelTextAlignment = TextAlignment.Left;
         private bool _isScrollingEnabled = true;
         private XmlLabelStyle _controlStyle;
@@ -78,7 +78,7 @@ namespace GUISkinFramework.Skin
         [DefaultValue(0)]
         [PropertyOrder(30)]
         [EditorCategory("Label", 4)]
-        public int LineHeight
+        public double LineHeight
         {
             get { return _lineHeight; }
             set { _lineHeight = value; NotifyPropertyChanged("LineHeight"); }
