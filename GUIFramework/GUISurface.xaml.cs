@@ -55,7 +55,7 @@ namespace GUIFramework
 
         private bool _screenSaverActive;
         private int _screenSaverDelay;
-        private ScreenSaverType _screenSaverType;
+        private ScreenSaverType _screenSaverType = ScreenSaverType.None;
         private DateTime _screenSaverLastInteraction = DateTime.Now;
         private bool _screenSaverMustDarken;
         private DateTime _screenSaverNextUpdate = DateTime.MinValue;
@@ -142,6 +142,7 @@ namespace GUIFramework
         /// <returns></returns>
         public async Task LoadSkin(GUISettings settings)
         {
+            _screenSaverType = ScreenSaverType.None;
             if (settings != null)
             {
                 IsSplashScreenVisible = true;
@@ -151,8 +152,8 @@ namespace GUIFramework
                     Settings = settings;
                     skinInfo.SkinFolderPath = Path.GetDirectoryName(settings.SkinInfoXml);
                     await LoadSkin(skinInfo);
-                }
-            }
+                 }
+             }
         }
 
         /// <summary>
@@ -765,9 +766,11 @@ namespace GUIFramework
         {
             await SendKeepAlive();
 
-            if (_screenSaverLastInteraction.AddSeconds(_screenSaverDelay) < DateTime.Now) await ScreenSaverStart();
-
-            await ScreenSaverUpdate();
+            if (_screenSaverType != ScreenSaverType.None)
+            {
+                if (_screenSaverLastInteraction.AddSeconds(_screenSaverDelay) < DateTime.Now) await ScreenSaverStart();
+                await ScreenSaverUpdate();             
+            }
         } 
 
         #endregion
@@ -1071,10 +1074,19 @@ namespace GUIFramework
 
         public async void ReceiveAPIDataMessage(APIDataMessage message)
         {
-            if (message != null && message.DataType == APIDataMessageType.KeepAlive)
+            if (message != null)
             {
-                _lastKeepAlive = DateTime.Now;
-                return;
+
+                switch (message.DataType)
+                {
+                    case APIDataMessageType.KeepAlive:
+                        _lastKeepAlive = DateTime.Now;
+                        return;
+
+                    case APIDataMessageType.MPActionId:
+                        ScreenSaverStop();
+                        break;
+                }
             }
             await Task.Factory.StartNew(() => GenericDataRepository.Instance.AddDataMessage(message));
         }
@@ -1093,7 +1105,11 @@ namespace GUIFramework
         public bool ScreenSaverActive
         {
             get { return _screenSaverActive; }
-            set { _screenSaverActive = value; NotifyPropertyChanged("ScreenSaverActive"); }
+            set
+            {
+                _screenSaverActive = value;
+                NotifyPropertyChanged("ScreenSaverActive");
+            }
         }
 
         /// <summary>
@@ -1105,11 +1121,11 @@ namespace GUIFramework
             try
             {
                 if (InfoRepository.Instance.ScreenSaverImageCount == 0) return;
-                _screenSaverSourceIndex = (_screenSaverSourceIndex + 1) % InfoRepository.Instance.ScreenSaverImageCount;
+                _screenSaverSourceIndex = (_screenSaverSourceIndex + 1)%InfoRepository.Instance.ScreenSaverImageCount;
 
                 Image imgFadeOut;
                 Image imgFadeIn;
-                _screenSaverCtrlIndex = (_screenSaverCtrlIndex + 1) % 2;
+                _screenSaverCtrlIndex = (_screenSaverCtrlIndex + 1)%2;
                 if (_screenSaverCtrlIndex == 0)
                 {
                     imgFadeOut = ScreenSaverImage1;
@@ -1118,7 +1134,7 @@ namespace GUIFramework
                 else
                 {
                     imgFadeOut = ScreenSaverImage2;
-                    imgFadeIn = ScreenSaverImage1;                   
+                    imgFadeIn = ScreenSaverImage1;
                 }
 
                 var newSource = GUIImageManager.GetImage(InfoRepository.Instance.ScreenSaverImageFiles[_screenSaverSourceIndex]);
@@ -1140,11 +1156,11 @@ namespace GUIFramework
         {
             _screenSaverType = ScreenSaverType.None;
 
-            if( _currentWindow is GUIMPWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMP)
+            if (_currentWindow is GUIMPWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMP)
                 _screenSaverType = InfoRepository.Instance.ScreenSaverImageCount == 0 ? ScreenSaverType.DarkenOnly : ScreenSaverType.Full;
-            if( _currentWindow is GUIMPDWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMPD)
-                _screenSaverType = InfoRepository.Instance.ScreenSaverImageCount == 0 ? ScreenSaverType.DarkenOnly : ScreenSaverType.Full; 
-            if( _currentWindow is GUIPlayerWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledPlayer) _screenSaverType = ScreenSaverType.DarkenOnly;
+            if (_currentWindow is GUIMPDWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMPD)
+                _screenSaverType = InfoRepository.Instance.ScreenSaverImageCount == 0 ? ScreenSaverType.DarkenOnly : ScreenSaverType.Full;
+            if (_currentWindow is GUIPlayerWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledPlayer) _screenSaverType = ScreenSaverType.DarkenOnly;
 
             _screenSaverLastInteraction = DateTime.Now;
         }
@@ -1162,9 +1178,7 @@ namespace GUIFramework
             if (toval > 1.0) toval = 1.0;
             var animation = new DoubleAnimation
             {
-                To = toval,
-                Duration = TimeSpan.FromSeconds(d),
-                FillBehavior = FillBehavior.Stop
+                To = toval, Duration = TimeSpan.FromSeconds(d), FillBehavior = FillBehavior.Stop
             };
             animation.Completed += (s, a) => c.Opacity = to;
 
@@ -1198,17 +1212,17 @@ namespace GUIFramework
             // screen save just turned on, darken only
             if (_screenSaverMustDarken)
             {
-                var to = InfoRepository.Instance.Settings.ScreenSaverDarkness / 100.0;
+                var to = InfoRepository.Instance.Settings.ScreenSaverDarkness/100.0;
                 ScreenSaverSetOpacity(ScreenSaverOverlay, 3.0, to);
                 _screenSaverMustDarken = false;
                 _screenSaverNextUpdate = DateTime.Now.AddSeconds(5);
-                 return Task.FromResult<object>(null);
+                return Task.FromResult<object>(null);
             }
             // no slideshow or next slide is not due --> abort
             if (_screenSaverNextUpdate >= DateTime.Now || _screenSaverType == ScreenSaverType.DarkenOnly)
                 return Task.FromResult<object>(null);
             // eventually make overlay non-transparent
-            if ( ScreenSaverOverlay.Opacity < 0.99 ) ScreenSaverSetOpacity(ScreenSaverOverlay, 2.0, 1.0);
+            if (ScreenSaverOverlay.Opacity < 0.99) ScreenSaverSetOpacity(ScreenSaverOverlay, 2.0, 1.0);
             // show next slide and schedule next slide
             ScreenSaverNextSlide();
             _screenSaverNextUpdate = DateTime.Now.AddSeconds(InfoRepository.Instance.Settings.ScreenSaverPictureChange);
@@ -1227,7 +1241,6 @@ namespace GUIFramework
 
             _screenSaverNextUpdate = DateTime.MinValue;
             _screenSaverLastInteraction = DateTime.Now;
-
         }
 
         #endregion
@@ -1242,13 +1255,21 @@ namespace GUIFramework
         public string SplashScreenImage
         {
             get { return _splashScreenImage; }
-            set { _splashScreenImage = value; NotifyPropertyChanged("SplashScreenImage"); }
+            set
+            {
+                _splashScreenImage = value;
+                NotifyPropertyChanged("SplashScreenImage");
+            }
         }
 
         public string SplashScreenText
         {
             get { return _splashScreenText; }
-            set { _splashScreenText = value; NotifyPropertyChanged("SplashScreenText"); }
+            set
+            {
+                _splashScreenText = value;
+                NotifyPropertyChanged("SplashScreenText");
+            }
         }
 
         public string SplashScreenVersionText => Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -1256,14 +1277,22 @@ namespace GUIFramework
         public string SplashScreenSkinText
         {
             get { return _splashScreenSkinText; }
-            set { _splashScreenSkinText = value; NotifyPropertyChanged("SplashScreenSkinText"); }
+            set
+            {
+                _splashScreenSkinText = value;
+                NotifyPropertyChanged("SplashScreenSkinText");
+            }
         }
 
 
         public bool IsSplashScreenVisible
         {
             get { return _isSplashScreenVisible; }
-            set { _isSplashScreenVisible = value; NotifyPropertyChanged("IsSplashScreenVisible"); }
+            set
+            {
+                _isSplashScreenVisible = value;
+                NotifyPropertyChanged("IsSplashScreenVisible");
+            }
         }
 
         public async Task SetSplashScreenText(string text, params object[] args)
@@ -1291,8 +1320,6 @@ namespace GUIFramework
             await SetSplashScreenText(error);
         }
 
-
-
         #endregion
 
         #region Mouse Events
@@ -1308,6 +1335,7 @@ namespace GUIFramework
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public void NotifyPropertyChanged(String info)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
@@ -1318,7 +1346,7 @@ namespace GUIFramework
         private void ScreenSaverOverlay_OnMouseDown(object sender, MouseButtonEventArgs e)
         {
             ScreenSaverStop();
-         }
+        }
     }
 
     public enum ScreenSaverType
