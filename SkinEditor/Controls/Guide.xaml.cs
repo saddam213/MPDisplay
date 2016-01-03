@@ -201,8 +201,8 @@ namespace SkinEditor.Controls
             Dispatcher.BeginInvoke((Action)delegate
             {
                 TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-                TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-                TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
+                TimelinePosition = TimelineLength - (TimelineEnd - Now()).TotalMinutes * TimelineMultiplier - (_programScrollViewer.ViewportWidth / 2.0 - 15 * TimelineMultiplier);
+                TimelineCenterPosition = (Now() - TimelineStart).TotalMinutes * TimelineMultiplier;
                 _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
             }, DispatcherPriority.Background);
         }
@@ -224,17 +224,17 @@ namespace SkinEditor.Controls
             TimelineStart = tvGuidePrograms.Min(p => p.StartTime);
             TimelineEnd = tvGuidePrograms.Max(p => p.EndTime);
             TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-            TimelinePosition = (TimelineLength - ((TimelineEnd - Now()).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+            TimelinePosition = TimelineLength - (TimelineEnd - Now()).TotalMinutes * TimelineMultiplier - (_programScrollViewer.ViewportWidth / 2.0 - 15 * TimelineMultiplier);
 
             var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
-            Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
+            Timeline = Enumerable.Range(0, (int)(TimelineEnd - begin).TotalHours * 2).Select(x => new TvGuideProgram
             {
                 StartTime = begin.AddMinutes(30 * x),
-                EndTime = begin.AddMinutes((30 * x) + 30),
+                EndTime = begin.AddMinutes(30 * x + 30),
                 Title = begin.AddMinutes(30 * x).ToString("t")
             }).ToList();
 
-            TimelineCenterPosition = ((Now() - TimelineStart).TotalMinutes * TimelineMultiplier);
+            TimelineCenterPosition = (Now() - TimelineStart).TotalMinutes * TimelineMultiplier;
 
             _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
             _timelineScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
@@ -310,7 +310,7 @@ namespace SkinEditor.Controls
 
         private static double GetStartPoint(DateTime startTime, DateTime guideStart, double multi)
         {
-            return ((startTime - guideStart).TotalMinutes * multi);
+            return (startTime - guideStart).TotalMinutes * multi;
         }
 
 

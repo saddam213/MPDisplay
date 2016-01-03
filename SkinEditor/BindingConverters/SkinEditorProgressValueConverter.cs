@@ -33,8 +33,8 @@ namespace SkinEditor.BindingConverters
             try
             {
                 var margin = values[2]?.ToString().ToThickness() ?? new Thickness(0);
-                var actualWidth = (width - (margin.Left + margin.Right));
-                return Math.Min(actualWidth, Math.Max(0.0, (actualWidth / 100.0) * percentage));
+                var actualWidth = width - (margin.Left + margin.Right);
+                return Math.Min(actualWidth, Math.Max(0.0, actualWidth / 100.0 * percentage));
             }
             catch
             {

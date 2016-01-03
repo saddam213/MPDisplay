@@ -61,7 +61,7 @@ namespace GUISkinFramework.Editors
         {
             var _this = d as ImageComboEditor;
             var xmlImage = e.NewValue as XmlImageFile;
-            if (_this == null || (xmlImage == null || xmlImage.DisplayName.Equals(_this.Value))) return;
+            if (_this == null || xmlImage == null || xmlImage.DisplayName.Equals(_this.Value)) return;
 
             _this.Value = xmlImage.DisplayName;
             _this._item.Value = _this.Value;

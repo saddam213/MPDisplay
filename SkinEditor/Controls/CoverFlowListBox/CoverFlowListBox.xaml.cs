@@ -197,8 +197,8 @@ namespace SkinEditor.Controls
             StopSelectionTimer();
 
             var newPos = IsLayoutVertical
-                ? (_itemMouseDownPoint.Y - Mouse.GetPosition(this).Y)
-                : (_itemMouseDownPoint.X - Mouse.GetPosition(this).X);
+                ? _itemMouseDownPoint.Y - Mouse.GetPosition(this).Y
+                : _itemMouseDownPoint.X - Mouse.GetPosition(this).X;
 
             if (_itemMouseDown && Math.Abs(newPos) < DragThreshold)
             {
@@ -262,7 +262,7 @@ namespace SkinEditor.Controls
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
                 {
-                    if ((Listbox.SelectedItem as CoverFlowListBoxItem) == GetCenterItem()) return;
+                    if (Listbox.SelectedItem as CoverFlowListBoxItem == GetCenterItem()) return;
 
                     Listbox.ScrollIntoView(Listbox.SelectedItem);
                     ScrollItemToCenter(Listbox.SelectedItem as CoverFlowListBoxItem);
@@ -330,7 +330,7 @@ namespace SkinEditor.Controls
         /// <returns></returns>
         private CoverFlowListBoxItem GetCenterItem()
         {
-            var element = Listbox.InputHitTest(new Point((Listbox.ActualWidth / 2.0), (Listbox.ActualHeight / 2.0))) as Border;
+            var element = Listbox.InputHitTest(new Point(Listbox.ActualWidth / 2.0, Listbox.ActualHeight / 2.0)) as Border;
 
             var contentPresenter = element?.Child as ContentPresenter;
             return contentPresenter?.Content as CoverFlowListBoxItem;
@@ -363,8 +363,8 @@ namespace SkinEditor.Controls
             StopSelectionTimer();
             _itemMouseDown = false;
             var newPos = IsLayoutVertical
-                ? (_itemMouseDownPoint.Y - e.GetPosition(this).Y)
-                : (_itemMouseDownPoint.X - e.GetPosition(this).X);
+                ? _itemMouseDownPoint.Y - e.GetPosition(this).Y
+                : _itemMouseDownPoint.X - e.GetPosition(this).X;
 
             if (Math.Abs(newPos) < DragThreshold)
             {

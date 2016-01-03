@@ -9,7 +9,7 @@ using System.Threading;
 using MessageFramework.DataObjects;
 using MessageFramework.Messages;
 
-namespace MediaPortalPlugin
+namespace MediaPortal2Plugin
 {
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
     [ServiceContract(ConfigurationName = "IMessage", CallbackContract = typeof(IMessageCallback), SessionMode = SessionMode.Required)]

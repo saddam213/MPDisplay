@@ -331,8 +331,8 @@ namespace MPDisplay.Common.Controls
             if (p.Y > _colorShadingCanvas.ActualHeight)
                 p.Y = _colorShadingCanvas.ActualHeight;
 
-            _colorShadeSelectorTransform.X = p.X - (_colorShadeSelector.Width / 2);
-            _colorShadeSelectorTransform.Y = p.Y - (_colorShadeSelector.Height / 2);
+            _colorShadeSelectorTransform.X = p.X - _colorShadeSelector.Width / 2;
+            _colorShadeSelectorTransform.Y = p.Y - _colorShadeSelector.Height / 2;
 
             p.X = p.X / _colorShadingCanvas.ActualWidth;
             p.Y = p.Y / _colorShadingCanvas.ActualHeight;
@@ -359,8 +359,8 @@ namespace MPDisplay.Common.Controls
 
             _currentColorPosition = p;
 
-            _colorShadeSelectorTransform.X = (p.X * _colorShadingCanvas.Width) - 5;
-            _colorShadeSelectorTransform.Y = (p.Y * _colorShadingCanvas.Height) - 5;
+            _colorShadeSelectorTransform.X = p.X * _colorShadingCanvas.Width - 5;
+            _colorShadeSelectorTransform.Y = p.Y * _colorShadingCanvas.Height - 5;
         }
 
         private void CalculateColor(Point p)

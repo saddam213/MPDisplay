@@ -114,7 +114,7 @@ namespace Common.Helpers
             try
             {
                 var prop = obj?.GetType().GetProperty(property);
-                if (prop != null ) return (T)(prop.GetValue(obj, index));
+                if (prop != null ) return (T)prop.GetValue(obj, index);
             }
             catch (Exception ex)
             {
@@ -172,7 +172,7 @@ namespace Common.Helpers
             try
             {
                 var prop = obj?.GetType().GetProperty(property);
-                if (prop != null) return (T)(prop.GetValue(obj, index));
+                if (prop != null) return (T)prop.GetValue(obj, index);
             }
             catch (Exception ex)
             {
@@ -212,7 +212,7 @@ namespace Common.Helpers
             try
             {
                 var fieldinfo = obj?.GetType().GetField(field, bindingFlags);
-                if (fieldinfo != null) return (T)(fieldinfo.GetValue(obj));
+                if (fieldinfo != null) return (T)fieldinfo.GetValue(obj);
             }
             catch (Exception ex)
             {
@@ -247,7 +247,7 @@ namespace Common.Helpers
             try
             {
                 var fieldinfo = obj.GetType().GetField(field);
-                if (fieldinfo != null) return (T)(fieldinfo.GetValue(null));
+                if (fieldinfo != null) return (T)fieldinfo.GetValue(null);
             }
             catch (Exception ex)
             {
@@ -363,7 +363,7 @@ namespace Common.Helpers
 
             if (type == typeof(string))
             {
-                yield return (obj).ToString();
+                yield return obj.ToString();
                 yield break;
             }
 

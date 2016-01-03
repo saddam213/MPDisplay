@@ -43,6 +43,7 @@ namespace MessageServer
 
     #region IMessageCallback interface
 
+    [ServiceContract]
     interface IMessageCallback
     {
         /// <summary>

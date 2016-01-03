@@ -132,7 +132,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the info data.
         /// </summary>
-        public async override void UpdateInfoData()
+        public override async void UpdateInfoData()
         {
             base.UpdateInfoData();
             ListItems = await ListRepository.GetCurrentListItems(SkinXml.ListType);
@@ -316,7 +316,7 @@ namespace GUIFramework.GUI
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
                 {
-                    if ((Listbox.SelectedItem as APIListItem) == GetCenterItem()) return;
+                    if (Listbox.SelectedItem as APIListItem == GetCenterItem()) return;
 
                     Listbox.ScrollIntoView(Listbox.SelectedItem);
                     ScrollItemToCenter(Listbox.SelectedItem as APIListItem);
@@ -399,8 +399,8 @@ namespace GUIFramework.GUI
         {
             if (_selectedZoomX == null || _selectedZoomY == null) return;
 
-            _selectedZoomX.To = Math.Max(1.0, (x / 100.0));
-            _selectedZoomY.To = Math.Max(1.0, (y / 100.0));
+            _selectedZoomX.To = Math.Max(1.0, x / 100.0);
+            _selectedZoomY.To = Math.Max(1.0, y / 100.0);
         }
 
         /// <summary>
@@ -409,7 +409,7 @@ namespace GUIFramework.GUI
         /// <returns></returns>
         private APIListItem GetCenterItem()
         {
-            var element = Listbox.InputHitTest(new Point((Listbox.ActualWidth / 2.0), (Listbox.ActualHeight / 2.0))) as Border;
+            var element = Listbox.InputHitTest(new Point(Listbox.ActualWidth / 2.0, Listbox.ActualHeight / 2.0)) as Border;
 
             var contentPresenter = element?.Child as ContentPresenter;
             return contentPresenter?.Content as APIListItem;

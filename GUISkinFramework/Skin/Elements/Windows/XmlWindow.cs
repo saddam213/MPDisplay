@@ -23,6 +23,8 @@ namespace GUISkinFramework.Skin
         private XmlBrush _backgroundBrush;
         private int _defaultMediaPortalFocusedControlId;
         private bool _designerVisible = true;
+        private bool _disableSlideshow;
+        private bool _disableDarkening;
 
         public XmlWindow()
         {
@@ -102,7 +104,25 @@ namespace GUISkinFramework.Skin
             get { return _description; }
             set { _description = value; NotifyPropertyChanged("Description"); }
         }
-        
+
+        [PropertyOrder(11)]
+        [DefaultValue(false)]
+        [EditorCategory("ScreenSaver", 1)]
+        public bool DisableSlideshow
+        {
+            get { return _disableSlideshow; }
+            set { _disableSlideshow = value; NotifyPropertyChanged("DisableSlideshow"); }
+        }
+
+        [PropertyOrder(12)]
+        [DefaultValue(false)]
+        [EditorCategory("ScreenSaver", 1)]
+        public bool DisableDarkening
+        {
+            get { return _disableDarkening; }
+            set { _disableDarkening = value; NotifyPropertyChanged("DisableDarkening"); }
+        }
+
         [PropertyOrder(62)]
         [EditorCategory("Appearance", 3)]
         // [DefaultValue(XmlBrushStyle.Default)]

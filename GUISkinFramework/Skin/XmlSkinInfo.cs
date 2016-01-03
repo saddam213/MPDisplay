@@ -483,7 +483,7 @@ namespace GUISkinFramework.Skin
             if (Styles.Count <= 1) return;
             var themes = Styles.Keys.ToList();
             var current = themes.IndexOf(_style.Name);
-            var next = (current == (themes.Count -1)) ? 0 : current + 1;
+            var next = current == themes.Count -1 ? 0 : current + 1;
             SetStyle(themes[next]);
         }
 

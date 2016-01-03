@@ -50,8 +50,8 @@ namespace MediaPortalPlugin.InfoManagers
             GUIWindowManager.OnNewAction += GUIWindowManager_OnNewAction;
             GUIWindowManager.Receivers += GUIWindowManager_Receivers;
             GUIPropertyManager.OnPropertyChanged += GUIPropertyManager_OnPropertyChanged;
-            _menuCotrolMoveUp = typeof(GUIMenuControl).GetMethod("OnUp", BindingFlags.Instance | BindingFlags.NonPublic);
-            _menuCotrolMoveDown = typeof(GUIMenuControl).GetMethod("OnDown", BindingFlags.Instance | BindingFlags.NonPublic);
+            _menuControlMoveUp = typeof(GUIMenuControl).GetMethod("OnUp", BindingFlags.Instance | BindingFlags.NonPublic);
+            _menuControlMoveDown = typeof(GUIMenuControl).GetMethod("OnDown", BindingFlags.Instance | BindingFlags.NonPublic);
             _menuControlButtonList = typeof(GUIMenuControl).GetField("_buttonList", BindingFlags.Instance | BindingFlags.NonPublic);
         }
 
@@ -605,8 +605,8 @@ namespace MediaPortalPlugin.InfoManagers
 
         //private int _lastMenuCotrolItemIndex = -1;
         private bool _movingMenuControl;
-        private MethodInfo _menuCotrolMoveUp;
-        private MethodInfo _menuCotrolMoveDown;
+        private MethodInfo _menuControlMoveUp;
+        private MethodInfo _menuControlMoveDown;
         private FieldInfo _menuControlButtonList;
 
         private void SetMenuControlSelectedItem(APIListAction item, bool isSelect)
@@ -631,16 +631,16 @@ namespace MediaPortalPlugin.InfoManagers
                         {
                             if (isMoveDown)
                             {
-                                if (_menuCotrolMoveDown != null)
+                                if (_menuControlMoveDown != null)
                                 {
-                                    SupportedPluginManager.GuiSafeInvoke(() => _menuCotrolMoveDown.Invoke(_menuControl, null));
+                                    SupportedPluginManager.GuiSafeInvoke(() => _menuControlMoveDown.Invoke(_menuControl, null));
                                 }
                             }
                             else
                             {
-                                if (_menuCotrolMoveUp != null)
+                                if (_menuControlMoveUp != null)
                                 {
-                                    SupportedPluginManager.GuiSafeInvoke(() => _menuCotrolMoveUp.Invoke(_menuControl, null));
+                                    SupportedPluginManager.GuiSafeInvoke(() => _menuControlMoveUp.Invoke(_menuControl, null));
                                 }
                             }
                         }
@@ -895,7 +895,7 @@ namespace MediaPortalPlugin.InfoManagers
             {
                
                 var batchNo = 1;
-                var batchCount = count < _settings.ListBatchSize ? 1 : ((count + _settings.ListBatchSize - 1) / _settings.ListBatchSize);
+                var batchCount = count < _settings.ListBatchSize ? 1 : (count + _settings.ListBatchSize - 1) / _settings.ListBatchSize;
                 for (var i = 0; i < count; i += _settings.ListBatchSize)
                 {
                     if (items != null)

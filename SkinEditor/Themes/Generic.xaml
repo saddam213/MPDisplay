@@ -364,7 +364,8 @@
                                                   Stretch="{Binding ImageStretch, Mode=OneWay}"
                                                   HorizontalAlignment="{Binding BaseXml.ControlStyle.ImageHorizontalAlignment,Mode=OneWay}" 
 						                          VerticalAlignment="{Binding BaseXml.ControlStyle.ImageVerticalAlignment,Mode=OneWay}" />
-                    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+
                     <Border Margin="{Binding ImageMargin, Converter={StaticResource ThicknessConverter}, Mode=OneWay}"
                         Background="{Binding CoverImage, Converter={StaticResource BrushConverter}, Mode=OneWay}" 
                         CornerRadius="{Binding CoverCornerRadius, Converter={StaticResource CornerRadiusConverter}, Mode=OneWay}"/>
@@ -809,7 +810,8 @@
 								</TextBlock.Style>
 							</TextBlock>
 
-							<TextBlock Text="{Binding Label2Text, Converter={StaticResource LabelConverter},Mode=OneWay}"
+                            <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
+                            <TextBlock Text="{Binding Label2Text, Converter={StaticResource LabelConverter},Mode=OneWay}"
 											   HorizontalAlignment="{Binding ControlStyle.Label2HorizontalAlignment,Mode=OneWay}" 
 						                       VerticalAlignment="{Binding ControlStyle.Label2VerticalAlignment,Mode=OneWay}"
 											   FontFamily="{Binding ControlStyle.Label2FontType, Converter={StaticResource FontConverter},Mode=OneWay}"
@@ -817,7 +819,8 @@
 											   FontWeight="{Binding ControlStyle.Label2FontWeight, Converter={StaticResource FontConverter}}"
 											   Margin="{Binding ControlStyle.Label2Margin, Converter={StaticResource ThicknessConverter}}" 
 											   Visibility="{Binding ControlStyle.EnableLabel2, Converter={StaticResource BooleanToVisibilityConverter}, Mode=OneWay}">
-								<TextBlock.Style>
+
+                                <TextBlock.Style>
 									<Style TargetType="TextBlock">
 										<Setter Property="Foreground" Value="{Binding ControlStyle.Label2NoFocusFontBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" />
 										<Style.Triggers>
@@ -848,7 +851,9 @@
 									</Style>
 								</TextBlock.Style>
 							</TextBlock>
-						</Grid>
+                            <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
+
+                        </Grid>
 					</Border>
 					<Border x:Name="Gloss" 
                         Background="{Binding ControlStyle.GlossBrush, Converter={StaticResource BrushConverter},Mode=OneWay}" 

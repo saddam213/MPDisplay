@@ -16,7 +16,7 @@ namespace GUIFramework.Converters
 
         private static double GetStartPoint(DateTime startTime, DateTime guideStart, double multi)
         {
-            return ((startTime - guideStart).TotalMinutes * multi);
+            return (startTime - guideStart).TotalMinutes * multi;
         }
 
         public object Convert(object[] values, Type targetType, object parameter, CultureInfo culture)

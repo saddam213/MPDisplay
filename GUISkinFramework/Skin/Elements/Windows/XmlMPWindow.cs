@@ -7,11 +7,11 @@ namespace GUISkinFramework.Skin
     [XmlType(TypeName = "MediaPortalWindow")]
     public class XmlMPWindow : XmlWindow
     {
+
         public XmlMPWindow()
         {
             this.SetDefaultValues();
         }
 
-        public override string DisplayType => "MediaPortal Window";
     }
 }

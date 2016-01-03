@@ -126,7 +126,7 @@ namespace MPDisplay.Common.Controls
         {
             if (e.Key != Key.Up) return;
             var item = ComboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(c => c.IsHighlighted);
-            if (item != null && (ComboBox.IsDropDownOpen && ComboBox.Items.IndexOf(item) == 0))
+            if (item != null && ComboBox.IsDropDownOpen && ComboBox.Items.IndexOf(item) == 0)
             {
                 Textbox.Focus();
             }

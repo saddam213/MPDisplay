@@ -236,7 +236,7 @@ namespace GUISkinFramework.Editors
 
         private void Button_LabelItemRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= (LabelItems.Count - 1))
+            if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= LabelItems.Count - 1)
             {
                 var index = SelectedLabelItemIndex;
                 if (LabelItems.ElementAtOrDefault(index) == "+")

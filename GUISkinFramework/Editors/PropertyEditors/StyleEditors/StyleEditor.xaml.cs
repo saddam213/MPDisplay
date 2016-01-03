@@ -116,7 +116,7 @@ namespace GUISkinFramework.Editors
             // Value.PropertyChanged += (s, e) => { (_Item.Instance as XmlControl).NotifyPropertyChanged(_Item.PropertyDescriptor.Name); };
 
             var styleProperty = _item.Instance.GetType().GetProperty(_item.PropertyDescriptor.Name);
-            if (Value != null && (styleProperty != null && styleProperty.PropertyType == Value.GetType()))
+            if (Value != null && styleProperty != null && styleProperty.PropertyType == Value.GetType())
             {
                 styleProperty.SetValue(_item.Instance, Value);
             }

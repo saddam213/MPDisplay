@@ -77,7 +77,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the info data.
         /// </summary>
-        public async override void UpdateInfoData()
+        public override async void UpdateInfoData()
         {
             base.UpdateInfoData();
             var text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText, SkinXml.LabelNumberFormat);

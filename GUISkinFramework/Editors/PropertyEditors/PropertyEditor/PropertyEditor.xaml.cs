@@ -112,7 +112,7 @@ namespace GUISkinFramework.Editors
         private void Button_MediaPortalTagRemove_Click(object sender, RoutedEventArgs e)
         {
             if (SelectedProperty == null) return;
-            if (MediaPortalTagSelectedIndex >= 0 && (SelectedProperty.MediaPortalTags.Count - 1) >= MediaPortalTagSelectedIndex)
+            if (MediaPortalTagSelectedIndex >= 0 && SelectedProperty.MediaPortalTags.Count - 1 >= MediaPortalTagSelectedIndex)
             {
                 SelectedProperty.MediaPortalTags.RemoveAt(MediaPortalTagSelectedIndex);
             }

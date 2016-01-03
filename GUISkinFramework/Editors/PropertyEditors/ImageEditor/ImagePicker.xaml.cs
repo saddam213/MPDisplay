@@ -340,7 +340,7 @@ namespace GUISkinFramework.Editors
         public string ToolTip => IsBack ? "Previous Folder" : IsFolder ?
             string.Format("Folder:{1}{0}", Directory.FullName, Environment.NewLine)
             : string.Format("Image Type: {1} Image{0}Size: {2:0.##} KB{0}FileName: {3}",
-                Environment.NewLine, File.Extension.Replace(".", "").ToUpper(), (File.Length / 1024.0), File.FullName);
+                Environment.NewLine, File.Extension.Replace(".", "").ToUpper(), File.Length / 1024.0, File.FullName);
 
         public string FileName
         {

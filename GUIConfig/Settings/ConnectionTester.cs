@@ -116,6 +116,7 @@ namespace GUIConfig.Settings
     }
 
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
+    [ServiceContract]
     public interface IMessageCallback
     {
 

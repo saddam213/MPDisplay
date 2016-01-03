@@ -156,7 +156,7 @@ namespace MPDisplay.Common.Controls
             var yadjust = DropDownHeight + e.VerticalChange;
             var xadjust = DropDownWidth + e.HorizontalChange;
 
-            if ((!(xadjust >= 0)) || (!(yadjust >= 0))) return;
+            if (!(xadjust >= 0) || !(yadjust >= 0)) return;
 
             DropDownWidth = xadjust;
             DropDownHeight = yadjust;

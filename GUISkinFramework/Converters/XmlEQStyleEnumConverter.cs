@@ -14,7 +14,7 @@ namespace GUISkinFramework.Converters
         {
             if (value is XmlEQStyle)
             {
-                return (EQStyle)((int)(XmlEQStyle)value);
+                return (EQStyle)(int)(XmlEQStyle)value;
             }
             return EQStyle.SingleBar;
         }

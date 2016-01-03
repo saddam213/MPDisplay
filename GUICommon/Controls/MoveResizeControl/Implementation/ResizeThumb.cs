@@ -34,7 +34,7 @@ namespace MPDisplay.Common.Controls
             if (!IsSnapToGrid || GridSize == 0) return (int) value;
 
             var snap = value % GridSize;
-            snap = (snap <= GridSize / 2.0) ? snap*-1 : GridSize - snap;
+            snap = snap <= GridSize / 2.0 ? snap*-1 : GridSize - snap;
             return (int)(snap + value);
         }
 

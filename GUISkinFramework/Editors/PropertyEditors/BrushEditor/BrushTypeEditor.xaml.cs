@@ -84,7 +84,7 @@ namespace GUISkinFramework.Editors
         {
             if (e.NewValue == null) return;
 
-            var editor = (d as BrushTypeEditor);
+            var editor = d as BrushTypeEditor;
             var brush = (e.NewValue as XmlBrush).CreateCopy();
             if (editor == null) return;
             editor.SetBrushType(brush);

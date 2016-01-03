@@ -236,7 +236,7 @@ namespace MPDisplay.Common.Controls
                         var nDecValue = MaxRangeValue / _ledCount;
                         if (pm.Value > 0)
                         {
-                            pm.Value -= (_ledCount > 1 ? nDecValue : (MaxRangeValue * 10) / 100);
+                            pm.Value -= _ledCount > 1 ? nDecValue : MaxRangeValue * 10 / 100;
                             if (pm.Value < 0)
                             {
                                 pm.Value = 0;
@@ -248,7 +248,7 @@ namespace MPDisplay.Common.Controls
                         }
                         if (pm.Speed == 0 && pm.Falloff > 0)
                         {
-                            pm.Falloff -= (_ledCount > 1 ? nDecValue >> 1 : 5);
+                            pm.Falloff -= _ledCount > 1 ? nDecValue >> 1 : 5;
                             if (pm.Falloff < 0)
                             {
                                 pm.Falloff = 0;
@@ -325,12 +325,12 @@ namespace MPDisplay.Common.Controls
         {
             var ledWidth = ActualWidth / BandCount;
             var ledHeight = ledWidth / 2;
-            var eqHeight = isDouble ? (ActualHeight / 2) - (ledHeight / 2) : (ActualHeight - ledHeight);
+            var eqHeight = isDouble ? ActualHeight / 2 - ledHeight / 2 : ActualHeight - ledHeight;
             double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
-            var bandMinLimit = (eqHeight / maxRange) * minRange;
-            var bandMedLimit = (eqHeight / maxRange) * medRange;
+            var bandMinLimit = eqHeight / maxRange * minRange;
+            var bandMedLimit = eqHeight / maxRange * medRange;
 
             _ledCount = (int)(ActualWidth / ledHeight);
 
@@ -339,19 +339,19 @@ namespace MPDisplay.Common.Controls
                 var bandX = bandNumber * ledWidth;
                 double dataValue = isDouble ? _fftData[bandNumber].Value / 2 : _fftData[bandNumber].Value;
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
-                var vertValue = (eqHeight / maxRange) * dataValue;
-                var falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
+                var vertValue = eqHeight / maxRange * dataValue;
+                var falloffValue = eqHeight - eqHeight / maxRange * falloffdataValue;
 
                 DrawRectangle(dc, FallOffColor, null, bandX, falloffValue, ledWidth, FallOffHeight, BandSpacing, 0);
                 if (isDouble)
                 {
-                    DrawRectangle(dc, FallOffColor, null, bandX, ((eqHeight * 2) - falloffValue) + (ledHeight - FallOffHeight), ledWidth, FallOffHeight, BandSpacing, 0);
+                    DrawRectangle(dc, FallOffColor, null, bandX, eqHeight * 2 - falloffValue + (ledHeight - FallOffHeight), ledWidth, FallOffHeight, BandSpacing, 0);
                 }
 
                 // Draw led's
                 for (var ledY = 0; ledY < _ledCount; ledY++)
                 {
-                    var locationY = (ledHeight * ledY);
+                    var locationY = ledHeight * ledY;
                     if (vertValue > locationY)
                     {
                         var color = GetRangeColor(locationY, bandMinLimit, bandMedLimit);
@@ -388,12 +388,12 @@ namespace MPDisplay.Common.Controls
         {
             var ledWidth = (int)(ActualWidth / BandCount);
             var ledHeight = ledWidth;
-            var eqHeight = isDouble ? (ActualHeight / 2) - ((double)ledHeight / 2) : (ActualHeight - ledHeight);
+            var eqHeight = isDouble ? ActualHeight / 2 - (double)ledHeight / 2 : ActualHeight - ledHeight;
             double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
-            var bandMinLimit = (eqHeight / maxRange) * minRange;
-            var bandMedLimit = (eqHeight / maxRange) * medRange;
+            var bandMinLimit = eqHeight / maxRange * minRange;
+            var bandMedLimit = eqHeight / maxRange * medRange;
 
             _ledCount = (int)(ActualWidth / ledHeight);
 
@@ -402,20 +402,20 @@ namespace MPDisplay.Common.Controls
                 double bandX = bandNumber * ledWidth;
                 double dataValue = isDouble ? _fftData[bandNumber].Value / 2 : _fftData[bandNumber].Value;
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
-                var vertValue = (eqHeight / maxRange) * dataValue;
-                var falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
+                var vertValue = eqHeight / maxRange * dataValue;
+                var falloffValue = eqHeight - eqHeight / maxRange * falloffdataValue;
 
 
-                DrawArc(dc, SweepDirection.Clockwise, bandX, falloffValue + ((double)ledHeight / 2), ledWidth, BandSpacing);
+                DrawArc(dc, SweepDirection.Clockwise, bandX, falloffValue + (double)ledHeight / 2, ledWidth, BandSpacing);
                 if (isDouble)
                 {
-                    DrawArc(dc, SweepDirection.Counterclockwise, bandX, ((eqHeight * 2) - falloffValue) + ((double)ledHeight / 2), ledWidth, BandSpacing);
+                    DrawArc(dc, SweepDirection.Counterclockwise, bandX, eqHeight * 2 - falloffValue + (double)ledHeight / 2, ledWidth, BandSpacing);
                 }
 
                 // Draw led's
                 for (var ledY = 0; ledY < _ledCount; ledY++)
                 {
-                    double locationY = (ledHeight * ledY);
+                    double locationY = ledHeight * ledY;
                     if (vertValue > locationY)
                     {
 
@@ -439,13 +439,13 @@ namespace MPDisplay.Common.Controls
         /// <param name="isDouble">if set to <c>true</c> [is double].</param>
         private void DrawBar(DrawingContext dc, bool isDouble)
         {
-            var eqHeight = isDouble ? (ActualHeight / 2) : ActualHeight;
+            var eqHeight = isDouble ? ActualHeight / 2 : ActualHeight;
             double maxRange = isDouble ? MaxRangeValue / 2 : MaxRangeValue;
             double minRange = isDouble ? LowRangeValue / 2 : LowRangeValue;
             double medRange = isDouble ? MedRangeValue / 2 : MedRangeValue;
 
-            var bandMinLimit = (eqHeight / maxRange) * minRange;
-            var bandMedLimit = (eqHeight / maxRange) * medRange;
+            var bandMinLimit = eqHeight / maxRange * minRange;
+            var bandMedLimit = eqHeight / maxRange * medRange;
             var barWidth = ActualWidth / BandCount;
             _ledCount = (int)(ActualWidth / BandCount);
 
@@ -454,8 +454,8 @@ namespace MPDisplay.Common.Controls
                 var bandX = bandNumber * barWidth;
                 double dataValue = isDouble ? _fftData[bandNumber].Value / 2 : _fftData[bandNumber].Value;
                 double falloffdataValue = isDouble ? _fftData[bandNumber].Falloff / 2 : _fftData[bandNumber].Falloff;
-                var vertValue = (eqHeight / maxRange) * dataValue;
-                var falloffValue = eqHeight - ((eqHeight / maxRange) * falloffdataValue);
+                var vertValue = eqHeight / maxRange * dataValue;
+                var falloffValue = eqHeight - eqHeight / maxRange * falloffdataValue;
                 var loVal = Math.Max(eqHeight - bandMinLimit, eqHeight - vertValue);
                 var medVal = Math.Max(eqHeight - bandMedLimit, eqHeight - vertValue);
                 var hghVal = Math.Max(0, eqHeight - vertValue);
@@ -463,23 +463,23 @@ namespace MPDisplay.Common.Controls
                 DrawRectangle(dc, FallOffColor, null, bandX, falloffValue, barWidth, FallOffHeight, BandSpacing, 0);
                 if (isDouble)
                 {
-                    DrawRectangle(dc, FallOffColor, null, bandX, (eqHeight * 2) - falloffValue, barWidth, FallOffHeight, BandSpacing, 0);
+                    DrawRectangle(dc, FallOffColor, null, bandX, eqHeight * 2 - falloffValue, barWidth, FallOffHeight, BandSpacing, 0);
                 }
 
-                if (hghVal < (eqHeight - bandMedLimit))
+                if (hghVal < eqHeight - bandMedLimit)
                 {
-                    DrawRectangle(dc, MaxRangeColor, null, bandX, hghVal, barWidth, (eqHeight - bandMedLimit) - hghVal, BandSpacing, 0);
+                    DrawRectangle(dc, MaxRangeColor, null, bandX, hghVal, barWidth, eqHeight - bandMedLimit - hghVal, BandSpacing, 0);
                     if (isDouble)
                     {
-                        DrawRectangle(dc, MaxRangeColor, null, bandX, eqHeight + bandMedLimit, barWidth, (eqHeight - bandMedLimit) - hghVal, BandSpacing, 0);
+                        DrawRectangle(dc, MaxRangeColor, null, bandX, eqHeight + bandMedLimit, barWidth, eqHeight - bandMedLimit - hghVal, BandSpacing, 0);
                     }
                 }
-                if (medVal < (eqHeight - bandMinLimit))
+                if (medVal < eqHeight - bandMinLimit)
                 {
-                    DrawRectangle(dc, MedRangeColor, null, bandX, medVal, barWidth, (eqHeight - bandMinLimit) - medVal, BandSpacing, 0);
+                    DrawRectangle(dc, MedRangeColor, null, bandX, medVal, barWidth, eqHeight - bandMinLimit - medVal, BandSpacing, 0);
                     if (isDouble)
                     {
-                        DrawRectangle(dc, MedRangeColor, null, bandX, eqHeight + bandMinLimit, barWidth, (eqHeight - bandMinLimit) - medVal, BandSpacing, 0);
+                        DrawRectangle(dc, MedRangeColor, null, bandX, eqHeight + bandMinLimit, barWidth, eqHeight - bandMinLimit - medVal, BandSpacing, 0);
                     }
                 }
                 if (loVal < eqHeight)

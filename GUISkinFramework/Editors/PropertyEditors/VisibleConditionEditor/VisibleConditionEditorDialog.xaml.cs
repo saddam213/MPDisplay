@@ -212,8 +212,7 @@ namespace GUISkinFramework.Editors
             LoadCompilerSettings();
             var code = VisibleClassString.Replace(ReplacementString, condition);
             var compileResults = _codeProvider.CompileAssemblyFromSource(_compilerParams, code);
-            return compileResults.Errors.HasErrors ? compileResults.Errors.Cast<CompilerError>().Aggregate(string.Empty, (current, item) => current +
-                (item.ErrorText + Environment.NewLine)) : string.Empty;
+            return compileResults.Errors.HasErrors ? compileResults.Errors.Cast<CompilerError>().Aggregate(string.Empty, (current, item) => current + item.ErrorText + Environment.NewLine) : string.Empty;
         }
 
 

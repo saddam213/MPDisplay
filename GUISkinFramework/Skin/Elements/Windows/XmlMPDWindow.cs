@@ -23,6 +23,6 @@ namespace GUISkinFramework.Skin
             set { _autoCloseWindow = value; NotifyPropertyChanged("AutoCloseWindow"); }
         }
 
-      
+     
     }
 }

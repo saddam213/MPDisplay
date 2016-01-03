@@ -131,7 +131,7 @@ namespace MPDisplay.Common.Controls
 
         private void CanMoveDown(object sender, CanExecuteRoutedEventArgs e)
         {
-            if (e.Parameter != null && Items.IndexOf(e.Parameter) < (Items.Count - 1))
+            if (e.Parameter != null && Items.IndexOf(e.Parameter) < Items.Count - 1)
                 e.CanExecute = true;
         }
 

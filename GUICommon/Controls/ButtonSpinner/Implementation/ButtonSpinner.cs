@@ -220,12 +220,12 @@ namespace MPDisplay.Common.Controls
             // buttonspinner adds buttons that spin, so disable accordingly.
             if (IncreaseButton != null)
             {
-                IncreaseButton.IsEnabled = ((ValidSpinDirection & ValidSpinDirections.Increase) == ValidSpinDirections.Increase);
+                IncreaseButton.IsEnabled = (ValidSpinDirection & ValidSpinDirections.Increase) == ValidSpinDirections.Increase;
             }
 
             if (DecreaseButton != null)
             {
-                DecreaseButton.IsEnabled = ((ValidSpinDirection & ValidSpinDirections.Decrease) == ValidSpinDirections.Decrease);
+                DecreaseButton.IsEnabled = (ValidSpinDirection & ValidSpinDirections.Decrease) == ValidSpinDirections.Decrease;
             }
         }
 

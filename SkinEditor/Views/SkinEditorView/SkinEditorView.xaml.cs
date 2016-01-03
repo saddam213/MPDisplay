@@ -779,7 +779,7 @@ namespace SkinEditor.Views
                 if (!(control2 is XmlGroup)) return;
 
                 (control2 as XmlGroup).DesignerVisible = value;
-                control = (control2 as XmlGroup);
+                control = control2 as XmlGroup;
             }
         }
 

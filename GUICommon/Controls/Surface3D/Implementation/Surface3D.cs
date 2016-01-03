@@ -88,17 +88,17 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D AxisX = new Vector3D(1, 0, 0);
+        private static readonly Vector3D AxisX = new Vector3D(1, 0, 0);
 
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D AxisY = new Vector3D(0, 1, 0);
+        private static readonly Vector3D AxisY = new Vector3D(0, 1, 0);
 
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D AxisZ = new Vector3D(0, 0, 1);
+        private static readonly Vector3D AxisZ = new Vector3D(0, 0, 1);
 
         #endregion
 
@@ -450,8 +450,8 @@ namespace MPDisplay.Common.Controls.Surface3D
                 return;
             }
 
-            _rotate.CenterX = (_bounds.Width / 2) + RotationCenterX;
-            _rotate.CenterY = (_bounds.Height / 2) - RotationCenterY;
+            _rotate.CenterX = _bounds.Width / 2 + RotationCenterX;
+            _rotate.CenterY = _bounds.Height / 2 - RotationCenterY;
             _rotate.CenterZ = RotationCenterZ;
         }
 

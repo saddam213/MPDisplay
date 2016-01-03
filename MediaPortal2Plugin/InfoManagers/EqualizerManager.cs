@@ -2,12 +2,13 @@
 using System.Threading;
 using Common.Log;
 using Common.Settings;
-using MediaPortal.Player;
+using MediaPortal.UI.Presentation.Players;
+using MediaPortal.UI.Players.BassPlayer;
 using MessageFramework.Messages;
 using Un4seen.Bass;
 using Un4seen.BassWasapi;
 
-namespace MediaPortalPlugin.InfoManagers
+namespace MediaPortal2Plugin.InfoManagers
 {
     public class EqualizerManager
     {
@@ -23,7 +24,6 @@ namespace MediaPortalPlugin.InfoManagers
         public static EqualizerManager Instance => _instance ?? (_instance = new EqualizerManager());
 
         #endregion
-
 
         private readonly Log _log;
         private bool _isEqRunning;
@@ -127,8 +127,17 @@ namespace MediaPortalPlugin.InfoManagers
         {
             try
             {
-                if (!g_Player.Playing) return;
-                if (g_Player.CurrentAudioStream == 0 || g_Player.CurrentAudioStream == -1) return;
+                var player = WindowManager.Instance.AudioPlayer;
+                if (player?.AVType != AVType.Audio) return;
+   
+                if (player.PlaybackState != PlaybackState.Playing) return;
+
+                var bassplayer = (BassPlayer) player.CurrentPlayer;
+
+                // TODO: get the hadle for Bass stream!
+                if (bassplayer == null) return;
+                int handle = 1;
+
                 lock (_eqFftData)
                 {
                     var lines = 16;                        // number of spectrum lines
@@ -150,9 +159,9 @@ namespace MediaPortalPlugin.InfoManagers
                     }
                     else
                     {
-                        var bassInfo = Bass.BASS_ChannelGetInfo(g_Player.CurrentAudioStream);
+                        var bassInfo = Bass.BASS_ChannelGetInfo(handle);
                         chans = bassInfo.chans;
-                        channel = Bass.BASS_ChannelGetData(g_Player.CurrentAudioStream, _eqFftData, GetBassGetDataFlags(bassInfo.freq, chans ));
+                        channel = Bass.BASS_ChannelGetData(handle, _eqFftData, GetBassGetDataFlags(bassInfo.freq, chans ));
                     }
 
                     if (channel <= 0) return;

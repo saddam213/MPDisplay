@@ -1,0 +1,102 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{813BF2B2-CAC9-4AF3-9124-0E96C4D20A18}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>MediaPortal2Plugin</RootNamespace>
+    <AssemblyName>MPDisplay.Plugin2</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>3.5</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>..\..\..\..\Program Files %28x86%29\Team MediaPortal\MP2-Client\Plugins\MediaPortal2Plugin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>..\..\..\MPDisplay\Plugin2\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <Prefer32Bit>false</Prefer32Bit>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Bass.Net">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BassLibraries\Bass.Net.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="BassPlayer">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BassPlayer\BassPlayer.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MediaPortal.Common">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\MediaPortal.Common.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MediaPortal.UI">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\MediaPortal.UI.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="MediaPortal.Utilities">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\MediaPortal.Utilities.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SkinEngine">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinEngine\SkinEngine.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\GlobalAssembly.cs">
+      <Link>Properties\GlobalAssembly.cs</Link>
+    </Compile>
+    <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="InfoManagers\EqualizerManager.cs" />
+    <Compile Include="InfoManagers\WindowManager.cs" />
+    <Compile Include="MessageService.cs" />
+    <Compile Include="MpDisplayPlugin2.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ServiceProxy.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="plugin.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{c6a8f1c0-8b75-425d-90ce-0e455e80844a}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\MessageFramework\MessageFramework.csproj">
+      <Project>{c3a683aa-2caf-4093-bf6e-0b47ff048096}</Project>
+      <Name>MessageFramework</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

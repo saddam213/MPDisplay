@@ -215,7 +215,7 @@ namespace GUI
         /// Invoked when an unhandled <see cref="E:System.Windows.Input.Mouse.MouseUp" /> routed event reaches an element in its route that is derived from this class. Implement this method to add class handling for this event.
         /// </summary>
         /// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data. The event data reports that the mouse button was released.</param>
-        protected async override void OnMouseUp(MouseButtonEventArgs e)
+        protected override async void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
 

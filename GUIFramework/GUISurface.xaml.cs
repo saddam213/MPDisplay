@@ -1100,7 +1100,7 @@ namespace GUIFramework
 
         #endregion
 
-        #region Screen saver
+        #region Screensaver
 
         public bool ScreenSaverActive
         {
@@ -1157,12 +1157,37 @@ namespace GUIFramework
             _screenSaverType = ScreenSaverType.None;
 
             if (_currentWindow is GUIMPWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMP)
-                _screenSaverType = InfoRepository.Instance.ScreenSaverImageCount == 0 ? ScreenSaverType.DarkenOnly : ScreenSaverType.Full;
+                _screenSaverType = GetCurrentScreenSaverType(true);               
             if (_currentWindow is GUIMPDWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMPD)
-                _screenSaverType = InfoRepository.Instance.ScreenSaverImageCount == 0 ? ScreenSaverType.DarkenOnly : ScreenSaverType.Full;
-            if (_currentWindow is GUIPlayerWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledPlayer) _screenSaverType = ScreenSaverType.DarkenOnly;
+                _screenSaverType = GetCurrentScreenSaverType(true);               
+            if (_currentWindow is GUIPlayerWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledPlayer)
+                _screenSaverType = GetCurrentScreenSaverType(false);               
 
             _screenSaverLastInteraction = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Get the screensaver type for the current window
+        /// </summary>
+        /// <param name="windowSlideshow">If slideshow is enabled for the window type</param>
+        /// <returns>The screensaver type</returns>
+        private ScreenSaverType GetCurrentScreenSaverType(bool windowSlideshow)
+        {
+            var currentType = ScreenSaverType.None;             // default is no screensaver
+
+            if (InfoRepository.Instance.ScreenSaverImageCount > 0 && !_currentWindow.BaseXml.DisableSlideshow && windowSlideshow)
+            {
+                    currentType = ScreenSaverType.Full;
+            }
+            else
+            {
+                    if (!_currentWindow.BaseXml.DisableDarkening)
+                    {
+                        currentType = ScreenSaverType.DarkenOnly;                     
+                    }
+            }
+
+            return currentType;
         }
 
         /// <summary>

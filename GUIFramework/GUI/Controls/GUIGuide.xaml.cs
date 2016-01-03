@@ -285,7 +285,7 @@ namespace GUIFramework.GUI
 
             _lastMediaportalAction = DateTime.Now;
             SelectedProgram = program;
-            TimelinePosition = (TimelineLength - ((TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+            TimelinePosition = TimelineLength - (TimelineEnd - program.StartTime).TotalMinutes * TimelineMultiplier - (_programScrollViewer.ViewportWidth / 2.0 - 15 * TimelineMultiplier);
             ProgramListBox.Dispatcher.BeginInvoke(new Action(delegate
             {
                 ProgramListBox.ScrollIntoView(channel);
@@ -302,12 +302,12 @@ namespace GUIFramework.GUI
             if (!(_programScrollViewer.HorizontalOffset > 0.0) || !(Math.Abs(_viewportHorizontalPosition - _programScrollViewer.HorizontalOffset) > Tolerance)) return;
 
             if (
-                !(_programScrollViewer.HorizontalOffset > (_viewportHorizontalPosition + (2*_programScrollViewer.ViewportWidth))) &&
-                !(_programScrollViewer.HorizontalOffset < (_viewportHorizontalPosition - _programScrollViewer.ViewportWidth))) return;
+                !(_programScrollViewer.HorizontalOffset > _viewportHorizontalPosition + 2*_programScrollViewer.ViewportWidth) &&
+                !(_programScrollViewer.HorizontalOffset < _viewportHorizontalPosition - _programScrollViewer.ViewportWidth)) return;
 
             _viewportHorizontalPosition = _programScrollViewer.HorizontalOffset;
-            var start = TimelineStart.AddMinutes((_viewportHorizontalPosition - (2 * _programScrollViewer.ViewportWidth)) / TimelineMultiplier);
-            var end = TimelineStart.AddMinutes((_viewportHorizontalPosition + (3 *_programScrollViewer.ViewportWidth)) / TimelineMultiplier);
+            var start = TimelineStart.AddMinutes((_viewportHorizontalPosition - 2 * _programScrollViewer.ViewportWidth) / TimelineMultiplier);
+            var end = TimelineStart.AddMinutes((_viewportHorizontalPosition + 3 *_programScrollViewer.ViewportWidth) / TimelineMultiplier);
             TVGuideRepository.Instance.FilterPrograms(start, end);
         }
 
@@ -320,16 +320,16 @@ namespace GUIFramework.GUI
 
              Timeline.Clear();
              TimelineLength = (TimelineEnd - TimelineStart).TotalMinutes * TimelineMultiplier;
-             TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
+             TimelinePosition = TimelineLength - (TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier - (_programScrollViewer.ViewportWidth / 2.0 - 15 * TimelineMultiplier);
              var begin = TimelineStart.Round(TimeSpan.FromMinutes(30));
-             Timeline = Enumerable.Range(0, ((int)(TimelineEnd - begin).TotalHours) * 2).Select(x => new TvGuideProgram
+             Timeline = Enumerable.Range(0, (int)(TimelineEnd - begin).TotalHours * 2).Select(x => new TvGuideProgram
              {
                  StartTime = begin.AddMinutes(30 * x),
-                 EndTime = begin.AddMinutes((30 * x) + 30),
+                 EndTime = begin.AddMinutes(30 * x + 30),
                  Title = begin.AddMinutes(30 * x).ToString("t")
              }).ToList();
 
-             TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
+             TimelineCenterPosition = (DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier;
              _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
         }
 
@@ -342,8 +342,8 @@ namespace GUIFramework.GUI
 
             if (DateTime.Now <= LastUserInteraction.AddSeconds(20) || DateTime.Now <= _lastMediaportalAction.AddSeconds(30)) return;
 
-            TimelinePosition = (TimelineLength - ((TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier)) - ((_programScrollViewer.ViewportWidth / 2.0) - (15 * TimelineMultiplier));
-            TimelineCenterPosition = ((DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier);
+            TimelinePosition = TimelineLength - (TimelineEnd - DateTime.Now).TotalMinutes * TimelineMultiplier - (_programScrollViewer.ViewportWidth / 2.0 - 15 * TimelineMultiplier);
+            TimelineCenterPosition = (DateTime.Now - TimelineStart).TotalMinutes * TimelineMultiplier;
             _programScrollViewer.ScrollToHorizontalOffset(TimelinePosition);
         }
 

@@ -57,7 +57,7 @@ namespace GUISkinFramework.Editors
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var editor = new ActionEditorDialog(_item.Instance);
-            editor.SetItems((_item.Value as ObservableCollection<XmlAction>) ?? new ObservableCollection<XmlAction>());
+            editor.SetItems(_item.Value as ObservableCollection<XmlAction> ?? new ObservableCollection<XmlAction>());
             if (editor.ShowDialog() == true)
             {
                 _item.Value = editor.GetItems();
@@ -88,7 +88,7 @@ namespace GUISkinFramework.Editors
         {
             if (!(_item?.Value is IList) || ((IList) _item.Value).Count <= 0) return "(Empty)";
             var returnValue = "Actions:" + Environment.NewLine;
-            return ((IList) _item.Value).OfType<XmlAction>().Aggregate(returnValue, (current, xmlAction) => current + (xmlAction.DisplayName + Environment.NewLine));
+            return ((IList) _item.Value).OfType<XmlAction>().Aggregate(returnValue, (current, xmlAction) => current + xmlAction.DisplayName + Environment.NewLine);
         }
     }
 

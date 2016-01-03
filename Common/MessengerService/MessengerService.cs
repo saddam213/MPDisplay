@@ -125,7 +125,7 @@ namespace Common.MessengerService
             Type[] registeredParameters;
             if (_messageToActionsMap.TryGetParameterTypes(message, out registeredParameters))
             {
-                if (registeredParameters == null && (parameters != null && parameters.Any()))
+                if (registeredParameters == null && parameters != null && parameters.Any())
                     throw new TargetParameterCountException("parameters not expected.");
 
                 if (registeredParameters != null && (parameters == null || parameters.Length != registeredParameters.Length))

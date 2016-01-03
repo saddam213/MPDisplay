@@ -19,9 +19,9 @@ namespace GUIFramework.Converters
                 var percentage = (double)values[1];
                 var width = values[0] != null ? double.Parse(values[0].ToString()) : 0.0;
                 var margin = values[2]?.ToString().ToThickness() ?? new Thickness(0);
-                var actualWidth = (width - (margin.Left + margin.Right));
+                var actualWidth = width - (margin.Left + margin.Right);
                 if (actualWidth < 0.0) actualWidth = 0.0;
-                return Math.Min(actualWidth, Math.Max(0.0, (actualWidth / 100.0) * percentage));
+                return Math.Min(actualWidth, Math.Max(0.0, actualWidth / 100.0 * percentage));
             }
             catch
             {

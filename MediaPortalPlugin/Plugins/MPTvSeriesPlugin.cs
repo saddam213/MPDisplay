@@ -13,7 +13,7 @@ namespace MediaPortalPlugin.Plugins
         {
         }
 
-        public TvSeriesPluginSettings CustomSettings => (Settings as TvSeriesPluginSettings);
+        public TvSeriesPluginSettings CustomSettings => Settings as TvSeriesPluginSettings;
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {
