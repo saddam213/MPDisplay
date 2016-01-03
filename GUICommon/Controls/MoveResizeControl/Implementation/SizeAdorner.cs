@@ -7,16 +7,10 @@ namespace MPDisplay.Common.Controls
 {
     public class SizeAdorner : Adorner
     {
-        private Control _chrome;
-        private VisualCollection _visuals;
+        private readonly Control _chrome;
+        private readonly VisualCollection _visuals;
 
-        protected override int VisualChildrenCount
-        {
-            get
-            {
-                return _visuals.Count;
-            }
-        }
+        protected override int VisualChildrenCount => _visuals.Count;
 
         public SizeAdorner(UIElement designerItem)
             : base(designerItem)

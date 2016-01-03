@@ -15,16 +15,9 @@ namespace SkinEditor.Views
             InitializeComponent();
         }
 
+        public override string Title => "Test Area";
 
-        public override string Title
-        {
-            get { return "Test Area"; }
-        }
-
-        public TestEditorViewSettings Settings 
-        {
-            get { return EditorSettings as TestEditorViewSettings; }
-        }
+        public TestEditorViewSettings Settings => EditorSettings as TestEditorViewSettings;
 
         private async void Button_Click_LoadSkin(object sender, RoutedEventArgs e)
         {

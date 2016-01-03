@@ -1,6 +1,6 @@
 ﻿<!-- ReSharper disable Xaml.RedundantAttachedProperty -->
 <!-- ReSharper disable Xaml.StaticResourceNotResolved -->
-<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
+
 <base:GUIControl x:Class="GUIFramework.GUI.GUIRectangle"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -21,13 +21,14 @@
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
 			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
 			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <!-- ReSharper disable once InconsistentNaming -->
 	<Border x:Name="background" Width="{Binding BaseXml.Width, Mode=OneWay}" Height="{Binding BaseXml.Height, Mode=OneWay}"
                 Background="{Binding BaseXml.BackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding BaseXml.BorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderThickness="{Binding BaseXml.BorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding BaseXml.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
-		<Border x:Name="focusShading" Background="{Binding BaseXml.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-			<Border x:Name="focusgloss" Background="{Binding BaseXml.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
+		<Border x:Name="FocusShading" Background="{Binding BaseXml.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
+			<Border x:Name="Focusgloss" Background="{Binding BaseXml.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}" />
 		</Border>
 	</Border>
 

@@ -64,7 +64,7 @@ namespace MPDisplay.Common.Controls
         {
             try
             {
-                comboBox.Items.Clear();
+                ComboBox.Items.Clear();
                 if (_currentWord.Length >= _searchThreshold)
                 {
                     // ReSharper disable once LoopCanBePartlyConvertedToQuery
@@ -73,14 +73,14 @@ namespace MPDisplay.Common.Controls
                         if (!entry.KeywordStrings.Any(word => word.StartsWith(_currentWord, StringComparison.CurrentCultureIgnoreCase)))
                             continue;
                         var cbItem = new ComboBoxItem {Content = entry.ToString()};
-                        comboBox.Items.Add(cbItem);
+                        ComboBox.Items.Add(cbItem);
                     }
-                    comboBox.Margin = new Thickness(textbox.GetRectFromCharacterIndex(textbox.Text.Length).X, 0, 0, 0);
-                    comboBox.IsDropDownOpen = comboBox.HasItems;
+                    ComboBox.Margin = new Thickness(Textbox.GetRectFromCharacterIndex(Textbox.Text.Length).X, 0, 0, 0);
+                    ComboBox.IsDropDownOpen = ComboBox.HasItems;
                 }
                 else
                 {
-                    comboBox.IsDropDownOpen = false;
+                    ComboBox.IsDropDownOpen = false;
                 }
             }
             catch
@@ -91,13 +91,13 @@ namespace MPDisplay.Common.Controls
 
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (null == comboBox.SelectedItem) return;
+            if (null == ComboBox.SelectedItem) return;
 
             _insertText = true;
-            var cbItem = (ComboBoxItem)comboBox.SelectedItem;
+            var cbItem = (ComboBoxItem)ComboBox.SelectedItem;
             Text = Text.TrimEnd(_currentWord.ToArray()) + cbItem.Content;
-            textbox.Focus();
-            textbox.CaretIndex = Text.Length;
+            Textbox.Focus();
+            Textbox.CaretIndex = Text.Length;
         }
 
         private void textBox_TextChanged(object sender, TextChangedEventArgs e)
@@ -116,19 +116,19 @@ namespace MPDisplay.Common.Controls
         private void textbox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Down) return;
-            if (comboBox.IsDropDownOpen)
+            if (ComboBox.IsDropDownOpen)
             {
-                comboBox.Focus();
+                ComboBox.Focus();
             }
         }
 
         private void comboBox_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key != Key.Up) return;
-            var item = comboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(c => c.IsHighlighted);
-            if (item != null && (comboBox.IsDropDownOpen && comboBox.Items.IndexOf(item) == 0))
+            var item = ComboBox.Items.OfType<ComboBoxItem>().FirstOrDefault(c => c.IsHighlighted);
+            if (item != null && ComboBox.IsDropDownOpen && ComboBox.Items.IndexOf(item) == 0)
             {
-                textbox.Focus();
+                Textbox.Focus();
             }
         }
 

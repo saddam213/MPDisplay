@@ -2,7 +2,6 @@
 // Copyright (c) Nish Sivakumar. All rights reserved.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -16,13 +15,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                return "GPS Time";
-            }
-        }
+        public string DisplayName => "GPS Time";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value
@@ -33,8 +26,8 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         {
             var values = exifValue.Values.Cast<Rational32>();
             var rational32S = values as IList<Rational32> ?? values.ToList();
-            return rational32S.Count() != 3 ? String.Empty : String.Format("{0}:{1}:{2}", (int)(double)rational32S.ElementAt(0), 
-                (int)(double)rational32S.ElementAt(1), (int)(double)rational32S.ElementAt(2));
+            return rational32S.Count != 3 ? string.Empty :
+                $"{ (double)rational32S.ElementAt(0)}:{ (double)rational32S.ElementAt(1)}:{ (double)rational32S.ElementAt(2)}";
         }
     }
 }

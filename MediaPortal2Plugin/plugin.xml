@@ -1,0 +1,28 @@
+<Plugin
+    DescriptorVersion="1.0"
+    Name="MPDisplay.Plugin2"
+    PluginId="9E63FD85-B1C6-42F8-A10B-7A1D33EE41F7"
+    Author="Team MPDiaplay++"
+    Copyright="GPL"
+    AutoActivate="true"
+    Description="MPDisplay++ Plugin for MediaPortal 2">
+
+  <Version
+    PluginVersion="0.1"
+    ReleaseDate="2013-11-11 01:00:00 GMT+01:00"
+    CurrentAPI="1"/>
+
+  <DependsOn>
+    <CoreDependency Name="MediaPortal.Common" CompatibleAPI="1" />
+    <CoreDependency Name="MediaPortal.UI" CompatibleAPI="1" />
+    <CoreDependency Name="MediaPortal.Utilities" CompatibleAPI="1" />
+  </DependsOn>
+
+  <Runtime>
+    <Assembly FileName="MPDisplay.Plugin2.dll"/>
+    <PluginStateTracker ClassName="MediaPortal2Plugin.MpDisplayPlugin2"/>
+  </Runtime>
+
+  <!-- This is s process plugin, so no models, workflows, or UI required -->
+  
+</Plugin>

@@ -11,10 +11,7 @@ namespace MediaPortalPlugin.Plugins
         {
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.TuneIn; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.TuneIn;
 
         public override bool IsPlaying(string filename, APIPlaybackType playtype)
         {

@@ -10,36 +10,36 @@ namespace Common.Log
     /// </summary>
     public static class LoggingManager
     {
-        private static Dictionary<string, Logger> _loggers = new Dictionary<string, Logger>();
-        private static Dictionary<string, Dictionary<Type, Log>> _logs = new Dictionary<string, Dictionary<Type, Log>>();
+        private static readonly Dictionary<string, Logger> Loggers = new Dictionary<string, Logger>();
+        private static readonly Dictionary<string, Dictionary<Type, Log>> Logs = new Dictionary<string, Dictionary<Type, Log>>();
 
         public static void AddLog(Logger logger, string logname = "Default")
         {
-            if (_loggers.ContainsKey(logname))
+            if (Loggers.ContainsKey(logname))
             {
-                _loggers[logname].Dispose();
-                _loggers.Remove(logname);
+                Loggers[logname].Dispose();
+                Loggers.Remove(logname);
             }
 
-            _loggers.Add(logname, logger);
-            _logs.Add(logname, new Dictionary<Type, Log>());
+            Loggers.Add(logname, logger);
+            Logs.Add(logname, new Dictionary<Type, Log>());
             logger.WriteHeader();
         }
 
         public static Log GetLog(Type owner, string logName = "Default")
         {
-            if (_loggers.Count == 0)
+            if (Loggers.Count == 0)
             {
                 AddLog(new ConsoleLogger(RegistrySettings.LogLevel));
             }
 
-            if (!_loggers.ContainsKey(logName) || !_logs.ContainsKey(logName)) return _logs[logName][owner];
+            if (!Loggers.ContainsKey(logName) || !Logs.ContainsKey(logName)) return Logs[logName][owner];
 
-            if (!_logs[logName].ContainsKey(owner))
+            if (!Logs[logName].ContainsKey(owner))
             {
-                _logs[logName].Add(owner, new Log(owner, _loggers[logName].QueueLogMessage));
+                Logs[logName].Add(owner, new Log(owner, Loggers[logName].QueueLogMessage));
             }
-            return _logs[logName][owner];
+            return Logs[logName][owner];
         }
 
         /// <summary>
@@ -47,13 +47,13 @@ namespace Common.Log
         /// </summary>
         public static void Destroy()
         {
-            if (!_loggers.Any()) return;
-            foreach (var logger in _loggers.Values)
+            if (!Loggers.Any()) return;
+            foreach (var logger in Loggers.Values)
             {
                 logger.Dispose();
             }
-            _loggers.Clear();
-            _logs.Clear();
+            Loggers.Clear();
+            Logs.Clear();
         }
     }
 }

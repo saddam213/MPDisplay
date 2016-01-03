@@ -11,17 +11,12 @@ namespace GUIFramework.Managers
     /// </summary>
     public static class GUIActionManager
     {
-        private static Log _log = LoggingManager.GetLog(typeof(GUIActionManager));
-
-        private static MessengerService<XmlActionType> _actionService = new MessengerService<XmlActionType>();
+        private static readonly Log Log = LoggingManager.GetLog(typeof(GUIActionManager));
 
         /// <summary>
         /// Gets the action service.
         /// </summary>
-        public static MessengerService<XmlActionType> ActionService
-        {
-            get { return _actionService; }
-        }
+        public static MessengerService<XmlActionType> ActionService { get; } = new MessengerService<XmlActionType>();
 
         /// <summary>
         /// Registers the action to the specified callback.
@@ -94,7 +89,7 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static T GetParam1As<T>(this XmlAction action, T defaultValue) where T : IConvertible
         {
-            if (action == null || action.Param1 == null) return defaultValue;
+            if (action?.Param1 == null) return defaultValue;
 
             try
             {
@@ -102,7 +97,7 @@ namespace GUIFramework.Managers
             }
             catch(Exception ex)
             {
-                _log.Message(LogLevel.Error, "[GetParam1As] - An exception getting parameter {0} of type {1}, exception: {2}", action.Param1, typeof(T), ex);
+                Log.Message(LogLevel.Error, "[GetParam1As] - An exception getting parameter {0} of type {1}, exception: {2}", action.Param1, typeof(T), ex);
             }
             return defaultValue;
         }
@@ -116,7 +111,7 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static T GetParam2As<T>(this XmlAction action, T defaultValue) where T : IConvertible
         {
-            if (action == null || action.Param2 == null) return defaultValue;
+            if (action?.Param2 == null) return defaultValue;
 
             try
             {
@@ -124,7 +119,7 @@ namespace GUIFramework.Managers
             }
             catch( Exception ex)
             {
-                _log.Message(LogLevel.Error, "[GetParam2As] - An exception getting parameter {0} of type {1}, exception: {2}", action.Param2, typeof(T), ex);
+                Log.Message(LogLevel.Error, "[GetParam2As] - An exception getting parameter {0} of type {1}, exception: {2}", action.Param2, typeof(T), ex);
             }
             return defaultValue;
         }

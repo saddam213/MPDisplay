@@ -16,7 +16,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// The PropertyItem associated with this object.
         /// </summary>
-        private PropertyItem _propertyItem;
+        private readonly PropertyItem _propertyItem;
 
         /// <summary>
         /// The IExifValue associated with this object.
@@ -26,22 +26,22 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// The IExifPropertyFormatter for this property.
         /// </summary>
-        private IExifPropertyFormatter _propertyFormatter;
+        private readonly IExifPropertyFormatter _propertyFormatter;
 
         /// <summary>
         /// Set to true if this object represents an unknown property tag
         /// </summary>
-        private bool _isUnknown;
+        private readonly bool _isUnknown;
 
         /// <summary>
         /// Set to true if this object has a custom property formatter
         /// </summary>
-        private bool _hasCustomFormatter;
+        private readonly bool _hasCustomFormatter;
 
         /// <summary>
         /// The parent ExifReader that owns this ExifProperty object
         /// </summary>
-        private ExifReader _parentReader;
+        private readonly ExifReader _parentReader;
 
         /// <summary>
         /// Initializes a new instance of the ExifProperty class.
@@ -71,13 +71,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Gets the IExifValue for this property
         /// </summary>
-        public IExifValue ExifValue
-        {
-            get
-            {
-                return _exifValue ?? InitializeExifValue();
-            }
-        }
+        public IExifValue ExifValue => _exifValue ?? InitializeExifValue();
 
         /// <summary>
         /// Gets the descriptive name of the Exif property
@@ -90,7 +84,7 @@ namespace MediaPortalPlugin.ExifReader
                 {
                     return _hasCustomFormatter || !_isUnknown ?
                         _propertyFormatter.DisplayName :
-                        string.Format("{0} #{1}", _propertyFormatter.DisplayName, _propertyItem.Id);
+                        $"{_propertyFormatter.DisplayName} #{_propertyItem.Id}";
                 }
                 catch (Exception ex)
                 {
@@ -104,47 +98,23 @@ namespace MediaPortalPlugin.ExifReader
         /// Gets a category name for the property.
         /// Note: This is not part of the Exif standard and is merely for convenience.
         /// </summary>
-        public string ExifPropertyCategory
-        {
-            get
-            {
-                return _isUnknown ? "Unknown" : "General";
-            }
-        }
+        public string ExifPropertyCategory => _isUnknown ? "Unknown" : "General";
 
         /// <summary>
         /// Gets the Exif property tag Id for this property
         /// </summary>
-        public PropertyTagId ExifTag
-        {
-            get
-            {
-                return _isUnknown ? PropertyTagId.UnknownExifTag : (PropertyTagId)_propertyItem.Id;
-            }
-        }
+        public PropertyTagId ExifTag => _isUnknown ? PropertyTagId.UnknownExifTag : (PropertyTagId)_propertyItem.Id;
 
         /// <summary>
         /// Gets the Exif data type for this property
         /// </summary>
-        public PropertyTagType ExifDatatype
-        {
-            get
-            {
-                return (PropertyTagType)_propertyItem.Type;
-            }
-        }
+        public PropertyTagType ExifDatatype => (PropertyTagType)_propertyItem.Type;
 
         /// <summary>
         /// Gets the raw Exif tag. For unknown tags this will not
         /// match the value of the ExifTag property.
         /// </summary>
-        public int RawExifTagId
-        {
-            get
-            {
-                return _propertyItem.Id;
-            }
-        }
+        public int RawExifTagId => _propertyItem.Id;
 
         /// <summary>
         /// Override for ToString

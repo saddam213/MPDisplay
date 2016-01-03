@@ -23,7 +23,7 @@ namespace SkinEditor.Controls
         #region Fields
 
         private XmlListItemStyle _currentLayout = new XmlListItemStyle();
-        private ScrollViewer _scrollViewer;
+        private readonly ScrollViewer _scrollViewer;
         private Point _itemMouseDownPoint;
         private XmlListLayout _currentOrientation = XmlListLayout.Vertical;
         private bool _itemMouseDown;
@@ -42,8 +42,8 @@ namespace SkinEditor.Controls
         {
           
             InitializeComponent();
-            _scrollViewer = listbox.GetDescendantByType<ScrollViewer>();
-            MouseTouchDevice.RegisterEvents(listbox.GetDescendantByType<VirtualizingStackPanel>());
+            _scrollViewer = Listbox.GetDescendantByType<ScrollViewer>();
+            MouseTouchDevice.RegisterEvents(Listbox.GetDescendantByType<VirtualizingStackPanel>());
         }
 
         #endregion
@@ -155,7 +155,7 @@ namespace SkinEditor.Controls
         private static void OnListOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var coverFlowListBox = d as CoverFlowListBox;
-            if (coverFlowListBox != null) coverFlowListBox.ChangeLayout((XmlListLayout)e.NewValue);
+            coverFlowListBox?.ChangeLayout((XmlListLayout)e.NewValue);
         }
 
         /// <summary>
@@ -166,7 +166,7 @@ namespace SkinEditor.Controls
         private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var coverFlowListBox = d as CoverFlowListBox;
-            if (coverFlowListBox != null) coverFlowListBox.SelectItem(e.NewValue as CoverFlowListBoxItem);
+            coverFlowListBox?.SelectItem(e.NewValue as CoverFlowListBoxItem);
         }
 
         #endregion
@@ -184,9 +184,9 @@ namespace SkinEditor.Controls
         /// <param name="item">The item.</param>
         private void SelectItem(CoverFlowListBoxItem item)
         {
-            listbox.ScrollIntoView(item);
+            Listbox.ScrollIntoView(item);
             ScrollItemToCenter(item);
-            listbox.SelectedItem = item;
+            Listbox.SelectedItem = item;
         }
 
         /// <summary>
@@ -197,12 +197,12 @@ namespace SkinEditor.Controls
             StopSelectionTimer();
 
             var newPos = IsLayoutVertical
-                ? (_itemMouseDownPoint.Y - Mouse.GetPosition(this).Y)
-                : (_itemMouseDownPoint.X - Mouse.GetPosition(this).X);
+                ? _itemMouseDownPoint.Y - Mouse.GetPosition(this).Y
+                : _itemMouseDownPoint.X - Mouse.GetPosition(this).X;
 
             if (_itemMouseDown && Math.Abs(newPos) < DragThreshold)
             {
-                UserSelectedItem = listbox.SelectedItem as CoverFlowListBoxItem;
+                UserSelectedItem = Listbox.SelectedItem as CoverFlowListBoxItem;
             }
         }
 
@@ -214,7 +214,7 @@ namespace SkinEditor.Controls
         {
             if (item == null) return;
 
-            var positionFromCenter = listbox.GetItemOffsetFromCenterOfView(item);
+            var positionFromCenter = Listbox.GetItemOffsetFromCenterOfView(item);
 
             if (positionFromCenter != null)
             {
@@ -262,10 +262,10 @@ namespace SkinEditor.Controls
                 Thread.Sleep(150);
                 Dispatcher.Invoke(() =>
                 {
-                    if ((listbox.SelectedItem as CoverFlowListBoxItem) == GetCenterItem()) return;
+                    if (Listbox.SelectedItem as CoverFlowListBoxItem == GetCenterItem()) return;
 
-                    listbox.ScrollIntoView(listbox.SelectedItem);
-                    ScrollItemToCenter(listbox.SelectedItem as CoverFlowListBoxItem);
+                    Listbox.ScrollIntoView(Listbox.SelectedItem);
+                    ScrollItemToCenter(Listbox.SelectedItem as CoverFlowListBoxItem);
                 }, DispatcherPriority.Background);
             });
         }
@@ -295,7 +295,7 @@ namespace SkinEditor.Controls
             if (_currentOrientation == orientation) return;
 
             _currentOrientation = orientation;
-            listbox.Items.Refresh();
+            Listbox.Items.Refresh();
         }
 
         /// <summary>
@@ -330,22 +330,16 @@ namespace SkinEditor.Controls
         /// <returns></returns>
         private CoverFlowListBoxItem GetCenterItem()
         {
-            var element = listbox.InputHitTest(new Point((listbox.ActualWidth / 2.0), (listbox.ActualHeight / 2.0))) as Border;
-            if (element == null) return null;
+            var element = Listbox.InputHitTest(new Point(Listbox.ActualWidth / 2.0, Listbox.ActualHeight / 2.0)) as Border;
 
-            var contentPresenter = element.Child as ContentPresenter;
-            if (contentPresenter != null)
-                return contentPresenter.Content as CoverFlowListBoxItem;
-            return null;
+            var contentPresenter = element?.Child as ContentPresenter;
+            return contentPresenter?.Content as CoverFlowListBoxItem;
         }
 
         /// <summary>
         /// Gets the drag threshold.
         /// </summary>
-        private double DragThreshold
-        {
-            get { return IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width; }
-        }
+        private double DragThreshold => IsLayoutVertical ? CurrentLayout.Height : CurrentLayout.Width;
 
         /// <summary>
         /// Gets a value indicating whether the layout is vertical.
@@ -353,10 +347,7 @@ namespace SkinEditor.Controls
         /// <value>
         /// <c>true</c> if the layout is vertical; otherwise, <c>false</c>.
         /// </value>
-        private bool IsLayoutVertical
-        {
-            get { return _currentOrientation == XmlListLayout.Vertical || _currentOrientation == XmlListLayout.VerticalIcon; }
-        }
+        private bool IsLayoutVertical => _currentOrientation == XmlListLayout.Vertical || _currentOrientation == XmlListLayout.VerticalIcon;
 
         #endregion
 
@@ -372,12 +363,12 @@ namespace SkinEditor.Controls
             StopSelectionTimer();
             _itemMouseDown = false;
             var newPos = IsLayoutVertical
-                ? (_itemMouseDownPoint.Y - e.GetPosition(this).Y)
-                : (_itemMouseDownPoint.X - e.GetPosition(this).X);
+                ? _itemMouseDownPoint.Y - e.GetPosition(this).Y
+                : _itemMouseDownPoint.X - e.GetPosition(this).X;
 
             if (Math.Abs(newPos) < DragThreshold)
             {
-                ScrollItemToCenter(listbox.SelectedItem as CoverFlowListBoxItem);
+                ScrollItemToCenter(Listbox.SelectedItem as CoverFlowListBoxItem);
             }
         }
 
@@ -412,10 +403,7 @@ namespace SkinEditor.Controls
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

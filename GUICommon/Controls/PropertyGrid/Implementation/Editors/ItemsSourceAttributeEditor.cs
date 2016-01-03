@@ -40,7 +40,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         {
             var instance = Activator.CreateInstance(_attribute.Type);
             var itemsSource = instance as IItemsSource;
-            return itemsSource != null ? itemsSource.GetValues() : null;
+            return itemsSource?.GetValues();
         }
     }
 }

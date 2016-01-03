@@ -35,10 +35,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlButton SkinXml
-        {
-            get { return BaseXml as XmlButton; }
-        }
+        public XmlButton SkinXml => BaseXml as XmlButton;
 
         /// <summary>
         /// Gets or sets the action collection.
@@ -110,7 +107,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the info data.
         /// </summary>
-        public async override void UpdateInfoData()
+        public override async void UpdateInfoData()
         {
             base.UpdateInfoData();
 

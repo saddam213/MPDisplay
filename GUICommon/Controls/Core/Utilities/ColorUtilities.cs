@@ -98,8 +98,8 @@ namespace MPDisplay.Common.Controls.Core
                 var f = h - i;
 
                 var p = v * (1.0 - s);
-                var q = v * (1.0 - (s * f));
-                var t = v * (1.0 - (s * (1.0 - f)));
+                var q = v * (1.0 - s * f);
+                var t = v * (1.0 - s * (1.0 - f));
 
                 switch (i)
                 {

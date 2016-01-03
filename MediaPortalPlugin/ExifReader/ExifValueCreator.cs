@@ -18,7 +18,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Delegate map between Exif tag types and associated creation methods
         /// </summary>
-        private static Dictionary<PropertyTagType, CreateExifValueDelegate> _createExifValueDelegateMap = new Dictionary<PropertyTagType, CreateExifValueDelegate>
+        private static readonly Dictionary<PropertyTagType, CreateExifValueDelegate> CreateExifValueDelegateMap = new Dictionary<PropertyTagType, CreateExifValueDelegate>
         {
             { PropertyTagType.ASCII, CreateExifValueForAsciiData },
             { PropertyTagType.Byte, CreateExifValueForByteData },
@@ -49,7 +49,7 @@ namespace MediaPortalPlugin.ExifReader
             try
             {
                 CreateExifValueDelegate createExifValueDelegate;
-                return _createExifValueDelegateMap.TryGetValue(type, out createExifValueDelegate) ? createExifValueDelegate(value, length) : new ExifValue<string>(new[] { type.ToString() });
+                return CreateExifValueDelegateMap.TryGetValue(type, out createExifValueDelegate) ? createExifValueDelegate(value, length) : new ExifValue<string>(new[] { type.ToString() });
             }
             catch (Exception ex)
             {

@@ -6,7 +6,7 @@
              mc:Ignorable="d"  Name="UI" >
      
     <Grid DataContext="{Binding ElementName=UI}" >
-        <ListBox x:Name="listBox" ItemsSource="{Binding ImageFiles}" SelectedItem="{Binding SelectedImage}" MouseDoubleClick="ListBox_DoubleClick" ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
+        <ListBox x:Name="ListBox" ItemsSource="{Binding ImageFiles}" SelectedItem="{Binding SelectedImage}" MouseDoubleClick="ListBox_DoubleClick" ScrollViewer.HorizontalScrollBarVisibility="Disabled" >
             <ListBox.Resources>
                     <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="#40000000" />
                     <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="#40000000"/>
@@ -33,6 +33,7 @@
                                         <Image Grid.Row="0" Margin="2"  Stretch="Uniform" >
                                             <Image.Style>
                                                 <Style TargetType="Image">
+                                                    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
                                                     <Setter Property="Source" Value="{Binding FileName}"/>
                                                     <Style.Triggers>
                                                         <DataTrigger Binding="{Binding IsFolder}" Value="True">
@@ -42,9 +43,11 @@
                                                             <Setter Property="Source" Value="/GUISkinFramework;component/Images/LeftArrow_Green.png"/>
                                                         </DataTrigger>
                                                     </Style.Triggers>
+                                                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
                                                 </Style>
                                             </Image.Style>
                                         </Image>
+                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                         <TextBlock Foreground="{TemplateBinding Foreground}" FontWeight="{TemplateBinding FontWeight}" VerticalAlignment="Bottom" Grid.Row="1" Text="{Binding DisplayName}" TextAlignment="Center" TextWrapping="Wrap" Margin="2" />
                                     </Grid>
 									

@@ -104,12 +104,7 @@ namespace GUISkinFramework.Editors
         }
 
 
-        private ObservableCollection<string> _labelItems = new ObservableCollection<string>();
-        public ObservableCollection<string> LabelItems
-        {
-            get { return _labelItems; }
-            set { _labelItems = value; }
-        }
+        public ObservableCollection<string> LabelItems { get; set; } = new ObservableCollection<string>();
 
         private string _selectedLabelItem;
 
@@ -203,10 +198,7 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion
@@ -244,7 +236,7 @@ namespace GUISkinFramework.Editors
 
         private void Button_LabelItemRemove_Click(object sender, RoutedEventArgs e)
         {
-            if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= (LabelItems.Count - 1))
+            if (SelectedLabelItemIndex >= 0 && SelectedLabelItemIndex <= LabelItems.Count - 1)
             {
                 var index = SelectedLabelItemIndex;
                 if (LabelItems.ElementAtOrDefault(index) == "+")

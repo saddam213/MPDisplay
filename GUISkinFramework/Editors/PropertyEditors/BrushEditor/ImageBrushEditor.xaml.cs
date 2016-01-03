@@ -51,7 +51,7 @@ namespace GUISkinFramework.Editors
         private bool _isChangingImage;
         private void OnBrushChanged(XmlImageBrush image)
         {
-            if (image == null || string.IsNullOrEmpty(image.ImageName)) return;
+            if (string.IsNullOrEmpty(image?.ImageName)) return;
             _isChangingImage = true;
             ImageName = image.ImageName;
             ImageStretch = image.ImageStretch;
@@ -105,12 +105,7 @@ namespace GUISkinFramework.Editors
           public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-      
     }
 }

@@ -49,7 +49,7 @@ namespace SkinEditor.BindingConverters
 
                 var background = imageBrush;
                 var imageName = SkinEditorInfoManager.SkinInfo.Images.FirstOrDefault(i => i.XmlName.Equals(background.ImageName));
-                if (imageName != null && !string.IsNullOrEmpty(imageName.FileName))
+                if (!string.IsNullOrEmpty(imageName?.FileName))
                 {
                     return new ImageBrush(new BitmapImage(new Uri(imageName.FileName, UriKind.RelativeOrAbsolute))) { Stretch = background.ImageStretch };
                 }

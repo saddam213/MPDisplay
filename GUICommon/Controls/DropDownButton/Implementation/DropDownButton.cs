@@ -54,8 +54,7 @@ namespace MPDisplay.Common.Controls
         private static void OnDropDownContentChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var dropDownButton = o as DropDownButton;
-            if (dropDownButton != null)
-                dropDownButton.OnDropDownContentChanged(e.OldValue, e.NewValue);
+            dropDownButton?.OnDropDownContentChanged(e.OldValue, e.NewValue);
         }
 
         protected virtual void OnDropDownContentChanged(object oldValue, object newValue)
@@ -77,8 +76,7 @@ namespace MPDisplay.Common.Controls
         private static void OnIsOpenChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var dropDownButton = o as DropDownButton;
-            if (dropDownButton != null)
-                dropDownButton.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
+            dropDownButton?.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsOpenChanged(bool oldValue, bool newValue)
@@ -165,7 +163,7 @@ namespace MPDisplay.Common.Controls
             var command = Command as RoutedCommand;
 
             // If a RoutedCommand.
-            IsEnabled = command != null ? command.CanExecute(CommandParameter, CommandTarget) : Command.CanExecute(CommandParameter);
+            IsEnabled = command?.CanExecute(CommandParameter, CommandTarget) ?? Command.CanExecute(CommandParameter);
         }
 
         /// <summary>
@@ -250,8 +248,7 @@ namespace MPDisplay.Common.Controls
         private static void OnCommandChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var dropDownButton = d as DropDownButton;
-            if (dropDownButton != null)
-                dropDownButton.OnCommandChanged((ICommand)e.OldValue, (ICommand)e.NewValue);
+            dropDownButton?.OnCommandChanged((ICommand)e.OldValue, (ICommand)e.NewValue);
         }
 
         protected virtual void OnCommandChanged(ICommand oldValue, ICommand newValue)

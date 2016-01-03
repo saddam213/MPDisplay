@@ -51,7 +51,7 @@ namespace MPDisplay.Common.Controls
         private static void OnContentPropertyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var source = d as ButtonSpinner;
-            if (source != null) source.OnContentChanged(e.OldValue, e.NewValue);
+            source?.OnContentChanged(e.OldValue, e.NewValue);
         }
 
         #endregion //Content
@@ -220,12 +220,12 @@ namespace MPDisplay.Common.Controls
             // buttonspinner adds buttons that spin, so disable accordingly.
             if (IncreaseButton != null)
             {
-                IncreaseButton.IsEnabled = ((ValidSpinDirection & ValidSpinDirections.Increase) == ValidSpinDirections.Increase);
+                IncreaseButton.IsEnabled = (ValidSpinDirection & ValidSpinDirections.Increase) == ValidSpinDirections.Increase;
             }
 
             if (DecreaseButton != null)
             {
-                DecreaseButton.IsEnabled = ((ValidSpinDirection & ValidSpinDirections.Decrease) == ValidSpinDirections.Decrease);
+                DecreaseButton.IsEnabled = (ValidSpinDirection & ValidSpinDirections.Decrease) == ValidSpinDirections.Decrease;
             }
         }
 

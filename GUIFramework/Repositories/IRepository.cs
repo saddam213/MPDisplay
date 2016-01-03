@@ -20,8 +20,8 @@ namespace GUIFramework.Repositories
 
     public class DataRepository<TK, TV>
     {
-        private Dictionary<TK, TV> _repository = new Dictionary<TK, TV>();
-        private Func<TV, TV, bool> _valueEquals;
+        private readonly Dictionary<TK, TV> _repository = new Dictionary<TK, TV>();
+        private readonly Func<TV, TV, bool> _valueEquals;
 
         public DataRepository()
         {

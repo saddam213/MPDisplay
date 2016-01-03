@@ -69,7 +69,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <returns>The Exif properties</returns>
         public ReadOnlyCollection<ExifProperty> GetExifProperties()
         {
-            return _exifproperties != null ? _exifproperties.AsReadOnly() : null;
+            return _exifproperties?.AsReadOnly();
         }
 
         /// <summary>
@@ -104,10 +104,7 @@ namespace MediaPortalPlugin.ExifReader
         {
             var queryPropertyFormatter = QueryPropertyFormatter;
 
-            if (queryPropertyFormatter != null)
-            {
-                queryPropertyFormatter(this, eventArgs);
-            }
+            queryPropertyFormatter?.Invoke(this, eventArgs);
         }
 
         /// <summary>
@@ -118,10 +115,7 @@ namespace MediaPortalPlugin.ExifReader
         {
             var queryUndefinedExtractor = QueryUndefinedExtractor;
 
-            if (queryUndefinedExtractor != null)
-            {
-                queryUndefinedExtractor(this, eventArgs);
-            }
+            queryUndefinedExtractor?.Invoke(this, eventArgs);
         }
 
         /// <summary>

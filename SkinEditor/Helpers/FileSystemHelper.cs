@@ -118,36 +118,40 @@ namespace SkinEditor.Helpers
             //check for empty/null file path:
             if (string.IsNullOrEmpty(filePath) || string.IsNullOrWhiteSpace(filePath))
             {
-                return !AllowEmptyPath ? new ValidationResult(false, string.Format("The {0} may not be empty.",Message)) : new ValidationResult(true, null);
+                return !AllowEmptyPath ? new ValidationResult(false, $"The {Message} may not be empty.") : new ValidationResult(true, null);
             }
 
             if (IsFileNameOnly)
             {
                 if (Path.GetInvalidFileNameChars().Any(x => filePath.Contains(x)))
                 {
-                    return new ValidationResult(false, string.Format("The characters {0} are not permitted in a {1}.", GetPrinatbleInvalidChars(Path.GetInvalidPathChars()), Message));
+                    return new ValidationResult(false,
+                        $"The characters {GetPrinatbleInvalidChars(Path.GetInvalidPathChars())} are not permitted in a {Message}.");
                 }
             }
             else if (IsFilePathOnly)
             {
                 if (Path.GetInvalidPathChars().Any(x => filePath.Contains(x)))
-                    return new ValidationResult(false, string.Format("The characters {0} are not permitted in a {1}.", GetPrinatbleInvalidChars(Path.GetInvalidPathChars()), Message));
+                    return new ValidationResult(false,
+                        $"The characters {GetPrinatbleInvalidChars(Path.GetInvalidPathChars())} are not permitted in a {Message}.");
             }
             else
             {
 
                 //null & empty has been handled above, now check for pure whitespace:
                 if (string.IsNullOrWhiteSpace(filePath))
-                    return new ValidationResult(false, string.Format("The {0} cannot consist only of whitespace.", Message));
+                    return new ValidationResult(false, $"The {Message} cannot consist only of whitespace.");
                 //check the path:
                 if (Path.GetInvalidPathChars().Any(x => filePath.Contains(x)))
-                    return new ValidationResult(false, string.Format("The characters {0} are not permitted in a {1}.", GetPrinatbleInvalidChars(Path.GetInvalidPathChars()), Message));
+                    return new ValidationResult(false,
+                        $"The characters {GetPrinatbleInvalidChars(Path.GetInvalidPathChars())} are not permitted in a {Message}.");
                 //check the filename (if one can be isolated out):
                 try
                 {
                     var fileName = Path.GetFileName(filePath);
                     if (Path.GetInvalidFileNameChars().Any(x => fileName.Contains(x)))
-                        throw new ArgumentException(string.Format("The characters {0} are not permitted in a {1}.", GetPrinatbleInvalidChars(Path.GetInvalidFileNameChars()), Message));
+                        throw new ArgumentException(
+                            $"The characters {GetPrinatbleInvalidChars(Path.GetInvalidFileNameChars())} are not permitted in a {Message}.");
                 }
                 catch (ArgumentException e) { return new ValidationResult(false, e.Message); }
 
@@ -157,15 +161,9 @@ namespace SkinEditor.Helpers
         /// <summary>
         /// Gets and sets a flag indicating whether an empty path forms an error condition or not.
         /// </summary>
-        public bool AllowEmptyPath { get; set; } 
+        public bool AllowEmptyPath { get; set; }
 
-        private string _message = "file path";
-
-        public string Message
-        {
-            get { return _message; }
-            set { _message = value; }
-        }
+        public string Message { get; set; } = "file path";
 
         public bool IsFileNameOnly { get; set; }
 

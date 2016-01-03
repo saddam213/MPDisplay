@@ -10,5 +10,5 @@
      
     </UserControl.Resources>
 
-    <imageEditor:ImagePickerCombo x:Name="picker" SkinInfo="{Binding SkinInfo, ElementName=UI}" SelectedImage="{Binding SelectedImage, ElementName=UI, Mode=TwoWay}" />
+    <imageEditor:ImagePickerCombo x:Name="Picker" SkinInfo="{Binding SkinInfo, ElementName=UI}" SelectedImage="{Binding SelectedImage, ElementName=UI, Mode=TwoWay}" />
 </UserControl>

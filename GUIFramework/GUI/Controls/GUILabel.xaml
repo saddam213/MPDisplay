@@ -1,6 +1,6 @@
 ﻿<!-- ReSharper disable Xaml.RedundantAttachedProperty -->
 <!-- ReSharper disable Xaml.StaticResourceNotResolved -->
-<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
+
 <base:GUIControl x:Class="GUIFramework.GUI.GUILabel"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -26,7 +26,7 @@
 			                            Height="{Binding BaseXml.Height, Mode=OneWay}"
 										FontFamily="{Binding BaseXml.ControlStyle.FontType, Converter={StaticResource GUIFontConverter}, Mode=OneWay}" 
 										FontSize="{Binding BaseXml.ControlStyle.FontSize, Mode=OneWay}" 
-                                        TextBlock.LineHeight="{Binding BaseXml.LineHeight, Mode=OneWay}"
+                                        TextBlock.LineHeight="{Binding BaseXml.LineHeight, Converter={StaticResource GUILineHeightConverter}, Mode=OneWay}"
                                         TextBlock.LineStackingStrategy="BlockLineHeight"
 										Foreground="{Binding BaseXml.ControlStyle.FontBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" 
 										FontWeight="{Binding BaseXml.ControlStyle.FontWeight, Converter={StaticResource GUIFontConverter}, Mode=OneWay}"
@@ -37,6 +37,5 @@
 										IsVertical="{Binding BaseXml.IsVertical, Mode=OneWay}"
 										ScrollDelay="{Binding BaseXml.ScrollDelay, Mode=OneWay}"
 										ScrollSpeed="{Binding BaseXml.ScrollSpeed, Mode=OneWay}"
-										ScrollSeperator="{Binding BaseXml.ScrollSeperator, Mode=OneWay}">
-	</implementation:ScrollingTextBlock>
+										ScrollSeperator="{Binding BaseXml.ScrollSeperator, Mode=OneWay}" />
 </base:GUIControl>

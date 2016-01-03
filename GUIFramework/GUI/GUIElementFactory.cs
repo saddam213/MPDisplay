@@ -31,7 +31,7 @@ namespace GUIFramework.GUI
                 return _xmlControlTypeMap ?? (_xmlControlTypeMap = new Dictionary<Type, Type>(
                     Assembly.GetExecutingAssembly()
                         .GetTypes()
-                        .Where(t => (t.BaseType == typeof (GUIControl) || t.BaseType == typeof (GUIDraggableListView)))
+                        .Where(t => t.BaseType == typeof (GUIControl) || t.BaseType == typeof (GUIDraggableListView))
                         .ToDictionary(key => key.GetCustomAttribute<GUISkinElementAttribute>().XmlType,
                             value => value.UnderlyingSystemType)));
             }

@@ -7,7 +7,7 @@ namespace Common.Helpers
 {
     public static class ServiceHelper
     {
-        private static Log.Log _log = LoggingManager.GetLog(typeof(ServiceHelper));
+        private static readonly Log.Log Log = LoggingManager.GetLog(typeof(ServiceHelper));
 
         /// <summary>
         /// Starts the customers interface if its not running
@@ -49,7 +49,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[StartService] - An exception occured starting service, Service: "+serviceName, ex);
+                Log.Exception("[StartService] - An exception occured starting service, Service: "+serviceName, ex);
             }
             return false;
         }
@@ -87,7 +87,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[IsServiceRunning] - An exception occured checking service status, Service: " + serviceName, ex);
+                Log.Exception("[IsServiceRunning] - An exception occured checking service status, Service: " + serviceName, ex);
             }
             return false;
         }
@@ -106,7 +106,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[GetServiceStatus] - An exception occured fetching service status, Service: " + serviceName, ex);
+                Log.Exception("[GetServiceStatus] - An exception occured fetching service status, Service: " + serviceName, ex);
             }
             return ServiceStatus.Stopped;
         }
@@ -127,7 +127,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[CheckIfServiceExists] - An exception occured checking service, Service: " + serviceName, ex);
+                Log.Exception("[CheckIfServiceExists] - An exception occured checking service, Service: " + serviceName, ex);
             }
             return false;
         }

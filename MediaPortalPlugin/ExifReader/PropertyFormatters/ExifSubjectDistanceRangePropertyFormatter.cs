@@ -14,7 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Map of SceneCaptureType names to their unsigned short representations
         /// </summary>
-        private Dictionary<ushort, string> _subjectDistanceRangeMap = new Dictionary<ushort, string>
+        private readonly Dictionary<ushort, string> _subjectDistanceRangeMap = new Dictionary<ushort, string>
         {
             { 0, "unknown" },
             { 1, "Macro" },
@@ -25,13 +25,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public override string DisplayName
-        {
-            get
-            {
-                return "Subject Distance Range";
-            }
-        }
+        public override string DisplayName => "Subject Distance Range";
 
         /// <summary>
         /// Gets a dictionary that maps values to named strings

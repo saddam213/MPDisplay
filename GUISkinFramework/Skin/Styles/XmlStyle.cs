@@ -32,20 +32,14 @@ namespace GUISkinFramework.Skin
         }
 
         [Browsable(false)]
-        public virtual string StyleType
-        {
-            get { return GetType().Name.Replace("Xml", ""); }
-        }
+        public virtual string StyleType => GetType().Name.Replace("Xml", "");
 
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

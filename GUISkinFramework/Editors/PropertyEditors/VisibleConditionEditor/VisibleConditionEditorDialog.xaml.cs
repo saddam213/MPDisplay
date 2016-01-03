@@ -22,7 +22,6 @@ namespace GUISkinFramework.Editors
     {
         private object _instance;
         private string _currentCondition = string.Empty;
-        private ObservableCollection<AutoCompleteEntry> _autoCompleteList = new ObservableCollection<AutoCompleteEntry>();
         private bool _ischecking;
         private string _errorToolTip;
 
@@ -61,19 +60,12 @@ namespace GUISkinFramework.Editors
         /// <summary>
         /// Gets a value indicating whether this instance is condition valid.
         /// </summary>
-        public bool IsConditionValid
-        {
-            get { return AllConditionsValid(); }
-        }
+        public bool IsConditionValid => AllConditionsValid();
 
         /// <summary>
         /// Gets or sets the auto complete list.
         /// </summary>
-        public ObservableCollection<AutoCompleteEntry> AutoCompleteList
-        {
-            get { return _autoCompleteList; }
-            set { _autoCompleteList = value; }
-        }
+        public ObservableCollection<AutoCompleteEntry> AutoCompleteList { get; set; } = new ObservableCollection<AutoCompleteEntry>();
 
         public string ErrorToolTip
         {
@@ -118,8 +110,10 @@ namespace GUISkinFramework.Editors
 
             foreach (var option in SkinInfo.SkinOptions)
             {
-                AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsSkinOptionEnabled({0})", option.Name), string.Format("IsSkinOptionEnabled({0})", option.Name), "skin", "iss", "option"));
-                AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsSkinOptionEnabled({0})", option.Name), string.Format("!IsSkinOptionEnabled({0})", option.Name), "!", "!skin", "!iss", "!option"));
+                AutoCompleteList.Add(new AutoCompleteEntry($"IsSkinOptionEnabled({option.Name})",
+                    $"IsSkinOptionEnabled({option.Name})", "skin", "iss", "option"));
+                AutoCompleteList.Add(new AutoCompleteEntry($"!IsSkinOptionEnabled({option.Name})",
+                    $"!IsSkinOptionEnabled({option.Name})", "!", "!skin", "!iss", "!option"));
             }
 
 
@@ -141,8 +135,8 @@ namespace GUISkinFramework.Editors
             {
                 foreach (var playType in Enum.GetNames(typeof(PlaybackType)))
                 {
-                    AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsPlayer({0})", playType), string.Format("IsPlayer({0})", playType), "play", "isp", "player"));
-                    AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsPlayer({0})", playType), string.Format("!IsPlayer({0})", playType), "!", "!play", "!isp", "!player"));
+                    AutoCompleteList.Add(new AutoCompleteEntry($"IsPlayer({playType})", $"IsPlayer({playType})", "play", "isp", "player"));
+                    AutoCompleteList.Add(new AutoCompleteEntry($"!IsPlayer({playType})", $"!IsPlayer({playType})", "!", "!play", "!isp", "!player"));
                 }
             }
 
@@ -151,14 +145,16 @@ namespace GUISkinFramework.Editors
 
             foreach (var playType in Enum.GetNames(typeof(PlaybackType)))
             {
-                AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsPlayer({0})", playType), string.Format("IsPlayer({0})", playType), "play", "isp", "player"));
-                AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsPlayer({0})", playType), string.Format("!IsPlayer({0})", playType), "!", "!play", "!isp", "!player"));
+                AutoCompleteList.Add(new AutoCompleteEntry($"IsPlayer({playType})", $"IsPlayer({playType})", "play", "isp", "player"));
+                AutoCompleteList.Add(new AutoCompleteEntry($"!IsPlayer({playType})", $"!IsPlayer({playType})", "!", "!play", "!isp", "!player"));
             }
 
             foreach (var layout in Enum.GetNames(typeof(XmlListLayout)).Where(x => !x.Equals("Auto")))
             {
-                AutoCompleteList.Add(new AutoCompleteEntry(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("IsMediaPortalListLayout({0})", layout), "MP", "ism", "lay", "list"));
-                AutoCompleteList.Add(new AutoCompleteEntry(string.Format("!IsMediaPortalListLayout({0})", layout), string.Format("!IsMediaPortalListLayout({0})", layout), "!", "!MP", "!ism", "!lay", "!list"));
+                AutoCompleteList.Add(new AutoCompleteEntry($"IsMediaPortalListLayout({layout})",
+                    $"IsMediaPortalListLayout({layout})", "MP", "ism", "lay", "list"));
+                AutoCompleteList.Add(new AutoCompleteEntry($"!IsMediaPortalListLayout({layout})",
+                    $"!IsMediaPortalListLayout({layout})", "!", "!MP", "!ism", "!lay", "!list"));
             }
 
             AutoCompleteList.Add(new AutoCompleteEntry("IsControlVisible(controlId)", "IsControlVisible(controlId)", "control", "isc", "visible", "vis"));
@@ -200,10 +196,7 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion
@@ -219,8 +212,7 @@ namespace GUISkinFramework.Editors
             LoadCompilerSettings();
             var code = VisibleClassString.Replace(ReplacementString, condition);
             var compileResults = _codeProvider.CompileAssemblyFromSource(_compilerParams, code);
-            return compileResults.Errors.HasErrors ? compileResults.Errors.Cast<CompilerError>().Aggregate(string.Empty, (current, item) => current +
-                (item.ErrorText + Environment.NewLine)) : string.Empty;
+            return compileResults.Errors.HasErrors ? compileResults.Errors.Cast<CompilerError>().Aggregate(string.Empty, (current, item) => current + item.ErrorText + Environment.NewLine) : string.Empty;
         }
 
 
@@ -336,12 +328,15 @@ namespace GUISkinFramework.Editors
 
             if (xmlVisibleString.Contains("IsPlayer("))
             {
-                xmlVisibleString = Enum.GetValues(typeof (PlaybackType)).Cast<object>().Aggregate(xmlVisibleString, (current, playtype) => current.Replace(string.Format("IsPlayer({0})", playtype), string.Format("GUIVisibilityManager.IsPlayer({0})", (int) playtype)));
+                xmlVisibleString = Enum.GetValues(typeof (PlaybackType)).Cast<object>().Aggregate(xmlVisibleString, (current, playtype) => current.Replace(
+                    $"IsPlayer({playtype})", $"GUIVisibilityManager.IsPlayer({(int) playtype})"));
             }
 
             if (xmlVisibleString.Contains("IsMediaPortalListLayout("))
             {
-                xmlVisibleString = Enum.GetValues(typeof (XmlListLayout)).Cast<object>().Aggregate(xmlVisibleString, (current, layout) => current.Replace(string.Format("IsMediaPortalListLayout({0})", layout), string.Format("GUIVisibilityManager.IsMediaPortalListLayout({0})", (int) layout)));
+                xmlVisibleString = Enum.GetValues(typeof (XmlListLayout)).Cast<object>().Aggregate(xmlVisibleString, (current, layout) => current.Replace(
+                    $"IsMediaPortalListLayout({layout})",
+                    $"GUIVisibilityManager.IsMediaPortalListLayout({(int) layout})"));
             }
 
             if (xmlVisibleString.Contains("IsPluginEnabled("))

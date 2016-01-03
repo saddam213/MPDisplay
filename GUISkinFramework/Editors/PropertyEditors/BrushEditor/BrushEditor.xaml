@@ -81,8 +81,8 @@
                 </DrawingBrush>
             </Border.Background>
         </Border>
-        <TextBox Grid.Column="1" Margin="1" IsReadOnly="True"  Name="txtbx" Text="{Binding ElementName=UI, Path=BrushTypeInfo}" />
-        <Button Grid.Column="2" Click="Button_Click" Style="{StaticResource ButtonStyle}" HorizontalAlignment="Right"></Button>
+        <TextBox Grid.Column="1" Margin="1" IsReadOnly="True"  Name="Txtbx" Text="{Binding ElementName=UI, Path=BrushTypeInfo}" />
+        <Button Grid.Column="2" Click="Button_Click" Style="{StaticResource ButtonStyle}" HorizontalAlignment="Right" />
     </Grid>
         <!--<StackPanel Orientation="Horizontal" Width="87">
          

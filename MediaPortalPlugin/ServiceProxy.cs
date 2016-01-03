@@ -19,6 +19,7 @@ namespace MediaPortalPlugin
         void SendPropertyMessage(APIPropertyMessage property);
 
         [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendPropertyMessage")]
+        // ReSharper disable once OneWayOperationContractWithReturnType
         IAsyncResult BeginSendPropertyMessage(APIPropertyMessage property, AsyncCallback callback, object asyncState);
 
         void EndSendPropertyMessage(IAsyncResult result);
@@ -27,6 +28,7 @@ namespace MediaPortalPlugin
         void SendListMessage(APIListMessage listData);
 
         [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendListMessage")]
+        // ReSharper disable once OneWayOperationContractWithReturnType
         IAsyncResult BeginSendListMessage(APIListMessage listData, AsyncCallback callback, object asyncState);
 
         void EndSendListMessage(IAsyncResult result);
@@ -35,6 +37,7 @@ namespace MediaPortalPlugin
         void SendInfoMessage(APIInfoMessage msg);
 
         [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendInfoMessage")]
+        // ReSharper disable once OneWayOperationContractWithReturnType
         IAsyncResult BeginSendInfoMessage(APIInfoMessage msg, AsyncCallback callback, object asyncState);
 
         void EndSendInfoMessage(IAsyncResult result);
@@ -43,6 +46,7 @@ namespace MediaPortalPlugin
         void SendDataMessage(APIDataMessage msg);
 
         [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendDataMessage")]
+        // ReSharper disable once OneWayOperationContractWithReturnType
         IAsyncResult BeginSendDataMessage(APIDataMessage msg, AsyncCallback callback, object asyncState);
 
         void EndSendDataMessage(IAsyncResult result);
@@ -51,6 +55,7 @@ namespace MediaPortalPlugin
         void SendMediaPortalMessage(APIMediaPortalMessage msg);
 
         [OperationContract(IsOneWay = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/SendMediaPortalMessage")]
+        // ReSharper disable once OneWayOperationContractWithReturnType
         IAsyncResult BeginSendMediaPortalMessage(APIMediaPortalMessage msg, AsyncCallback callback, object asyncState);
 
         void EndSendMediaPortalMessage(IAsyncResult result);
@@ -67,12 +72,14 @@ namespace MediaPortalPlugin
         void Disconnect();
 
         [OperationContract(IsOneWay = true, IsTerminating = true, IsInitiating = false, AsyncPattern = true, Action = "http://tempuri.org/IMessage/Disconnect")]
+        // ReSharper disable once OneWayOperationContractWithReturnType
         IAsyncResult BeginDisconnect(AsyncCallback callback, object asyncState);
 
         void EndDisconnect(IAsyncResult result);
     }
 
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
+    [ServiceContract]
     public interface IMessageCallback
     {
         [OperationContract(IsOneWay = true, Action = "http://tempuri.org/IMessage/ReceiveAPIPropertyMessage")]
@@ -107,7 +114,7 @@ namespace MediaPortalPlugin
     public class ConnectCompletedEventArgs : AsyncCompletedEventArgs
     {
 
-        private object[] _results;
+        private readonly object[] _results;
 
         public ConnectCompletedEventArgs(object[] results, Exception exception, bool cancelled, object userState) :
             base(exception, cancelled, userState)
@@ -120,7 +127,7 @@ namespace MediaPortalPlugin
             get
             {
                 RaiseExceptionIfNecessary();
-                return ((List<APIConnection>)(_results[0]));
+                return (List<APIConnection>)_results[0];
             }
         }
     }
@@ -230,7 +237,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendPropertyMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            var property = ((APIPropertyMessage)(inValues[0]));
+            var property = (APIPropertyMessage)inValues[0];
             return BeginSendPropertyMessage(property, callback, asyncState);
         }
 
@@ -242,9 +249,9 @@ namespace MediaPortalPlugin
 
         private void OnSendPropertyMessageCompleted(object state)
         {
-            if ((SendPropertyMessageCompleted == null)) return;
+            if (SendPropertyMessageCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             SendPropertyMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
@@ -255,15 +262,15 @@ namespace MediaPortalPlugin
 
         public void SendPropertyMessageAsync(APIPropertyMessage property, object userState)
         {
-            if ((_onBeginSendPropertyMessageDelegate == null))
+            if (_onBeginSendPropertyMessageDelegate == null)
             {
                 _onBeginSendPropertyMessageDelegate = OnBeginSendPropertyMessage;
             }
-            if ((_onEndSendPropertyMessageDelegate == null))
+            if (_onEndSendPropertyMessageDelegate == null)
             {
                 _onEndSendPropertyMessageDelegate = OnEndSendPropertyMessage;
             }
-            if ((_onSendPropertyMessageCompletedDelegate == null))
+            if (_onSendPropertyMessageCompletedDelegate == null)
             {
                 _onSendPropertyMessageCompletedDelegate = OnSendPropertyMessageCompleted;
             }
@@ -290,7 +297,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendListMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            var listData = ((APIListMessage)(inValues[0]));
+            var listData = (APIListMessage)inValues[0];
             return BeginSendListMessage(listData, callback, asyncState);
         }
 
@@ -302,9 +309,9 @@ namespace MediaPortalPlugin
 
         private void OnSendListMessageCompleted(object state)
         {
-            if ((SendListMessageCompleted == null)) return;
+            if (SendListMessageCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             SendListMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
@@ -315,15 +322,15 @@ namespace MediaPortalPlugin
 
         public void SendListMessageAsync(APIListMessage listData, object userState)
         {
-            if ((_onBeginSendListMessageDelegate == null))
+            if (_onBeginSendListMessageDelegate == null)
             {
                 _onBeginSendListMessageDelegate = OnBeginSendListMessage;
             }
-            if ((_onEndSendListMessageDelegate == null))
+            if (_onEndSendListMessageDelegate == null)
             {
                 _onEndSendListMessageDelegate = OnEndSendListMessage;
             }
-            if ((_onSendListMessageCompletedDelegate == null))
+            if (_onSendListMessageCompletedDelegate == null)
             {
                 _onSendListMessageCompletedDelegate = OnSendListMessageCompleted;
             }
@@ -350,7 +357,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendInfoMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            var msg = ((APIInfoMessage)(inValues[0]));
+            var msg = (APIInfoMessage)inValues[0];
             return BeginSendInfoMessage(msg, callback, asyncState);
         }
 
@@ -362,9 +369,9 @@ namespace MediaPortalPlugin
 
         private void OnSendInfoMessageCompleted(object state)
         {
-            if ((SendInfoMessageCompleted == null)) return;
+            if (SendInfoMessageCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             SendInfoMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
@@ -375,15 +382,15 @@ namespace MediaPortalPlugin
 
         public void SendInfoMessageAsync(APIInfoMessage msg, object userState)
         {
-            if ((_onBeginSendInfoMessageDelegate == null))
+            if (_onBeginSendInfoMessageDelegate == null)
             {
                 _onBeginSendInfoMessageDelegate = OnBeginSendInfoMessage;
             }
-            if ((_onEndSendInfoMessageDelegate == null))
+            if (_onEndSendInfoMessageDelegate == null)
             {
                 _onEndSendInfoMessageDelegate = OnEndSendInfoMessage;
             }
-            if ((_onSendInfoMessageCompletedDelegate == null))
+            if (_onSendInfoMessageCompletedDelegate == null)
             {
                 _onSendInfoMessageCompletedDelegate = OnSendInfoMessageCompleted;
             }
@@ -410,7 +417,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendDataMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            var msg = ((APIDataMessage)(inValues[0]));
+            var msg = (APIDataMessage)inValues[0];
             return BeginSendDataMessage(msg, callback, asyncState);
         }
 
@@ -422,9 +429,9 @@ namespace MediaPortalPlugin
 
         private void OnSendDataMessageCompleted(object state)
         {
-            if ((SendDataMessageCompleted == null)) return;
+            if (SendDataMessageCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             SendDataMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
@@ -435,15 +442,15 @@ namespace MediaPortalPlugin
 
         public void SendDataMessageAsync(APIDataMessage msg, object userState)
         {
-            if ((_onBeginSendDataMessageDelegate == null))
+            if (_onBeginSendDataMessageDelegate == null)
             {
                 _onBeginSendDataMessageDelegate = OnBeginSendDataMessage;
             }
-            if ((_onEndSendDataMessageDelegate == null))
+            if (_onEndSendDataMessageDelegate == null)
             {
                 _onEndSendDataMessageDelegate = OnEndSendDataMessage;
             }
-            if ((_onSendDataMessageCompletedDelegate == null))
+            if (_onSendDataMessageCompletedDelegate == null)
             {
                 _onSendDataMessageCompletedDelegate = OnSendDataMessageCompleted;
             }
@@ -470,7 +477,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginSendMediaPortalMessage(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            var msg = ((APIMediaPortalMessage)(inValues[0]));
+            var msg = (APIMediaPortalMessage)inValues[0];
             return BeginSendMediaPortalMessage(msg, callback, asyncState);
         }
 
@@ -482,9 +489,9 @@ namespace MediaPortalPlugin
 
         private void OnSendMediaPortalMessageCompleted(object state)
         {
-            if ((SendMediaPortalMessageCompleted == null)) return;
+            if (SendMediaPortalMessageCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             SendMediaPortalMessageCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
@@ -495,15 +502,15 @@ namespace MediaPortalPlugin
 
         public void SendMediaPortalMessageAsync(APIMediaPortalMessage msg, object userState)
         {
-            if ((_onBeginSendMediaPortalMessageDelegate == null))
+            if (_onBeginSendMediaPortalMessageDelegate == null)
             {
                 _onBeginSendMediaPortalMessageDelegate = OnBeginSendMediaPortalMessage;
             }
-            if ((_onEndSendMediaPortalMessageDelegate == null))
+            if (_onEndSendMediaPortalMessageDelegate == null)
             {
                 _onEndSendMediaPortalMessageDelegate = OnEndSendMediaPortalMessage;
             }
-            if ((_onSendMediaPortalMessageCompletedDelegate == null))
+            if (_onSendMediaPortalMessageCompletedDelegate == null)
             {
                 _onSendMediaPortalMessageCompletedDelegate = OnSendMediaPortalMessageCompleted;
             }
@@ -531,7 +538,7 @@ namespace MediaPortalPlugin
 
         private IAsyncResult OnBeginConnect(object[] inValues, AsyncCallback callback, object asyncState)
         {
-            var name = ((APIConnection)(inValues[0]));
+            var name = (APIConnection)inValues[0];
             return BeginConnect(name, callback, asyncState);
         }
 
@@ -544,9 +551,9 @@ namespace MediaPortalPlugin
 
         private void OnConnectCompleted(object state)
         {
-            if ((ConnectCompleted == null)) return;
+            if (ConnectCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             ConnectCompleted(this, new ConnectCompletedEventArgs(e.Results, e.Error, e.Cancelled, e.UserState));
         }
 
@@ -557,15 +564,15 @@ namespace MediaPortalPlugin
 
         public void ConnectAsync(APIConnection name, object userState)
         {
-            if ((_onBeginConnectDelegate == null))
+            if (_onBeginConnectDelegate == null)
             {
                 _onBeginConnectDelegate = OnBeginConnect;
             }
-            if ((_onEndConnectDelegate == null))
+            if (_onEndConnectDelegate == null)
             {
                 _onEndConnectDelegate = OnEndConnect;
             }
-            if ((_onConnectCompletedDelegate == null))
+            if (_onConnectCompletedDelegate == null)
             {
                 _onConnectCompletedDelegate = OnConnectCompleted;
             }
@@ -603,9 +610,9 @@ namespace MediaPortalPlugin
 
         private void OnDisconnectCompleted(object state)
         {
-            if ((DisconnectCompleted == null)) return;
+            if (DisconnectCompleted == null) return;
 
-            var e = ((InvokeAsyncCompletedEventArgs)(state));
+            var e = (InvokeAsyncCompletedEventArgs)state;
             DisconnectCompleted(this, new AsyncCompletedEventArgs(e.Error, e.Cancelled, e.UserState));
         }
 
@@ -616,15 +623,15 @@ namespace MediaPortalPlugin
 
         public void DisconnectAsync(object userState)
         {
-            if ((_onBeginDisconnectDelegate == null))
+            if (_onBeginDisconnectDelegate == null)
             {
                 _onBeginDisconnectDelegate = OnBeginDisconnect;
             }
-            if ((_onEndDisconnectDelegate == null))
+            if (_onEndDisconnectDelegate == null)
             {
                 _onEndDisconnectDelegate = OnEndDisconnect;
             }
-            if ((_onDisconnectCompletedDelegate == null))
+            if (_onDisconnectCompletedDelegate == null)
             {
                 _onDisconnectCompletedDelegate = OnDisconnectCompleted;
             }

@@ -20,9 +20,6 @@ namespace MediaPortalPlugin.Plugins
             return ReflectionHelper.GetPropertyValue(currentMovie, "File", string.Empty) == filename;
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.MyFilms; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.MyFilms;
     }
 }

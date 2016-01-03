@@ -10,7 +10,7 @@ namespace GUIFramework.GUI
     {
         #region Fields
 
-        private Func<bool> _condition;
+        private readonly Func<bool> _condition;
 
         #endregion
 
@@ -56,7 +56,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the XML string.
         /// </summary>
-        public string XmlString { get; private set; }
+        public string XmlString { get; }
 
         /// <summary>
         /// Gets a value indicating whether has a condition set.
@@ -64,10 +64,7 @@ namespace GUIFramework.GUI
         /// <value>
         ///   <c>true</c> if has condition; otherwise, <c>false</c>.
         /// </value>
-        public bool HasCondition
-        {
-            get { return _condition != null; }
-        }
+        public bool HasCondition => _condition != null;
 
         /// <summary>
         /// Indicates whether the element should be visible.

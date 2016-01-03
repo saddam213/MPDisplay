@@ -7,13 +7,7 @@ namespace GUISkinFramework.Skin
     [XmlType(TypeName = "PlayerWindow")]
     public class XmlPlayerWindow : XmlWindow
     {
+ public override string DisplayType => "Now Playing Window";
 
-        public override string DisplayType
-        {
-            get { return "Now Playing Window"; }
-        }
-
-
-      
     }
 }

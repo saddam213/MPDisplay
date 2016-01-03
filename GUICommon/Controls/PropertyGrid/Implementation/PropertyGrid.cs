@@ -77,14 +77,12 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnFilterChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-                propertyGrid.OnFilterChanged((string)e.OldValue, (string)e.NewValue);
+            propertyGrid?.OnFilterChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnFilterChanged(string oldValue, string newValue)
         {
-            if (Properties != null)
-                Properties.Filter(newValue);
+            Properties?.Filter(newValue);
         }
 
         #endregion //Filter
@@ -112,8 +110,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnIsCategorizedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-                propertyGrid.OnIsCategorizedChanged((bool)e.OldValue, (bool)e.NewValue);
+            propertyGrid?.OnIsCategorizedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsCategorizedChanged(bool oldValue, bool newValue)
@@ -168,8 +165,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnSelectedObjectChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyInspector = o as PropertyGrid;
-            if (propertyInspector != null)
-                propertyInspector.OnSelectedObjectChanged(e.OldValue, e.NewValue);
+            propertyInspector?.OnSelectedObjectChanged(e.OldValue, e.NewValue);
         }
 
         protected virtual void OnSelectedObjectChanged(object oldValue, object newValue)
@@ -199,8 +195,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnSelectedObjectTypeChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-                propertyGrid.OnSelectedObjectTypeChanged((Type)e.OldValue, (Type)e.NewValue);
+            propertyGrid?.OnSelectedObjectTypeChanged((Type)e.OldValue, (Type)e.NewValue);
         }
 
         protected virtual void OnSelectedObjectTypeChanged(Type oldValue, Type newValue)
@@ -244,8 +239,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnSelectedObjectNameChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-                propertyGrid.SelectedObjectNameChanged((string)e.OldValue, (string)e.NewValue);
+            propertyGrid?.SelectedObjectNameChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void SelectedObjectNameChanged(string oldValue, string newValue)
@@ -267,8 +261,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
         private static void OnSelectedPropertyChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var propertyGrid = o as PropertyGrid;
-            if (propertyGrid != null)
-                propertyGrid.OnSelectedPropertyChanged((PropertyItem)e.OldValue, (PropertyItem)e.NewValue);
+            propertyGrid?.OnSelectedPropertyChanged((PropertyItem)e.OldValue, (PropertyItem)e.NewValue);
         }
 
         protected virtual void OnSelectedPropertyChanged(PropertyItem oldValue, PropertyItem newValue)
@@ -371,7 +364,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
             if (((TextBox) e.OriginalSource).AcceptsReturn) return;
 
             var be = ((TextBox)e.OriginalSource).GetBindingExpression(TextBox.TextProperty);
-            if (be != null) be.UpdateSource();
+            be?.UpdateSource();
         }
 
         #endregion //Base Class Overrides

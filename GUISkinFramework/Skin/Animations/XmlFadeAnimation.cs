@@ -30,12 +30,6 @@ namespace GUISkinFramework.Skin
         [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(0, 100)]
         public int To { get; set; }
 
-        public override string DisplayName
-        {
-            get
-            {
-                return "FadeAnimation";
-            }
-        }
+        public override string DisplayName => "FadeAnimation";
     }
 }

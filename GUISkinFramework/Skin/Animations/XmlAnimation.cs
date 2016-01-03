@@ -50,10 +50,7 @@ namespace GUISkinFramework.Skin
         public int Repeat { get; set; }
 
        [Browsable(false)]
-        public virtual string DisplayName
-        {
-            get { return "Animation"; }
-        }
+        public virtual string DisplayName => "Animation";
     }
 
     public enum XmlAnimationEaseMode

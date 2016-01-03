@@ -14,13 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                return "Exposure Mode";
-            }
-        }
+        public string DisplayName => "Exposure Mode";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value

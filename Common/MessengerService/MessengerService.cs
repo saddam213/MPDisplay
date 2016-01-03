@@ -93,7 +93,7 @@ namespace Common.MessengerService
                 throw new ArgumentException("'message' cannot be null or empty.");
 
             if (callback == null)
-                throw new ArgumentNullException("callback");
+                throw new ArgumentNullException(nameof(callback));
 
             _messageToActionsMap.AddAction(message, callback.Target, callback.Method, parameterType);
         }
@@ -125,10 +125,10 @@ namespace Common.MessengerService
             Type[] registeredParameters;
             if (_messageToActionsMap.TryGetParameterTypes(message, out registeredParameters))
             {
-                if (registeredParameters == null && (parameters != null && parameters.Any()))
+                if (registeredParameters == null && parameters != null && parameters.Any())
                     throw new TargetParameterCountException("parameters not expected.");
 
-                if (registeredParameters != null && (parameters == null || parameters.Count() != registeredParameters.Count()))
+                if (registeredParameters != null && (parameters == null || parameters.Length != registeredParameters.Length))
                     throw new TargetParameterCountException("parameter count mismatch");
                
             }

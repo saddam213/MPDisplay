@@ -18,17 +18,8 @@
         public byte[] FileBytes { get; set; }
         public string FileName { get; set; }
 
-        public bool IsFile
-        {
-            get { return !string.IsNullOrEmpty(FileName); }
-        }
+        public bool IsFile => !string.IsNullOrEmpty(FileName);
 
-        public bool IsEmpty
-        {
-            get
-            {
-                return string.IsNullOrEmpty(FileName) && FileBytes == null;
-            }
-        }
+        public bool IsEmpty => string.IsNullOrEmpty(FileName) && FileBytes == null;
     }
 }

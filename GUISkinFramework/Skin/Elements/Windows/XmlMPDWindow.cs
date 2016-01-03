@@ -12,10 +12,7 @@ namespace GUISkinFramework.Skin
 
         private bool _autoCloseWindow = true;
 
-        public override string DisplayType
-        {
-            get { return "MPDisplay Window"; }
-        }
+        public override string DisplayType => "MPDisplay Window";
 
         [PropertyOrder(10)]
         [DefaultValue(true)]
@@ -26,6 +23,6 @@ namespace GUISkinFramework.Skin
             set { _autoCloseWindow = value; NotifyPropertyChanged("AutoCloseWindow"); }
         }
 
-      
+     
     }
 }

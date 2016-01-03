@@ -20,7 +20,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// The type of the IExifValueUndefinedExtractor
         /// </summary>
-        private Type _undefinedExtractorType;
+        private readonly Type _undefinedExtractorType;
 
         /// <summary>
         /// Initializes a new instance of the ExifValueUndefinedExtractorAttribute class

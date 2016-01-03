@@ -24,7 +24,7 @@ namespace MPDisplay.Common.ExtensionMethods
     /// </summary>
     public class VisualTreeAdapter : ILinqTree<DependencyObject>
     {
-        private DependencyObject _item;
+        private readonly DependencyObject _item;
 
         public VisualTreeAdapter(DependencyObject item)
         {
@@ -40,13 +40,7 @@ namespace MPDisplay.Common.ExtensionMethods
             }
         }
 
-        public DependencyObject Parent
-        {
-            get
-            {
-                return VisualTreeHelper.GetParent(_item);
-            }
-        }
+        public DependencyObject Parent => VisualTreeHelper.GetParent(_item);
     }
 
     public static class VisualTreeExtensions
@@ -69,10 +63,7 @@ namespace MPDisplay.Common.ExtensionMethods
             }
             Visual foundElement = null;
             var frameworkElement = element as FrameworkElement;
-            if (frameworkElement != null)
-            {
-                frameworkElement.ApplyTemplate();
-            }
+            frameworkElement?.ApplyTemplate();
             for (var i = 0; i < VisualTreeHelper.GetChildrenCount(element); i++)
             {
                 var visual = VisualTreeHelper.GetChild(element, i) as Visual;
@@ -96,10 +87,7 @@ namespace MPDisplay.Common.ExtensionMethods
                 return (T)element;
             }
             var frameworkElement = element as FrameworkElement;
-            if (frameworkElement != null)
-            {
-                frameworkElement.ApplyTemplate();
-            }
+            frameworkElement?.ApplyTemplate();
             var foundElement = VisualTreeHelper.GetParent(element) as Visual;
             // ReSharper disable once TailRecursiveCall
             return foundElement != null ? GetAscendantByType<T>(foundElement) : null;

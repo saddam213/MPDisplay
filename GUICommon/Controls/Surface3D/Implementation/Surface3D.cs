@@ -88,17 +88,17 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D AxisX = new Vector3D(1, 0, 0);
+        private static readonly Vector3D AxisX = new Vector3D(1, 0, 0);
 
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D AxisY = new Vector3D(0, 1, 0);
+        private static readonly Vector3D AxisY = new Vector3D(0, 1, 0);
 
         /// <summary>
         /// Optimization, only create the axis once.
         /// </summary>
-        static private readonly Vector3D AxisZ = new Vector3D(0, 0, 1);
+        private static readonly Vector3D AxisZ = new Vector3D(0, 0, 1);
 
         #endregion
 
@@ -247,7 +247,7 @@ namespace MPDisplay.Common.Controls.Surface3D
             typeof(Surface3D),
             new PropertyMetadata(0.0, (sender, e) =>
             {
-                if (sender == null) throw new ArgumentNullException("sender");
+                if (sender == null) throw new ArgumentNullException(nameof(sender));
                 ((Surface3D) sender).UpdateRotationCenter();
             }));
 
@@ -354,10 +354,7 @@ namespace MPDisplay.Common.Controls.Surface3D
         /// </summary>
         public void RefreshSurface()
         {
-            if (_content != null)
-            {
-                _content.InvalidateVisual();
-            }
+            _content?.InvalidateVisual();
         }
 
         /// <summary>
@@ -453,8 +450,8 @@ namespace MPDisplay.Common.Controls.Surface3D
                 return;
             }
 
-            _rotate.CenterX = (_bounds.Width / 2) + RotationCenterX;
-            _rotate.CenterY = (_bounds.Height / 2) - RotationCenterY;
+            _rotate.CenterX = _bounds.Width / 2 + RotationCenterX;
+            _rotate.CenterY = _bounds.Height / 2 - RotationCenterY;
             _rotate.CenterZ = RotationCenterZ;
         }
 
@@ -537,13 +534,8 @@ namespace MPDisplay.Common.Controls.Surface3D
       
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-
 
 
         public bool Is3DControl

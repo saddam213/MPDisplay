@@ -18,7 +18,6 @@ namespace GUIConfig.ViewModels
         #region Fields
 
         private const string Servicename = "MPDisplayServer";
-        private bool _canEditConnectionName;
         private bool _canManageService;
         private string _testStatus;
         private string _serverStatus;
@@ -68,18 +67,6 @@ namespace GUIConfig.ViewModels
         // Using a DependencyProperty as the backing store for ConnectionSettings.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty ConnectionSettingsProperty =
             DependencyProperty.Register("ConnectionSettings", typeof(ConnectionSettings), typeof(ConnectionSettingsView));//, new PropertyMetadata(new ConnectionSettings));
-
-        /// <summary>
-        /// Gets or sets a value indicating whether can edit connection name.
-        /// </summary>
-        /// <value>
-        /// <c>true</c> if [can edit connection name]; otherwise, <c>false</c>.
-        /// </value>
-        public bool CanEditConnectionName
-        {
-            get { return _canEditConnectionName; }
-            set { _canEditConnectionName = value; NotifyPropertyChanged("CanEditConnectionName"); }
-        }
 
         /// <summary>
         ///  Gets the flag if the MPDisplay service is installed locally
@@ -307,10 +294,7 @@ namespace GUIConfig.ViewModels
         /// <param name="property">The property.</param>
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

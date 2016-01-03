@@ -79,10 +79,7 @@ namespace GUISkinFramework.Editors
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion
@@ -150,6 +147,7 @@ namespace GUISkinFramework.Editors
 
     public enum MediaPortalActions
     {
+        // ReSharper disable InconsistentNaming
         ACTION_INVALID = 0,
         ACTION_MOVE_LEFT = 1,
         ACTION_MOVE_RIGHT = 2,
@@ -313,5 +311,7 @@ namespace GUISkinFramework.Editors
         ACTION_TVGUIDE_PREV_GROUP = 9996,
         ACTION_ROTATE_PICTURE_180 = 9997,
         ACTION_ROTATE_PICTURE_270 = 9998
+        // ReSharper restore InconsistentNaming
+
     }
 }

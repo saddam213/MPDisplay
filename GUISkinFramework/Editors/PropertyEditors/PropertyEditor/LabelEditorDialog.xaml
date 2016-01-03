@@ -5,7 +5,7 @@
         x:Class="GUISkinFramework.Editors.LabelEditorDialog"
         Title="LabelEditorDialog" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" x:Name="UI" Height="222.667" Width="662" >
 	<Window.Resources>
-		<CollectionViewSource x:Key="properties" Source="{Binding SkinInfo.Properties, ElementName=UI}">
+		<CollectionViewSource x:Key="Properties" Source="{Binding SkinInfo.Properties, ElementName=UI}">
 			<CollectionViewSource.GroupDescriptions>
 				<PropertyGroupDescription PropertyName="PropertyType" />
 			</CollectionViewSource.GroupDescriptions>
@@ -17,6 +17,7 @@
 		</CollectionViewSource>
 
 
+	    <!-- ReSharper disable once InconsistentNaming -->
 		<CollectionViewSource x:Key="languageEntries" Source="{Binding SkinInfo.Language.LanguageEntries, ElementName=UI}">
 			<CollectionViewSource.SortDescriptions>
 				<componentModel:SortDescription Direction="Ascending" PropertyName="SkinTag" />
@@ -40,7 +41,7 @@
 							<ColumnDefinition Width="22"/>
 							<ColumnDefinition Width="22"/>
 						</Grid.ColumnDefinitions>
-						<ComboBox x:Name="cmbxlang" ItemsSource="{Binding Source={StaticResource languageEntries}}" DisplayMemberPath="SkinTag" SelectedItem="{Binding SelectedLanguageEntry}"  />
+						<ComboBox x:Name="Cmbxlang" ItemsSource="{Binding Source={StaticResource languageEntries}}" DisplayMemberPath="SkinTag" SelectedItem="{Binding SelectedLanguageEntry}"  />
 						<Button Click="Button_LanguageAdd_Click" Grid.Column="1"  >
 							<Button.Style>
 								<Style TargetType="{x:Type Button}">
@@ -80,7 +81,7 @@
 							<ColumnDefinition Width="22*"/>
 							<ColumnDefinition Width="22"/>
 						</Grid.ColumnDefinitions>
-						<ComboBox ItemsSource="{Binding Source={StaticResource properties}}" SelectedItem="{Binding SelectedPropertyEntry}" >
+						<ComboBox ItemsSource="{Binding Source={StaticResource Properties}}" SelectedItem="{Binding SelectedPropertyEntry}" >
 							<ComboBox.GroupStyle>
 								<GroupStyle>
 									<GroupStyle.HeaderTemplate>

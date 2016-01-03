@@ -117,7 +117,7 @@ namespace GUIFramework.GUI
             if (ScrollViewer != null)
             {
                 // Check whether it is a mouse double click
-                IsMouseDoubleClick = (e.ClickCount > 1);
+                IsMouseDoubleClick = e.ClickCount > 1;
 
                 // Set isScrolling to false
                 // isScrolling is true when initialOffset is saved and mouse cursor
@@ -169,7 +169,7 @@ namespace GUIFramework.GUI
                 _mouseCurrentPoint = e.GetPosition(this);
 
                 // The default: IsMouseCaptured is true
-                if (!(IsMouseCaptured))
+                if (!IsMouseCaptured)
                     CaptureMouse();
 
                 if (!IsScrolling)
@@ -260,7 +260,7 @@ namespace GUIFramework.GUI
                 }
             }
             // Set isScrolling to false when mouse button is Pressed but is not over the control
-            else if (e.LeftButton == MouseButtonState.Pressed && ScrollViewer != null && !(IsMouseActualOver(e.GetPosition(this))))
+            else if (e.LeftButton == MouseButtonState.Pressed && ScrollViewer != null && !IsMouseActualOver(e.GetPosition(this)))
             {
                 // Set isScrolling to false and update the cursor
                 Cursor = Cursors.Arrow;
@@ -330,16 +330,16 @@ namespace GUIFramework.GUI
                     if (speed1 > speed2)
                     {
                         speed = speed1;
-                        leftOrRight = (_mouseMovePoint3.X > _mouseMovePoint1.X) ? Direction.Left : Direction.Right;
-                        upOrDown = (_mouseMovePoint3.Y > _mouseMovePoint1.Y) ? Direction.Up : Direction.Down;
+                        leftOrRight = _mouseMovePoint3.X > _mouseMovePoint1.X ? Direction.Left : Direction.Right;
+                        upOrDown = _mouseMovePoint3.Y > _mouseMovePoint1.Y ? Direction.Up : Direction.Down;
                         speedX = Math.Abs(_mouseMovePoint3.X - _mouseMovePoint1.X) / _mouseMoveTime3.Subtract(_mouseMoveTime1).TotalSeconds;
                         speedY = Math.Abs(_mouseMovePoint3.Y - _mouseMovePoint1.Y) / _mouseMoveTime3.Subtract(_mouseMoveTime1).TotalSeconds;
                     }
                     else
                     {
                         speed = speed2;
-                        leftOrRight = (_mouseMovePoint3.X > _mouseDownPoint.X) ? Direction.Left : Direction.Right;
-                        upOrDown = (_mouseMovePoint3.Y > _mouseDownPoint.Y) ? Direction.Up : Direction.Down;
+                        leftOrRight = _mouseMovePoint3.X > _mouseDownPoint.X ? Direction.Left : Direction.Right;
+                        upOrDown = _mouseMovePoint3.Y > _mouseDownPoint.Y ? Direction.Up : Direction.Down;
                         speedX = Math.Abs(_mouseMovePoint3.X - _mouseDownPoint.X) / _mouseMoveTime3.Subtract(_mouseDownTime).TotalSeconds;
                         speedY = Math.Abs(_mouseMovePoint3.Y - _mouseDownPoint.Y) / _mouseMoveTime3.Subtract(_mouseDownTime).TotalSeconds;
                     }

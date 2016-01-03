@@ -16,14 +16,9 @@ namespace MediaPortalPlugin.ExifReader
     internal class CachedAttributeExtractor<T, TA> where TA : Attribute
     {
         /// <summary>
-        /// The singleton instance
-        /// </summary>
-        private static CachedAttributeExtractor<T, TA> _instance = new CachedAttributeExtractor<T, TA>();
-
-        /// <summary>
         /// The map of fields to attributes
         /// </summary>
-        private Dictionary<string, TA> _fieldAttributeMap = new Dictionary<string, TA>();
+        private readonly Dictionary<string, TA> _fieldAttributeMap = new Dictionary<string, TA>();
 
         /// <summary>
         /// Prevents a default instance of the CachedAttributeExtractor class from being created.
@@ -35,10 +30,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// Gets the singleton instance
         /// </summary>
-        internal static CachedAttributeExtractor<T, TA> Instance
-        {
-            get { return _instance; }
-        }
+        internal static CachedAttributeExtractor<T, TA> Instance { get; } = new CachedAttributeExtractor<T, TA>();
 
         /// <summary>
         /// Gets the attribute for the field

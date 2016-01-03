@@ -70,14 +70,16 @@ namespace SkinEditor.Dialogs
             var newPath = Path.Combine(SkinFolder, SkinName);
             if (FileSystemHelper.DirecoryExists(newPath))
             {
-                MessageBox.Show(string.Format("Directory {0} already exists{1}please choose another directory", newPath, Environment.NewLine), "Error");
+                MessageBox.Show(
+                    $"Directory {newPath} already exists{Environment.NewLine}please choose another directory", "Error");
                 SkinFolder = string.Empty;
                 return;
             }
 
             if (!FileSystemHelper.CreateDirectory(newPath))
             {
-                MessageBox.Show(string.Format("Failed to create {0}{1}please check that you have permission to acess this folder", newPath, Environment.NewLine), "Error");
+                MessageBox.Show(
+                    $"Failed to create {newPath}{Environment.NewLine}please check that you have permission to acess this folder", "Error");
                 SkinFolder = string.Empty;
                 return;
             }
@@ -107,10 +109,7 @@ namespace SkinEditor.Dialogs
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion

@@ -9,7 +9,9 @@ using System.ServiceModel;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using System.Windows.Threading;
 using Common.Helpers;
 using Common.Log;
@@ -34,7 +36,7 @@ namespace GUIFramework
     {
         #region Fields
 
-        private Log _log = LoggingManager.GetLog(typeof(GUISurface));
+        private readonly Log _log = LoggingManager.GetLog(typeof(GUISurface));
         private APIConnection _connection;
         private EndpointAddress _serverEndpoint;
         private NetTcpBinding _serverBinding;
@@ -43,13 +45,22 @@ namespace GUIFramework
         private GUIWindow _currentWindow;
         private GUIMPDialog _currentMediaPortalDialog;
         private bool _currentWindowIsLocked;
-        private Stack<int> _previousWindows = new Stack<int>();
+        private readonly Stack<int> _previousWindows = new Stack<int>();
         private DispatcherTimer _secondTimer;
         private bool _processWindow;
         private int _currentMPDWindowId = -1;
         private DateTime _lastUserInteraction = DateTime.MinValue;
         private DateTime _lastKeepAlive = DateTime.MinValue;
         private int _exceptionCount;
+
+        private bool _screenSaverActive;
+        private int _screenSaverDelay;
+        private ScreenSaverType _screenSaverType = ScreenSaverType.None;
+        private DateTime _screenSaverLastInteraction = DateTime.Now;
+        private bool _screenSaverMustDarken;
+        private DateTime _screenSaverNextUpdate = DateTime.MinValue;
+        private int _screenSaverSourceIndex;
+        private int _screenSaverCtrlIndex;
 
         #endregion
 
@@ -90,42 +101,27 @@ namespace GUIFramework
         /// <summary>
         /// Gets the mp display windows.
         /// </summary>
-        public IEnumerable<GUIMPDWindow> MPDisplayWindows
-        {
-            get { return SurfaceElements.OfType<GUIMPDWindow>(); }
-        }
+        public IEnumerable<GUIMPDWindow> MPDisplayWindows => SurfaceElements.OfType<GUIMPDWindow>();
 
         /// <summary>
         /// Gets the media portal windows.
         /// </summary>
-        public IEnumerable<GUIMPWindow> MediaPortalWindows
-        {
-            get { return SurfaceElements.OfType<GUIMPWindow>(); }
-        }
+        public IEnumerable<GUIMPWindow> MediaPortalWindows => SurfaceElements.OfType<GUIMPWindow>();
 
         /// <summary>
         /// Gets the player windows.
         /// </summary>
-        public IEnumerable<GUIPlayerWindow> PlayerWindows
-        {
-            get { return SurfaceElements.OfType<GUIPlayerWindow>(); }
-        }
+        public IEnumerable<GUIPlayerWindow> PlayerWindows => SurfaceElements.OfType<GUIPlayerWindow>();
 
         /// <summary>
         /// Gets the mp display dialogs.
         /// </summary>
-        public IEnumerable<GUIMPDDialog> MPDisplayDialogs
-        {
-            get { return SurfaceElements.OfType<GUIMPDDialog>(); }
-        }
+        public IEnumerable<GUIMPDDialog> MPDisplayDialogs => SurfaceElements.OfType<GUIMPDDialog>();
 
         /// <summary>
         /// Gets the media portal dialogs.
         /// </summary>
-        public IEnumerable<GUIMPDialog> MediaPortalDialogs
-        {
-            get { return SurfaceElements.OfType<GUIMPDialog>(); }
-        }
+        public IEnumerable<GUIMPDialog> MediaPortalDialogs => SurfaceElements.OfType<GUIMPDialog>();
 
         /// <summary>
         /// Gets a value indicating whether [is user interacting].
@@ -133,10 +129,8 @@ namespace GUIFramework
         /// <value>
         ///   <c>true</c> if [is user interacting]; otherwise, <c>false</c>.
         /// </value>
-        public bool IsUserInteracting
-        {
-            get { return DateTime.Now < _lastUserInteraction.AddSeconds(Settings.UserInteractionDelay); }
-        } 
+        public bool IsUserInteracting => DateTime.Now < _lastUserInteraction.AddSeconds(Settings.UserInteractionDelay);
+
         #endregion
 
         #region Load Skin
@@ -148,6 +142,7 @@ namespace GUIFramework
         /// <returns></returns>
         public async Task LoadSkin(GUISettings settings)
         {
+            _screenSaverType = ScreenSaverType.None;
             if (settings != null)
             {
                 IsSplashScreenVisible = true;
@@ -157,8 +152,8 @@ namespace GUIFramework
                     Settings = settings;
                     skinInfo.SkinFolderPath = Path.GetDirectoryName(settings.SkinInfoXml);
                     await LoadSkin(skinInfo);
-                }
-            }
+                 }
+             }
         }
 
         /// <summary>
@@ -245,6 +240,8 @@ namespace GUIFramework
                 await SetSplashScreenText("Connecting to service...");
                 await InitializeServerConnection(Settings.ConnectionSettings);
 
+                if (InfoRepository.Instance.Settings != null)
+                    _screenSaverDelay = InfoRepository.Instance.Settings.ScreenSaverDelay;
 
                 await SetSplashScreenText("Starting MPDisplay++...");
                 if (MPDisplayWindows.Any(w => w.IsDefault) && MediaPortalWindows.Any(w => w.IsDefault))
@@ -491,6 +488,8 @@ namespace GUIFramework
                         Thread.Sleep(750);
                     }
                     await _currentWindow.WindowOpen();
+                    ScreenSaverStop();
+                    SetScreenSaverType();
                     GUIVisibilityManager.NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
                 }
             }
@@ -548,7 +547,7 @@ namespace GUIFramework
             if (_previousWindows.Any())
             {
                 _currentMPDWindowId = _previousWindows.Pop();
-            }
+             }
         }
 
         /// <summary>
@@ -690,10 +689,7 @@ namespace GUIFramework
         // ReSharper disable once UnusedMember.Local
         private void ChangeSkinStyle()
         {
-            if (CurrentSkin != null)
-            {
-                CurrentSkin.CycleTheme();
-            }
+            CurrentSkin?.CycleTheme();
         }
 
         /// <summary>
@@ -769,6 +765,12 @@ namespace GUIFramework
         private async void SecondTimer_Tick(object sender, EventArgs e)
         {
             await SendKeepAlive();
+
+            if (_screenSaverType != ScreenSaverType.None)
+            {
+                if (_screenSaverLastInteraction.AddSeconds(_screenSaverDelay) < DateTime.Now) await ScreenSaverStart();
+                await ScreenSaverUpdate();             
+            }
         } 
 
         #endregion
@@ -778,7 +780,7 @@ namespace GUIFramework
         public async Task InitializeServerConnection(ConnectionSettings settings)
         {
            // _settings = settings;
-            _serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port));
+            _serverEndpoint = new EndpointAddress($"net.tcp://{settings.IpAddress}:{settings.Port}/MPDisplayService");
             _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", _serverEndpoint);
  
             _serverBinding = ConnectHelper.GetServerBinding();
@@ -1060,6 +1062,7 @@ namespace GUIFramework
             }
             else
             {
+                ScreenSaverStop();
                 await Task.Factory.StartNew(() => ListRepository.Instance.AddListData(message));
             }
         }
@@ -1071,10 +1074,19 @@ namespace GUIFramework
 
         public async void ReceiveAPIDataMessage(APIDataMessage message)
         {
-            if (message != null && message.DataType == APIDataMessageType.KeepAlive)
+            if (message != null)
             {
-                _lastKeepAlive = DateTime.Now;
-                return;
+
+                switch (message.DataType)
+                {
+                    case APIDataMessageType.KeepAlive:
+                        _lastKeepAlive = DateTime.Now;
+                        return;
+
+                    case APIDataMessageType.MPActionId:
+                        ScreenSaverStop();
+                        break;
+                }
             }
             await Task.Factory.StartNew(() => GenericDataRepository.Instance.AddDataMessage(message));
         }
@@ -1086,7 +1098,175 @@ namespace GUIFramework
 
         #endregion
 
-     
+        #endregion
+
+        #region Screensaver
+
+        public bool ScreenSaverActive
+        {
+            get { return _screenSaverActive; }
+            set
+            {
+                _screenSaverActive = value;
+                NotifyPropertyChanged("ScreenSaverActive");
+            }
+        }
+
+        /// <summary>
+        /// moves to the next slide of the screen saver
+        /// </summary>
+        private void ScreenSaverNextSlide()
+        {
+            if (_screenSaverType != ScreenSaverType.Full) return;
+            try
+            {
+                if (InfoRepository.Instance.ScreenSaverImageCount == 0) return;
+                _screenSaverSourceIndex = (_screenSaverSourceIndex + 1)%InfoRepository.Instance.ScreenSaverImageCount;
+
+                Image imgFadeOut;
+                Image imgFadeIn;
+                _screenSaverCtrlIndex = (_screenSaverCtrlIndex + 1)%2;
+                if (_screenSaverCtrlIndex == 0)
+                {
+                    imgFadeOut = ScreenSaverImage1;
+                    imgFadeIn = ScreenSaverImage2;
+                }
+                else
+                {
+                    imgFadeOut = ScreenSaverImage2;
+                    imgFadeIn = ScreenSaverImage1;
+                }
+
+                var newSource = GUIImageManager.GetImage(InfoRepository.Instance.ScreenSaverImageFiles[_screenSaverSourceIndex]);
+                imgFadeIn.Source = newSource;
+
+                ScreenSaverSetOpacity(imgFadeOut, 2.0, 0.0);
+                ScreenSaverSetOpacity(imgFadeIn, 1.75, 1.0);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+        }
+
+        /// <summary>
+        /// Determine screen saver type for the current window from settings and window type
+        /// </summary>
+        private void SetScreenSaverType()
+        {
+            _screenSaverType = ScreenSaverType.None;
+
+            if (_currentWindow is GUIMPWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMP)
+                _screenSaverType = GetCurrentScreenSaverType(true);               
+            if (_currentWindow is GUIMPDWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledMPD)
+                _screenSaverType = GetCurrentScreenSaverType(true);               
+            if (_currentWindow is GUIPlayerWindow && InfoRepository.Instance.Settings.ScreenSaverEnabledPlayer)
+                _screenSaverType = GetCurrentScreenSaverType(false);               
+
+            _screenSaverLastInteraction = DateTime.Now;
+        }
+
+        /// <summary>
+        /// Get the screensaver type for the current window
+        /// </summary>
+        /// <param name="windowSlideshow">If slideshow is enabled for the window type</param>
+        /// <returns>The screensaver type</returns>
+        private ScreenSaverType GetCurrentScreenSaverType(bool windowSlideshow)
+        {
+            var currentType = ScreenSaverType.None;             // default is no screensaver
+
+            if (InfoRepository.Instance.ScreenSaverImageCount > 0 && !_currentWindow.BaseXml.DisableSlideshow && windowSlideshow)
+            {
+                    currentType = ScreenSaverType.Full;
+            }
+            else
+            {
+                    if (!_currentWindow.BaseXml.DisableDarkening)
+                    {
+                        currentType = ScreenSaverType.DarkenOnly;                     
+                    }
+            }
+
+            return currentType;
+        }
+
+        /// <summary>
+        /// Sets the opacity of control c to the target value and using an animation of d d
+        /// </summary>
+        /// <param name="c">GUI control</param>
+        /// <param name="d">Duration of animation in seconds</param>
+        /// <param name="to">Target value for opacity</param>
+        private static void ScreenSaverSetOpacity(UIElement c, double d, double to)
+        {
+            var toval = to;
+            if (toval < 0.0) toval = 0.0;
+            if (toval > 1.0) toval = 1.0;
+            var animation = new DoubleAnimation
+            {
+                To = toval, Duration = TimeSpan.FromSeconds(d), FillBehavior = FillBehavior.Stop
+            };
+            animation.Completed += (s, a) => c.Opacity = to;
+
+            c.BeginAnimation(OpacityProperty, animation);
+        }
+
+        /// <summary>
+        /// Start screen saver
+        /// </summary>
+        private Task ScreenSaverStart()
+        {
+            if (_screenSaverActive) return Task.FromResult<object>(null);
+
+            ScreenSaverOverlay.Opacity = 0.0;
+            ScreenSaverImage1.Opacity = 0.0;
+            ScreenSaverImage2.Opacity = 0.0;
+            ScreenSaverImage1.Source = null;
+            ScreenSaverImage2.Source = null;
+            ScreenSaverActive = true;
+            _screenSaverMustDarken = true;
+
+            return Task.FromResult<object>(null);
+        }
+
+        /// <summary>
+        /// Updates the screen saver
+        /// </summary>
+        private Task ScreenSaverUpdate()
+        {
+            if (!ScreenSaverActive) return Task.FromResult<object>(null);
+            // screen save just turned on, darken only
+            if (_screenSaverMustDarken)
+            {
+                var to = InfoRepository.Instance.Settings.ScreenSaverDarkness/100.0;
+                ScreenSaverSetOpacity(ScreenSaverOverlay, 3.0, to);
+                _screenSaverMustDarken = false;
+                _screenSaverNextUpdate = DateTime.Now.AddSeconds(5);
+                return Task.FromResult<object>(null);
+            }
+            // no slideshow or next slide is not due --> abort
+            if (_screenSaverNextUpdate >= DateTime.Now || _screenSaverType == ScreenSaverType.DarkenOnly)
+                return Task.FromResult<object>(null);
+            // eventually make overlay non-transparent
+            if (ScreenSaverOverlay.Opacity < 0.99) ScreenSaverSetOpacity(ScreenSaverOverlay, 2.0, 1.0);
+            // show next slide and schedule next slide
+            ScreenSaverNextSlide();
+            _screenSaverNextUpdate = DateTime.Now.AddSeconds(InfoRepository.Instance.Settings.ScreenSaverPictureChange);
+
+            return Task.FromResult<object>(null);
+        }
+
+        /// <summary>
+        /// Stop screen saver
+        /// </summary>
+        private void ScreenSaverStop()
+        {
+            if (!ScreenSaverActive) return;
+
+            ScreenSaverActive = false;
+
+            _screenSaverNextUpdate = DateTime.MinValue;
+            _screenSaverLastInteraction = DateTime.Now;
+        }
 
         #endregion
 
@@ -1100,34 +1280,44 @@ namespace GUIFramework
         public string SplashScreenImage
         {
             get { return _splashScreenImage; }
-            set { _splashScreenImage = value; NotifyPropertyChanged("SplashScreenImage"); }
+            set
+            {
+                _splashScreenImage = value;
+                NotifyPropertyChanged("SplashScreenImage");
+            }
         }
 
         public string SplashScreenText
         {
             get { return _splashScreenText; }
-            set { _splashScreenText = value; NotifyPropertyChanged("SplashScreenText"); }
-        }
-
-        public string SplashScreenVersionText
-        {
-            get
+            set
             {
-                return Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                _splashScreenText = value;
+                NotifyPropertyChanged("SplashScreenText");
             }
         }
+
+        public string SplashScreenVersionText => Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
         public string SplashScreenSkinText
         {
             get { return _splashScreenSkinText; }
-            set { _splashScreenSkinText = value; NotifyPropertyChanged("SplashScreenSkinText"); }
+            set
+            {
+                _splashScreenSkinText = value;
+                NotifyPropertyChanged("SplashScreenSkinText");
+            }
         }
 
 
         public bool IsSplashScreenVisible
         {
             get { return _isSplashScreenVisible; }
-            set { _isSplashScreenVisible = value; NotifyPropertyChanged("IsSplashScreenVisible"); }
+            set
+            {
+                _isSplashScreenVisible = value;
+                NotifyPropertyChanged("IsSplashScreenVisible");
+            }
         }
 
         public async Task SetSplashScreenText(string text, params object[] args)
@@ -1139,7 +1329,7 @@ namespace GUIFramework
         private void ShowSplashScreen()
         {
             IsSplashScreenVisible = true;
-            SplashScreenSkinText = string.Format("{0}, Author: {1}", CurrentSkin.SkinName, CurrentSkin.Author);
+            SplashScreenSkinText = $"{CurrentSkin.SkinName}, Author: {CurrentSkin.Author}";
             SplashScreenImage = CurrentSkin.SplashScreenImage;
         }
 
@@ -1154,8 +1344,6 @@ namespace GUIFramework
             SplashScreenImage = CurrentSkin.ErrorScreenImage;
             await SetSplashScreenText(error);
         }
-
-
 
         #endregion
 
@@ -1172,14 +1360,24 @@ namespace GUIFramework
         #region INotifyPropertyChanged
 
         public event PropertyChangedEventHandler PropertyChanged;
+
         public void NotifyPropertyChanged(String info)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
 
         #endregion
+
+        private void ScreenSaverOverlay_OnMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            ScreenSaverStop();
+        }
+    }
+
+    public enum ScreenSaverType
+    {
+        None,
+        DarkenOnly,
+        Full
     }
 }

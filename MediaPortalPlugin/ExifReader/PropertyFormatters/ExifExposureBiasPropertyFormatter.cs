@@ -2,7 +2,6 @@
 // Copyright (c) Nish Sivakumar. All rights reserved.
 // </copyright>
 
-using System;
 using System.Linq;
 
 namespace MediaPortalPlugin.ExifReader.PropertyFormatters
@@ -15,13 +14,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// Gets a display name for this property
         /// </summary>
-        public string DisplayName
-        {
-            get
-            {
-                return "Exposure Bias";
-            }
-        }
+        public string DisplayName => "Exposure Bias";
 
         /// <summary>
         /// Gets a formatted string for a given Exif value
@@ -31,7 +24,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         public string GetFormattedString(IExifValue exifValue)
         {
             var values = exifValue.Values.Cast<Rational32>(); 
-            return String.Format("{0:g2} step", (double)values.FirstOrDefault());
+            return $"{(double) values.FirstOrDefault():g2} step";
         }
     }
 }

@@ -148,6 +148,8 @@ namespace MediaPortalPlugin.ExifReader
         T6Option = 0x0125,
 
         [ExifPropertyFormatter(typeof(ResolutionUnitPropertyFormatter))]
+        // ReSharper disable InconsistentNaming
+
         ResolutionUnit = 0x0128,
 
         PageNumber = 0x0129,
@@ -530,6 +532,8 @@ namespace MediaPortalPlugin.ExifReader
         ExifSubjectDistanceRange = 0xA40C,
 
         EXIF_UNIQUE_IMAGE_ID = 0xA420,
+
+        // ReSharper restore InconsistentNaming
 
         [ExifPropertyFormatter(typeof(GenericRational32PropertyFormatter), ConstructorNeedsPropertyTag = true)]
         ExifGamma = 0xA500,

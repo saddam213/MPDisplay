@@ -33,7 +33,6 @@ namespace SkinEditor.Helpers
         private bool _isMediaPortalConnected;
 
         private ObservableCollection<SkinPropertyItem> _propertyData = new ObservableCollection<SkinPropertyItem>();
-        private ObservableCollection<SkinPropertyItem> _listItemData = new ObservableCollection<SkinPropertyItem>();
         private int _windowId;
         private int _dialogId;
         private int _focusedControlId;
@@ -41,7 +40,7 @@ namespace SkinEditor.Helpers
 
         private InfoEditorViewSettings _settings;
 
-        private Log _log = LoggingManager.GetLog(typeof(ConnectionHelper));
+        private readonly Log _log = LoggingManager.GetLog(typeof(ConnectionHelper));
 
         public ConnectionHelper()
         {
@@ -73,11 +72,7 @@ namespace SkinEditor.Helpers
             set { _propertyData = value; }
         }
 
-        public ObservableCollection<SkinPropertyItem> ListItemData
-        {
-            get { return _listItemData; }
-            set { _listItemData = value; }
-        }
+        public ObservableCollection<SkinPropertyItem> ListItemData { get; set; } = new ObservableCollection<SkinPropertyItem>();
 
         public int WindowId
         {
@@ -115,13 +110,13 @@ namespace SkinEditor.Helpers
          // call notifyer of all registered baseclasses uning this instance
         private void NotifyPropertyChangedAll(string property)
         {
-                if ( Baseclass != null ) Baseclass.NotifyPropertyChanged(property);
-         }
+            Baseclass?.NotifyPropertyChanged(property);
+        }
 
         public async Task InitializeServerConnection()
         {
 
-            _serverEndpoint = new EndpointAddress(string.Format("net.tcp://{0}:{1}/MPDisplayService", _settings.IpAddress, _settings.Port));
+            _serverEndpoint = new EndpointAddress($"net.tcp://{_settings.IpAddress}:{_settings.Port}/MPDisplayService");
             _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", _serverEndpoint);
             _serverBinding = ConnectHelper.GetServerBinding();
 
@@ -326,7 +321,7 @@ namespace SkinEditor.Helpers
                 if (skineditorData.DataType == APISkinEditorDataType.Property)
                 {
                     var property = skineditorData.PropertyData;
-                    if (property != null && property.Count() == 2)
+                    if (property != null && property.Length == 2)
                     {
 
                         var existing = _propertyData.FirstOrDefault(p => p.Tag == property[0]);
@@ -344,7 +339,7 @@ namespace SkinEditor.Helpers
                 if (skineditorData.DataType == APISkinEditorDataType.ListItem)
                 {
                     ListItemData.Clear();
-                    foreach (var item in skineditorData.ListItemData.Where(x => x != null && x.Count() == 2).ToArray())
+                    foreach (var item in skineditorData.ListItemData.Where(x => x != null && x.Length == 2).ToArray())
                     {
                         ListItemData.Add(new SkinPropertyItem { Tag = item[0], Value = item[1] });
                         _log.Message(LogLevel.Verbose, "[SkinEditor Message Received] - List Item Tag <{0}> Value <{1}>.", item[0], item[1]);

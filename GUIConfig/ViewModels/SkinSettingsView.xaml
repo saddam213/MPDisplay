@@ -42,9 +42,10 @@
 							<ColumnDefinition />
 							<ColumnDefinition Width="Auto"/>
 						</Grid.ColumnDefinitions>
+					    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
 						<ComboBox ItemsSource="{Binding Skins}" SelectedItem="{Binding SelectedSkin}" DisplayMemberPath="SkinName" SelectedValue="{Binding DataObject.SkinName}" SelectedValuePath="SkinName" />
-						<Button Grid.Column="1" Width="22" Command="{Binding SkinEditorCommand}" Name="btn">
-							<Image Margin="2,3,2,1"  Stretch="Uniform" Source="/MPDisplayConfig;component/Images/Edit.png" IsEnabled="{Binding IsEnabled, ElementName=btn}" >
+						<Button Grid.Column="1" Width="22" Command="{Binding SkinEditorCommand}" Name="Btn">
+							<Image Margin="2,3,2,1"  Stretch="Uniform" Source="/MPDisplayConfig;component/Images/Edit.png" IsEnabled="{Binding IsEnabled, ElementName=Btn}" >
 								<Image.Style>
 									<Style TargetType="Image">
 										<Setter Property="Opacity" Value="1" />
@@ -88,7 +89,8 @@
 					<ComboBox ItemsSource="{Binding SelectedSkin.Languages}" SelectedItem="{Binding SelectedSkin.CurrentLanguage}"/>
 
 					<TextBlock Text="{Binding FallbackValue=Cursor, ConverterParameter=Cursor, Converter={StaticResource LanguageConverter}}" Margin="0,5,0,0"/>
-					<ComboBox x:Name="comboCursors" ItemsSource="{Binding Source={StaticResource Cursors}}" Cursor="{Binding ElementName=comboCursors,Path=SelectedItem}" SelectedItem="{Binding DataObject.CursorStyle}"/>
+				    <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
+					<ComboBox x:Name="ComboCursors" ItemsSource="{Binding Source={StaticResource Cursors}}" Cursor="{Binding ElementName=ComboCursors,Path=SelectedItem}" SelectedItem="{Binding DataObject.CursorStyle}"/>
 				</StackPanel>
 
 				<DockPanel Margin="5,0,0,0" Width="200">

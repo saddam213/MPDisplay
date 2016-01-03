@@ -23,9 +23,6 @@ namespace MediaPortalPlugin.Plugins
             return ReflectionHelper.GetPropertyValue(currentMovie, "FullPath", string.Empty) == filename;
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.MovingPictures; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.MovingPictures;
     }
 }

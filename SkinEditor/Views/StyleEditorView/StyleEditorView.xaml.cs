@@ -29,10 +29,7 @@ namespace SkinEditor.Views
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get { return "Style Editor"; }
-        }
+        public override string Title => "Style Editor";
 
         public override void Initialize()
         {
@@ -41,10 +38,7 @@ namespace SkinEditor.Views
         }
      
 
-        public StyleEditorViewSettings Settings
-        {
-            get { return EditorSettings as StyleEditorViewSettings; }
-        }
+        public StyleEditorViewSettings Settings => EditorSettings as StyleEditorViewSettings;
 
         public IEnumerable<string> Styles
         {
@@ -64,10 +58,7 @@ namespace SkinEditor.Views
             }
         }
 
-        public Type CurrentBrushType 
-        {
-            get { return SelectedBrushStyle != null ? SelectedBrushStyle.GetType() : null; }
-        }
+        public Type CurrentBrushType => SelectedBrushStyle?.GetType();
 
         #region Brush Styles
 
@@ -91,7 +82,7 @@ namespace SkinEditor.Views
         {
             if (SelectedBrushStyle == null) return;
 
-            if (MessageBox.Show(string.Format("Are you sure you want to delete ControlStyle: {0} ?", SelectedBrushStyle.StyleId),
+            if (MessageBox.Show($"Are you sure you want to delete ControlStyle: {SelectedBrushStyle.StyleId} ?",
                     "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
 
             foreach (var style in SkinInfo.Styles.Values)
@@ -110,7 +101,7 @@ namespace SkinEditor.Views
 
             if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show($"StyleId {newStyle} already exists, please select a new StyleId", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -136,7 +127,7 @@ namespace SkinEditor.Views
 
             if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show($"StyleId {newStyle} already exists, please select a new StyleId", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -200,12 +191,12 @@ namespace SkinEditor.Views
         private void AddBrush<T>() where T : XmlBrush
         {
             var newBrush = Activator.CreateInstance<T>();
-            var newStyle = TextBoxDialog.ShowDialog(string.Format("New {0}", newBrush.StyleType), string.Format("{0} StyleId", newBrush.StyleType));
+            var newStyle = TextBoxDialog.ShowDialog($"New {newBrush.StyleType}", $"{newBrush.StyleType} StyleId");
             if (string.IsNullOrEmpty(newStyle)) return;
 
             if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show($"StyleId {newStyle} already exists, please select a new StyleId", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -424,11 +415,11 @@ namespace SkinEditor.Views
             Dispatcher.BeginInvoke((Action)delegate
             {
                 if (!(_selectedControlStyle is XmlButtonStyle) && !(_selectedControlStyle is XmlImageStyle)) return;
-                if (controlSurface == null) return;
+                if (ControlSurface == null) return;
 
                 if (_selectedControlStyle is XmlListItemStyle)
                 {
-                    var text = controlSurface.FindVisualChildren<TextBlock>();
+                    var text = ControlSurface.FindVisualChildren<TextBlock>();
                     var textBlocks = text as IList<TextBlock> ?? text.ToList();
                     int count;
                     Color[] colors;
@@ -443,7 +434,7 @@ namespace SkinEditor.Views
                         }
                     }
 
-                    var images = controlSurface.FindVisualChildren<RoundedImage>();
+                    var images = ControlSurface.FindVisualChildren<RoundedImage>();
                     var roundedImages = images as IList<RoundedImage> ?? images.ToList();
                     if (images == null || !roundedImages.Any()) return;
                     count = 0;
@@ -456,14 +447,14 @@ namespace SkinEditor.Views
                 }
                 else
                 {
-                    var text = controlSurface.FindVisualChildren<TextBlock>().FirstOrDefault();
+                    var text = ControlSurface.FindVisualChildren<TextBlock>().FirstOrDefault();
                     if (text != null)
                     {
                         text.Background = new SolidColorBrush(showColors ? Colors.Orange : Colors.Transparent);
                     }
 
-                    var image = controlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();
-                    if (image != null && image.Parent is Border)
+                    var image = ControlSurface.FindVisualChildren<RoundedImage>().FirstOrDefault();
+                    if (image?.Parent is Border)
                     {
                         ((Border) image.Parent).Background = new SolidColorBrush(showColors ? Colors.Red : Colors.Transparent);
                     }
@@ -561,7 +552,7 @@ namespace SkinEditor.Views
 
             if (SkinInfo.Styles[SelectedStyle].BrushStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show($"StyleId {newStyle} already exists, please select a new StyleId", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
             var newControl = SelectedControlStyle.CreateCopy();
@@ -579,7 +570,7 @@ namespace SkinEditor.Views
         {
             if (SelectedControlStyle == null) return;
 
-            if (MessageBox.Show(string.Format("Are you sure you want to delete ControlStyle: {0} ?", SelectedControlStyle.StyleId),
+            if (MessageBox.Show($"Are you sure you want to delete ControlStyle: {SelectedControlStyle.StyleId} ?",
                     "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
 
             foreach (var style in SkinInfo.Styles.Values)
@@ -601,7 +592,7 @@ namespace SkinEditor.Views
 
             if (SkinInfo.Styles[SelectedStyle].ControlStyles.Any(b => b.StyleId.Equals(newStyle)))
             {
-                MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show($"StyleId {newStyle} already exists, please select a new StyleId", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -627,12 +618,12 @@ namespace SkinEditor.Views
             try
             {
                 var newControl = Activator.CreateInstance<T>();
-                var newStyle = TextBoxDialog.ShowDialog(string.Format("New {0}", newControl.StyleType), string.Format("{0} StyleId", newControl.StyleType));
+                var newStyle = TextBoxDialog.ShowDialog($"New {newControl.StyleType}", $"{newControl.StyleType} StyleId");
                 if (string.IsNullOrEmpty(newStyle)) return;
 
                 if (SkinInfo.Styles[SelectedStyle].ControlStyles.Any(b => b.StyleId.Equals(newStyle)))
                 {
-                    MessageBox.Show(string.Format("StyleId {0} already exists, please select a new StyleId", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    MessageBox.Show($"StyleId {newStyle} already exists, please select a new StyleId", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     return;
                 }
 
@@ -659,7 +650,7 @@ namespace SkinEditor.Views
 
             if (SkinInfo.Styles.ContainsKey(newStyle))
             {
-                MessageBox.Show(string.Format("Style name '{0}' already exists, please select a new Style name", newStyle), "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show($"Style name '{newStyle}' already exists, please select a new Style name", "Style Exists", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 return;
             }
 
@@ -670,7 +661,7 @@ namespace SkinEditor.Views
 
         private void Button_DeleteStyle_Click(object sender, RoutedEventArgs e)
         {
-            if (MessageBox.Show(string.Format("Are you sure you want to delete {0} style", SelectedStyle),
+            if (MessageBox.Show($"Are you sure you want to delete {SelectedStyle} style",
                     "Delete Style", MessageBoxButton.YesNo, MessageBoxImage.Question) != MessageBoxResult.Yes) return;
 
             FileHelpers.TryDelete(SkinInfo.SkinStyleFolder + SelectedStyle + ".xml");
@@ -707,7 +698,7 @@ namespace SkinEditor.Views
                         Width = 16,
                         Height = 16,
                         Source =
-                            new BitmapImage(new Uri(string.Format(@"/Images/{0}.png", icon), UriKind.RelativeOrAbsolute))
+                            new BitmapImage(new Uri($@"/Images/{icon}.png", UriKind.RelativeOrAbsolute))
                     }
             };
             if (handler != null)

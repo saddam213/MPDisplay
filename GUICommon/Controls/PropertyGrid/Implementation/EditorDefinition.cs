@@ -7,12 +7,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
     {
         public DataTemplate EditorTemplate { get; set; }
 
-        private PropertyDefinitionCollection _properties = new PropertyDefinitionCollection();
-        public PropertyDefinitionCollection PropertiesDefinitions
-        {
-            get { return _properties; }
-            set { _properties = value; }
-        }
+        public PropertyDefinitionCollection PropertiesDefinitions { get; set; } = new PropertyDefinitionCollection();
 
         public Type TargetType { get; set; }
     }

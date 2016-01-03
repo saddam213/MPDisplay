@@ -66,7 +66,7 @@ namespace MPDisplay.Common.Controls
 
         protected override string ConvertValueToText()
         {
-            return Value == null ? string.Empty : Value.Value.ToString(FormatString, CultureInfo);
+            return Value?.ToString(FormatString, CultureInfo) ?? string.Empty;
         }
 
         protected override void SetValidSpinDirection()

@@ -30,8 +30,7 @@ namespace MPDisplay.Common.Controls
         private static void OnIsOpenChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
-            if (primitiveTypeCollectionEditor != null)
-                primitiveTypeCollectionEditor.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
+            primitiveTypeCollectionEditor?.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsOpenChanged(bool oldValue, bool newValue)
@@ -53,8 +52,7 @@ namespace MPDisplay.Common.Controls
         private static void OnItemsSourceChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
-            if (primitiveTypeCollectionEditor != null)
-                primitiveTypeCollectionEditor.OnItemsSourceChanged((IList)e.OldValue, (IList)e.NewValue);
+            primitiveTypeCollectionEditor?.OnItemsSourceChanged((IList)e.OldValue, (IList)e.NewValue);
         }
 
         protected virtual void OnItemsSourceChanged(IList oldValue, IList newValue)
@@ -100,8 +98,7 @@ namespace MPDisplay.Common.Controls
         private static void OnTextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var primitiveTypeCollectionEditor = o as PrimitiveTypeCollectionEditor;
-            if (primitiveTypeCollectionEditor != null)
-                primitiveTypeCollectionEditor.OnTextChanged((string)e.OldValue, (string)e.NewValue);
+            primitiveTypeCollectionEditor?.OnTextChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnTextChanged(string oldValue, string newValue)

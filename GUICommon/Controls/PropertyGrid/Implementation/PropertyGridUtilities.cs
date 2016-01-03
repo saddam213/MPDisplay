@@ -138,7 +138,7 @@ namespace MPDisplay.Common.Controls.PropertyGrid
                 editor = new DoubleUpDownEditor();
             else if (propertyItem.PropertyType == typeof(int) || propertyItem.PropertyType == typeof(int?))
                 editor = new IntegerUpDownEditor();
-            else if ((propertyItem.PropertyType == typeof(Color)))
+            else if (propertyItem.PropertyType == typeof(Color))
                 editor = new ColorEditor();
             else if (propertyItem.PropertyType.IsEnum)
                 editor = new EnumComboBoxEditor();

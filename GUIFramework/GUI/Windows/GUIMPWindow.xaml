@@ -8,15 +8,15 @@
 			 xmlns:base="clr-namespace:GUIFramework.GUI"
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
-    <Border Width="{Binding BaseXml.Width, Mode=OneWay}" 
-		        Height="{Binding BaseXml.Height, Mode=OneWay}"
+
+    <Border Width="{Binding BaseXml.Width, Mode=OneWay}" Height="{Binding BaseXml.Height, Mode=OneWay}"
                 Background="{Binding BaseXml.BackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" >
-		<ItemsControl ItemsSource="{Binding Controls, IsAsync=True, Mode=OneTime}" Background="Transparent" >
-			<ItemsControl.ItemsPanel>
-				<ItemsPanelTemplate>
-					<Canvas IsItemsHost="True" />
-				</ItemsPanelTemplate>
-			</ItemsControl.ItemsPanel>
-		</ItemsControl>
-	</Border>
+            <ItemsControl ItemsSource="{Binding Controls, IsAsync=True, Mode=OneTime}" Background="Transparent" >
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <Canvas IsItemsHost="True" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+            </ItemsControl>
+    </Border>
 </base:GUIWindow>

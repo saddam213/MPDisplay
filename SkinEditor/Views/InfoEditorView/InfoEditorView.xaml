@@ -92,6 +92,7 @@
                                                 <Style TargetType="Image">
                                                     <Setter Property="Source" Value="/SkinEditor;component/Images/Plus.png" />
                                                     <Style.Triggers>
+                                                        <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                                         <DataTrigger Binding="{Binding IsDefined}" Value="True" >
                                                             <Setter Property="Source" Value="/SkinEditor;component/Images/Tick.png" />
                                                         </DataTrigger>
@@ -111,6 +112,7 @@
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="ToolTip">
                                         <Setter.Value>
+                                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                             <Image Source="{Binding Value}" MaxWidth="300" />
                                         </Setter.Value>
                                     </Setter>
@@ -134,6 +136,7 @@
                                 <Style TargetType="DataGridCell">
                                     <Setter Property="ToolTip">
                                         <Setter.Value>
+                                            <!-- ReSharper disable once Xaml.BindingWithContextNotResolved -->
                                             <Image Source="{Binding Value}" MaxWidth="300" />
                                         </Setter.Value>
                                     </Setter>

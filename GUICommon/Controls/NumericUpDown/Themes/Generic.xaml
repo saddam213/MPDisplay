@@ -19,6 +19,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Control">
+                    <!-- ReSharper disable Xaml.BindingWithContextNotResolved -->
                     <local:ButtonSpinner x:Name="Spinner" IsTabStop="False" Background="{TemplateBinding Background}" BorderThickness="{TemplateBinding BorderThickness}"
                                          AllowSpin="{Binding AllowSpin, RelativeSource={RelativeSource TemplatedParent}}" ShowButtonSpinner="{Binding ShowButtonSpinner, RelativeSource={RelativeSource TemplatedParent}}">
                         <local:WatermarkTextBox x:Name="TextBox" BorderThickness="0"
@@ -43,6 +44,7 @@
                                                 Watermark="{Binding Watermark, RelativeSource={RelativeSource TemplatedParent}}"
                                                 WatermarkTemplate="{Binding WatermarkTemplate, RelativeSource={RelativeSource TemplatedParent}}"/>
                     </local:ButtonSpinner>
+                    <!-- ReSharper restore Xaml.BindingWithContextNotResolved -->
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}" />

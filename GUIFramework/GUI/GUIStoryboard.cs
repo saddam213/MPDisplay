@@ -18,10 +18,7 @@ namespace GUIFramework.GUI
         {
             Completed += (s, e) =>
             {
-                if (OnAnimationComplete != null)
-                {
-                    OnAnimationComplete(Condition);
-                }
+                OnAnimationComplete?.Invoke(Condition);
             };
         }
 

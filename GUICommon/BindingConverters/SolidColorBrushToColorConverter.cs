@@ -12,7 +12,7 @@ namespace MPDisplay.Common.BindingConverters
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             var brush = value as SolidColorBrush;
-            return brush != null ? brush.Color : default(Color);
+            return brush?.Color ?? default(Color);
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

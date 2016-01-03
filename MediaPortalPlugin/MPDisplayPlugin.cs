@@ -14,10 +14,10 @@ namespace MediaPortalPlugin
     [PluginIcons("MediaPortalPlugin.Resources.Enabled.png", "MediaPortalPlugin.Resources.Disable.png")]
     public class MpDisplayPlugin : IPlugin, ISetupForm
     {
-        private PluginSettings _settings;
-        private AdvancedPluginSettings _advancedSettings;
-        private AddImageSettings _addImageSettings;
-        private Log _log;
+        private readonly PluginSettings _settings;
+        private readonly AdvancedPluginSettings _advancedSettings;
+        private readonly AddImageSettings _addImageSettings;
+        private readonly Log _log;
 
         public MpDisplayPlugin()
         {
@@ -112,7 +112,8 @@ namespace MediaPortalPlugin
             else
             {
                 _log.Message(LogLevel.Error, "[OnShowConfigForm] - Failed to start MPDisplay configuration, File not found: {0}", RegistrySettings.MPDisplayConfigExePath);
-                MessageBox.Show(string.Format("Failed to start MPDisplay configuration, File not found: {0}", RegistrySettings.MPDisplayConfigExePath), "Error");
+                MessageBox.Show(
+                    $"Failed to start MPDisplay configuration, File not found: {RegistrySettings.MPDisplayConfigExePath}", "Error");
             }
         }
 

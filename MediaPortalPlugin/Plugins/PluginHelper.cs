@@ -14,24 +14,15 @@ namespace MediaPortalPlugin.Plugins
             Settings = settings;
         }
 
-        public SupportedPluginSettings Settings { get; private set; }
+        public SupportedPluginSettings Settings { get; }
 
-        public GUIWindow PluginWindow { get; private set; }
+        public GUIWindow PluginWindow { get; }
 
-        public bool IsEnabled
-        {
-            get { return PluginWindow != null; }
-        }
+        public bool IsEnabled => PluginWindow != null;
 
-        public int WindowId
-        {
-            get { return IsEnabled ? PluginWindow.GetID : -1; }
-        }
+        public int WindowId => IsEnabled ? PluginWindow.GetID : -1;
 
-        public virtual APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.None; }
-        }
+        public virtual APIPlaybackType PlayType => APIPlaybackType.None;
 
         public virtual bool IsPlaying(string filename, APIPlaybackType playtype)
         {

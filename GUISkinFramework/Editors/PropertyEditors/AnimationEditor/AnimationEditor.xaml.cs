@@ -54,7 +54,7 @@ namespace GUISkinFramework.Editors
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var editor = new AnimationEditorDialog(_item.Instance);
-            editor.SetItems((_item.Value as ObservableCollection<XmlAnimation>) ?? new ObservableCollection<XmlAnimation>());
+            editor.SetItems(_item.Value as ObservableCollection<XmlAnimation> ?? new ObservableCollection<XmlAnimation>());
             if (editor.ShowDialog() == true)
             {
                 _item.Value = editor.GetItems();

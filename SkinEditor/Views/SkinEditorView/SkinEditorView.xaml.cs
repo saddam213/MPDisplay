@@ -54,10 +54,7 @@ namespace SkinEditor.Views
 
         #region connection
 
-        public InfoEditorViewSettings ConnectionSettings
-        {
-            get { return ConnectSettings as InfoEditorViewSettings; }
-        }
+        public InfoEditorViewSettings ConnectionSettings => ConnectSettings as InfoEditorViewSettings;
 
         public ICommand ConnectCommand { get; internal set; }
         public ICommand DisconnectCommand { get; internal set; }
@@ -65,40 +62,19 @@ namespace SkinEditor.Views
         public ICommand PropertyEditCommand { get; internal set; }
         public ICommand ClearListItemCommand { get; internal set; }
 
-        public bool IsConnected
-        {
-            get { return ConnectionHelper.IsConnected; }
-        }
+        public bool IsConnected => ConnectionHelper.IsConnected;
 
-        public bool IsMediaPortalConnected
-        {
-            get { return ConnectionHelper.IsMediaPortalConnected; }
-        }
+        public bool IsMediaPortalConnected => ConnectionHelper.IsMediaPortalConnected;
 
-        public ObservableCollection<SkinPropertyItem> PropertyData
-        {
-            get { return ConnectionHelper.PropertyData; }
-        }
+        public ObservableCollection<SkinPropertyItem> PropertyData => ConnectionHelper.PropertyData;
 
-        public ObservableCollection<SkinPropertyItem> ListItemData
-        {
-            get { return ConnectionHelper.ListItemData; }
-        }
+        public ObservableCollection<SkinPropertyItem> ListItemData => ConnectionHelper.ListItemData;
 
-        public int WindowId
-        {
-            get { return ConnectionHelper.WindowId; }
-        }
+        public int WindowId => ConnectionHelper.WindowId;
 
-        public int DialogId
-        {
-            get { return ConnectionHelper.DialogId; }
-        }
+        public int DialogId => ConnectionHelper.DialogId;
 
-        public int FocusedControlId
-        {
-            get { return ConnectionHelper.FocusedControlId; }
-        }
+        public int FocusedControlId => ConnectionHelper.FocusedControlId;
 
         #endregion
 
@@ -107,34 +83,22 @@ namespace SkinEditor.Views
         /// <summary>
         /// Gets the settings.
         /// </summary>
-        public SkinEditorViewSettings Settings
-        {
-            get { return EditorSettings as SkinEditorViewSettings; }
-        }
+        public SkinEditorViewSettings Settings => EditorSettings as SkinEditorViewSettings;
 
         /// <summary>
         /// Gets all Windows and Dialogs.
         /// </summary>
-        public IEnumerable<IXmlControlHost> AllWindows
-        {
-            get { return Windows.Concat(Dialogs.Cast<IXmlControlHost>()); }
-        }
-        
-        /// <summary>
-        /// Gets the windows.
-        /// </summary>
-        public ObservableCollection<XmlWindow> Windows
-        {
-            get { return SkinInfo.Windows; }
-        }
+        public IEnumerable<IXmlControlHost> AllWindows => Windows.Concat(Dialogs.Cast<IXmlControlHost>());
 
         /// <summary>
         /// Gets the windows.
         /// </summary>
-        public ObservableCollection<XmlDialog> Dialogs
-        {
-            get { return SkinInfo.Dialogs; }
-        }
+        public ObservableCollection<XmlWindow> Windows => SkinInfo.Windows;
+
+        /// <summary>
+        /// Gets the windows.
+        /// </summary>
+        public ObservableCollection<XmlDialog> Dialogs => SkinInfo.Dialogs;
 
         /// <summary>
         /// Gets or sets the current XML window.
@@ -220,10 +184,7 @@ namespace SkinEditor.Views
         /// <summary>
         /// Gets the title.
         /// </summary>
-        public override string Title
-        {
-            get { return "Skin Editor"; }
-        }
+        public override string Title => "Skin Editor";
 
         public override void Initialize()
         {
@@ -309,7 +270,7 @@ namespace SkinEditor.Views
             {
                 Dispatcher.BeginInvoke((Action)delegate
                 {
-                    var treeItem = skinTree.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
+                    var treeItem = SkinTree.ItemContainerGenerator.ContainerFromItem(item) as TreeViewItem;
                     if (treeItem != null)
                     {
                         treeItem.IsSelected = true;
@@ -320,10 +281,7 @@ namespace SkinEditor.Views
 
         #endregion
 
-        public bool IsControlHostSelected
-        {
-            get { return SelectedTreeItem is IXmlControlHost; }
-        }
+        public bool IsControlHostSelected => SelectedTreeItem is IXmlControlHost;
 
         private IXmlControlHost GetControlParent(XmlControl control)
         {
@@ -626,10 +584,7 @@ namespace SkinEditor.Views
             if (SkinClipboard.IsCut)
             {
                 var parent = GetControlParent(control);
-                if (parent != null)
-                {
-                    parent.Controls.Remove(control);
-                }
+                parent?.Controls.Remove(control);
             }
 
             var newId = 0;
@@ -649,7 +604,7 @@ namespace SkinEditor.Views
 
 
             control.Id = newId;
-            control.WindowId = _currentXmlWindow != null ? _currentXmlWindow.Id : _currentXmlDialog.Id;
+            control.WindowId = _currentXmlWindow?.Id ?? _currentXmlDialog.Id;
 
             if (control is XmlGroup)
             {
@@ -660,7 +615,7 @@ namespace SkinEditor.Views
                     item.WindowId = control.WindowId;
                 }
             }
-            if (newParent != null) newParent.Controls.Add(control);
+            newParent?.Controls.Add(control);
 
             SkinClipboard.ClearData();
             HasPendingChanges = true;
@@ -706,10 +661,7 @@ namespace SkinEditor.Views
                     {
                         var control = xmlControl;
                         var parent = GetControlParent(control);
-                        if (parent != null)
-                        {
-                            parent.Controls.Remove(control);
-                        }
+                        parent?.Controls.Remove(control);
                     }
                 }
             }
@@ -827,7 +779,7 @@ namespace SkinEditor.Views
                 if (!(control2 is XmlGroup)) return;
 
                 (control2 as XmlGroup).DesignerVisible = value;
-                control = (control2 as XmlGroup);
+                control = control2 as XmlGroup;
             }
         }
 
@@ -949,10 +901,7 @@ namespace SkinEditor.Views
         /// <value>
         ///   <c>true</c> if this instance has data; otherwise, <c>false</c>.
         /// </value>
-        public static bool HasData
-        {
-            get { return _clipboardControl != null; }
-        }
+        public static bool HasData => _clipboardControl != null;
 
         /// <summary>
         /// Gets a value indicating whether the clipboard content is cut.
@@ -960,10 +909,7 @@ namespace SkinEditor.Views
         /// <value>
         ///   <c>true</c> if this instance is cut; otherwise, <c>false</c>.
         /// </value>
-        public static bool IsCut
-        {
-            get { return !_isCopy; }
-        }
+        public static bool IsCut => !_isCopy;
 
         /// <summary>
         /// Sets the clipboard data.

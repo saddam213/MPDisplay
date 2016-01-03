@@ -28,17 +28,14 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(PropertyManager));
         }
 
-        public static PropertyManager Instance
-        {
-            get { return _instance ?? (_instance = new PropertyManager()); }
-        }
+        public static PropertyManager Instance => _instance ?? (_instance = new PropertyManager());
 
         #endregion
 
-        private Log _log;
+        private readonly Log _log;
 
-        private List<APIPropertyMessage> _properties = new List<APIPropertyMessage>();
-        private List<string> _registeredProperties = new List<string>();
+        private readonly List<APIPropertyMessage> _properties = new List<APIPropertyMessage>();
+        private readonly List<string> _registeredProperties = new List<string>();
         private PluginSettings _settings;
         private AddImageSettings _addImageSettings;
         private bool _suspended;
@@ -235,7 +232,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         public void SendImageProperty(string tag, string tagValue)
         {
-		    if (!string.IsNullOrEmpty(tagValue) && ((FileHelpers.IsURL(tagValue) && FileHelpers.ExistsURL(tagValue)) || File.Exists(tagValue))) // check for url to prevent exception
+		    if (!string.IsNullOrEmpty(tagValue) && ((FileHelpers.IsUrl(tagValue) && FileHelpers.ExistsUrl(tagValue)) || File.Exists(tagValue))) // check for url to prevent exception
             {
                 MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
                 {
@@ -358,10 +355,20 @@ namespace MediaPortalPlugin.InfoManagers
 
             Thread.Sleep(500);
 
-            var slidelist = ReflectionHelper.GetFieldValue<List<string>>(WindowManager.Instance.CurrentWindow, "_slideList", null, BindingFlags.Instance | BindingFlags.Public);
+            var slidelist = new List<string>();
+            SupportedPluginManager.GuiSafeInvoke(() =>
+            {
+                slidelist = ReflectionHelper.GetFieldValue<List<string>>(WindowManager.Instance.CurrentWindow, "_slideList", null, BindingFlags.Instance | BindingFlags.Public);
+            });
+
             if (slidelist == null || !slidelist.Any()) return;
 
-            var slideindex = ReflectionHelper.GetFieldValue(WindowManager.Instance.CurrentWindow, "_currentSlideIndex", 0, BindingFlags.Instance | BindingFlags.Public);
+            int slideindex = -1;
+
+            SupportedPluginManager.GuiSafeInvoke(() =>
+            {
+                slideindex = ReflectionHelper.GetFieldValue(WindowManager.Instance.CurrentWindow, "_currentSlideIndex", 0, BindingFlags.Instance | BindingFlags.Public);
+            });
 
             var filename = string.Empty;
             if (slideindex >= 0 && slideindex < slidelist.Count)

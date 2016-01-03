@@ -30,9 +30,6 @@ namespace MediaPortalPlugin.Plugins
             return !image.IsEmpty ? image : base.GetListItemImage1(item, layout);
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.Rockstar; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.Rockstar;
     }
 }

@@ -7,8 +7,8 @@ namespace Common.Helpers
     {
 
         // map related variables
-        private int _mapHeight;
-        private int _mapWidth;
+        private readonly int _mapHeight;
+        private readonly int _mapWidth;
         private string _googleApiKey;
         private int _zoom ;
 
@@ -18,7 +18,7 @@ namespace Common.Helpers
 
         public string GoogleApiKey
         {
-            get { return string.IsNullOrWhiteSpace(_googleApiKey) ? string.Empty : string.Format("&key={0}", _googleApiKey); }
+            get { return string.IsNullOrWhiteSpace(_googleApiKey) ? string.Empty : $"&key={_googleApiKey}"; }
             set { _googleApiKey = value; }
         }
 
@@ -44,8 +44,8 @@ namespace Common.Helpers
         /// </summary>
         public MapHelper(int height, int width, int defaultZoom)
         {
-            _mapHeight = (height > 640) ? 640 : height;
-            _mapWidth = (width > 640) ? 640 : width;
+            _mapHeight = height > 640 ? 640 : height;
+            _mapWidth = width > 640 ? 640 : width;
 
             _zoom = defaultZoom;
             if (_zoom < 0) _zoom = 0;
@@ -106,10 +106,10 @@ namespace Common.Helpers
             if (_zoom > 15)
             {
                 diff = _zoom - 15;
-                return ((15 - diff) * 0.003) / 15;
+                return (15 - diff) * 0.003 / 15;
             }
             diff = 15 - _zoom;
-            return ((15 + diff) * 0.003) / 15;
+            return (15 + diff) * 0.003 / 15;
         }
 
         // Increment Zoom

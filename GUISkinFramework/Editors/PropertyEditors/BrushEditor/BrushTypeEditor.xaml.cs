@@ -57,10 +57,7 @@ namespace GUISkinFramework.Editors
         /// <summary>
         /// Gets the skin image folder.
         /// </summary>
-        public string SkinImageFolder
-        {
-            get { return SkinInfo != null ? SkinInfo.SkinImageFolder : string.Empty; }
-        }
+        public string SkinImageFolder => SkinInfo != null ? SkinInfo.SkinImageFolder : string.Empty;
 
         /// <summary>
         /// Gets or sets the edit brush.
@@ -87,7 +84,7 @@ namespace GUISkinFramework.Editors
         {
             if (e.NewValue == null) return;
 
-            var editor = (d as BrushTypeEditor);
+            var editor = d as BrushTypeEditor;
             var brush = (e.NewValue as XmlBrush).CreateCopy();
             if (editor == null) return;
             editor.SetBrushType(brush);
@@ -147,7 +144,7 @@ namespace GUISkinFramework.Editors
         {
             BrushType brushType;
 
-            if (brush != null && !string.IsNullOrEmpty(brush.StyleId))
+            if (!string.IsNullOrEmpty(brush?.StyleId))
             {
                 brushType = BrushType.Style;
             }
@@ -210,10 +207,7 @@ namespace GUISkinFramework.Editors
         /// <param name="brush">The brush.</param>
         private void FireBrushChanged(XmlBrush brush)
         {
-            if (OnBrushChanged != null)
-            {
-                OnBrushChanged(brush);
-            }
+            OnBrushChanged?.Invoke(brush);
         }
 
         /// <summary>
@@ -264,10 +258,7 @@ namespace GUISkinFramework.Editors
         /// <param name="property">The property.</param>
         public void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
     }
 

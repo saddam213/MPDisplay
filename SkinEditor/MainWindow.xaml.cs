@@ -27,10 +27,10 @@ namespace SkinEditor
     /// </summary>
     public partial class MainWindow : INotifyPropertyChanged
     {
-        private string _settingsFile;
+        private readonly string _settingsFile;
         private XmlSkinInfo _currentSkinInfo;
         private SkinEditorSettings _settings;
-        private ConnectionHelper _connectionHelper;
+        private readonly ConnectionHelper _connectionHelper;
 
         public MainWindow()
         {
@@ -69,15 +69,9 @@ namespace SkinEditor
         }
 
         #region Properties
-         
-        private ObservableCollection<EditorViewModel> _editorViews = new ObservableCollection<EditorViewModel>();
 
-        public ObservableCollection<EditorViewModel> EditorViews
-        {
-            get { return _editorViews; }
-            set { _editorViews = value; }
-        }
-        
+        public ObservableCollection<EditorViewModel> EditorViews { get; set; } = new ObservableCollection<EditorViewModel>();
+
 
         public XmlSkinInfo CurrentSkinInfo
         {
@@ -308,10 +302,7 @@ namespace SkinEditor
         public event PropertyChangedEventHandler PropertyChanged;
         private void NotifyPropertyChanged(string property)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(property)); 
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
         #endregion 

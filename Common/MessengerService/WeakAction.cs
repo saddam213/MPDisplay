@@ -32,7 +32,7 @@ namespace Common.MessengerService
             {
                 _delegateType = typeof(Action);
             }
-            else switch (parameterTypes.Count())
+            else switch (parameterTypes.Length)
             {
                 case 1:
                     _delegateType = typeof(Action<>).MakeGenericType(parameterTypes);

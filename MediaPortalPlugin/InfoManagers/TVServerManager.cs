@@ -30,15 +30,12 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(TvServerManager));
         }
 
-        public static TvServerManager Instance
-        {
-            get { return _instance ?? (_instance = new TvServerManager()); }
-        }
+        public static TvServerManager Instance => _instance ?? (_instance = new TvServerManager());
 
         #endregion
 
 
-        private Log _log;
+        private readonly Log _log;
         private PluginSettings _settings;
         private Func<List<APIChannel>> _getGuide;
         private Func<List<APIRecording>> _getRecordings;
@@ -174,7 +171,7 @@ namespace MediaPortalPlugin.InfoManagers
                      return;
                  }
 
-                 var getSetting = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetSetting") && m.GetParameters().Count() == 2);
+                 var getSetting = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetSetting") && m.GetParameters().Length == 2);
 
                  _preRecordingInterval = 5;                 // set default in case the settings cannot be retrieved
                  _postRecordingInterval = 10;
@@ -201,9 +198,9 @@ namespace MediaPortalPlugin.InfoManagers
 
          private void SetupGetGuide(object tvBusinessLayer)
         {
-            var getGroup = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetGroupByName") && m.GetParameters().Count() == 1);
-            var getChannelsInGroup = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetTVGuideChannelsForGroup") && m.GetParameters().Count() == 1);
-            var getProgramsInChannel = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetPrograms") && m.GetParameters().Count() == 3 &&
+            var getGroup = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetGroupByName") && m.GetParameters().Length == 1);
+            var getChannelsInGroup = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetTVGuideChannelsForGroup") && m.GetParameters().Length == 1);
+            var getProgramsInChannel = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetPrograms") && m.GetParameters().Length == 3 &&
                         m.GetParameters()[0].ParameterType != typeof(DateTime));
 
              if (getGroup == null || getChannelsInGroup == null || getProgramsInChannel == null)
@@ -311,10 +308,10 @@ namespace MediaPortalPlugin.InfoManagers
                 return;
             }
 
-            var getSchedule = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("AddSchedule") && m.GetParameters().Count() == 5);
-            var stopRecording = tvServer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("StopRecordingSchedule") && m.GetParameters().Count() == 1);
+            var getSchedule = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("AddSchedule") && m.GetParameters().Length == 5);
+            var stopRecording = tvServer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("StopRecordingSchedule") && m.GetParameters().Length == 1);
             var onNewSchedule = tvServer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("OnNewSchedule") && !m.GetParameters().Any());
-            var isRecordingSchedule = tvServer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("IsRecordingSchedule") && m.GetParameters().Count() == 2);
+            var isRecordingSchedule = tvServer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("IsRecordingSchedule") && m.GetParameters().Length == 2);
 
             if (getSchedule == null || stopRecording == null || onNewSchedule == null || isRecordingSchedule == null)
             {
@@ -375,15 +372,12 @@ namespace MediaPortalPlugin.InfoManagers
         {
 
             if( string.IsNullOrEmpty(title) || channelId == -1 ) return;
-            if (_setRecording != null)
-            {
-                _setRecording(channelId, title, startTime, endTime, cancel);
-            }
-          }
+            _setRecording?.Invoke(channelId, title, startTime, endTime, cancel);
+        }
 
         public void OnActionMessageReceived(APIActionMessage message)
         {
-            if (message == null || message.GuideAction == null) return;
+            if (message?.GuideAction == null) return;
 
             if (message.GuideAction.ActionType == APIGuideActionType.UpdateData)
             {

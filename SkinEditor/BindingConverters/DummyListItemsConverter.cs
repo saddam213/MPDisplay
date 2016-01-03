@@ -12,7 +12,7 @@ namespace SkinEditor.BindingConverters
 {
     public class DummyListItemsConverter : IMultiValueConverter
     {
-        private List<string> _allowedsExtensions = new List<string>(new[] { ".BMP", ".JPG", ".GIF", ".PNG" });
+        private readonly List<string> _allowedsExtensions = new List<string>(new[] { ".BMP", ".JPG", ".GIF", ".PNG" });
 
         public object Convert(object[] value, Type targetType, object parameter, CultureInfo culture)
         {

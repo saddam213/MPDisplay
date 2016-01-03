@@ -6,7 +6,7 @@ namespace MPDisplay.Common.Controls
 {
     public class RoundedImage : Image
     {
-        private RectangleGeometry _clipRect = new RectangleGeometry();
+        private readonly RectangleGeometry _clipRect = new RectangleGeometry();
   
         /// <summary>
         /// Gets or sets the corner radius.

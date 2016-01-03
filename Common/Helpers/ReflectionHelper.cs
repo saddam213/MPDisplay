@@ -10,7 +10,7 @@ namespace Common.Helpers
     public static class ReflectionHelper
     {
 
-        private static Log.Log _log = LoggingManager.GetLog(typeof(ReflectionHelper));
+        private static readonly Log.Log Log = LoggingManager.GetLog(typeof(ReflectionHelper));
 
 
         #region Method Invoke
@@ -29,7 +29,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                Log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
         }
 
@@ -50,7 +50,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                Log.Message(LogLevel.Debug, "[InvokeMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
             return defalutValue;
         }
@@ -72,7 +72,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                Log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
             return defalutValue;
         }
@@ -92,7 +92,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
+                Log.Message(LogLevel.Debug, "[InvokeStaticMethod] - An exception occured invoking method, Method: {1} - {0}", ex, methodName);
             }
         }
 
@@ -113,15 +113,12 @@ namespace Common.Helpers
         {
             try
             {
-                if (obj != null)
-                {
-                    var prop = obj.GetType().GetProperty(property);
-                    if (prop != null ) return (T)(prop.GetValue(obj, index));
-                }
+                var prop = obj?.GetType().GetProperty(property);
+                if (prop != null ) return (T)prop.GetValue(obj, index);
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[GetPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
+                Log.Message(LogLevel.Debug, "[GetPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
             }
             return defaultValue;
         }
@@ -140,11 +137,11 @@ namespace Common.Helpers
             {
                 if (obj == null) return;
                 var prop = obj.GetType().GetProperty(property);
-                if (prop != null ) prop.SetValue(obj, value);
+                prop?.SetValue(obj, value);
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[SetPropertyValue] - An exception occured setting property value, property: {1} - {0}", ex, property);
+                Log.Message(LogLevel.Debug, "[SetPropertyValue] - An exception occured setting property value, property: {1} - {0}", ex, property);
             }
         }
 
@@ -174,15 +171,12 @@ namespace Common.Helpers
         {
             try
             {
-                if (obj != null)
-                {
-                    var prop = obj.GetType().GetProperty(property);
-                    if (prop != null) return (T)(prop.GetValue(obj, index));
-                }
+                var prop = obj?.GetType().GetProperty(property);
+                if (prop != null) return (T)prop.GetValue(obj, index);
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[GetStaticPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
+                Log.Message(LogLevel.Debug, "[GetStaticPropertyValue] - An exception occured getting property value, property: {1} - {0}", ex, property);
             }
             return defaultValue;
         }
@@ -217,15 +211,12 @@ namespace Common.Helpers
         {
             try
             {
-                if (obj != null)
-                {
-                    var fieldinfo = obj.GetType().GetField(field, bindingFlags);
-                    if (fieldinfo != null) return (T)(fieldinfo.GetValue(obj));
-                }
+                var fieldinfo = obj?.GetType().GetField(field, bindingFlags);
+                if (fieldinfo != null) return (T)fieldinfo.GetValue(obj);
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[GetFieldValue] - An exception occured getting field value, Field: {1} - {0}", ex, field);
+                Log.Message(LogLevel.Debug, "[GetFieldValue] - An exception occured getting field value, Field: {1} - {0}", ex, field);
             }
             return defaultValue;
         }
@@ -256,11 +247,11 @@ namespace Common.Helpers
             try
             {
                 var fieldinfo = obj.GetType().GetField(field);
-                if (fieldinfo != null) return (T)(fieldinfo.GetValue(null));
+                if (fieldinfo != null) return (T)fieldinfo.GetValue(null);
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[GetStaticField] - An exception occured getting field value, Field: {1} - {0}", ex, field);
+                Log.Message(LogLevel.Debug, "[GetStaticField] - An exception occured getting field value, Field: {1} - {0}", ex, field);
             }
             return defaultValue;
         }
@@ -313,7 +304,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting property value, PropertyPath: {1} - {0}", ex, property);
+                Log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting property value, PropertyPath: {1} - {0}", ex, property);
             }
             return defaultValue;
         }
@@ -341,7 +332,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting PropertyInfo, PropertyPath: {1} - {0}", ex, property);
+                Log.Message(LogLevel.Debug, "[GetPropertyPath] - An exception occured getting PropertyInfo, PropertyPath: {1} - {0}", ex, property);
             }
             return null;
         }
@@ -372,7 +363,7 @@ namespace Common.Helpers
 
             if (type == typeof(string))
             {
-                yield return (obj).ToString();
+                yield return obj.ToString();
                 yield break;
             }
 

@@ -18,7 +18,7 @@ namespace GUIConfig.ViewModels
     {
         #region Fields
 
-        private Log _log = LoggingManager.GetLog(typeof(SkinSettingsView));
+        private readonly Log _log = LoggingManager.GetLog(typeof(SkinSettingsView));
         private ObservableCollection<SkinInfo> _skins = new ObservableCollection<SkinInfo>();
         private SkinInfo _selectedSkin;
 
@@ -66,10 +66,7 @@ namespace GUIConfig.ViewModels
         /// <summary>
         /// Gets the tabs title.
         /// </summary>
-        public override string Title
-        {
-            get { return "Skin Settings"; }
-        }
+        public override string Title => "Skin Settings";
 
         #endregion 
 

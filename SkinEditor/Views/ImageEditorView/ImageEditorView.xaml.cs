@@ -10,9 +10,6 @@
             InitializeComponent();
         }
 
-        public override string Title
-        {
-            get { return "Image Editor"; }
-        }
+        public override string Title => "Image Editor";
     }
 }

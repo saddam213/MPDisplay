@@ -115,7 +115,7 @@ namespace SkinHelper
         #region Methods
 
         private int _lastFocusedControl = -1;
-        private object _syncObject = new object();
+        private readonly object _syncObject = new object();
 
         void GUIWindowManager_OnNewAction(Action action)
         {
@@ -200,9 +200,8 @@ namespace SkinHelper
             try
             {
                 var currentWindow = GUIWindowManager.GetWindow(GUIWindowManager.ActiveWindowEx);
-                if (currentWindow == null) return;
 
-                var focusedControl = currentWindow.GetControl(currentWindow.GetFocusControlId());
+                var focusedControl = currentWindow?.GetControl(currentWindow.GetFocusControlId());
                 if (focusedControl == null) return;
 
                 if (focusedControl.GetType() == typeof(GUIFacadeControl))
@@ -327,7 +326,8 @@ namespace SkinHelper
                             var image = item as GUIImage;
                             if (image != null)
                             {
-                                LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info, string.Format("[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Image{0}, TagValue: {1}", item.GetID, image.FileName));
+                                LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info,
+                                    $"[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Image{item.GetID}, TagValue: {image.FileName}");
                             }
                         }
                         else
@@ -335,7 +335,8 @@ namespace SkinHelper
                             var label = ReflectionHelper.GetPropertyValue<string>(item, "Label", null);
                             if (!string.IsNullOrEmpty(label))
                             {
-                                LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info, string.Format("[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Label{0}, TagValue: {1}", item.GetID, label));
+                                LoggingManager.GetLog(typeof(SkinHelper), "Dialog").Message(LogLevel.Info,
+                                    $"[Dialog]-[DialogProperties] - Dialog property sent, Tag: #Dialog.Label{item.GetID}, TagValue: {label}");
                             }
                         }
                     }

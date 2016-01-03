@@ -21,8 +21,7 @@ namespace MPDisplay.Common.Controls.Core
         private static void OnCultureInfoChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var inputBase = o as InputBase;
-            if (inputBase != null)
-                inputBase.OnCultureInfoChanged((CultureInfo)e.OldValue, (CultureInfo)e.NewValue);
+            inputBase?.OnCultureInfoChanged((CultureInfo)e.OldValue, (CultureInfo)e.NewValue);
         }
 
         protected virtual void OnCultureInfoChanged(CultureInfo oldValue, CultureInfo newValue)
@@ -55,8 +54,7 @@ namespace MPDisplay.Common.Controls.Core
         private static void OnTextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var inputBase = o as InputBase;
-            if (inputBase != null)
-                inputBase.OnTextChanged((string)e.OldValue, (string)e.NewValue);
+            inputBase?.OnTextChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnTextChanged(string oldValue, string newValue)

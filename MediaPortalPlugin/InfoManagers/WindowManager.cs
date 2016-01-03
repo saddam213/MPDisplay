@@ -29,14 +29,11 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(WindowManager));
         }
 
-        public static WindowManager Instance
-        {
-            get { return _instance ?? (_instance = new WindowManager()); }
-        }
+        public static WindowManager Instance => _instance ?? (_instance = new WindowManager());
 
         #endregion
 
-        private Log _log;
+        private readonly Log _log;
         private bool _isFullscreenVideo;
         private PluginSettings _settings;
         private AdvancedPluginSettings _advancedSettings;
@@ -57,10 +54,7 @@ namespace MediaPortalPlugin.InfoManagers
 
         public PluginHelper CurrentPlugin { get; private set; }
 
-        public int CurrentWindowFocusedControlId
-        {
-            get { return CurrentWindow != null ? CurrentWindow.GetFocusControlId() : -1; }
-        }
+        public int CurrentWindowFocusedControlId => CurrentWindow?.GetFocusControlId() ?? -1;
 
         public void Initialize(PluginSettings settings, AdvancedPluginSettings advancedSettings, AddImageSettings addImageSettings)
         {

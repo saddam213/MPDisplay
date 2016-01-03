@@ -9,7 +9,7 @@ namespace Common.Helpers
 {
     public class ProcessHelper
     {
-        private static Log.Log _log = LoggingManager.GetLog(typeof(ProcessHelper));
+        private static readonly Log.Log Log = LoggingManager.GetLog(typeof(ProcessHelper));
 
         // Sets the window to be foreground 
         [DllImport("User32")]
@@ -25,9 +25,11 @@ namespace Common.Helpers
         [DllImport("user32.dll")]
         public static extern int GetWindowLong(IntPtr hWnd, int nIndex);
 
+        // ReSharper disable InconsistentNaming
         private const int SW_RESTORE = 9;
         private const int GWL_EXSTYLE = -20;
         private const int WS_EX_NOACTIVATE = 0x08000000;
+        // ReSharper restore InconsistentNaming
 
         public static void ActivateApplication(string appName)
         {
@@ -54,7 +56,7 @@ namespace Common.Helpers
             }
             catch(Exception ex)
             {
-                _log.Exception("[StartApplication] - An execption occured starting application, Filename: {0}, args: {1}", ex, filename, args);
+                Log.Exception("[StartApplication] - An execption occured starting application, Filename: {0}, args: {1}", ex, filename, args);
             }
         }
 
@@ -82,7 +84,7 @@ namespace Common.Helpers
             }
             catch (Exception ex)
             {
-                _log.Exception("[KillApplication] - An execption occured starting application, Name: {0}, IsKill: {1}", ex, name, kill);
+                Log.Exception("[KillApplication] - An execption occured starting application, Name: {0}, IsKill: {1}", ex, name, kill);
             }
         }
 

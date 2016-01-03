@@ -2,7 +2,6 @@
 // Copyright (c) Nish Sivakumar. All rights reserved.
 // </copyright>
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -31,7 +30,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         {
             var values = exifValue.Values.Cast<Rational32>();
             var rational32S = values as IList<Rational32> ?? values.ToList();
-            return !rational32S.Any() ? String.Empty : String.Format("f/{0:g3}", (double)rational32S.First());
+            return !rational32S.Any() ? string.Empty : $"f/{(double) rational32S.First():g3}";
         }
     }
 }

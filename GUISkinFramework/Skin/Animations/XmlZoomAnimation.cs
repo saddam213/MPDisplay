@@ -30,12 +30,6 @@ namespace GUISkinFramework.Skin
         [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(0, int.MaxValue)]
         public int To { get; set; }
 
-        public override string DisplayName
-        {
-            get
-            {
-                return "ZoomAnimation";
-            }
-        }
+        public override string DisplayName => "ZoomAnimation";
     }
 }

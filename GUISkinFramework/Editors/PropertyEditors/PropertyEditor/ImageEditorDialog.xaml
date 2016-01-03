@@ -6,7 +6,7 @@
 		xmlns:imageEditor="clr-namespace:GUISkinFramework.Editors"
 		Title="LabelEditorDialog" ResizeMode="NoResize" WindowStartupLocation="CenterOwner" x:Name="UI" Height="378.667" Width="662" >
 	<Window.Resources>
-		<CollectionViewSource x:Key="properties" Source="{Binding SkinInfo.Properties, ElementName=UI}">
+		<CollectionViewSource x:Key="Properties" Source="{Binding SkinInfo.Properties, ElementName=UI}">
 			<CollectionViewSource.GroupDescriptions>
 				<PropertyGroupDescription PropertyName="PropertyType" />
 			</CollectionViewSource.GroupDescriptions>
@@ -76,7 +76,7 @@
                             <ColumnDefinition Width="22*"/>
                             <ColumnDefinition Width="22"/>
                         </Grid.ColumnDefinitions>
-						<ComboBox ItemsSource="{Binding Source={StaticResource properties}}" SelectedItem="{Binding SelectedPropertyEntry}" >
+						<ComboBox ItemsSource="{Binding Source={StaticResource Properties}}" SelectedItem="{Binding SelectedPropertyEntry}" >
 							<ComboBox.GroupStyle>
 								<GroupStyle>
 									<GroupStyle.HeaderTemplate>

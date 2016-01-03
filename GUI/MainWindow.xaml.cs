@@ -24,8 +24,9 @@ namespace GUI
 
         #region Fields
 
-        private Log _log = LoggingManager.GetLog(typeof(MainWindow));
-        private GUISettings _settings; 
+        private readonly Log _log = LoggingManager.GetLog(typeof(MainWindow));
+        private GUISettings _settings;
+        private DispatcherTimer _secondTimer;
 
         #endregion
 
@@ -74,7 +75,8 @@ namespace GUI
                 SettingsManager.Save(settings, RegistrySettings.MPDisplaySettingsFile);
             }
             _log.Message(LogLevel.Info, "[LoadSettings] - MPDisplay.xml sucessfully loaded.");
-            settings.GUISettings.SkinInfoXml = string.Format("{0}{1}\\SkinInfo.xml", RegistrySettings.MPDisplaySkinFolder, settings.GUISettings.SkinName);
+            settings.GUISettings.SkinInfoXml =
+                $"{RegistrySettings.MPDisplaySkinFolder}{settings.GUISettings.SkinName}\\SkinInfo.xml";
             if (!File.Exists(settings.GUISettings.SkinInfoXml))
             {
                 _log.Message(LogLevel.Error, "[LoadSettings] - Failed to locate the selected skins info file '{0}'", settings.GUISettings.SkinInfoXml);
@@ -104,36 +106,87 @@ namespace GUI
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             // Set base screen size/location, scaled to screens DPI
+            SetMPDDisplay();
+            StartSecondTimer();
+        }
+
+        /// <summary>
+        /// Check is MPD is displayed on configured display (only in full screen mode)
+        /// </summary>
+        /// <returns>
+        ///  false if MPD must be moved to configured display
+        ///  true is MPD is displayed on configured screen or screen is not available
+        /// </returns>
+        private bool CheckMPDScreen()
+        {
+
+            if (_settings.DesktopMode) return true;                 // do nothing when desktop mode is selected
+
             var screen = GetDisplayByDeviceName(_settings.Display);
+            var source = PresentationSource.FromVisual(this);
+
+            if (screen.DeviceName.Equals(_settings.Display))        // if the configured display exists do check of position
+            {
+                // Set base screen size/location, scaled to screens DPI
+                double leftPos = screen.Bounds.X;
+                double topPos = screen.Bounds.Y;
+
+                if (source?.CompositionTarget != null)
+                {
+                    var dpiX = 96.0*source.CompositionTarget.TransformToDevice.M11;
+                    var dpiY = 96.0*source.CompositionTarget.TransformToDevice.M22;
+                    if (Math.Abs(dpiX - 96.0) > Tolerance || Math.Abs(dpiY - 96.0) > Tolerance)
+                    {
+                        leftPos = leftPos*96.0/dpiX;
+                        topPos = topPos*96.0/dpiY;
+                    }
+                }
+                // if position is ok then nothing to do
+                if (Math.Abs(Left - leftPos) < Tolerance && Math.Abs(Top - topPos) < Tolerance) return true;
+            }
+            else
+            {
+                return true;                                         // configured display does (currently) not exist, give up
+            }
+
+            _log.Message(LogLevel.Info, "[CheckMPDScreen] - MPD is not displayed on cofigured display");
+            return false;
+        }
+
+        /// <summary>
+        /// Moves the MPD window to the configured display and position according to settings
+        /// </summary>
+        private void SetMPDDisplay()
+        {
+
+            var screen = GetDisplayByDeviceName(_settings.Display);
+            var source = PresentationSource.FromVisual(this);
+
+            // Set base screen size/location, scaled to screens DPI
             double left = _settings.CustomResolution ? screen.Bounds.X + _settings.ScreenOffSetX : screen.Bounds.X;
             double top = _settings.CustomResolution ? screen.Bounds.Y + _settings.ScreenOffSetY : screen.Bounds.Y;
             double width = _settings.CustomResolution ? _settings.ScreenWidth : screen.Bounds.Width;
             double height = _settings.CustomResolution ? _settings.ScreenHeight : screen.Bounds.Height;
 
-            var source = PresentationSource.FromVisual(this);
-            if (source != null)
+            if (source?.CompositionTarget != null)
             {
-                if (source.CompositionTarget != null)
+                var dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
+                var dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
+                if (Math.Abs(dpiX - 96.0) > Tolerance || Math.Abs(dpiY - 96.0) > Tolerance)
                 {
-                    var dpiX = 96.0 * source.CompositionTarget.TransformToDevice.M11;
-                    var dpiY = 96.0 * source.CompositionTarget.TransformToDevice.M22;
-                    // ReSharper disable once CompareOfFloatsByEqualityOperator
-                    if (Math.Abs(dpiX - 96.0) > Tolerance || Math.Abs(dpiY - 96.0) > Tolerance)
-                    {
-                        width = width * 96.0 / dpiX;
-                        height = height * 96.0 / dpiY;
-                        left = left * 96.0 / dpiX;
-                        top = top * 96.0 / dpiY;
-                    }
+                    width = width * 96.0 / dpiX;
+                    height = height * 96.0 / dpiY;
+                    left = left * 96.0 / dpiX;
+                    top = top * 96.0 / dpiY;
                 }
             }
             Left = left;
             Top = top;
             Width = width;
             Height = height;
-            _log.Message(LogLevel.Info, "[Load_Window] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
+            _log.Message(LogLevel.Info, "[SetMPDDisplay] - Set UI surface, Width: {0}, Height: {1}, X: {2}, Y: {3}, DesktopMode: {4}", width, height, left, top, _settings.DesktopMode);
 
-        }  
+        }
 
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Window.Closing" /> event.
@@ -142,6 +195,7 @@ namespace GUI
         protected override void OnClosing(CancelEventArgs e)
         {
             _log.Message(LogLevel.Info, "[OnClosing] - Close Requested.");
+            StopSecondTimer();
             Surface.CloseDown();
             base.OnClosing(e);
         }
@@ -161,7 +215,7 @@ namespace GUI
         /// Invoked when an unhandled <see cref="E:System.Windows.Input.Mouse.MouseUp" /> routed event reaches an element in its route that is derived from this class. Implement this method to add class handling for this event.
         /// </summary>
         /// <param name="e">The <see cref="T:System.Windows.Input.MouseButtonEventArgs" /> that contains the event data. The event data reports that the mouse button was released.</param>
-        protected async override void OnMouseUp(MouseButtonEventArgs e)
+        protected override async void OnMouseUp(MouseButtonEventArgs e)
         {
             base.OnMouseUp(e);
 
@@ -212,14 +266,48 @@ namespace GUI
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(String info)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(info));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(info));
         }
 
         #endregion
 
+        #region Timer
+
+        /// <summary>
+        /// Starts the second timer.
+        /// </summary>
+        private void StartSecondTimer()
+        {
+            if (_secondTimer != null) return;
+
+            _secondTimer = new DispatcherTimer(DispatcherPriority.Background) { Interval = TimeSpan.FromSeconds(10) };
+            _secondTimer.Tick += SecondTimer_Tick;
+            _secondTimer.Start();
+        }
+
+        /// <summary>
+        /// Stops the second timer.
+        /// </summary>
+        private void StopSecondTimer()
+        {
+            if (_secondTimer == null) return;
+
+            _secondTimer.Tick -= SecondTimer_Tick;
+            _secondTimer.Stop();
+            _secondTimer = null;
+        }
+
+        /// <summary>
+        /// Handles the Tick event of the SecondTimer control.
+        /// </summary>
+        /// <param name="sender">The source of the event.</param>
+        /// <param name="e">The <see cref="EventArgs"/> instance containing the event data.</param>
+        private void SecondTimer_Tick(object sender, EventArgs e)
+        {
+            if( !CheckMPDScreen()) SetMPDDisplay();
+        }
+
+        #endregion
 
         /// <summary>
         /// Restarts the mp display.

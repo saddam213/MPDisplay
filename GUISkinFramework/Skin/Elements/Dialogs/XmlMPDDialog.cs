@@ -7,9 +7,6 @@ namespace GUISkinFramework.Skin
     [XmlType(TypeName = "MPDisplayDialog")]
     public class XmlMPDDialog : XmlDialog
     {
-        public override string DisplayType
-        {
-            get { return "MPDisplay Dialog"; }
-        }
+        public override string DisplayType => "MPDisplay Dialog";
     }
 }

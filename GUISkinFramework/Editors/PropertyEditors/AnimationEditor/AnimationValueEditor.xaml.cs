@@ -60,9 +60,8 @@ namespace GUISkinFramework.Editors
         private void Button_Click(object sender, RoutedEventArgs e)
         {
             var animationEditorDialog = _propertyItem.PropertyGrid.DataContext as AnimationEditorDialog;
-            if (animationEditorDialog == null) return;
 
-            var animatedElement = animationEditorDialog.AnimatedElement as XmlControl;
+            var animatedElement = animationEditorDialog?.AnimatedElement as XmlControl;
 
             if (animatedElement == null) return;
 
@@ -157,14 +156,8 @@ namespace GUISkinFramework.Editors
             Mmax = max;
         }
 
-        public int Min
-        {
-            get { return Mmin; }
-        }
+        public int Min => Mmin;
 
-        public int Max
-        {
-            get { return Mmax; }
-        }
+        public int Max => Mmax;
     }
 }

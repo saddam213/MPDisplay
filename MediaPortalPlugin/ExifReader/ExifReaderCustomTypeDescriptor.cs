@@ -17,7 +17,7 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// List of custom fields
         /// </summary>
-        private List<PropertyDescriptor> _customFields = new List<PropertyDescriptor>();
+        private readonly List<PropertyDescriptor> _customFields = new List<PropertyDescriptor>();
 
         /// <summary>
         ///  Initializes a new instance of the ExifReaderCustomTypeDescriptor class.

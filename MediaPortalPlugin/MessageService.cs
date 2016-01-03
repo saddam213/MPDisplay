@@ -42,10 +42,7 @@ namespace MediaPortalPlugin
         /// <summary>
         /// Gets the instance.
         /// </summary>
-        public static MessageService Instance
-        {
-            get { return _instance ?? (_instance = new MessageService()); }
-        }
+        public static MessageService Instance => _instance ?? (_instance = new MessageService());
 
         /// <summary>
         /// Initializes the message service.
@@ -65,11 +62,11 @@ namespace MediaPortalPlugin
         private EndpointAddress _serverEndpoint;
         private NetTcpBinding _serverBinding;
         private ConnectionSettings _settings;
-        private Log _log;
+        private readonly Log _log;
         private Timer _keepAlive;
         private bool _isDisconnecting;
         private DateTime _lastKeepAlive = DateTime.Now.AddMinutes(2);
-        private Dictionary<ConnectionType, int> _connections = new Dictionary<ConnectionType, int>();
+        private readonly Dictionary<ConnectionType, int> _connections = new Dictionary<ConnectionType, int>();
 
         #endregion
 
@@ -108,7 +105,7 @@ namespace MediaPortalPlugin
             try
             {
                 _settings = settings;
-                var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                var connectionString = $"net.tcp://{settings.IpAddress}:{settings.Port}/MPDisplayService";
                 _log.Message(LogLevel.Info, "[Initialize] - Initializing server connection. Connection: {0}", connectionString);
                 _serverEndpoint = new EndpointAddress(connectionString);
                 _serverBinding = ConnectHelper.GetServerBinding();
@@ -439,7 +436,7 @@ namespace MediaPortalPlugin
                 {
                     if (dataMessage.IntArray != null)
                     {
-                        _log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}, ArraySize {2}.", dataMessage.DataType, dataMessage.IntValue, dataMessage.IntArray.Count());
+                        _log.Message(LogLevel.Verbose, "[Send] - Sending data message, MessageType: {0}, IntValue: {1}, ArraySize {2}.", dataMessage.DataType, dataMessage.IntValue, dataMessage.IntArray.Length);
                     }
                     else
                     {
@@ -480,9 +477,7 @@ namespace MediaPortalPlugin
         /// <param name="message">The message.</param>
         public void ReceiveAPIDataMessage(APIDataMessage message)
         {
-            if (message == null) return;
-
-            if (message.DataType == APIDataMessageType.KeepAlive)
+            if (message?.DataType == APIDataMessageType.KeepAlive)
             {
                 _lastKeepAlive = DateTime.Now;
             }

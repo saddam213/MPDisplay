@@ -41,15 +41,9 @@ namespace GUISkinFramework.Skin
             set { _param2 = value; NotifyPropertyChanged("Param2"); }
         }
 
-        public string DisplayName
-        {
-            get
-            {
-                return string.IsNullOrEmpty(Param1)
-                    ? string.Format("Action({0})", ActionType)
-                    : string.Format("{0}({1})", ActionType, Param1);
-            }
-        }
+        public string DisplayName => string.IsNullOrEmpty(Param1)
+            ? $"Action({ActionType})"
+            : $"{ActionType}({Param1})";
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void NotifyPropertyChanged(string property)
@@ -126,14 +120,8 @@ namespace GUISkinFramework.Skin
             PparamName = paramName;
         }
 
-        public string DisplayName
-        {
-            get { return DdisplayName; }
-        }
+        public string DisplayName => DdisplayName;
 
-        public string ParamName
-        {
-            get { return PparamName; }
-        }
+        public string ParamName => PparamName;
     }
 }

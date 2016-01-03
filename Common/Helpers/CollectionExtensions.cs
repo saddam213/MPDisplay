@@ -26,7 +26,7 @@ namespace Common.Helpers
 
             var enumerable = second as IList<T> ?? second.ToList();
             var enumerable1 = first as IList<T> ?? first.ToList();
-            return enumerable.Count() != enumerable1.Count() || enumerable1.SequenceEqual(enumerable);
+            return enumerable.Count != enumerable1.Count || enumerable1.SequenceEqual(enumerable);
         }
 
         /// <summary>
@@ -49,7 +49,7 @@ namespace Common.Helpers
 
             var enumerable = second as IList<T> ?? second.ToList();
             var enumerable1 = first as IList<T> ?? first.ToList();
-            if (enumerable.Count() != enumerable1.Count())
+            if (enumerable.Count != enumerable1.Count)
             {
                 return false;
             }
@@ -79,7 +79,7 @@ namespace Common.Helpers
 
             var enumerable = second as IList<T> ?? second.ToList();
             var enumerable1 = first as IList<T> ?? first.ToList();
-            return enumerable.Count() != enumerable1.Count() || enumerable1.SequenceEqual(enumerable);
+            return enumerable.Count != enumerable1.Count || enumerable1.SequenceEqual(enumerable);
         }
 
         /// <summary>
@@ -103,7 +103,7 @@ namespace Common.Helpers
 
             var enumerable = second as IList<T> ?? second.ToList();
             var enumerable1 = first as IList<T> ?? first.ToList();
-            if (enumerable.Count() != enumerable1.Count())
+            if (enumerable.Count != enumerable1.Count)
             {
                 return true;
             }

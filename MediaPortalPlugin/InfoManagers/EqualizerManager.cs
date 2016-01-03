@@ -20,17 +20,14 @@ namespace MediaPortalPlugin.InfoManagers
             _log = LoggingManager.GetLog(typeof(EqualizerManager));
         }
 
-        public static EqualizerManager Instance
-        {
-            get { return _instance ?? (_instance = new EqualizerManager()); }
-        }
+        public static EqualizerManager Instance => _instance ?? (_instance = new EqualizerManager());
 
         #endregion
 
 
-        private Log _log;
+        private readonly Log _log;
         private bool _isEqRunning;
-        private float[] _eqFftData = new float[4096];
+        private readonly float[] _eqFftData = new float[4096];
         private Timer _eqThread;
         private int _eqDataLength = 50;
         private const int RefreshRate = 60;
@@ -177,8 +174,8 @@ namespace MediaPortalPlugin.InfoManagers
                                 if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
                                 if (peak2 < _eqFftData[innerIndex+1]) peak2 = _eqFftData[innerIndex+1];
                             }
-                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak) * 2) * eqMultiplier, 1));
-                            eqData[eqIndex + 1] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak2) * 2) * eqMultiplier, 1));
+                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak * 2) * eqMultiplier, 1));
+                            eqData[eqIndex + 1] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak2 * 2) * eqMultiplier, 1));
                         }
                     }
                     else
@@ -191,7 +188,7 @@ namespace MediaPortalPlugin.InfoManagers
                             {
                                 if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
                             }
-                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt((peak) * 2) * eqMultiplier, 1));
+                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak * 2) * eqMultiplier, 1));
                             eqData[eqIndex + 1] = eqData[eqIndex];
                         }
                                              

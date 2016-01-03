@@ -23,12 +23,9 @@ namespace GUIConfig.Settings
 
         private ConnectionTester() { }
         private static ConnectionTester _instance;
-        public static ConnectionTester Instance
-        {
-            get { return _instance ?? (_instance = new ConnectionTester()); }
-        }
+        public static ConnectionTester Instance => _instance ?? (_instance = new ConnectionTester());
 
-        public static Task<bool> TestConnection(ConnectionSettings settings)
+            public static Task<bool> TestConnection(ConnectionSettings settings)
         {
            return Instance.TestServerConnection(settings);
         }
@@ -40,7 +37,7 @@ namespace GUIConfig.Settings
             try
             {
                
-                var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                var connectionString = $"net.tcp://{settings.IpAddress}:{settings.Port}/MPDisplayService";
                 var serverEndpoint = new EndpointAddress(connectionString);
                 var serverBinding = ConnectHelper.GetServerBinding();
                 var site = new InstanceContext(this);
@@ -119,6 +116,7 @@ namespace GUIConfig.Settings
     }
 
     [GeneratedCode("System.ServiceModel", "4.0.0.0")]
+    [ServiceContract]
     public interface IMessageCallback
     {
 

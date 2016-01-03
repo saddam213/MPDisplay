@@ -42,8 +42,7 @@ namespace MPDisplay.Common.Controls
         private static void OnIsOpenChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var multiLineTextEditor = o as MultiLineTextEditor;
-            if (multiLineTextEditor != null)
-                multiLineTextEditor.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
+            multiLineTextEditor?.OnIsOpenChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsOpenChanged(bool oldValue, bool newValue)
@@ -73,8 +72,7 @@ namespace MPDisplay.Common.Controls
         private static void OnTextChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var textEditor = o as MultiLineTextEditor;
-            if (textEditor != null)
-                textEditor.OnTextChanged((string)e.OldValue, (string)e.NewValue);
+            textEditor?.OnTextChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnTextChanged(string oldValue, string newValue)
@@ -158,7 +156,7 @@ namespace MPDisplay.Common.Controls
             var yadjust = DropDownHeight + e.VerticalChange;
             var xadjust = DropDownWidth + e.HorizontalChange;
 
-            if ((!(xadjust >= 0)) || (!(yadjust >= 0))) return;
+            if (!(xadjust >= 0) || !(yadjust >= 0)) return;
 
             DropDownWidth = xadjust;
             DropDownHeight = yadjust;

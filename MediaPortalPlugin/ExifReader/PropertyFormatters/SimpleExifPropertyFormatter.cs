@@ -2,7 +2,6 @@
 // Copyright (c) Nish Sivakumar. All rights reserved.
 // </copyright>
 
-using System;
 using System.Text.RegularExpressions;
 
 namespace MediaPortalPlugin.ExifReader.PropertyFormatters
@@ -16,12 +15,12 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <summary>
         /// The associated PropertyTagId
         /// </summary>
-        private PropertyTagId _tagId;
+        private readonly PropertyTagId _tagId;
 
         /// <summary>
         /// The display name attribute if one's available
         /// </summary>
-        private EnumDisplayNameAttribute _displayNameAttribute;
+        private readonly EnumDisplayNameAttribute _displayNameAttribute;
 
         /// <summary>
         /// Initializes a new instance of the SimpleExifPropertyFormatter class.
@@ -39,15 +38,9 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// crude enhancement and separates out words heuristically by spliting them 
         /// up based on an uppercase letter following a lowercase one.
         /// </summary>
-        public virtual string DisplayName
-        {
-            get
-            {
-                return _displayNameAttribute != null ?
-                    _displayNameAttribute.DisplayName :
-                    Regex.Replace(_tagId.ToString(), @"([a-z])([A-Z])", @"$1 $2", RegexOptions.None);
-            }
-        }
+        public virtual string DisplayName => _displayNameAttribute != null ?
+            _displayNameAttribute.DisplayName :
+            Regex.Replace(_tagId.ToString(), @"([a-z])([A-Z])", @"$1 $2", RegexOptions.None);
 
         /// <summary>
         /// Gets a formatted string for a given Exif value
@@ -56,7 +49,7 @@ namespace MediaPortalPlugin.ExifReader.PropertyFormatters
         /// <returns>The formatted string</returns>
         public virtual string GetFormattedString(IExifValue exifValue)
         {
-            var firstValue = String.Empty;
+            var firstValue = string.Empty;
 
             foreach (var item in exifValue.Values)
             {

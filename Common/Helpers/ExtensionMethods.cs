@@ -27,11 +27,11 @@ namespace Common.Helpers
             var asGb = Math.Round((double)value / OneGb, decimalPlaces);
             var asMb = Math.Round((double)value / OneMb, decimalPlaces);
             var asKb = Math.Round((double)value / OneKb, decimalPlaces);
-            var chosenValue = asTb > 1 ? string.Format("{0}Tb", asTb)
-                : asGb > 1 ? string.Format("{0}Gb", asGb)
-                : asMb > 1 ? string.Format("{0}Mb", asMb)
-                : asKb > 1 ? string.Format("{0}Kb", asKb)
-                : string.Format("{0}B", Math.Round((double)value, decimalPlaces));
+            var chosenValue = asTb > 1 ? $"{asTb}Tb"
+                : asGb > 1 ? $"{asGb}Gb"
+                    : asMb > 1 ? $"{asMb}Mb"
+                        : asKb > 1 ? $"{asKb}Kb"
+                            : $"{Math.Round((double) value, decimalPlaces)}B";
             return chosenValue;
         }
 

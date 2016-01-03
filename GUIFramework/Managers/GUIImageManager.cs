@@ -12,10 +12,10 @@ namespace GUIFramework.Managers
 {
     public class GUIImageManager
     {
-        private static Log _log = LoggingManager.GetLog(typeof(GUIImageManager));
-        private static Dictionary<string, ImageBrush> _cache = new Dictionary<string, ImageBrush>();
-        private static Dictionary<string, ImageBrush> _styleCache = new Dictionary<string, ImageBrush>();
-        private static Dictionary<string, XmlImageFile> _xmlImages = new Dictionary<string, XmlImageFile>();
+        private static readonly Log Log = LoggingManager.GetLog(typeof(GUIImageManager));
+        private static readonly Dictionary<string, ImageBrush> Cache = new Dictionary<string, ImageBrush>();
+        private static readonly Dictionary<string, ImageBrush> StyleCache = new Dictionary<string, ImageBrush>();
+        private static readonly Dictionary<string, XmlImageFile> XmlImages = new Dictionary<string, XmlImageFile>();
 
         /// <summary>
         /// Initializes the ImageManager using the specified SkinInfo.
@@ -23,12 +23,12 @@ namespace GUIFramework.Managers
         /// <param name="skinInfo">The skin info.</param>
         public static void Initialize(XmlSkinInfo skinInfo)
         {
-            _cache.Clear();
-            _styleCache.Clear();
-            _xmlImages.Clear();
-            foreach (var xmlImage in skinInfo.Images.Where(xmlImage => !_xmlImages.ContainsKey(xmlImage.XmlName)))
+            Cache.Clear();
+            StyleCache.Clear();
+            XmlImages.Clear();
+            foreach (var xmlImage in skinInfo.Images.Where(xmlImage => !XmlImages.ContainsKey(xmlImage.XmlName)))
             {
-                _xmlImages.Add(xmlImage.XmlName, xmlImage);
+                XmlImages.Add(xmlImage.XmlName, xmlImage);
             }
         }
 
@@ -39,25 +39,25 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static ImageBrush GetSkinImage(XmlImageBrush brush)
         {
-            if (!_xmlImages.ContainsKey(brush.ImageName)) return null;
+            if (!XmlImages.ContainsKey(brush.ImageName)) return null;
 
             if (!string.IsNullOrEmpty(brush.StyleId))
             {
-                if (_styleCache.ContainsKey(brush.StyleId)) return _styleCache[brush.StyleId];
+                if (StyleCache.ContainsKey(brush.StyleId)) return StyleCache[brush.StyleId];
 
-                var imageSource = GetImage(_xmlImages[brush.ImageName].FileName);
+                var imageSource = GetImage(XmlImages[brush.ImageName].FileName);
                 var newBrush = new ImageBrush(imageSource) {Stretch = brush.ImageStretch};
-                _styleCache.Add(brush.StyleId, (ImageBrush)newBrush.GetAsFrozen());
-                return _styleCache[brush.StyleId];
+                StyleCache.Add(brush.StyleId, (ImageBrush)newBrush.GetAsFrozen());
+                return StyleCache[brush.StyleId];
             }
 
-            var cacheKey = string.Format("{0} | {1}", brush.ImageName, brush.ImageStretch);
-            if (_cache.ContainsKey(cacheKey)) return _cache[cacheKey];
+            var cacheKey = $"{brush.ImageName} | {brush.ImageStretch}";
+            if (Cache.ContainsKey(cacheKey)) return Cache[cacheKey];
 
-            var imageSource1 = GetImage(_xmlImages[brush.ImageName].FileName);
+            var imageSource1 = GetImage(XmlImages[brush.ImageName].FileName);
             var newBrush1 = new ImageBrush(imageSource1) {Stretch = brush.ImageStretch};
-            _cache.Add(cacheKey, (ImageBrush)newBrush1.GetAsFrozen());
-            return _cache[cacheKey];
+            Cache.Add(cacheKey, (ImageBrush)newBrush1.GetAsFrozen());
+            return Cache[cacheKey];
         }
 
         /// <summary>
@@ -69,7 +69,7 @@ namespace GUIFramework.Managers
         {
                try
                 {
-                    if (!string.IsNullOrWhiteSpace(filename) && ( (FileHelpers.IsURL(filename) && FileHelpers.ExistsURL(filename)) || File.Exists(filename)))
+                    if (!string.IsNullOrWhiteSpace(filename) && ( (FileHelpers.IsUrl(filename) && FileHelpers.ExistsUrl(filename)) || File.Exists(filename)))
                     {
                         var bmImage = new BitmapImage();
                         bmImage.BeginInit();
@@ -82,7 +82,7 @@ namespace GUIFramework.Managers
                 }
                 catch (Exception ex)
                 {
-                    _log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                    Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
                 }
                 return new BitmapImage();     
          }
@@ -113,7 +113,7 @@ namespace GUIFramework.Managers
             }
             catch (Exception ex)
             {
-                _log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
+                Log.Exception("[GetImage] - An exception occured creating BitmapImage", ex);
             }
             return new BitmapImage();
         }

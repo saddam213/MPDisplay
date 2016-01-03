@@ -18,7 +18,7 @@ namespace GUIConfig.SupportInfo
 
     public class SupportInfoFile 
     {
-        private List<SupportInfoItem> _items;       // List of items to be exported
+        private readonly List<SupportInfoItem> _items;       // List of items to be exported
 
         private string _tempFolder;                 // the temporary folder to collect output
 
@@ -86,9 +86,9 @@ namespace GUIConfig.SupportInfo
         //
         public void AddItem( SupportInfoItem item )
         {
-            if (item != null && _items != null)
+            if (item != null)
             {
-                _items.Add(item);
+                _items?.Add(item);
             }
         }
 

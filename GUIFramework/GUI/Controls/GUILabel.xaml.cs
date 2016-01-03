@@ -32,10 +32,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlLabel SkinXml
-        {
-            get { return BaseXml as XmlLabel; }
-        }
+        public XmlLabel SkinXml => BaseXml as XmlLabel;
 
         /// <summary>
         /// Gets or sets the label.
@@ -80,7 +77,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the info data.
         /// </summary>
-        public async override void UpdateInfoData()
+        public override async void UpdateInfoData()
         {
             base.UpdateInfoData();
             var text = await PropertyRepository.GetProperty<string>(SkinXml.LabelText, SkinXml.LabelNumberFormat);

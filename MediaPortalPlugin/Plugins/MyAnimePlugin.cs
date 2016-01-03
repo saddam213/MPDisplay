@@ -20,9 +20,6 @@ namespace MediaPortalPlugin.Plugins
             return ReflectionHelper.GetPropertyValue(currentMovie, "FullPath", string.Empty) == filename;
         }
 
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.MyAnime; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.MyAnime;
     }
 }

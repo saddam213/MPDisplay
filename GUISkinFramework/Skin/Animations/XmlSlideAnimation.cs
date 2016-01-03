@@ -57,12 +57,6 @@ namespace GUISkinFramework.Skin
         [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor))]
         public int EndZ { get; set; }
 
-        public override string DisplayName
-        {
-            get
-            {
-                return "SlideAnimation";
-            }
-        }
+        public override string DisplayName => "SlideAnimation";
     }
 }

@@ -36,10 +36,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlProgressBar SkinXml
-        {
-            get { return BaseXml as XmlProgressBar; }
-        }
+        public XmlProgressBar SkinXml => BaseXml as XmlProgressBar;
 
         /// <summary>
         /// Gets or sets the progress.
@@ -114,7 +111,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the info data.
         /// </summary>
-        public async override void UpdateInfoData()
+        public override async void UpdateInfoData()
         {
             base.UpdateInfoData();
             Progress = await PropertyRepository.GetProperty<double>(SkinXml.ProgressValue, null);

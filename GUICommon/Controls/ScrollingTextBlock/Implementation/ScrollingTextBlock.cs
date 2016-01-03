@@ -112,7 +112,7 @@ namespace MPDisplay.Common.Controls
                         _mainTextBlock.Text = GetScrollingText();
                         var textLength = GetScrollingLength();
                         var animation = new DoubleAnimation(0.0, -textLength,
-                            new Duration(TimeSpan.FromSeconds((textLength/5))))
+                            new Duration(TimeSpan.FromSeconds(textLength/5)))
                         {
                             SpeedRatio = ScrollSpeed,
                             BeginTime = TimeSpan.FromSeconds(ScrollDelay),
@@ -140,7 +140,7 @@ namespace MPDisplay.Common.Controls
                         _mainTextBlock.Text = GetScrollingText();
                         var textLength = GetScrollingLength();
                         var animation = new DoubleAnimation(0.0, -textLength,
-                            new Duration(TimeSpan.FromSeconds((textLength/5))))
+                            new Duration(TimeSpan.FromSeconds(textLength/5)))
                         {
                             SpeedRatio = ScrollSpeed,
                             BeginTime = TimeSpan.FromSeconds(ScrollDelay),

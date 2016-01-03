@@ -83,8 +83,7 @@ namespace MPDisplay.Common.Controls.Core
         private static void OnSelectedValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var selector = o as Selector;
-            if (selector != null)
-                selector.OnSelectedValueChanged((string)e.OldValue, (string)e.NewValue);
+            selector?.OnSelectedValueChanged((string)e.OldValue, (string)e.NewValue);
         }
 
         protected virtual void OnSelectedValueChanged(string oldValue, string newValue)
@@ -131,7 +130,7 @@ namespace MPDisplay.Common.Controls.Core
                     Mode = BindingMode.TwoWay,
                     Source = item
                 };
-                if (selectorItem != null) selectorItem.SetBinding(SelectorItem.IsSelectedProperty, selectedBinding);
+                selectorItem?.SetBinding(SelectorItem.IsSelectedProperty, selectedBinding);
             }
 
             //now let's search the SelectedItems for the current item.  If it's there then mark it as selected
@@ -139,7 +138,7 @@ namespace MPDisplay.Common.Controls.Core
             {
                 if (SelectedItems.Cast<object>().Contains(item))
                 {
-                    if (selectorItem != null) selectorItem.SetValue(SelectorItem.IsSelectedProperty, true);
+                    selectorItem?.SetValue(SelectorItem.IsSelectedProperty, true);
                 }
             }
 
@@ -191,12 +190,12 @@ namespace MPDisplay.Common.Controls.Core
         {
             var element = item as FrameworkElement;
 
-            return element != null ? element.DataContext : null;
+            return element?.DataContext;
         }
 
         protected string GetDelimitedValue(object value)
         {
-            return String.Format("{0}{1}", value, Delimiter);
+            return $"{value}{Delimiter}";
         }
 
         protected virtual void OnItemSelected(object source, bool remove)
@@ -213,7 +212,7 @@ namespace MPDisplay.Common.Controls.Core
 
             RaiseEvent(new SelectedItemChangedEventArgs(SelectedItemChangedEvent, this, item, isSelected));
 
-            if (Command != null) Command.Execute(item);
+            Command?.Execute(item);
         }
 
         protected virtual void Update(object item, bool remove)

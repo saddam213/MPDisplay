@@ -32,8 +32,7 @@ namespace MPDisplay.Common.Controls.Core
         private static void OnIsSelectedChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var selectorItem = o as SelectorItem;
-            if (selectorItem != null)
-                selectorItem.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
+            selectorItem?.OnIsSelectedChanged((bool)e.OldValue, (bool)e.NewValue);
         }
 
         protected virtual void OnIsSelectedChanged(bool oldValue, bool newValue)
@@ -43,10 +42,7 @@ namespace MPDisplay.Common.Controls.Core
                 : new RoutedEventArgs(Selector.UnSelectedEvent, this));
         }
 
-        internal Selector ParentSelector
-        {
-            get { return ItemsControl.ItemsControlFromItemContainer(this) as Selector; }
-        }
+        internal Selector ParentSelector => ItemsControl.ItemsControlFromItemContainer(this) as Selector;
 
         #endregion //Properties
 

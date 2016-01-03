@@ -35,7 +35,7 @@ namespace MPDisplay.Common.Utils
        public RelayCommand(Action execute, Func<bool> canExecute) 
        { 
            if (execute == null)
-               throw new ArgumentNullException("execute");
+               throw new ArgumentNullException(nameof(execute));
            
            _execute = p => execute();
            _canExecute = canExecute;
@@ -44,7 +44,7 @@ namespace MPDisplay.Common.Utils
        public RelayCommand(Action<object> execute, Func<bool> canExecute)
        {
            if (execute == null)
-               throw new ArgumentNullException("execute");
+               throw new ArgumentNullException(nameof(execute));
 
            _execute = execute;
            _canExecute = canExecute;
@@ -114,7 +114,7 @@ namespace MPDisplay.Common.Utils
        public RelayCommand(Action<T> execute, Predicate<T> canExecute)
        {
            if (execute == null)
-               throw new ArgumentNullException("execute");
+               throw new ArgumentNullException(nameof(execute));
 
            _execute = execute;
            _canExecute = canExecute;

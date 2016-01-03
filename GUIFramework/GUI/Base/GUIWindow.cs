@@ -22,7 +22,7 @@ namespace GUIFramework.GUI
         /// </summary>
         public GUIWindow()
         {
-            Visibility = Visibility.Collapsed;
+           Visibility = Visibility.Collapsed;
             RenderTransform = new ScaleTransform(1, 1);
             RenderTransformOrigin = new Point(0.5, 0.5);
             DataContext = this;
@@ -218,6 +218,6 @@ namespace GUIFramework.GUI
         }
 
         #endregion
-       
+
     }
 }

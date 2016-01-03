@@ -110,16 +110,6 @@ namespace GUISkinFramework.Skin
         [Editor(typeof(AnimationValueEditor), typeof(ITypeEditor)), PropertyRange(-360, 360)]
         public int Pos3DCenterZTo { get; set; }
 
-
-
-      
-
-        public override string DisplayName
-        {
-            get
-            {
-                return "RotateAnimation";
-            }
-        }
+        public override string DisplayName => "RotateAnimation";
     }
 }

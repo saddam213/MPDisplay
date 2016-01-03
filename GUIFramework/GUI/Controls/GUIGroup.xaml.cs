@@ -33,10 +33,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlGroup SkinXml
-        {
-            get { return BaseXml as XmlGroup; }
-        }
+        public XmlGroup SkinXml => BaseXml as XmlGroup;
 
         #endregion
 

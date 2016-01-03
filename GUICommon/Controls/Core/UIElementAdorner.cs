@@ -193,10 +193,7 @@ namespace MPDisplay.Common.Controls.Core
         /// <summary>
         /// Override.
         /// </summary>
-        protected override int VisualChildrenCount
-        {
-            get { return _child == null ? 0 : 1; }
-        }
+        protected override int VisualChildrenCount => _child == null ? 0 : 1;
 
         #endregion // Protected Overrides
 
@@ -205,8 +202,7 @@ namespace MPDisplay.Common.Controls.Core
         void UpdateLocation()
         {
             var adornerLayer = Parent as AdornerLayer;
-            if (adornerLayer != null)
-                adornerLayer.Update(AdornedElement);
+            adornerLayer?.Update(AdornedElement);
         }
 
         #endregion // Private Helpers

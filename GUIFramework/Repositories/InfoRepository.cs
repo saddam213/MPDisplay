@@ -17,10 +17,7 @@ namespace GUIFramework.Repositories
 
         private InfoRepository() { }
         private static InfoRepository _instance;
-        public static InfoRepository Instance
-        {
-            get { return _instance ?? (_instance = new InfoRepository()); }
-        }
+        public static InfoRepository Instance => _instance ?? (_instance = new InfoRepository());
 
         public static void RegisterMessage<T>(InfoMessageType message, Action<T> callback)
         {
@@ -46,7 +43,6 @@ namespace GUIFramework.Repositories
 
         #region Fields
 
-        private MessengerService<InfoMessageType> _infoService = new MessengerService<InfoMessageType>();
         private List<string> _currentEnabledPluginMap = new List<string>();
         private APIPlaybackType _playerType = APIPlaybackType.None;
         private APIPlaybackType _playbackType = APIPlaybackType.None;
@@ -65,6 +61,8 @@ namespace GUIFramework.Repositories
         private bool _isMPDisplayConnected;
         private bool _isFullscreenMusic;
 
+        private static readonly string[] ValidImageExtensions = { ".png", ".jpg", ".jpeg", ".bmp", ".gif" };
+
         #endregion
 
         public GUISettings Settings { get; set; }
@@ -75,6 +73,8 @@ namespace GUIFramework.Repositories
         {
             Settings = settings;
             SkinInfo = skininfo;
+
+            LoadScreenSaverImageFolder(Settings.ScreenSaverPicturePath);
         }
 
         public void ClearRepository()
@@ -103,10 +103,7 @@ namespace GUIFramework.Repositories
 
         #region Properties
 
-        public MessengerService<InfoMessageType> InfoService
-        {
-            get { return _infoService; }
-        }
+        public MessengerService<InfoMessageType> InfoService { get; } = new MessengerService<InfoMessageType>();
 
         /// <summary>
         /// Gets the current enabled plugin map.
@@ -334,6 +331,12 @@ namespace GUIFramework.Repositories
             }
         }
 
+        // properties for screen saver
+
+        public int ScreenSaverImageCount => ScreenSaverImageFiles.Count;
+
+        public List<string> ScreenSaverImageFiles { get; private set; } = new List<string>();
+
         #endregion
 
 
@@ -436,6 +439,24 @@ namespace GUIFramework.Repositories
                     break;
             }
         }
+
+        /// <summary>
+        /// Loads the file names of all image files for the screen saver
+        /// </summary>
+        /// <param name="folder"></param>
+        private void LoadScreenSaverImageFolder(string folder)
+        {
+            if (string.IsNullOrEmpty(folder)) return;
+            if (!System.IO.Directory.Exists(folder)) return;
+
+            var r = new Random();
+            var files = from file in new System.IO.DirectoryInfo(folder).GetFiles().AsParallel()
+                        where ValidImageExtensions.Contains(file.Extension, StringComparer.InvariantCultureIgnoreCase)
+                        orderby r.Next()
+                        select file.FullName;
+            ScreenSaverImageFiles = files.ToList();
+        }
+
     }
 
     public enum InfoMessageType

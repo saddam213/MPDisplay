@@ -10,12 +10,12 @@ namespace MediaPortalPlugin
     {
         public static IEnumerable<GUIControl> GetControls(this GUIWindow window)
         {
-            return window != null ? window.Children.GetControls() : null;
+            return window?.Children.GetControls();
         }
 
         public static IEnumerable<T> GetControls<T>(this GUIWindow window)
         {
-            return window != null ? window.Children.GetControls().OfType<T>() : null;
+            return window?.Children.GetControls().OfType<T>();
         }
 
         public static bool HasControl<T>(this GUIWindow window)

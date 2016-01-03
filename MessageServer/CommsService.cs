@@ -10,7 +10,7 @@ namespace MessageServer
     partial class CommsService : ServiceBase
     {
         private ServiceHost _mpDisplayHost;
-        private Log _log;
+        private readonly Log _log;
      
 
         /// <summary>
@@ -36,7 +36,7 @@ namespace MessageServer
                 if (settings != null)
                 {
                     Uri uri;
-                    var connectionString = string.Format("net.tcp://{0}:{1}/MPDisplayService", settings.IpAddress, settings.Port);
+                    var connectionString = $"net.tcp://{settings.IpAddress}:{settings.Port}/MPDisplayService";
                     if (Uri.TryCreate(connectionString, UriKind.RelativeOrAbsolute, out uri))
                     {
                         _log.Message(LogLevel.Info, "[OnStart] - Connection settings loaded, Connection: {0}", connectionString);
@@ -85,7 +85,7 @@ namespace MessageServer
 
             _log.Message(LogLevel.Info, "[GetConnectionSettings] - Loading settings file '{0}'", settingsFilename);
             var settings = SettingsManager.Load<MPDisplaySettings>(settingsFilename);
-            if (settings != null && settings.PluginSettings != null && settings.PluginSettings.ConnectionSettings != null)
+            if (settings?.PluginSettings?.ConnectionSettings != null)
             {
                 _log.Message(LogLevel.Info, "[GetConnectionSettings] - Sucessfully loaded settings file '{0}'", settingsFilename);
                 return settings.PluginSettings.ConnectionSettings;

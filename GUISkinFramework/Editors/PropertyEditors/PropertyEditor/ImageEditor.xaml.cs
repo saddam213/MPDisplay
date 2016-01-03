@@ -74,7 +74,7 @@ namespace GUISkinFramework.Editors
 
         private string GetText()
         {
-            if (_item == null || !(_item.Value is string)) return "(Empty)";
+            if (!(_item?.Value is string)) return "(Empty)";
 
             var val = _item.Value.ToString();
             return string.IsNullOrEmpty(val) ? "(Empty)"
@@ -85,7 +85,7 @@ namespace GUISkinFramework.Editors
 
         private string GetToolTipText()
         {
-            if (_item != null && _item.Value is string && !string.IsNullOrEmpty(_item.Value.ToString()))
+            if (_item?.Value is string && !string.IsNullOrEmpty(_item.Value.ToString()))
             {
                 return _item.Value.ToString();
             }

@@ -14,10 +14,10 @@ namespace GUIFramework.GUI
     {
         #region Fields
 
-        private Dictionary<XmlAnimationCondition, GUIStoryboard> _animations = new Dictionary<XmlAnimationCondition, GUIStoryboard>();
-        private FrameworkElement _element;
-        private Action<XmlAnimationCondition> _startedCallback;
-        private Action<XmlAnimationCondition> _completedCallback; 
+        private readonly Dictionary<XmlAnimationCondition, GUIStoryboard> _animations = new Dictionary<XmlAnimationCondition, GUIStoryboard>();
+        private readonly FrameworkElement _element;
+        private readonly Action<XmlAnimationCondition> _startedCallback;
+        private readonly Action<XmlAnimationCondition> _completedCallback; 
 
         #endregion
 
@@ -79,10 +79,7 @@ namespace GUIFramework.GUI
             }
             else
             {
-                if (_completedCallback != null)
-                {
-                    _completedCallback(condition);
-                }
+                _completedCallback?.Invoke(condition);
             }
         }
 

@@ -6,7 +6,7 @@ namespace MPDisplay.Common.Controls
 {
     public class VisualTargetPresentationSource : PresentationSource
     {
-        private VisualTarget _visualTarget;
+        private readonly VisualTarget _visualTarget;
         private bool _isDisposed;
 
         public VisualTargetPresentationSource(HostVisual hostVisual)
@@ -52,10 +52,7 @@ namespace MPDisplay.Common.Controls
             return _visualTarget;
         }
 
-        public override bool IsDisposed
-        {
-            get { return _isDisposed; }
-        }
+        public override bool IsDisposed => _isDisposed;
 
         internal void Dispose()
         {

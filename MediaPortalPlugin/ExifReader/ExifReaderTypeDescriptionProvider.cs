@@ -15,13 +15,13 @@ namespace MediaPortalPlugin.ExifReader
         /// <summary>
         /// The default TypeDescriptionProvider to use
         /// </summary>
-        private static TypeDescriptionProvider _defaultTypeProvider = TypeDescriptor.GetProvider(typeof(ExifReader));
+        private static readonly TypeDescriptionProvider DefaultTypeProvider = TypeDescriptor.GetProvider(typeof(ExifReader));
 
         /// <summary>
         /// Initializes a new instance of the ExifReaderTypeDescriptionProvider class.
         /// </summary>
         public ExifReaderTypeDescriptionProvider()
-            : base(_defaultTypeProvider)
+            : base(DefaultTypeProvider)
         {
         }
 

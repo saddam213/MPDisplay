@@ -26,11 +26,6 @@ namespace MediaPortalPlugin.Plugins
              return playlist != null && playlist.Cast<object>().Any(item => ReflectionHelper.GetPropertyValue(item, "FileName", string.Empty) == filename);
         }
 
-
-
-        public override APIPlaybackType PlayType
-        {
-            get { return APIPlaybackType.mvCentral; }
-        }
+        public override APIPlaybackType PlayType => APIPlaybackType.mvCentral;
     }
 }

@@ -77,8 +77,7 @@ namespace MPDisplay.Common.Controls.Core
         private static void OnValueChanged(DependencyObject o, DependencyPropertyChangedEventArgs e)
         {
             var upDownBase = o as UpDownBase<T>;
-            if (upDownBase != null)
-                upDownBase.OnValueChanged((T)e.OldValue, (T)e.NewValue);
+            upDownBase?.OnValueChanged((T)e.OldValue, (T)e.NewValue);
         }
 
         protected virtual void OnValueChanged(T oldValue, T newValue)
@@ -110,8 +109,7 @@ namespace MPDisplay.Common.Controls.Core
 
         protected override void OnAccessKey(AccessKeyEventArgs e)
         {
-            if (TextBox != null)
-                TextBox.Focus();
+            TextBox?.Focus();
 
             base.OnAccessKey(e);
         }
@@ -135,8 +133,7 @@ namespace MPDisplay.Common.Controls.Core
 
         protected override void OnGotFocus(RoutedEventArgs e)
         {
-            if (TextBox != null)
-                TextBox.Focus();
+            TextBox?.Focus();
         }
 
         protected override void OnPreviewKeyDown(KeyEventArgs e)
@@ -162,7 +159,7 @@ namespace MPDisplay.Common.Controls.Core
                         if (!IsReadOnly)
                         {
                             var binding = BindingOperations.GetBindingExpression(TextBox, TextBox.TextProperty);
-                            if (binding != null) binding.UpdateSource();
+                            binding?.UpdateSource();
                         }
                         break;
                     }
@@ -221,7 +218,7 @@ namespace MPDisplay.Common.Controls.Core
         protected virtual void OnSpin(SpinEventArgs e)
         {
             if (e == null)
-                throw new ArgumentNullException("e");
+                throw new ArgumentNullException(nameof(e));
 
             if (e.Direction == SpinDirection.Increase)
                 DoIncrement();

@@ -3,10 +3,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              Name="Ui">
     <Grid>
-        <ComboBox Name="comboBox" IsSynchronizedWithCurrentItem="True" IsTabStop="False" 
+        <ComboBox Name="ComboBox" IsSynchronizedWithCurrentItem="True" IsTabStop="False" 
                    SelectionChanged="comboBox_SelectionChanged" PreviewKeyDown="comboBox_KeyDown" />
         <TextBox Foreground="{Binding ElementName=Ui,Path=Foreground}" 
                  Text="{Binding ElementName=Ui, Path=Text, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}"
-                 TextWrapping="Wrap" Name="textbox"  TextChanged="textBox_TextChanged" PreviewKeyDown="textbox_KeyDown"  />
+                 TextWrapping="Wrap" Name="Textbox"  TextChanged="textBox_TextChanged" PreviewKeyDown="textbox_KeyDown"  />
     </Grid>
 </UserControl>

@@ -32,9 +32,8 @@ namespace GUIFramework.Managers
     {
         #region Fields
 
-        private static Log _log = LoggingManager.GetLog(typeof(GUIVisibilityManager));
-        private static Dictionary<int, Dictionary<int, bool>> _controlVisibilityMap = new Dictionary<int, Dictionary<int, bool>>();
-        private static MessengerService<VisibleMessageType> _visibilityService = new MessengerService<VisibleMessageType>(); 
+        private static readonly Log Log = LoggingManager.GetLog(typeof(GUIVisibilityManager));
+        private static readonly Dictionary<int, Dictionary<int, bool>> ControlVisibilityMap = new Dictionary<int, Dictionary<int, bool>>();
 
         #endregion
 
@@ -43,10 +42,7 @@ namespace GUIFramework.Managers
         /// <summary>
         /// Gets the visibility service.
         /// </summary>
-        public static MessengerService<VisibleMessageType> VisibilityService
-        {
-            get { return _visibilityService; }
-        }
+        public static MessengerService<VisibleMessageType> VisibilityService { get; } = new MessengerService<VisibleMessageType>();
 
         #endregion
 
@@ -97,9 +93,9 @@ namespace GUIFramework.Managers
         public static void RegisterControlVisibility(IControlHost controlHost)
         {
             DeregisterControlVisibility(controlHost);
-            lock (_controlVisibilityMap)
+            lock (ControlVisibilityMap)
             {
-                _controlVisibilityMap.Add(controlHost.Id, controlHost.Controls.GetControls().DistinctBy(c => c.Id).ToDictionary(k => k.Id, v => v.IsWindowOpenVisible));
+                ControlVisibilityMap.Add(controlHost.Id, controlHost.Controls.GetControls().DistinctBy(c => c.Id).ToDictionary(k => k.Id, v => v.IsWindowOpenVisible));
             }
         }
 
@@ -109,11 +105,11 @@ namespace GUIFramework.Managers
         /// <param name="controlHost">The control host.</param>
         public static void DeregisterControlVisibility(IControlHost controlHost)
         {
-            lock (_controlVisibilityMap)
+            lock (ControlVisibilityMap)
             {
-                if (_controlVisibilityMap.ContainsKey(controlHost.Id))
+                if (ControlVisibilityMap.ContainsKey(controlHost.Id))
                 {
-                    _controlVisibilityMap.Remove(controlHost.Id);
+                    ControlVisibilityMap.Remove(controlHost.Id);
                 }
             }
         }
@@ -126,17 +122,17 @@ namespace GUIFramework.Managers
         {
             if (control == null) return;
 
-            lock (_controlVisibilityMap)
+            lock (ControlVisibilityMap)
             {
-                if (!_controlVisibilityMap.ContainsKey(control.ParentId)) return;
+                if (!ControlVisibilityMap.ContainsKey(control.ParentId)) return;
 
-                if (!_controlVisibilityMap[control.ParentId].ContainsKey(control.Id)) return;
+                if (!ControlVisibilityMap[control.ParentId].ContainsKey(control.Id)) return;
 
-                if (_controlVisibilityMap[control.ParentId][control.Id] == control.IsControlVisible) return;
+                if (ControlVisibilityMap[control.ParentId][control.Id] == control.IsControlVisible) return;
 
-                lock (_controlVisibilityMap)
+                lock (ControlVisibilityMap)
                 {
-                    _controlVisibilityMap[control.ParentId][control.Id] = control.IsControlVisible;
+                    ControlVisibilityMap[control.ParentId][control.Id] = control.IsControlVisible;
                 }
                 NotifyVisibilityChanged(VisibleMessageType.ControlVisibilityChanged);
             }
@@ -154,11 +150,11 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static bool IsControlVisible(int windowId, int controlId)
         {
-            lock (_controlVisibilityMap)
+            lock (ControlVisibilityMap)
             {
-                if (_controlVisibilityMap.ContainsKey(windowId) && _controlVisibilityMap[windowId].ContainsKey(controlId))
+                if (ControlVisibilityMap.ContainsKey(windowId) && ControlVisibilityMap[windowId].ContainsKey(controlId))
                 {
-                    return _controlVisibilityMap[windowId][controlId];
+                    return ControlVisibilityMap[windowId][controlId];
                 }
             }
             return false;
@@ -324,9 +320,8 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static Func<bool> GetVisibleCondition(int windowId)
         {
-            if (_visibleConditionModule == null) return null;
-
-            var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}", windowId));
+            var method = _visibleConditionModule?.GetType("Visibility.VisibleMethodClass").GetMethod(
+                $"ShouldBeVisibleW{windowId}");
             if (method != null)
             {
                 return () => (bool)method.Invoke(_visibleConditionModule, null);
@@ -342,9 +337,8 @@ namespace GUIFramework.Managers
         /// <returns></returns>
         public static Func<bool> GetVisibleCondition(int windowId, int controlId)
         {
-            if (_visibleConditionModule == null) return null;
-
-            var method = _visibleConditionModule.GetType("Visibility.VisibleMethodClass").GetMethod(string.Format("ShouldBeVisibleW{0}C{1}", windowId, controlId));
+            var method = _visibleConditionModule?.GetType("Visibility.VisibleMethodClass").GetMethod(
+                $"ShouldBeVisibleW{windowId}C{controlId}");
             if (method != null)
             {
                 return () => (bool)method.Invoke(_visibleConditionModule, null);
@@ -365,13 +359,14 @@ namespace GUIFramework.Managers
             {
                 if (!string.IsNullOrEmpty(controlHost.VisibleCondition))
                 {
-                    visibleCode = visibleCode.Replace("*MethodPlaceHolder*", methodTemplate.Replace("ShouldBeVisible()", string.Format("ShouldBeVisibleW{0}()", controlHost.Id))
+                    visibleCode = visibleCode.Replace("*MethodPlaceHolder*", methodTemplate.Replace("ShouldBeVisible()",
+                        $"ShouldBeVisibleW{controlHost.Id}()")
                         .Replace("*ConditionPlaceHolder*", CreateVisibleWindowConditionString(controlHost)) + Environment.NewLine + "*MethodPlaceHolder*");
                 }
 
                 visibleCode = controlHost.Controls.GetControls().Where(control => !string.IsNullOrEmpty(control.VisibleCondition)).Aggregate(visibleCode,
                     (current, control) => current.Replace("*MethodPlaceHolder*", methodTemplate.Replace("ShouldBeVisible()",
-                        string.Format("ShouldBeVisibleW{0}C{1}()", controlHost.Id, control.Id)).Replace("*ConditionPlaceHolder*",
+                        $"ShouldBeVisibleW{controlHost.Id}C{control.Id}()").Replace("*ConditionPlaceHolder*",
                         CreateVisibleControlConditionString(control, controlHost.Id)) + Environment.NewLine + "*MethodPlaceHolder*"));
             }
             visibleCode = visibleCode.Replace("*MethodPlaceHolder*", "");
@@ -417,21 +412,22 @@ namespace GUIFramework.Managers
                             if (window != null)
                             {
                                 var control = window.Controls.GetControls().FirstOrDefault(c => c.Id == details[1]);
-                                var controltext = control != null ? string.Format( "{0} ({1})", control.Name, control.Id) : "<control is null>";
-                                _log.Message(LogLevel.Error, "An error occured creating control VisibleCondition, Error: {0}, Window: {1} ({2}), Control: {3}", error.ErrorText, window.Name, window.Id, controltext);
+                                var controltext = control != null ? $"{control.Name} ({control.Id})"
+                                    : "<control is null>";
+                                Log.Message(LogLevel.Error, "An error occured creating control VisibleCondition, Error: {0}, Window: {1} ({2}), Control: {3}", error.ErrorText, window.Name, window.Id, controltext);
                             }
-                            _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
+                            Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                         }
                         else
                         {
                             var details = int.Parse(errorLine.Replace("W", "").Trim());
                             var window = xmlControlHosts.FirstOrDefault(w => w.Id == details);
-                            var windowtext = window != null ? string.Format("{0} ({1})", window.Name, window.Id) : "<window is null>";
-                            _log.Message(LogLevel.Error, "An error occured creating window VisibleCondition, Error: {0}, Window: {1}", error.ErrorText, windowtext);
-                            _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
+                            var windowtext = window != null ? $"{window.Name} ({window.Id})" : "<window is null>";
+                            Log.Message(LogLevel.Error, "An error occured creating window VisibleCondition, Error: {0}, Window: {1}", error.ErrorText, windowtext);
+                            Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                         }
 
-                        for (var i = 0; i < MethodTemplate.Replace("\r", "").Split('\n').Count(); i++)
+                        for (var i = 0; i < MethodTemplate.Replace("\r", "").Split('\n').Length; i++)
                         {
                             lines.RemoveAt(error.Line - 3);
                         }
@@ -443,14 +439,14 @@ namespace GUIFramework.Managers
                     }
                     else
                     {
-                        _log.Message(LogLevel.Error, "An error occured loading VisibleConditions, Error: {0}", error.ErrorText);
-                        _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
+                        Log.Message(LogLevel.Error, "An error occured loading VisibleConditions, Error: {0}", error.ErrorText);
+                        Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                     }
                 }
                 catch (Exception ex)
                 {
-                    _log.Exception("An error occured loading VisibleConditions", ex);
-                    _log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
+                    Log.Exception("An error occured loading VisibleConditions", ex);
+                    Log.Message(LogLevel.Error, "Visibility Code: <{0}>", visibleCode);
                 }
             }
             else
@@ -485,15 +481,15 @@ namespace GUIFramework.Managers
             if (xmlVisibleString.Contains("IsPlayer("))
             {
                 xmlVisibleString = Enum.GetValues(typeof (APIPlaybackType)).Cast<object>().Aggregate(xmlVisibleString,
-                    (current, playtype) => current.Replace(string.Format("IsPlayer({0})", playtype),
-                        string.Format("GUIVisibilityManager.IsPlayer({0})", (int) playtype)));
+                    (current, playtype) => current.Replace($"IsPlayer({playtype})",
+                        $"GUIVisibilityManager.IsPlayer({(int) playtype})"));
             }
 
             if (xmlVisibleString.Contains("IsMediaPortalListLayout("))
             {
                 xmlVisibleString = Enum.GetValues(typeof (XmlListLayout)).Cast<object>().Aggregate(xmlVisibleString,
-                    (current, layout) => current.Replace(string.Format("IsMediaPortalListLayout({0})", layout),
-                        string.Format("GUIVisibilityManager.IsMediaPortalListLayout({0})", (int) layout)));
+                    (current, layout) => current.Replace($"IsMediaPortalListLayout({layout})",
+                        $"GUIVisibilityManager.IsMediaPortalListLayout({(int) layout})"));
             }
 
             if (xmlVisibleString.Contains("IsPluginEnabled("))
@@ -531,8 +527,8 @@ namespace GUIFramework.Managers
                 if (xmlVisibleString.Contains("IsPlayer("))
                 {
                     xmlVisibleString = Enum.GetValues(typeof (APIPlaybackType)).Cast<object>().Aggregate(xmlVisibleString,
-                        (current, playtype) => current.Replace(string.Format("IsPlayer({0})", playtype),
-                            string.Format("GUIVisibilityManager.IsPlayer({0})", (int) playtype)));
+                        (current, playtype) => current.Replace($"IsPlayer({playtype})",
+                            $"GUIVisibilityManager.IsPlayer({(int) playtype})"));
                 }
             }
             if (controlHost is XmlMPWindow)

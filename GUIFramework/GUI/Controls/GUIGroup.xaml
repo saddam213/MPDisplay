@@ -1,6 +1,6 @@
 ﻿<!-- ReSharper disable Xaml.StaticResourceNotResolved -->
 <!-- ReSharper disable Xaml.RedundantAttachedProperty -->
-<!-- ReSharper disable Xaml.BindingWithoutContextNotResolved -->
+
 <base:GUIControl x:Class="GUIFramework.GUI.GUIGroup"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -22,16 +22,17 @@
 			 RotationCenterY="{Binding BaseXml.Center3DY,Mode=OneWay}"
 			 RotationCenterZ="{Binding BaseXml.Center3DZ,Mode=OneWay}"
 			 Visibility="{Binding IsControlVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+    <!-- ReSharper disable once InconsistentNaming -->
 	<Border x:Name="background" Width="{Binding BaseXml.Width, Mode=OneWay}" Height="{Binding BaseXml.Height, Mode=OneWay}"
                 Background="{Binding BaseXml.ControlStyle.BackgroundBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderBrush="{Binding BaseXml.ControlStyle.BorderBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}"
                 BorderThickness="{Binding BaseXml.ControlStyle.BorderThickness, Converter={StaticResource GUIThicknessConverter}, Mode=OneWay}"
                 CornerRadius="{Binding BaseXml.ControlStyle.CornerRadius, Converter={StaticResource GUICornerRadiusConverter}, Mode=OneWay}" >
-			<Border x:Name="focusShading" Background="{Binding BaseXml.ControlStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
-			<Border x:Name="focusgloss" Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
+			<Border x:Name="FocusShading" Background="{Binding BaseXml.ControlStyle.ShadeBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
+			<Border x:Name="Focusgloss" Background="{Binding BaseXml.ControlStyle.GlossBrush, Converter={StaticResource GUIBrushConverter}, Mode=OneWay}" CornerRadius="{Binding ElementName=background, Path=CornerRadius, Mode=OneWay}">
 				<ItemsControl ItemsSource="{Binding Controls}" 
-			                  Width="{Binding ActualWidth, ElementName=focusgloss}" 
-		                      Height="{Binding ActualHeight, ElementName=focusgloss}" 
+			                  Width="{Binding ActualWidth, ElementName=Focusgloss}" 
+		                      Height="{Binding ActualHeight, ElementName=Focusgloss}" 
 							  ClipToBounds="True" >
                     <ItemsControl.ItemsPanel>
 						<ItemsPanelTemplate>

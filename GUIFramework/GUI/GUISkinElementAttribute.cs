@@ -12,9 +12,6 @@ namespace GUIFramework.GUI
             XxmlType = xmlType;
         }
 
-        public Type XmlType
-        {
-            get { return XxmlType; }
-        }
+        public Type XmlType => XxmlType;
     }
 }

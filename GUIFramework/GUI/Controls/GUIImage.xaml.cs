@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Linq;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using Common.Helpers;
@@ -41,10 +40,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Gets the skin XML.
         /// </summary>
-        public XmlImage SkinXml
-        {
-            get { return BaseXml as XmlImage; }
-        }
+        public XmlImage SkinXml => BaseXml as XmlImage;
 
         /// <summary>
         /// Gets or sets the image.
@@ -107,7 +103,7 @@ namespace GUIFramework.GUI
         /// <summary>
         /// Updates the info data.
         /// </summary>
-        public async override void UpdateInfoData()
+        public override async void UpdateInfoData()
         {
             base.UpdateInfoData();
 
@@ -121,7 +117,7 @@ namespace GUIFramework.GUI
                     try
                     {
                         var part = location.Split(',');
-                        if (part.Count() == 4)
+                        if (part.Length == 4)
                         {
                             latitude = double.Parse(part[1], CultureInfo.InvariantCulture);
                             longitude = double.Parse(part[3], CultureInfo.InvariantCulture);
