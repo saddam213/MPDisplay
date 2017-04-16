@@ -47,6 +47,10 @@
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BassPlayer\BassPlayer.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Media">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\Media\Media.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="MediaPortal.Common">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\MediaPortal.Common.dll</HintPath>
       <Private>False</Private>
@@ -59,6 +63,14 @@
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\MediaPortal.Utilities.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="News">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\News\News.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="SkinBase">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinBase\SkinBase.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="SkinEngine">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinEngine\SkinEngine.dll</HintPath>
       <Private>False</Private>
@@ -69,6 +81,10 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="Weather">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\Weather\Weather.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
@@ -76,7 +92,9 @@
       <Link>Properties\GlobalAssembly.cs</Link>
     </Compile>
     <Compile Include="ExtensionMethods.cs" />
+    <Compile Include="ImageHelper.cs" />
     <Compile Include="InfoManagers\EqualizerManager.cs" />
+    <Compile Include="InfoManagers\PropertyManager.cs" />
     <Compile Include="InfoManagers\WindowManager.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="MpDisplayPlugin2.cs" />

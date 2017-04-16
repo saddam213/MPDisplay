@@ -22,7 +22,7 @@ namespace MediaPortal2Plugin
 
         private readonly PluginSettings _settings;
         private readonly AdvancedPluginSettings _advancedSettings;
-        private readonly AddImageSettings _addImageSettings;
+        private readonly MP2PluginSettings _mp2PluginSettings;
         private readonly Log _log;
         private bool _pluginStarted ;
     public MpDisplayPlugin2()
@@ -44,19 +44,16 @@ namespace MediaPortal2Plugin
                 _log.Message(LogLevel.Info, "[PluginConstructor] - Settings file AdvancedPluginSettings not found, Loading defaults..");
                 advancedSettings = new AdvancedPluginSettings();
             }
-            var addImageSettings = SettingsManager.Load<AddImageSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "AddImageSettings.xml"));
-            if (addImageSettings == null)
+            var mp2PluginSettings = SettingsManager.Load<MP2PluginSettings>(Path.Combine(RegistrySettings.ProgramDataPath, "MP2PluginSettings.xml"));
+            if (mp2PluginSettings == null)
             {
-                _log.Message(LogLevel.Info, "[PluginConstructor] - Settings file AddImageSettings not found, Loading defaults..");
-                addImageSettings = new AddImageSettings();
+                _log.Message(LogLevel.Info, "[PluginConstructor] - Settings file MP2PluginSettings not found, Loading defaults..");
+                mp2PluginSettings = new MP2PluginSettings();
             }
 
             _advancedSettings = advancedSettings;
-            _addImageSettings = addImageSettings;
+            _mp2PluginSettings = mp2PluginSettings;
             _settings = settings.PluginSettings;
-
-            // TODO: Get corresponding folder for thumbs from MP2
-            //_addImageSettings.InitAddImagePropertySettings(Config.GetFolder(Config.Dir.Thumbs));
 
         }
 
@@ -92,7 +89,7 @@ namespace MediaPortal2Plugin
             }
 
             MessageService.InitializeMessageService(_settings.ConnectionSettings);
-            WindowManager.Instance.Initialize(_settings, _advancedSettings, _addImageSettings);
+            WindowManager.Instance.Initialize(_settings, _advancedSettings, _mp2PluginSettings);
             //TvServerManager.Instance.Initialize(_settings);
             _log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
             _pluginStarted = true;
@@ -161,6 +158,11 @@ namespace MediaPortal2Plugin
             WindowManager.Instance.Shutdown();
             DropMessageQueue();
 
+            if (_mp2PluginSettings.IsModified)
+            {
+                SettingsManager.Save(_mp2PluginSettings, Path.Combine(RegistrySettings.ProgramDataPath, "MP2PluginSettings.xml"));
+                _log.Message(LogLevel.Info, "[PluginStop] - Modified MP2Plugin Settings have been saved.");
+            }
             _log.Message(LogLevel.Info, "[PluginStop] - MPDisplay Plugin2 stopped.");
             LoggingManager.Destroy();
         }

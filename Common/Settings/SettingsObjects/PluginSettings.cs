@@ -19,7 +19,7 @@ namespace Common.Settings
         {
             get { return _connectionSettings; }
             set { _connectionSettings = value; NotifyPropertyChanged("ConnectionSettings"); }
-        } 
+        }
 
         public bool LaunchMPDisplayOnStart
         {
