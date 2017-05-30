@@ -39,6 +39,9 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BackgroundManager">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BackgroundManager\BackgroundManager.dll</HintPath>
+    </Reference>
     <Reference Include="Bass.Net">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BassLibraries\Bass.Net.dll</HintPath>
       <Private>False</Private>
@@ -65,7 +68,7 @@
     </Reference>
     <Reference Include="News">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\News\News.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="SkinBase">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinBase\SkinBase.dll</HintPath>
@@ -75,6 +78,12 @@
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinEngine\SkinEngine.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="SlimTv.Client">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SlimTv.Client\SlimTv.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="SlimTv.Interfaces">
+      <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SlimTv.Client\SlimTv.Interfaces.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
@@ -83,7 +92,7 @@
     <Reference Include="System.Xml" />
     <Reference Include="Weather">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\Weather\Weather.dll</HintPath>
-      <Private>False</Private>
+      <Private>True</Private>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
@@ -94,7 +103,9 @@
     <Compile Include="ExtensionMethods.cs" />
     <Compile Include="ImageHelper.cs" />
     <Compile Include="InfoManagers\EqualizerManager.cs" />
+    <Compile Include="InfoManagers\ListManager.cs" />
     <Compile Include="InfoManagers\PropertyManager.cs" />
+    <Compile Include="InfoManagers\TVServerManager.cs" />
     <Compile Include="InfoManagers\WindowManager.cs" />
     <Compile Include="MessageService.cs" />
     <Compile Include="MpDisplayPlugin2.cs" />

@@ -16,8 +16,9 @@ using MediaPortal.UiComponents.SkinBase.Models;
 using MediaPortal.UiComponents.Weather.Models;
 using MediaPortal.UiComponents.News.Models;
 using MediaPortal.UiComponents.Media.Models;
+using MediaPortal.UiComponents.BackgroundManager.Models;
 using MediaPortal.UiComponents.Weather;
-using MediaPortal.UI.Presentation.DataObjects;
+using MediaPortal.UI.Presentation.Models;
 using MediaPortal.UI.Presentation.SkinResources;
 using MediaPortal.UI.SkinEngine.SkinManagement;
 using Log = Common.Log.Log;
@@ -70,11 +71,12 @@ namespace MediaPortal2Plugin.InfoManagers
             AddPictureTags();
 
             InitTimerModels();
-            _log.Message(LogLevel.Debug, "[Initialize] - Initialize complete");
-
             InitStaticModels();
+           _log.Message(LogLevel.Debug, "[Initialize] - Initialize complete");
+
 
             if (RegistrySettings.InstallType != MPDisplayInstallType.Plugin || !_settings.IsSystemInfoEnabled) return;
+
             _systemInfo = new SystemStatusInfo {TagPrefix = "MP"};
             _systemInfo.OnTextDataChanged += SystemInfo_OnTextDataChanged;
             _systemInfo.OnNumberDataChanged += SystemInfo_OnNumberDataChanged;
@@ -100,10 +102,11 @@ namespace MediaPortal2Plugin.InfoManagers
         {
             _modelProcessors.Add("d5b308c1-4585-4051-ab78-e10d17c3cc2d", ProcessNewsModel);
             _modelProcessors.Add("92bdb53f-4159-4dc2-b212-6083c820a214", ProcessWeatherModel);
-              _modelProcessors.Add("9e9d0cd9-4fdb-4c0f-a0c4-f356e151bde0", ProcessMenuModel);
-              _modelProcessors.Add("e821b1c8-0666-4339-8027-aa45a4f6f107", ProcessTimeModel);
-              _modelProcessors.Add("ca6428a7-a6e2-4dd3-9661-f89cebaf8e62", ProcessMouseModel);
-              _modelProcessors.Add("4cdd601f-e280-43b9-ad0a-6d7b2403c856", ProcessMediaNavigationModel);
+            _modelProcessors.Add("9e9d0cd9-4fdb-4c0f-a0c4-f356e151bde0", ProcessMenuModel);
+            _modelProcessors.Add("ca6428a7-a6e2-4dd3-9661-f89cebaf8e62", ProcessMouseModel);
+            _modelProcessors.Add("4cdd601f-e280-43b9-ad0a-6d7b2403c856", ProcessMediaNavigationModel);
+            _modelProcessors.Add("1f4caede-7108-483d-b5c8-18bec7ec58e5", ProcessBackgroundManagerModel);
+            _modelProcessors.Add("854aba9a-71a1-420b-a657-9641815f9c01", ProcessHomeServerModel);
     }
 
         public void RegisterModel(object model)
@@ -123,8 +126,14 @@ namespace MediaPortal2Plugin.InfoManagers
 
             if (model == null) return modelId;
 
-            var pmodelId = model.GetType().GetProperty("ModelId");
-            modelId = pmodelId.GetValue(model).ToString();
+            if (model.GetType().IsSubclassOf(typeof(BaseTimerControlledModel))) return modelId;
+
+            var s = model.GetType().GetProperty("ModelId")?.GetValue(model, null); 
+            if (s != null)
+            {
+                modelId = s.ToString();
+            }
+
             var modelName = model.GetType().Name;
 
             Func<object, bool> processor;
@@ -151,10 +160,22 @@ namespace MediaPortal2Plugin.InfoManagers
 
             if (model == null) return false;
 
-            _log.Message(LogLevel.Debug, "[ProcessNewsModel] - Processing ");
+            _log.Message(LogLevel.Debug, "[ProcessNewsModel] - Processing {0} feeds", model.Feeds.Count());
 
-            foreach (var feed in model.Feeds)
+            foreach (var item in model.Feeds)
             {
+                ListManager.Instance.SendSkinEditorData(item);
+            }
+
+            if (model.SelectedFeed != null)
+            {
+                _log.Message(LogLevel.Debug, "[ProcessNewsModel] - Processing {0} news items", model.SelectedFeed.Items.Count());
+
+                foreach (var item in model.SelectedFeed.Items)
+                {
+                    ListManager.Instance.SendSkinEditorData(item);
+                }
+                
             }
             return true;
         }
@@ -166,39 +187,51 @@ namespace MediaPortal2Plugin.InfoManagers
 
             _log.Message(LogLevel.Debug, "[ProcessWeatherModel] - Processing ");
 
-            ProcessProperty("#Weather.Temperature", model.CurrentLocation.Condition.Temperature);
-            ProcessProperty("#Weather.Humidity", model.CurrentLocation.Condition.Humidity);
-            ProcessProperty("#Weather.City", model.CurrentLocation.Condition.City);
-            ProcessProperty("#Weather.Precipitation", model.CurrentLocation.Condition.Precipitation);
-            ProcessProperty("#Weather.BigIcon", model.CurrentLocation.Condition.BigIcon);
-            ProcessProperty("#Weather.Wind", model.CurrentLocation.Condition.Wind);
-            ProcessProperty("#Weather.Condition", model.CurrentLocation.Condition.Condition);
+            ProcessProperty("Weather.Temperature", model.CurrentLocation.Condition.Temperature);
+            ProcessProperty("Weather.Humidity", model.CurrentLocation.Condition.Humidity);
+            ProcessProperty("Weather.City", model.CurrentLocation.Condition.City);
+            ProcessProperty("Weather.Precipitation", model.CurrentLocation.Condition.Precipitation);
+            ProcessProperty("Weather.BigIcon", model.CurrentLocation.Condition.BigIcon);
+            ProcessProperty("Weather.Wind", model.CurrentLocation.Condition.Wind);
+            ProcessProperty("Weather.Condition", model.CurrentLocation.Condition.Condition);
             var day = 0;
             foreach (var listItem in model.CurrentLocation.ForecastCollection)
             {
                 var forecast = (DayForecast) listItem;
-                ProcessProperty($"#Weather.Forecast.Day{day}.TempHigh", forecast.High);                   
-                ProcessProperty($"#Weather.Forecast.Day{day}.TempLow", forecast.Low);                   
-                ProcessProperty($"#Weather.Forecast.Day{day}.BigIcon", forecast.BigIcon);                   
-                ProcessProperty($"#Weather.Forecast.Day{day}.SmallIcon", forecast.SmallIcon);                   
-                ProcessProperty($"#Weather.Forecast.Day{day}.Wind", forecast.Wind);                   
-                ProcessProperty($"#Weather.Forecast.Day{day}.Humidity", forecast.Humidity);                   
-                ProcessProperty($"#Weather.Forecast.Day{day}.Precipitation", forecast.Precipitation);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.TempHigh", forecast.High);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.TempLow", forecast.Low);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.BigIcon", forecast.BigIcon);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.SmallIcon", forecast.SmallIcon);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.Wind", forecast.Wind);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.Humidity", forecast.Humidity);                   
+                ProcessProperty($"Weather.Forecast.Day{day}.Precipitation", forecast.Precipitation);                   
                 day++;
             }
             return true;
         }
 
-        private bool ProcessTimeModel(object modelobject)
+        private bool ProcessBackgroundManagerModel(object modelobject)
         {
-            var model = modelobject as TimeModel;
+            var model = modelobject as BackgroundManagerModel;
             if (model == null) return false;
 
-            _log.Message(LogLevel.Debug, "[ProcessTimeModel] - Processing ");
+            _log.Message(LogLevel.Debug, "[ProcessBackgroundManagerModel] - Processing ");
 
-            //model.CurrentLocation.LocationInfo.
+            ProcessProperty("Background.Image", model.BackgroundImage);
             return true;
         }
+        private bool ProcessHomeServerModel(object modelobject)
+        {
+            var model = modelobject as HomeServerModel;
+            if (model == null) return false;
+
+            _log.Message(LogLevel.Debug, "[ProcessHomeServerModel] - Processing ");
+
+            ProcessProperty("HomeServer", model.HomeServer);
+
+            return true;
+        }
+
         private bool ProcessMouseModel(object modelobject)
         {
             var model = modelobject as MouseModel;
@@ -213,10 +246,17 @@ namespace MediaPortal2Plugin.InfoManagers
         {
             var model = modelobject as MediaNavigationModel;
             if (model == null) return false;
+            var navigationdata = model.NavigationData;
+            var screendata = navigationdata.CurrentScreenData;
+            if (screendata == null) return false;
 
-            _log.Message(LogLevel.Debug, "[ProcessMediaNavigationModel] - Processing ");
+            _log.Message(LogLevel.Debug, "[ProcessMediaNavigationModel] - Processing {0} items", screendata.NumItems);
 
-            //model.CurrentLocation.LocationInfo.
+ 
+            foreach (var item in screendata.Items)
+            {
+                ListManager.Instance.SendSkinEditorData(item);
+            }
             return true;
         }
         private bool ProcessMenuModel(object modelobject)
@@ -224,9 +264,12 @@ namespace MediaPortal2Plugin.InfoManagers
             var model = modelobject as MenuModel;
             if (model == null) return false;
 
-            _log.Message(LogLevel.Debug, "[ProcessMenuodel] - Processing ");
+            _log.Message(LogLevel.Debug, "[ProcessMenuModel] - Processing {0} items", model.MenuItems.Count());
 
-            //model.CurrentLocation.LocationInfo.
+            foreach (var item in model.MenuItems)
+            {
+                ListManager.Instance.SendSkinEditorData(item);
+            }
             return true;
         }
 
