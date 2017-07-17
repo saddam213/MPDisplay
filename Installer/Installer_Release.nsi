@@ -2,11 +2,11 @@
 # Created by Sa_ddam213
 
 # Installer Vars
-!define VERSION "1.1.0.0"
+!define VERSION "1.2.0.0"
 !define BUILD_FOLDER "C:\Entwicklung\MPDisplay"
 !define GROUP_NAME "MPDisplay Team"
 !define WEB_SITE "http://www.mpdisplay2.de/"
-!define COPYRIGHT "MPDisplay Team  © 2015"
+!define COPYRIGHT "MPDisplay Team  © 2017"
 !define DESCRIPTION "MPDisplay++ - TouchScreen/External Display Interface For MediaPortal"
 !define MUI_ABORTWARNING
 !define MUI_UNABORTWARNING

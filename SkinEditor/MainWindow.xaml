@@ -58,6 +58,12 @@
                             </MenuItem.Icon>
                         </MenuItem>
                         <Separator />
+                        <MenuItem Header="Options" Command="{Binding SkinEditorOptionsCommand}" >
+                            <MenuItem.Icon>
+                                <Image Source="Images/Options.png" Width="16" Height="16" Stretch="Uniform" Margin="2"/>
+                            </MenuItem.Icon>
+                        </MenuItem>
+                        <Separator />
 						<MenuItem Header="E_xit" Command="{Binding ExitCommand}" >
                             <MenuItem.Icon>
                                 <Image Source="Images/Exit.PNG" Width="16" Height="16" Stretch="Uniform" Margin="2"/>

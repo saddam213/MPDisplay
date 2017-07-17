@@ -113,6 +113,14 @@ namespace SkinEditor
             set { _lastSkinDirectory = value; NotifyPropertyChanged("LastSkinDirectory"); }
         }
 
+        private bool _autoLoadLastSkin = true;
+
+        public bool AutoLoadLastSkin
+        {
+            get { return _autoLoadLastSkin;}
+            set { _autoLoadLastSkin = value; NotifyPropertyChanged("AutoLOadLastSkin"); }
+        }
+
         private ObservableCollection<string> _recentSkins = new ObservableCollection<string>();
         public ObservableCollection<string> RecentSkins
         {

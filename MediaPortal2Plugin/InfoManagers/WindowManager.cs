@@ -1,22 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using Common.Log;
 using Common.Settings;
 using MediaPortal.Common;
 using MediaPortal.Common.Messaging;
 using MediaPortal.UI.Control.InputManager;
-using MediaPortal.UI.Presentation.DataObjects;
-using MediaPortal.UI.Presentation.Models;
 using MediaPortal.UI.Presentation.Players;
 using MediaPortal.UI.Presentation.Workflow;
+using MediaPortal.UI.Presentation.Screens;
 using MessageFramework.DataObjects;
 using MessageFramework.Messages;
 using MediaPortal.UI.Services.Players;
-using MediaPortal.UI.SkinEngine.Controls.Panels;
-using MediaPortal.UI.SkinEngine.Controls.Visuals;
 using MediaPortal.UI.SkinEngine.ScreenManagement;
 using MediaPortal.UI.SkinEngine.InputManagement;
 using Log = Common.Log.Log;
@@ -50,7 +46,7 @@ namespace MediaPortal2Plugin.InfoManagers
         private bool _isFullscreenVideo;
         private PluginSettings _settings;
         private AdvancedPluginSettings _advancedSettings;
-        private AddImageSettings _addImageSettings;
+        private MP2PluginSettings _mp2PluginSettings;
         private int _previousFocusedControlId = -1;
         private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
         private APIPlaybackType _currentPlaybackType = APIPlaybackType.None;
@@ -62,23 +58,24 @@ namespace MediaPortal2Plugin.InfoManagers
         private bool _isFullScreenMusic;
         private APIPlayerMessage _lastPlayerMessage;
 
-        //public GUIWindow CurrentWindow { get; private set; }
+
+        public MP2IdMapping CurrentWindow { get; private set; } = null;
 
         //public int CurrentWindowFocusedControlId => CurrentWindow?.GetFocusControlId() ?? -1;
 
-        public void Initialize(PluginSettings settings, AdvancedPluginSettings advancedSettings, AddImageSettings addImageSettings)
+        public void Initialize(PluginSettings settings, AdvancedPluginSettings advancedSettings, MP2PluginSettings mp2PluginSettings)
         {
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[Initialize] - Initializing WindowsManager...");
+            _log.Message(LogLevel.Debug, "[Initialize] - Initializing WindowsManager...");
             _settings = settings;
             _advancedSettings = advancedSettings;
-            _addImageSettings = addImageSettings;
+            _mp2PluginSettings = mp2PluginSettings;
 
             SubscribeToMessages();
 
-            InputManager.Instance.KeyPressed += OnMP2KeyPressed;
+            InputManager.Instance.KeyPreview += OnMP2KeyPressed;
 
             //ListManager.Instance.Initialize(_settings);
-            //PropertyManager.Instance.Initialize(_settings, _addImageSettings);
+            PropertyManager.Instance.Initialize(_settings);
             EqualizerManager.Instance.Initialize(_settings);
             //DialogManager.Instance.Initialize(_settings);
 
@@ -93,7 +90,7 @@ namespace MediaPortal2Plugin.InfoManagers
           //  GUIWindowManager.Receivers += GUIGraphicsContext_Receivers;
             _secondTimer = new Timer( SecondTimerTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
             _lastPlayBackChanged = DateTime.MinValue;
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[Initialize] - Initialize complete");
+            _log.Message(LogLevel.Debug, "[Initialize] - Initialize complete");
         }
 
         public void Shutdown()
@@ -101,7 +98,7 @@ namespace MediaPortal2Plugin.InfoManagers
             _secondTimer.Change(Timeout.Infinite, Timeout.Infinite);
 
             UnsubscribeFromMessages();
-            InputManager.Instance.KeyPressed -= OnMP2KeyPressed;
+            InputManager.Instance.KeyPreview -= OnMP2KeyPressed;
 
             //GUIWindowManager.OnActivateWindow -= GUIWindowManager_OnActivateWindow;
             //g_Player.PlayBackStarted -= Player_PlayBackStarted;
@@ -111,13 +108,11 @@ namespace MediaPortal2Plugin.InfoManagers
             //GUIWindowManager.OnNewAction -= GUIWindowManager_OnNewAction;
 
             //ListManager.Instance.Shutdown();
-            //PropertyManager.Instance.Shutdown();
+            PropertyManager.Instance.Shutdown();
             EqualizerManager.Instance.Shutdown();
             //DialogManager.Instance.Shutdown();
 
         }
-
-       
 
         private void SecondTimerTick(object state)
         {
@@ -126,8 +121,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private void CheckUserInteraction()
         {
-            _isUserInteracting = InputManager.Instance.LastInputTime <= _lastIteraction ||
-                                 InputManager.Instance.LastMouseUsageTime <= _lastIteraction;
+            _isUserInteracting = InputManager.Instance.LastInputTime <= _lastIteraction || InputManager.Instance.LastMouseUsageTime <= _lastIteraction;
 
             if (!_isUserInteracting) return;
             if (DateTime.Now <= _lastIteraction.AddSeconds(_settings.UserInteractionDelay)) return;
@@ -163,7 +157,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private void SubscribeToMessages()
         {
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[SubscribeToMessages] - Initialize subscription to MP2 messages");
+            _log.Message(LogLevel.Debug, "[SubscribeToMessages] - Initialize subscription to MP2 messages");
             MessageQueue = new AsynchronousMessageQueue(this, new[]
               {
                     ScreenManagerMessaging.CHANNEL,
@@ -173,14 +167,14 @@ namespace MediaPortal2Plugin.InfoManagers
               });
             MessageQueue.MessageReceived += OnMP2MessageReceived;
             MessageQueue.Start();
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[SubscribeToMessages] - Subscription to MP2 messages done");
+            _log.Message(LogLevel.Debug, "[SubscribeToMessages] - Subscription to MP2 messages done");
         }
 
         private void UnsubscribeFromMessages()
         {
             if (MessageQueue == null)
                 return;
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[UnsubscribeFromMessages] - Unsubscription from MP2 messages done");
+            _log.Message(LogLevel.Debug, "[UnsubscribeFromMessages] - Unsubscription from MP2 messages done");
             MessageQueue.Shutdown();
             MessageQueue = null;
         }
@@ -190,22 +184,36 @@ namespace MediaPortal2Plugin.InfoManagers
             if (message.ChannelName == WorkflowManagerMessaging.CHANNEL)
             {
                 WorkflowManagerMessaging.MessageType messageType = (WorkflowManagerMessaging.MessageType) message.MessageType;
-                _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2MessageReceived] - WorkflowManagerMessaging Type <{0}>", messageType);
-                var context = (NavigationContext)message.MessageData[WorkflowManagerMessaging.CONTEXT];
-                if (context != null)
-                {
-                    foreach (var modelitem in context.Models)
-                    {
-                        var model = modelitem.Value;
-                        _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2MessageReceived] - WorkflowManagerMessaging Model <{0}> Type <{1}>", modelitem.Key, model.GetType());
-                        ProcessModel(model);
-                    }
-                }
+                _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - WorkflowManagerMessaging Type <{0}>", messageType);
                 switch (messageType)
                 {
                     case WorkflowManagerMessaging.MessageType.StatePushed:
+                        var context = (NavigationContext)message.MessageData[WorkflowManagerMessaging.CONTEXT];
+                        if (context != null)
+                        {
+                            _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - Context Item Label <{0}> WorkflowStateId <{1}>", context.DisplayLabel, context.WorkflowState.StateId);
+                            foreach (var modelitem in context.Models)
+                            {
+                                var model = modelitem.Value;
+                                PropertyManager.Instance.RegisterModel(model);
+                            }
+                        }
                         break;
                     case WorkflowManagerMessaging.MessageType.StatesPopped:
+                        var contexts = (IDictionary<Guid, NavigationContext>)message.MessageData[WorkflowManagerMessaging.CONTEXTS];
+                        if (contexts != null)
+                        {
+                            foreach (var contextitem in contexts)
+                            {
+                                _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - Context Item <{0}> Label <{1}> WorkflowStateId <{2}>", contextitem.Key, contextitem.Value.DisplayLabel, contextitem.Value.WorkflowState.StateId);
+
+                                foreach (var model in contextitem.Value.Models.Select(modelitem => modelitem.Value))
+                                {
+                                    PropertyManager.Instance.RegisterModel(model);
+                                }
+                            }
+                        }
+
                         break;
                     case WorkflowManagerMessaging.MessageType.NavigationComplete:
                         break;
@@ -213,28 +221,24 @@ namespace MediaPortal2Plugin.InfoManagers
                         throw new ArgumentOutOfRangeException();
                 }
             }
+
             if (message.ChannelName == PlayerManagerMessaging.CHANNEL)
             {
                 // React to player changes
                 PlayerManagerMessaging.MessageType messageType = (PlayerManagerMessaging.MessageType) message.MessageType;
-                _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2MessageReceived] - PlayerManagerMessaging Type <{0}>", messageType);
-                IPlayerSlotController psc;
+                _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - PlayerManagerMessaging Type <{0}>", messageType);
                 switch (messageType)
                 {
                     case PlayerManagerMessaging.MessageType.PlayerResumeState:
-                        psc = (IPlayerSlotController) message.MessageData[PlayerManagerMessaging.PLAYER_SLOT_CONTROLLER];
                         IResumeState resumeState = (IResumeState) message.MessageData[PlayerManagerMessaging.KEY_RESUME_STATE];
-                        Guid mediaItemId = (Guid) message.MessageData[PlayerManagerMessaging.KEY_MEDIAITEM_ID];
+                        Guid mediaItemId = (Guid) message.MessageData[PlayerManagerMessaging.KEY_MEDIAITEM];
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerError:
                     case PlayerManagerMessaging.MessageType.PlayerEnded:
-                        psc = (IPlayerSlotController) message.MessageData[PlayerManagerMessaging.PLAYER_SLOT_CONTROLLER];
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerStopped:
-                        psc = (IPlayerSlotController) message.MessageData[PlayerManagerMessaging.PLAYER_SLOT_CONTROLLER];
                         break;
                     case PlayerManagerMessaging.MessageType.RequestNextItem:
-                        psc = (IPlayerSlotController) message.MessageData[PlayerManagerMessaging.PLAYER_SLOT_CONTROLLER];
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerStarted:
                         break;
@@ -262,7 +266,7 @@ namespace MediaPortal2Plugin.InfoManagers
             {
                 // React to internal player context manager changes
                 PlayerContextManagerMessaging.MessageType messageType = (PlayerContextManagerMessaging.MessageType) message.MessageType;
-                _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2MessageReceived] - PlayerContextMessaging Type <{0}>", messageType);
+                _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - PlayerContextMessaging Type <{0}>", messageType);
                 switch (messageType)
                 {
                     case PlayerContextManagerMessaging.MessageType.UpdatePlayerRolesInternal:
@@ -280,31 +284,42 @@ namespace MediaPortal2Plugin.InfoManagers
             else if (message.ChannelName == ScreenManagerMessaging.CHANNEL)
             {
                 ScreenManagerMessaging.MessageType messageType = (ScreenManagerMessaging.MessageType) message.MessageType;
-                _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2MessageReceived] - ScreenManagerMessaging Type <{0}>", messageType);
+                var context = ServiceRegistration.Get<IWorkflowManager>().CurrentNavigationContext;
+                _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - ScreenManagerMessaging Type <{0}>", messageType);
+
                 switch (messageType)
                 {
                     case ScreenManagerMessaging.MessageType.ShowScreen:
                         var screen = (Screen) message.MessageData[ScreenManagerMessaging.SCREEN];
-                        _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2MessageReceived] - ScreenManagerMessaging ShowScreen <{0}>, instance ID <{1}>", screen.Name, screen.ScreenInstanceId);
-                        var resources = screen.Resources;
-                        if (resources != null)
-                        {
-                            foreach (var model in resources.Values)
-                            {
-                                if (model is BaseMessageControlledModel)
-                                {
-                                    ProcessModel(model);
-                                }
+                        var closeDialogs = (bool) message.MessageData[ScreenManagerMessaging.CLOSE_DIALOGS];
+                        _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - ScreenManagerMessaging ShowScreen <{0}>, instance ID <{1}> CloseDialogs is {2}", screen.Name, screen.ScreenInstanceId, closeDialogs);
 
+                        if (context != null)
+                        {
+                            _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - Context Item Label <{0}>", context.DisplayLabel);
+                            SetCurrentWindow(context.WorkflowState.StateId.ToString());
+                            foreach (var modelitem in context.Models)
+                            {
+                                var model = modelitem.Value;
+                                PropertyManager.Instance.RegisterModel(model);
                             }
                         }
-
                         break;
                     case ScreenManagerMessaging.MessageType.SetSuperLayer:
                         break;
                     case ScreenManagerMessaging.MessageType.ShowDialog:
+                        var dialogData = (DialogData) message.MessageData[ScreenManagerMessaging.DIALOG_DATA];
+                         _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - ScreenManagerMessaging ShowDialog <{0}>, name is {1}", dialogData.DialogInstanceId, dialogData.DialogName);                           
+                        if (context != null)
+                        {
+                            var dialogItem = _mp2PluginSettings.GetDialogMapping(context.WorkflowState.StateId.ToString());
+                            _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - ScreenManagerMessaging DialogID is <{0}>", dialogItem.MPDid);                           
+                        }
                         break;
                     case ScreenManagerMessaging.MessageType.CloseDialogs:
+                        var dialogInstanceId = (Guid) message.MessageData[ScreenManagerMessaging.DIALOG_INSTANCE_ID];
+                        var mode = (CloseDialogsMode) message.MessageData[ScreenManagerMessaging.CLOSE_DIALOGS_MODE];
+                        _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - ScreenManagerMessaging CloseDialog <{0}>, mode is {1}", dialogInstanceId, mode);
                         break;
                     case ScreenManagerMessaging.MessageType.ReloadScreens:
                         break;
@@ -320,122 +335,23 @@ namespace MediaPortal2Plugin.InfoManagers
 
         #endregion
 
-        private void ProcessModel(object model)
-        {
-            if (model == null) return;
-
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessModel] - ScreenManagerMessaging MessageModel <{0}> Type <{1}>", model.ToString(), model.GetType());
-            foreach (PropertyInfo propertyInfo in model.GetType().GetProperties())
-            {
-                if (propertyInfo.CanRead)
-                {
-                    var item = propertyInfo.GetValue(model, null);
-                    _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessModel] - ScreenManagerMessaging Property <{0}> Value <{1}>", propertyInfo.Name, item);
-                    var list = item as ItemsList;
-                    if (list != null)
-                    {
-                        foreach (var listitem in list)
-                        {
-                            _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessModel] - ScreenManagerMessaging ListItem <{0}> selected <{1}>", listitem, listitem.Selected );
-                            foreach (var kvp in listitem.Labels)
-                            {
-                                _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessModel] - ScreenManagerMessaging ListItem Label  Name <{0}> Value <{1}>", kvp.Key, kvp.Value );   
-                            }
-                            foreach (var kvp in listitem.AdditionalProperties)
-                            {
-                                _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessModel] - ScreenManagerMessaging ListItem AddProperties Name <{0}> Type <{1}>", kvp.Key, kvp.Value.GetType() );   
-                            }
-                            
-                        }
-                    }
-                    if (propertyInfo.Name == "NavigationData" || propertyInfo.Name == "CurrentScreenData")
-                    {
-                        ProcessModel(item);
-                    }
-                }
-            }
-
-        }
-        private void ProcessScreen(UIElement screen)
-        {
-            if (screen == null) return;
-
-            var children = GetAllChildren(screen);
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - Screen <{0}> loaded with {1} children", screen.Name, children.Count);
-
-            foreach (var control in children)
-            {
-                _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - Control <{0}> Type <{1}>", control.Name, control.GetType());
-                if (control is Button)
-                {
-                    var button = control as Button;
-                    _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - Button Content <{0}>", button.Content);
-                }
-                if (control is Label)
-                {
-                    var label = control as Label;
-                    _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - Label Content <{0}>", label.Content);
-                }
-                if (control is WrapPanel)
-                {
-                    var panel = control as WrapPanel;
-                    _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - WrapPanel contains <{0}> items", panel.Children.Count);
-                    foreach (var item in panel.Children)
-                    {
-                        _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - WrapPanel item type <{0}>", item.GetType());
-                        var buttons = item.GetChildren().Where(x => x is Button);
-                        foreach (var btn in buttons)
-                        {
-                            _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - WrapPanel button <{0}>, command is <{1}>", (btn as Button)?.Content, (btn as Button)?.Command.ToString());
-                            var images = btn.GetChildren().Where(x => x is Image);
-                            foreach (var img in images)
-                            {
-                                if (img is Image)
-                                    _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - WrapPanel button - image <{0}>", (img as Image)?.Source);
-                            }
-                            var labels = btn.GetChildren().Where(x => x is Label);
-                            foreach (var lbl in labels)
-                            {
-                                _log.Message(LogLevel.Debug, "[WindowsManager]-[ProcessScreen] - WrapPanel button - label <{0}>", (lbl as Label)?.Content);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        #region Screens
-
-        private static List<UIElement> GetAllChildren(UIElement e)
-        {
-            var c = e.GetChildren().ToList();
-            if (e.GetChildren().Count == 0) return c.ToList();
-            foreach (var child in e.GetChildren())
-            {
-                c.AddRange(GetAllChildren(child).ToList());
-            }
-            return c;
-        }
-
-        #endregion
-
         private void OnMP2KeyPressed(ref Key key)
         {
-            _log.Message(LogLevel.Debug, "[WindowsManager]-[OnMP2KeyPressed] - Key <{0}> was pressed", key.Name);
+            _log.Message(LogLevel.Debug, "[OnMP2KeyPressed] - Key <{0}> was pressed", key.Name);
 
-            //switch (key.Name)
-            //{
-            //    //case Key.Down.Name:
-            //    //case Action.ActionType.ACTION_MOVE_LEFT:
-            //    //case Action.ActionType.ACTION_MOVE_RIGHT:
-            //    //case Action.ActionType.ACTION_MOVE_UP:
-            //    //case Action.ActionType.ACTION_SHOW_ACTIONMENU:
-            //    //case Action.ActionType.ACTION_SELECT_ITEM:
-            //    //case Action.ActionType.ACTION_PREVIOUS_MENU:
-            //    //case Action.ActionType.ACTION_MOUSE_CLICK:
-            //        ResetUserInteraction();
-            //        break;
-            //}
+            switch (key.Name)
+            {
+                case "Down":
+                case "Left":
+                case "Right":
+                case "Up":
+                case "Info":
+                case "Ok":
+                case "Back":
+                //case Action.ActionType.ACTION_MOUSE_CLICK:
+                    ResetUserInteraction();
+                    break;
+            }
 
 
             //    if ((action.wID == Action.ActionType.ACTION_SELECT_ITEM || action.wID == Action.ActionType.ACTION_KEY_PRESSED) && CurrentWindow.GetID == 96742 && CurrentWindowFocusedControlId == 50)
@@ -452,12 +368,6 @@ namespace MediaPortal2Plugin.InfoManagers
             //        SendActionIdMessage((int) action.wID);
             //    }
         }
-
-        private void GUIWindowManager_OnActivateWindow(int windowId)
-        {
-            ThreadPool.QueueUserWorkItem(o => SetCurrentWindow(windowId));
-        }
-
 
         public void OnMediaPortalMessageReceived(APIMediaPortalMessage message)
         {
@@ -526,8 +436,10 @@ namespace MediaPortal2Plugin.InfoManagers
             //TvServerManager.Instance.SendRecordings();
         }
 
-        private void SetCurrentWindow(int windowId)
+        private void SetCurrentWindow(string guid)
         {
+            CurrentWindow = _mp2PluginSettings.GetWindowMapping(guid);
+
             //ListManager.Instance.ClearWindowListControls();
             //PropertyManager.Instance.Suspend(true);
 
@@ -550,7 +462,7 @@ namespace MediaPortal2Plugin.InfoManagers
             //if (!fullscreen)
             //{
             //    CurrentPlugin = SupportedPluginManager.GetPluginHelper(Instance.CurrentWindow.GetID);
-            //    SendWindowMessage();
+                  SendWindowMessage();
             //    ListManager.Instance.SetWindowListControls();
             //    if (Instance.CurrentWindow.GetID == 600 || Instance.CurrentWindow.GetID == 604)
             //    {
@@ -574,11 +486,11 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private void SendWindowMessage()
         {
-            //if (CurrentWindow == null) return;
+            if (CurrentWindow == null) return;
 
-            //if (MessageService.Instance.IsMpDisplayConnected)
-            //{
-            //    _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}", CurrentWindow.GetID, CurrentWindow.GetFocusControlId());
+            if (MessageService.Instance.IsMpDisplayConnected)
+            {
+            //      _log.Message(LogLevel.Debug, "[SendWindowMessage] - WindowId: {0}, FocusedControlId: {1}", CurrentWindow.GetID, CurrentWindow.GetFocusControlId());
             //    MessageService.Instance.SendInfoMessage(new APIInfoMessage
             //    {
             //        MessageType = APIInfoMessageType.WindowMessage, WindowMessage = new APIWindowMessage
@@ -586,9 +498,9 @@ namespace MediaPortal2Plugin.InfoManagers
             //            WindowId = CurrentWindow.GetID, FocusedControlId = CurrentWindow.GetFocusControlId(), EnabledPlugins = _enabledlugins
             //        }
             //    });
-            //}
+            }
 
-            //if (MessageService.Instance.IsSkinEditorConnected) SendEditorData(APISkinEditorDataType.WindowId, CurrentWindow.GetID);
+            if (MessageService.Instance.IsSkinEditorConnected) SendEditorData(APISkinEditorDataType.WindowId, CurrentWindow.MPDid);
         }
 
         private void SendFocusedControlMessage(int controlId)

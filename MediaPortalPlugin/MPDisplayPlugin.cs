@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Windows.Forms;
 using Common.Log;
 using Common.Settings;
@@ -8,6 +10,8 @@ using MediaPortal.Configuration;
 using MediaPortal.GUI.Library;
 using MediaPortalPlugin.InfoManagers;
 using Log = Common.Log.Log;
+
+
 
 namespace MediaPortalPlugin
 {
@@ -21,8 +25,25 @@ namespace MediaPortalPlugin
 
         public MpDisplayPlugin()
         {
+
             LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin", RegistrySettings.LogLevel));
             _log = LoggingManager.GetLog(typeof(MpDisplayPlugin));
+
+            AppDomain.CurrentDomain.AssemblyResolve += delegate(object sender, ResolveEventArgs e)
+            {
+                try
+                {
+                    string partialName = e.Name.Substring(0, e.Name.IndexOf(','));
+                    return Assembly.Load(new AssemblyName(partialName));
+
+                }
+                catch 
+                {
+                    _log.Message(LogLevel.Info, "[AssemblyResover] - Cannot redirect assembly: {0}", e.Name);
+                    return null;
+                }
+
+            };
 
             _log.Message(LogLevel.Info, "[OnPluginStart] - Loading MPDisplay settings file: {0}", RegistrySettings.MPDisplaySettingsFile);
             var settings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);

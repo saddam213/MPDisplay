@@ -14,7 +14,7 @@ namespace Common.Settings
         private string _path;
 
         private bool _pathExists;
-        private List<String> _mpProperties;
+        private List<string> _mpProperties;
 
         public string ImageName
         {
