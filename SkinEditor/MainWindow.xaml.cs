@@ -55,7 +55,20 @@ namespace SkinEditor
 
             LoadViews();
 
-            SkinOpenRecent(App.StartupSkinInfoFilename);
+            // If commandline argument was passed, try to open this skin
+            if (App.StartupSkinInfoFilename.Length > 1)
+            {
+                SkinOpenRecent(App.StartupSkinInfoFilename);
+            }
+            // else try ty load the last skin used, if setting is enabled
+            else
+            {
+                if (Settings.GlobalSettings.AutoLoadLastSkin)
+                {
+                    SkinOpenRecent(Settings.GlobalSettings.RecentSkins.FirstOrDefault());
+                }
+                
+            }
         }
 
         private static void Current_DispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
@@ -147,6 +160,7 @@ namespace SkinEditor
         public ICommand OpenSkinCommand { get; internal set; }
         public ICommand SaveSkinCommand { get; internal set; }
         public ICommand SaveAsSkinCommand { get; internal set; }
+        public ICommand SkinEditorOptionsCommand { get; internal set; }
         public ICommand ExitCommand { get; internal set; }
         public ICommand RecentSkinCommand { get; internal set; }
 
@@ -159,6 +173,7 @@ namespace SkinEditor
             OpenSkinCommand = new RelayCommand(SkinOpen);
             SaveSkinCommand = new RelayCommand(SkinSave, CanExecuteSaveSkinCommand);
             SaveAsSkinCommand = new RelayCommand(SkinSaveAs,  CanExecuteSaveAsSkinCommand);
+            SkinEditorOptionsCommand = new RelayCommand( SkinEditorOptions);
             ExitCommand = new RelayCommand( SkinEditorExit);
             RecentSkinCommand = new RelayCommand<string>(SkinOpenRecent);
         }
@@ -259,6 +274,21 @@ namespace SkinEditor
             }
         }
 
+        private void SkinEditorOptions()
+        {
+            try
+            {
+                var skinEditorOptionsDialog = new SkinEditorOptionsDialog(Settings.GlobalSettings);
+
+                if (skinEditorOptionsDialog.ShowDialog() != true) return;
+
+                Settings.GlobalSettings.AutoLoadLastSkin = skinEditorOptionsDialog.AutoLoadLastSkin;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(string.Format("An exception occured editing SkinEditor options:{0}{0}{1}", Environment.NewLine, ex), "Error!");
+            }
+        }
      
 
         private void SkinOpenRecent(string recentSkin)

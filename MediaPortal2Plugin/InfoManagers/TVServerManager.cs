@@ -283,32 +283,32 @@ namespace MediaPortal2Plugin.InfoManagers
                         _tvHandler.ScheduleControl.GetRecordingStatus(program, out recStatus);
                     }
 
-                    var schedule = getSchedule.Invoke(tvBusinessLayer, new object[] { channelId, title, startTime, endTime, 0 });
+                    //var schedule = getSchedule.Invoke(tvBusinessLayer, new object[] { channelId, title, startTime, endTime, 0 });
 
-                    if (schedule != null)
-                    {
-                        if (cancel)
-                        {
-                            var isRecording = false;
-                            var scheduleId = ReflectionHelper.GetPropertyValue(schedule, "IdSchedule", -1);
-                            if (scheduleId > -1)
-                            {
-                                isRecording = (bool)isRecordingSchedule.Invoke(tvServer, new object[] { scheduleId, null });
-                            }
-                            if (isRecording  && scheduleId > -1)
-                            {
-                                stopRecording.Invoke(tvServer, new object[] { scheduleId });
-                            }
-                            ReflectionHelper.InvokeMethod(schedule, "Delete", null);
-                        }
-                        else
-                        {
-                            ReflectionHelper.SetPropertyValue(schedule, "PreRecordInterval", _preRecordingInterval);
-                            ReflectionHelper.SetPropertyValue(schedule, "PostRecordInterval", _postRecordingInterval);
-                            ReflectionHelper.InvokeMethod(schedule, "Persist", null);
-                        }
+                    //if (schedule != null)
+                    //{
+                    //    if (cancel)
+                    //    {
+                    //        var isRecording = false;
+                    //        var scheduleId = ReflectionHelper.GetPropertyValue(schedule, "IdSchedule", -1);
+                    //        if (scheduleId > -1)
+                    //        {
+                    //            isRecording = (bool)isRecordingSchedule.Invoke(tvServer, new object[] { scheduleId, null });
+                    //        }
+                    //        if (isRecording  && scheduleId > -1)
+                    //        {
+                    //            stopRecording.Invoke(tvServer, new object[] { scheduleId });
+                    //        }
+                    //        ReflectionHelper.InvokeMethod(schedule, "Delete", null);
+                    //    }
+                    //    else
+                    //    {
+                    //        ReflectionHelper.SetPropertyValue(schedule, "PreRecordInterval", _preRecordingInterval);
+                    //        ReflectionHelper.SetPropertyValue(schedule, "PostRecordInterval", _postRecordingInterval);
+                    //        ReflectionHelper.InvokeMethod(schedule, "Persist", null);
+                    //    }
                         // onNewSchedule.Invoke(tvServer, null);
-                    }
+                    //}
                 }
                 catch (Exception ex)
                 {

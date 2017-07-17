@@ -161,7 +161,7 @@ namespace MediaPortalPlugin.InfoManagers
             // detail screen (control 6). Therefore, instead of sending the actual focussed control 50 send control ID 6. If selecting a movie directly plays the movie (instead of the detail screen)
             // the detail screen will shortly display on MPD, then the player screen will be activated.
             if ((action.wID == Action.ActionType.ACTION_SELECT_ITEM || action.wID == Action.ActionType.ACTION_KEY_PRESSED) &&
-                    CurrentWindow.GetID == 96742 && CurrentWindowFocusedControlId == 50)
+                    CurrentWindow?.GetID == 96742 && CurrentWindowFocusedControlId == 50)
             {
                 SendFocusedControlMessage(6);
             }

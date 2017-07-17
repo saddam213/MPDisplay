@@ -85,6 +85,9 @@
     <Compile Include="Controls\Guide.xaml.cs">
       <DependentUpon>Guide.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Dialogs\SkinEditorOptionsDialog.xaml.cs">
+      <DependentUpon>SkinEditorOptionsDialog.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Helpers\ConnectionHelper.cs" />
     <Compile Include="Helpers\ExtensionMethods.cs" />
     <Compile Include="Helpers\FileSystemHelper.cs" />
@@ -135,6 +138,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="Controls\Guide.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Dialogs\SkinEditorOptionsDialog.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -346,6 +353,9 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\Unhide.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Options.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

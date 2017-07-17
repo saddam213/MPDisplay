@@ -1,0 +1,16 @@
+﻿<Window
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+ x:Class="SkinEditor.Dialogs.SkinEditorOptionsDialog"
+    Title="SkinEditorOptions" Height="119.242" Width="300" Name="UI" WindowStartupLocation="CenterOwner">
+
+    <Grid DataContext="{Binding ElementName=UI}">
+        <Button Content="OK" HorizontalAlignment="Right" Margin="0,0,90,10" VerticalAlignment="Bottom" Width="75" Click="Button_Ok_Click"/>
+        <Button Content="Cancel" HorizontalAlignment="Right" Margin="0,0,10,10" VerticalAlignment="Bottom" Width="75" Click="Button_Cancel_Click"/>
+        <StackPanel Margin="10,10,10,40">
+            <!-- ReSharper disable once InconsistentNaming -->
+            <CheckBox x:Name="autoLoadLastSkin" Content="Auto-load last skin at start-up?" Height="20" Margin="0,0,60,0" IsChecked="{Binding AutoLoadLastSkin}" />
+        </StackPanel>
+
+    </Grid>
+</Window>
