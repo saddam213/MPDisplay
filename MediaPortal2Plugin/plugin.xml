@@ -16,6 +16,7 @@
     <CoreDependency Name="MediaPortal.Common" CompatibleAPI="2" />
     <CoreDependency Name="MediaPortal.UI" CompatibleAPI="2" />
     <CoreDependency Name="MediaPortal.Utilities" CompatibleAPI="1" />
+    <PluginReference PluginId="{63040BB4-4638-49b7-A82F-F4530D4D43B9}" CompatibleAPI="1"/> <!-- SlimTvClient -->
   </DependsOn>
 
   <Runtime>

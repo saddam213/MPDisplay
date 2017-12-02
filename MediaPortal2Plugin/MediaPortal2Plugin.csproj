@@ -41,6 +41,7 @@
   <ItemGroup>
     <Reference Include="BackgroundManager">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BackgroundManager\BackgroundManager.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="Bass.Net">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\BassLibraries\Bass.Net.dll</HintPath>
@@ -68,7 +69,7 @@
     </Reference>
     <Reference Include="News">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\News\News.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SkinBase">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinBase\SkinBase.dll</HintPath>
@@ -80,19 +81,18 @@
     </Reference>
     <Reference Include="SlimTv.Client">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SlimTv.Client\SlimTv.Client.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="SlimTv.Interfaces">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SlimTv.Client\SlimTv.Interfaces.dll</HintPath>
+      <Private>False</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
     <Reference Include="System.ServiceModel" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
     <Reference Include="Weather">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\Weather\Weather.dll</HintPath>
-      <Private>True</Private>
+      <Private>False</Private>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>

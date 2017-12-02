@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
-using System.Windows.Forms;
 using Common.Helpers;
 using Common.Log;
 using Common.Settings;
 using MediaPortal.Common;
-using MediaPortal.Common.General;
-using MediaPortal.Plugins.SlimTv.Client.Helpers;
-using MediaPortal.Plugins.SlimTv.Client.Models;
+using MediaPortal.Common.Services.TaskScheduler;
 using MediaPortal.Plugins.SlimTv.Interfaces;
 using MediaPortal.Plugins.SlimTv.Interfaces.Items;
+using MediaPortal.UI.SkinEngine.SkinManagement;
 using MessageFramework.DataObjects;
 using MessageFramework.Messages;
 using Log = Common.Log.Log;
@@ -41,57 +36,58 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private readonly Log _log;
         private PluginSettings _settings;
-        private SlimTvClientModel _tvmodel;
-        private ITvHandler _tvHandler;
         private Func<List<APIChannel>> _getGuide;
         private Func<List<APIRecording>> _getRecordings;
         private Func<int, string, DateTime, DateTime, bool, bool> _setRecording;
-        private string _channelGroup;
+        private int _channelGroupId;
+        private IChannelGroup _channelGroup;
         private List<APIRecording> _lastRecordingMessage = new List<APIRecording>();
         private int _batchId;
         private Timer _updateTimer;
-        private int _preRecordingInterval;
-        private int _postRecordingInterval;
 
         public void Initialize(PluginSettings settings)
         {
-            _settings = settings;
-            _tvmodel = new SlimTvClientModel();
 
+            _log.Message(LogLevel.Debug, "[Initialize] - Initializing TVServerManager...");
+            _settings = settings;
+            _channelGroup = null;
+            _channelGroupId = -1;
             SetupTvServerInterface();
 
-            _channelGroup = _tvmodel.CurrentGroupName;
-            _tvmodel.CurrentGroupNameProperty.Attach(GroupNamePropertyChanged);
-            if (_getRecordings == null) return;
             if (_updateTimer == null)
             {
                 _updateTimer = new Timer(o => UpdateGuideData(), null, 5000, -1);
             }
+            _log.Message(LogLevel.Debug, "[Initialize] - Initialize complete");
         }
 
-   
-        void GroupNamePropertyChanged(AbstractProperty property, object oldvalue)
-        {
-            _channelGroup = property.GetValue().ToString();
-            SendChannelGroup();                         // send new group
-            SendTvGuide();                              // and send TVGuide again because it contaisn only the channels of the group
-        }
-
+  
         public void Shutdown()
         {
-            _tvmodel.CurrentGroupNameProperty.Detach(GroupNamePropertyChanged);
-            _tvmodel.Dispose();
-
             if (_updateTimer == null) return;
             _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
             _updateTimer = null;
         }
 
-
-        private void UpdateGuideData()
+         private void UpdateGuideData()
         {
             if (_updateTimer == null) return;
             _updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+
+             var tvHandler = ServiceRegistration.Get<ITvHandler>();
+            tvHandler.Initialize();
+
+            if (_channelGroupId != tvHandler.ChannelAndGroupInfo.SelectedChannelGroupId)
+            {
+                _channelGroupId = tvHandler.ChannelAndGroupInfo.SelectedChannelGroupId;
+                if (tvHandler.ChannelAndGroupInfo.GetChannelGroups(out IList<IChannelGroup> grouplist))
+                {
+                    _channelGroup = grouplist[_channelGroupId];
+                }
+                SendChannelGroup();                         // send new group
+                SendTvGuide();                              // and send TVGuide again because it contaisn only the channels of the group
+
+            }
             SendRecordings();
             _updateTimer.Change(5000, -1);
         }
@@ -115,9 +111,11 @@ namespace MediaPortal2Plugin.InfoManagers
                         }
                     }
                 });
-                _lastRecordingMessage = null;           // make sure recordings are sent again 
+                _lastRecordingMessage = null;           // make sure recordings are sent again
+               _log.Message(LogLevel.Debug, "[SendTvGuide] - TV guide for {0}: {1} programs", channels[i].Name, channels[i].Programs.Count);
             }
-        }
+            _log.Message(LogLevel.Debug, "[SendTvGuide] - TV guide data sent for {0} channels", channels.Count);
+       }
 
         public void SendRecordings()
         {
@@ -140,11 +138,13 @@ namespace MediaPortal2Plugin.InfoManagers
 
         public void SendChannelGroup()
         {
+            if (_channelGroup == null) return;
+
             MessageService.Instance.SendListMessage(new APIListMessage
             {
                 MessageType = APIListMessageType.TVGuide, TvGuide = new APITVGuide
                 {
-                    MessageType = APITVGuideMessageType.TvGuideGroup, GuideGroup = _channelGroup
+                    MessageType = APITVGuideMessageType.TvGuideGroup, GuideGroup = _channelGroup.Name
                 }
             });
         }
@@ -152,25 +152,8 @@ namespace MediaPortal2Plugin.InfoManagers
         private void SetupTvServerInterface()
         {
 
-            _tvHandler = ServiceRegistration.Get<ITvHandler>();
-            if (_tvHandler == null)
-            {
-                _log.Message(LogLevel.Error, "[SetupTVServerInterface] - Cannot initialize TvHandler interface");
-                return;
-            }
-            _tvHandler.Initialize();
-
-
-            if (_tvHandler.ChannelAndGroupInfo == null) return;
-
-
              try
              {
-
-                 _preRecordingInterval = 5;                 // set default in case the settings cannot be retrieved
-                 _postRecordingInterval = 10;
-                // todo: load actual settings (if available)
-
                  SetupGetGuide();                           // setup method to retrieve TV guide
                  SetupGetRecordings();                      // setup method to retrieve scheduled recordings
                  SetupSetRecording();                       // setup method to schedule recordings
@@ -184,47 +167,56 @@ namespace MediaPortal2Plugin.InfoManagers
 
          private void SetupGetGuide()
         {
-            //var getGroup = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetGroupByName") && m.GetParameters().Length == 1);
-            //var getChannelsInGroup = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetTVGuideChannelsForGroup") && m.GetParameters().Length == 1);
-            //var getProgramsInChannel = tvBusinessLayer.GetType().GetMethods().FirstOrDefault(m => m.Name.Equals("GetPrograms") && m.GetParameters().Length == 3 &&
-            //            m.GetParameters()[0].ParameterType != typeof(DateTime));
-
-            // if (getGroup == null || getChannelsInGroup == null || getProgramsInChannel == null)
-            // {
-            //     _log.Message(LogLevel.Error, "[SetupGetGuide] - Interface to TVServer cannot be initialized");
-            //     return;
-            // }
-
              _getGuide = () =>
             {
-                var sp = new Stopwatch();
-                sp.Start();
-                var returnValue = new List<APIChannel>();
+              var sp = new Stopwatch();
+              sp.Start();
+              var returnValue = new List<APIChannel>();
+              var tvHandler = ServiceRegistration.Get<ITvHandler>();
+
+              if (tvHandler == null )
+              {
+                return returnValue;
+              }
+              tvHandler.Initialize();
+
                 try
                 {
-                    var allChannels = _tvmodel.CurrentGroupChannels;
-                    var iSort = 0;
-
-                    foreach (var listItem in allChannels)
+                    if (tvHandler.ChannelAndGroupInfo.GetChannels(_channelGroup, out IList<IChannel> allChannels))
                     {
-                        var channel = (ChannelProgramListItem) listItem;
-                        var apiPrograms = new List<APIProgram> {};
-                        IList<IProgram> programs;
+                        var iSort = 0;
 
-                        _tvHandler.ProgramInfo.GetPrograms(channel.Channel, DateTime.Now.Date,
-                            DateTime.Now.AddDays(_settings.EPGDays).Date, out programs);
-                        foreach (var program in programs)
+                        foreach (var channel in allChannels)
                         {
-                            RecordingStatus isScheduled;
-                            _tvHandler.ScheduleControl.GetRecordingStatus(program, out isScheduled);
-                            apiPrograms.Add(new APIProgram() {Id = program.ProgramId, ChannelId = program.ChannelId, Description = program.Description, Title = program.Title,
-                                StartTime = program.StartTime, EndTime = program.EndTime, IsScheduled = isScheduled != RecordingStatus.None});
+                            var apiPrograms = new List<APIProgram>();
+                            IList<IProgram> programs = null;
+                            tvHandler.ProgramInfo?.GetPrograms(channel, DateTime.Now.Date, DateTime.Now.AddDays(_settings.EPGDays).Date, out programs);
+                             if (programs != null)
+                                foreach (var program in programs)
+                                {
+                                    var isScheduled = RecordingStatus.None;
+                                    tvHandler.ScheduleControl?.GetRecordingStatus(program, out isScheduled);
+                                    apiPrograms.Add(new APIProgram()
+                                    {
+                                        Id = program.ProgramId,
+                                        ChannelId = program.ChannelId,
+                                        Description = program.Description,
+                                        Title = program.Title,
+                                        StartTime = program.StartTime,
+                                        EndTime = program.EndTime,
+                                        IsScheduled = isScheduled != RecordingStatus.None
+                                    });
+                                }
+                            returnValue.Add(new APIChannel
+                            {
+                                Id = channel.ChannelId,
+                                Name = channel.Name,
+                                Logo = GetChannelLogo(channel),
+                                Programs = apiPrograms,
+                                SortOrder = iSort++
+                            });
                         }
-                        returnValue.Add( new APIChannel
-                        {
-                            Id = channel.Channel.ChannelId, Name = channel.Channel.Name, Logo = GetChannelLogo(channel.ChannelLogoPath), Programs = apiPrograms,
-                            SortOrder = iSort++
-                        });
+
                     }
                 }
                 catch (Exception ex)
@@ -241,14 +233,22 @@ namespace MediaPortal2Plugin.InfoManagers
  
             _getRecordings = () =>
             {
-                var recordings = new List<APIRecording>();
-                try
+              var recordings = new List<APIRecording>();
+              var tvHandler = ServiceRegistration.Get<ITvHandler>();
+              if ( tvHandler == null )
+              {
+                return recordings;
+              }
+              tvHandler.Initialize();
+
+              try
                 {
-                    IList<ISchedule> schedules;
-                    _tvHandler.ScheduleControl.GetSchedules(out schedules);
+                    IList<ISchedule> schedules = null;
+                
+                    tvHandler.ScheduleControl?.GetSchedules(out schedules);
                    if (schedules != null)
                     {
-                        foreach (var schedule in schedules)
+                        foreach (ISchedule schedule in schedules)
                         {
                                 recordings.Add(new APIRecording
                                     {
@@ -272,43 +272,44 @@ namespace MediaPortal2Plugin.InfoManagers
         {
             _setRecording = (channelId, title, startTime, endTime, cancel) =>
             {
-                try
-                {
-                    IList<IProgram> programs; 
-                   
-                    _tvHandler.ProgramInfo.GetPrograms(title, startTime, endTime, out programs);
-                    foreach (var program in programs)
-                    {
-                        RecordingStatus recStatus;
-                        _tvHandler.ScheduleControl.GetRecordingStatus(program, out recStatus);
+
+              var tvHandler = ServiceRegistration.Get<ITvHandler>();
+              if (tvHandler == null) return false;
+              tvHandler.Initialize();
+              try
+              {
+                  tvHandler.ProgramInfo.GetPrograms(title, startTime, endTime, out var programs);
+                  tvHandler.ScheduleControl.GetSchedules(out var schedules);
+
+                  if (cancel)
+                  {
+                      foreach (var schedule in schedules)
+                      {
+                          if (schedule.ChannelId == channelId && schedule.StartTime == startTime &&
+                              schedule.EndTime == endTime)
+                              tvHandler.ScheduleControl.RemoveSchedule(schedule);
+                      }
+                  }
+                  else
+                  {
+                      var scheduled = false;
+                      foreach (var schedule in schedules)
+                      {
+                          if (schedule.ChannelId == channelId && schedule.StartTime == startTime &&
+                              schedule.EndTime == endTime)
+                              scheduled = true;
+                      }
+                      if (!scheduled)
+                      {
+                          foreach( var program in programs)
+                          {
+                              tvHandler.ScheduleControl.CreateSchedule(program, ScheduleRecordingType.Once,
+                                  out var _);
+                          }
+                       }
                     }
-
-                    //var schedule = getSchedule.Invoke(tvBusinessLayer, new object[] { channelId, title, startTime, endTime, 0 });
-
-                    //if (schedule != null)
-                    //{
-                    //    if (cancel)
-                    //    {
-                    //        var isRecording = false;
-                    //        var scheduleId = ReflectionHelper.GetPropertyValue(schedule, "IdSchedule", -1);
-                    //        if (scheduleId > -1)
-                    //        {
-                    //            isRecording = (bool)isRecordingSchedule.Invoke(tvServer, new object[] { scheduleId, null });
-                    //        }
-                    //        if (isRecording  && scheduleId > -1)
-                    //        {
-                    //            stopRecording.Invoke(tvServer, new object[] { scheduleId });
-                    //        }
-                    //        ReflectionHelper.InvokeMethod(schedule, "Delete", null);
-                    //    }
-                    //    else
-                    //    {
-                    //        ReflectionHelper.SetPropertyValue(schedule, "PreRecordInterval", _preRecordingInterval);
-                    //        ReflectionHelper.SetPropertyValue(schedule, "PostRecordInterval", _postRecordingInterval);
-                    //        ReflectionHelper.InvokeMethod(schedule, "Persist", null);
-                    //    }
-                        // onNewSchedule.Invoke(tvServer, null);
-                    //}
+ 
+ 
                 }
                 catch (Exception ex)
                 {
@@ -318,9 +319,9 @@ namespace MediaPortal2Plugin.InfoManagers
             };
         }
 
-        private static APIImage GetChannelLogo(string logoPath)
+        private static APIImage GetChannelLogo(IChannel channel)
         {         
-            return ImageHelper.CreateImage(logoPath);
+            return ImageHelper.CreateImage(channel.Name);
         }
 
         // Message from MPD-EPG: Program was selected:

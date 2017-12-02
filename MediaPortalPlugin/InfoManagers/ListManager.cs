@@ -616,42 +616,41 @@ namespace MediaPortalPlugin.InfoManagers
             _movingMenuControl = true;
             if (item.ItemIndex <= _menuControl.ButtonInfos.Count)
             {
-                var buttonList = _menuControlButtonList.GetValue(_menuControl) as List<GUIButtonControl>;
-                if (buttonList != null)
+        if (_menuControlButtonList.GetValue(_menuControl) is List<GUIButtonControl> buttonList)
+        {
+          var newIndex = buttonList.FindIndex(b => b.Label == item.ItemText);
+          if (newIndex != -1)
+          {
+            var isMoveDown = newIndex > _menuControl.FocusedButton;
+            var moveCount = isMoveDown
+                ? newIndex - _menuControl.FocusedButton
+                : _menuControl.FocusedButton - newIndex;
+
+            for (var i = 0; i < moveCount; i++)
+            {
+              if (isMoveDown)
+              {
+                if (_menuControlMoveDown != null)
                 {
-                    var newIndex = buttonList.FindIndex(b => b.Label == item.ItemText);
-                    if (newIndex != -1)
-                    {
-                        var isMoveDown = newIndex > _menuControl.FocusedButton;
-                        var moveCount = isMoveDown
-                            ? newIndex - _menuControl.FocusedButton
-                            : _menuControl.FocusedButton - newIndex;
-
-                        for (var i = 0; i < moveCount; i++)
-                        {
-                            if (isMoveDown)
-                            {
-                                if (_menuControlMoveDown != null)
-                                {
-                                    SupportedPluginManager.GuiSafeInvoke(() => _menuControlMoveDown.Invoke(_menuControl, null));
-                                }
-                            }
-                            else
-                            {
-                                if (_menuControlMoveUp != null)
-                                {
-                                    SupportedPluginManager.GuiSafeInvoke(() => _menuControlMoveUp.Invoke(_menuControl, null));
-                                }
-                            }
-                        }
-
-                        if (isSelect)
-                        {
-                            SupportedPluginManager.GuiSafeInvoke(() => GUIWindowManager.ActivateWindow(_menuControl.ButtonInfos[item.ItemIndex].PluginID));
-                        }
-                    }
+                  SupportedPluginManager.GuiSafeInvoke(() => _menuControlMoveDown.Invoke(_menuControl, null));
                 }
+              }
+              else
+              {
+                if (_menuControlMoveUp != null)
+                {
+                  SupportedPluginManager.GuiSafeInvoke(() => _menuControlMoveUp.Invoke(_menuControl, null));
+                }
+              }
             }
+
+            if (isSelect)
+            {
+              SupportedPluginManager.GuiSafeInvoke(() => GUIWindowManager.ActivateWindow(_menuControl.ButtonInfos[item.ItemIndex].PluginID));
+            }
+          }
+        }
+      }
             _movingMenuControl = false;
         }
 

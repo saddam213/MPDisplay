@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using Common.Helpers;
 using Common.Log;
@@ -100,6 +98,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private void InitStaticModels()
         {
+            _log.Message(LogLevel.Debug, "[InitStaticModels] - Initializing static models..");
             _modelProcessors.Add("d5b308c1-4585-4051-ab78-e10d17c3cc2d", ProcessNewsModel);
             _modelProcessors.Add("92bdb53f-4159-4dc2-b212-6083c820a214", ProcessWeatherModel);
             _modelProcessors.Add("9e9d0cd9-4fdb-4c0f-a0c4-f356e151bde0", ProcessMenuModel);
@@ -107,7 +106,8 @@ namespace MediaPortal2Plugin.InfoManagers
             _modelProcessors.Add("4cdd601f-e280-43b9-ad0a-6d7b2403c856", ProcessMediaNavigationModel);
             _modelProcessors.Add("1f4caede-7108-483d-b5c8-18bec7ec58e5", ProcessBackgroundManagerModel);
             _modelProcessors.Add("854aba9a-71a1-420b-a657-9641815f9c01", ProcessHomeServerModel);
-    }
+           _log.Message(LogLevel.Debug, "[InitStaticModels] - <{0}> static models were added", _modelProcessors.Count);
+     }
 
         public void RegisterModel(object model)
         {
@@ -136,11 +136,10 @@ namespace MediaPortal2Plugin.InfoManagers
 
             var modelName = model.GetType().Name;
 
-            Func<object, bool> processor;
 
-            _modelProcessors.TryGetValue(modelId,out processor);
+      _modelProcessors.TryGetValue(modelId, out Func<object, bool> processor);
 
-            if (processor == null)
+      if (processor == null)
             {
                  _log.Message(LogLevel.Error, "[ProcessModel] - Processing model type <{0}>, modelId <{1}> failed, no processor found", modelName, modelId);
                 
@@ -212,8 +211,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private bool ProcessBackgroundManagerModel(object modelobject)
         {
-            var model = modelobject as BackgroundManagerModel;
-            if (model == null) return false;
+          if (!(modelobject is BackgroundManagerModel model)) return false;
 
             _log.Message(LogLevel.Debug, "[ProcessBackgroundManagerModel] - Processing ");
 
@@ -222,8 +220,7 @@ namespace MediaPortal2Plugin.InfoManagers
         }
         private bool ProcessHomeServerModel(object modelobject)
         {
-            var model = modelobject as HomeServerModel;
-            if (model == null) return false;
+          if (!(modelobject is HomeServerModel model)) return false;
 
             _log.Message(LogLevel.Debug, "[ProcessHomeServerModel] - Processing ");
 
@@ -234,8 +231,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private bool ProcessMouseModel(object modelobject)
         {
-            var model = modelobject as MouseModel;
-            if (model == null) return false;
+          if (!(modelobject is MouseModel model)) return false;
 
             _log.Message(LogLevel.Debug, "[ProcessMouseModel] - Processing ");
 
@@ -244,10 +240,9 @@ namespace MediaPortal2Plugin.InfoManagers
         }
         private bool ProcessMediaNavigationModel(object modelobject)
         {
-            var model = modelobject as MediaNavigationModel;
-            if (model == null) return false;
+          if (!(modelobject is MediaNavigationModel model)) return false;
             var navigationdata = model.NavigationData;
-            var screendata = navigationdata.CurrentScreenData;
+            var screendata = navigationdata?.CurrentScreenData;
             if (screendata == null) return false;
 
             _log.Message(LogLevel.Debug, "[ProcessMediaNavigationModel] - Processing {0} items", screendata.NumItems);
@@ -261,8 +256,7 @@ namespace MediaPortal2Plugin.InfoManagers
         }
         private bool ProcessMenuModel(object modelobject)
         {
-            var model = modelobject as MenuModel;
-            if (model == null) return false;
+          if (!(modelobject is MenuModel model)) return false;
 
             _log.Message(LogLevel.Debug, "[ProcessMenuModel] - Processing {0} items", model.MenuItems.Count());
 
@@ -328,17 +322,17 @@ namespace MediaPortal2Plugin.InfoManagers
         private void InitTimerModels()
         {
             _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: TimerModel");
-            _timeModel = new TimeModel();
-            RegisterTimedProperties(_timeModel?.CurrentTimeProperty, "Time");
-            RegisterTimedProperties(_timeModel?.CurrentDateProperty, "Date");
+            // _timeModel = new TimeModel();
+            // RegisterTimedProperties(_timeModel?.CurrentTimeProperty, "Time");
+            // RegisterTimedProperties(_timeModel?.CurrentDateProperty, "Date");
 
             _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: CurrentNewsModel");
-            _currentNewsModel = new CurrentNewsModel();
-            RegisterTimedProperties(_currentNewsModel.CurrentNewsItemProperty, "CurrentNews");
+            // _currentNewsModel = new CurrentNewsModel();
+            // RegisterTimedProperties(_currentNewsModel?.CurrentNewsItemProperty, "CurrentNews");
 
             _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: CurrentWeatherModel");
-            _currentWeatherModel = new CurrentWeatherModel();
-            RegisterTimedProperties(_currentWeatherModel.CurrentLocationProperty, "CurrentWeather");
+            // _currentWeatherModel = new CurrentWeatherModel();
+            // RegisterTimedProperties(_currentWeatherModel?.CurrentLocationProperty, "CurrentWeather");
 
         }
 
@@ -412,7 +406,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private void ProcessProperty(string tag, string tagValue)
         {
-            if (string.IsNullOrWhiteSpace(tag)) return;
+            if (string.IsNullOrWhiteSpace(tag) || tagValue == null) return;
             var value = tagValue;
 
             if (value.Contains("\\"))
@@ -498,8 +492,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private static void SendNumberProperty(string tag, string tagValue)
         {
-            double value;
-            if (tagValue != null && double.TryParse(tagValue, out value))
+            if (tagValue != null && double.TryParse(tagValue, out double value))
             {
                 MessageService.Instance.SendPropertyMessage(new APIPropertyMessage
                 {

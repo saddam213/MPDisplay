@@ -1,6 +1,8 @@
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using MediaPortal.Common.Messaging;
 using MediaPortal.Common.PluginManager;
 using MediaPortal.Common.Runtime;
@@ -27,10 +29,26 @@ namespace MediaPortal2Plugin
         private bool _pluginStarted ;
     public MpDisplayPlugin2()
     {
-            LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin2", RegistrySettings.LogLevel));
-            _log = LoggingManager.GetLog(typeof(MpDisplayPlugin2));
+        LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin2", RegistrySettings.LogLevel));
+        _log = LoggingManager.GetLog(typeof(MpDisplayPlugin2));
 
-            _log.Message(LogLevel.Info, "[PluginConstructor] - Loading MPDisplay settings file: {0}", RegistrySettings.MPDisplaySettingsFile);
+      AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
+      {
+        try
+        {
+          string partialName = e.Name.Substring(0, e.Name.IndexOf(','));
+          return Assembly.Load(new AssemblyName(partialName));
+
+        }
+        catch
+        {
+          _log.Message(LogLevel.Info, "[AssemblyResover] - Cannot redirect assembly: {0}", e.Name);
+          return null;
+        }
+
+      };
+
+      _log.Message(LogLevel.Info, "[PluginConstructor] - Loading MPDisplay settings file: {0}", RegistrySettings.MPDisplaySettingsFile);
             var settings = SettingsManager.Load<MPDisplaySettings>(RegistrySettings.MPDisplaySettingsFile);
             if (settings == null)
             {
@@ -90,7 +108,7 @@ namespace MediaPortal2Plugin
 
             MessageService.InitializeMessageService(_settings.ConnectionSettings);
             WindowManager.Instance.Initialize(_settings, _advancedSettings, _mp2PluginSettings);
-            //TvServerManager.Instance.Initialize(_settings);
+            TvServerManager.Instance.Initialize(_settings);
             _log.Message(LogLevel.Info, "[OnPluginStart] - MPDisplay Plugin started.");
             _pluginStarted = true;
 

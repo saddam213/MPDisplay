@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Remoting.Channels;
 using System.Threading;
 using Common.Log;
 using Common.Settings;
@@ -6,7 +7,9 @@ using MediaPortal.UI.Presentation.Players;
 using MediaPortal.UI.Players.BassPlayer;
 using MessageFramework.Messages;
 using Un4seen.Bass;
+using Un4seen.Bass.AddOn.Cd;
 using Un4seen.BassWasapi;
+using MediaPortal.Common;
 
 namespace MediaPortal2Plugin.InfoManagers
 {
@@ -31,6 +34,7 @@ namespace MediaPortal2Plugin.InfoManagers
         private Timer _eqThread;
         private int _eqDataLength = 50;
         private const int RefreshRate = 60;
+
         //private bool _isRegistered;
 
         public void Initialize(PluginSettings settings)
@@ -134,9 +138,8 @@ namespace MediaPortal2Plugin.InfoManagers
 
                 var bassplayer = (BassPlayer) player.CurrentPlayer;
 
-                // TODO: get the hadle for Bass stream!
+                // TODO: get the handle for Bass stream!
                 if (bassplayer == null) return;
-                int handle = 1;
 
                 lock (_eqFftData)
                 {
@@ -149,59 +152,26 @@ namespace MediaPortal2Plugin.InfoManagers
                     var length = _eqDataLength * 2;         // pass values for 2 channels
                     var eqData = new byte[length];
 
-                    int channel;
-                    int chans;
-                    if (BassWasapi.BASS_WASAPI_IsStarted())
-                    {
-                        var wasapiInfo = BassWasapi.BASS_WASAPI_GetInfo();
-                        chans = wasapiInfo.chans;
-                        channel = BassWasapi.BASS_WASAPI_GetData(_eqFftData, GetBassGetDataFlags(wasapiInfo.freq, chans));
-                    }
-                    else
-                    {
-                        var bassInfo = Bass.BASS_ChannelGetInfo(handle);
-                        chans = bassInfo.chans;
-                        channel = Bass.BASS_ChannelGetData(handle, _eqFftData, GetBassGetDataFlags(bassInfo.freq, chans ));
-                    }
-
-                    if (channel <= 0) return;
+                    if (!bassplayer.GetFFTData(_eqFftData)) return;
                     if (_eqDataLength < lines) lines = _eqDataLength;                 // EQ requests less lines than available
                     //compute the spectrum data for 2 channels
-                    float peak;
-                    int index;
-                    int eqIndex;
-                    int innerIndex;
-                    if (chans == 2)
+                  int index;
+                  for (index = 0; index < lines; index++)
                     {
-                        for (index = 0; index < lines; index++)
+                        float peak = 0;
+                        float peak2 = 0;
+                        var eqIndex = 2 * index;
+                      int innerIndex;
+                      for (innerIndex = lineIndex2[index]; innerIndex < lineIndex2[index + 1]; innerIndex += 2)
                         {
-                            peak = 0;                                                   // determine peak in band range
-                            float peak2 = 0;
-                            eqIndex = 2 * index;
-                            for (innerIndex = lineIndex2[index]; innerIndex < lineIndex2[index + 1]; innerIndex += 2)
-                            {
-                                if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
-                                if (peak2 < _eqFftData[innerIndex+1]) peak2 = _eqFftData[innerIndex+1];
-                            }
-                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak * 2) * eqMultiplier, 1));
-                            eqData[eqIndex + 1] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak2 * 2) * eqMultiplier, 1));
+                            if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
+                            if (peak2 < _eqFftData[innerIndex+1]) peak2 = _eqFftData[innerIndex+1];
                         }
+                        eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak * 2) * eqMultiplier, 1));
+                        eqData[eqIndex + 1] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak2 * 2) * eqMultiplier, 1));
                     }
-                    else
-                    {
-                        for (index = 0; index < lines; index++)
-                        {
-                            peak = 0;                               // determine peak in band range
-                            eqIndex = 2 * index;
-                            for (innerIndex = lineIndex[index]; innerIndex < lineIndex[index + 1]; innerIndex++)
-                            {
-                                if (peak < _eqFftData[innerIndex]) peak = _eqFftData[innerIndex];
-                            }
-                            eqData[eqIndex] = (byte)Math.Min(255, Math.Max(Math.Sqrt(peak * 2) * eqMultiplier, 1));
-                            eqData[eqIndex + 1] = eqData[eqIndex];
-                        }
-                                             
-                    }
+ 
+
                     for (index = lines*2; index < length; index++)                // pad with 0 in case mare lines were requested
                     {
                         eqData[index] = 0;

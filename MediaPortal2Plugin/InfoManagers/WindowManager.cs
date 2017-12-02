@@ -9,7 +9,6 @@ using MediaPortal.Common.Messaging;
 using MediaPortal.UI.Control.InputManager;
 using MediaPortal.UI.Presentation.Players;
 using MediaPortal.UI.Presentation.Workflow;
-using MediaPortal.UI.Presentation.Screens;
 using MessageFramework.DataObjects;
 using MessageFramework.Messages;
 using MediaPortal.UI.Services.Players;
@@ -45,7 +44,6 @@ namespace MediaPortal2Plugin.InfoManagers
         private readonly Log _log;
         private bool _isFullscreenVideo;
         private PluginSettings _settings;
-        private AdvancedPluginSettings _advancedSettings;
         private MP2PluginSettings _mp2PluginSettings;
         private int _previousFocusedControlId = -1;
         private APIPlaybackState _currentPlaybackState = APIPlaybackState.None;
@@ -67,14 +65,13 @@ namespace MediaPortal2Plugin.InfoManagers
         {
             _log.Message(LogLevel.Debug, "[Initialize] - Initializing WindowsManager...");
             _settings = settings;
-            _advancedSettings = advancedSettings;
             _mp2PluginSettings = mp2PluginSettings;
 
-            SubscribeToMessages();
+           SubscribeToMessages();
 
             InputManager.Instance.KeyPreview += OnMP2KeyPressed;
 
-            //ListManager.Instance.Initialize(_settings);
+            ListManager.Instance.Initialize(_settings);
             PropertyManager.Instance.Initialize(_settings);
             EqualizerManager.Instance.Initialize(_settings);
             //DialogManager.Instance.Initialize(_settings);
@@ -224,23 +221,34 @@ namespace MediaPortal2Plugin.InfoManagers
 
             if (message.ChannelName == PlayerManagerMessaging.CHANNEL)
             {
+                  IPlayerManager playerManager = ServiceRegistration.Get<IPlayerManager>();
+                  IPlayerContextManager playerContextManager = ServiceRegistration.Get<IPlayerContextManager>();
+                  IPlayerContext playerContext = playerContextManager.GetPlayerContext(playerContextManager.CurrentPlayerIndex);
+                  AVType type = AVType.None;
+                  if (playerContext != null)
+                  {
+                    type = playerContext.AVType;
+                  } 
+          
                 // React to player changes
                 PlayerManagerMessaging.MessageType messageType = (PlayerManagerMessaging.MessageType) message.MessageType;
                 _log.Message(LogLevel.Debug, "[OnMP2MessageReceived] - PlayerManagerMessaging Type <{0}>", messageType);
                 switch (messageType)
                 {
                     case PlayerManagerMessaging.MessageType.PlayerResumeState:
-                        IResumeState resumeState = (IResumeState) message.MessageData[PlayerManagerMessaging.KEY_RESUME_STATE];
-                        Guid mediaItemId = (Guid) message.MessageData[PlayerManagerMessaging.KEY_MEDIAITEM];
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerError:
                     case PlayerManagerMessaging.MessageType.PlayerEnded:
+                        Player_PlayBackEnded(type);
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerStopped:
+                        Player_PlayBackStopped(type);
                         break;
                     case PlayerManagerMessaging.MessageType.RequestNextItem:
+                        Player_PlayBackChanged(type);
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerStarted:
+                        Player_PlayBackStarted(type);
                         break;
                     case PlayerManagerMessaging.MessageType.PlayerStateReady:
                         break;
@@ -379,8 +387,8 @@ namespace MediaPortal2Plugin.InfoManagers
                 case APIMediaPortalMessageType.WindowInfoMessage:
                     if (message.WindowMessage != null)
                     {
-                        //PropertyManager.Instance.RegisterWindowProperties(message.WindowMessage.Properties);
-                        //ListManager.Instance.RegisterWindowListTypes(message.WindowMessage.Lists);
+                        PropertyManager.Instance.RegisterWindowProperties(message.WindowMessage.Properties);
+                        ListManager.Instance.RegisterWindowListTypes(message.WindowMessage.Lists);
                         EqualizerManager.Instance.RegisterEqualizer(message.WindowMessage.EQData);
                     }
                     break;
@@ -576,7 +584,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
         #region Player
 
-        private void Player_PlayBackEnded(AVType type, string filename)
+        private void Player_PlayBackEnded(AVType type)
         {
             if (DateTime.Now > _lastPlayBackChanged.AddSeconds(10)) // Ignore Player Ended event due to MovingPictures issue when playing multiple files
             {
@@ -595,7 +603,7 @@ namespace MediaPortal2Plugin.InfoManagers
             }
         }
 
-        private void Player_PlayBackStopped(AVType type, int stoptime, string filename)
+        private void Player_PlayBackStopped(AVType type)
         {
             _log.Message(LogLevel.Debug, "[Player_PlayBackStopped] - PlayType: {0}", type);
             EqualizerManager.Instance.StopEqualizer();
@@ -607,12 +615,12 @@ namespace MediaPortal2Plugin.InfoManagers
             SendPlayerMessage();
         }
 
-        void Player_PlayBackChanged(AVType type, int stoptime, string filename)
+        void Player_PlayBackChanged(AVType type)
         {
             _log.Message(LogLevel.Debug, "[Player_PlayBackChanged] - PlayType: {0}", type);
         }
 
-        private void Player_PlayBackStarted(AVType type, string filename)
+        private void Player_PlayBackStarted(AVType type)
         {
             _log.Message(LogLevel.Debug, "[Player_PlayBackStarted] - PlayType: {0}", type);
             _currentPlaybackState = APIPlaybackState.Playing;
