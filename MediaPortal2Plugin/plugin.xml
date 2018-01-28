@@ -17,6 +17,8 @@
     <CoreDependency Name="MediaPortal.UI" CompatibleAPI="2" />
     <CoreDependency Name="MediaPortal.Utilities" CompatibleAPI="1" />
     <PluginReference PluginId="{63040BB4-4638-49b7-A82F-F4530D4D43B9}" CompatibleAPI="1"/> <!-- SlimTvClient -->
+    <PluginReference PluginId="{AD9C0439-F9DA-443c-BAC3-163891FB09F1}" CompatibleAPI="1"/> <!-- Weather -->
+    <PluginReference PluginId="{26DAEAFE-5DA5-4548-AB69-A67DEB9EA77B}" CompatibleAPI="1"/> <!-- News -->
   </DependsOn>
 
   <Runtime>

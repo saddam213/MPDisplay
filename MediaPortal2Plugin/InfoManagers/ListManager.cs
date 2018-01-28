@@ -88,6 +88,18 @@ namespace MediaPortal2Plugin.InfoManagers
             _currentLayout = APIListLayout.Vertical;
         }
 
+        public void SendList(ItemsList list, string name)
+        {
+            _log.Message(LogLevel.Debug, $"[SendList] - Sending {{0}} items for list <{{1}}>", list.Count, name);
+
+            foreach (var item in list)
+            {
+                _log.Message(LogLevel.Debug, "[SendList] - ListItem <{0}> #Labels {1}", item.Label("Name", "----"), item.Labels.Count);
+
+                SendSkinEditorData(item);
+            }
+
+        }
 
         //private void RegisterWindowListTypes()
         //{
@@ -120,20 +132,22 @@ namespace MediaPortal2Plugin.InfoManagers
 
         public void SendSkinEditorData(ListItem item)
         {
-            if (item == null || !MessageService.Instance.IsSkinEditorConnected) return;
+            if (item == null || !MessageService.Instance.IsSkinEditorConnected)
+            {
+                return;
+            }
 
             try
             {
 
                 var data = item.Labels.Select(kvp => new[] {kvp.Key, kvp.Value.ToString()}).ToList();
-                _log.Message(LogLevel.Debug, "[SendSkinEditorData] - ListItem <{0}> #Labels {1}", item.Label("Name","----"), item.Labels.Count);
 
-            MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
-                {
-                    DataType = APISkinEditorDataType.ListItem,
-                    ListItemData = data
-                });
-            }
+                MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
+                    {
+                        DataType = APISkinEditorDataType.ListItem,
+                        ListItemData = data
+                    });
+                }
             catch (Exception ex)
             {
                 _log.Message(LogLevel.Error, "[SendSkinEditorData] - An exception occured sendind data for ListItem <{0}>. Exception: {1}", item, ex.Message);

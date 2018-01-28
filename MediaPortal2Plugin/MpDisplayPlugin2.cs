@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -27,6 +28,8 @@ namespace MediaPortal2Plugin
         private readonly MP2PluginSettings _mp2PluginSettings;
         private readonly Log _log;
         private bool _pluginStarted ;
+        private readonly List<string> _resolveAssembies = new List<string>() {""};
+
     public MpDisplayPlugin2()
     {
         LoggingManager.AddLog(new FileLogger(RegistrySettings.ProgramDataPath + "Logs", "Plugin2", RegistrySettings.LogLevel));
@@ -34,9 +37,11 @@ namespace MediaPortal2Plugin
 
       AppDomain.CurrentDomain.AssemblyResolve += delegate (object sender, ResolveEventArgs e)
       {
+        if (!_resolveAssembies.Contains(e.Name)) return null;
+
         try
         {
-          string partialName = e.Name.Substring(0, e.Name.IndexOf(','));
+          var partialName = e.Name.Substring(0, e.Name.IndexOf(','));
           return Assembly.Load(new AssemblyName(partialName));
 
         }

@@ -155,34 +155,22 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private bool ProcessNewsModel( object modelobject)
         {
-            var model = modelobject as NewsModel;
-
-            if (model == null) return false;
-
-            _log.Message(LogLevel.Debug, "[ProcessNewsModel] - Processing {0} feeds", model.Feeds.Count());
-
-            foreach (var item in model.Feeds)
-            {
-                ListManager.Instance.SendSkinEditorData(item);
-            }
+            if (!(modelobject is NewsModel model)) return false;
 
             if (model.SelectedFeed != null)
             {
-                _log.Message(LogLevel.Debug, "[ProcessNewsModel] - Processing {0} news items", model.SelectedFeed.Items.Count());
-
-                foreach (var item in model.SelectedFeed.Items)
-                {
-                    ListManager.Instance.SendSkinEditorData(item);
-                }
-                
+                ListManager.Instance.SendList(model.SelectedFeed.Items,"NewsItems");
+            }
+            else
+            {
+                ListManager.Instance.SendList(model.Feeds, "NewsFeeds");
             }
             return true;
         }
 
         private bool ProcessWeatherModel(object modelobject)
         {
-            var model = modelobject as WeatherModel;
-            if (model == null) return false;
+            if (!(modelobject is WeatherModel model)) return false;
 
             _log.Message(LogLevel.Debug, "[ProcessWeatherModel] - Processing ");
 
@@ -247,11 +235,8 @@ namespace MediaPortal2Plugin.InfoManagers
 
             _log.Message(LogLevel.Debug, "[ProcessMediaNavigationModel] - Processing {0} items", screendata.NumItems);
 
- 
-            foreach (var item in screendata.Items)
-            {
-                ListManager.Instance.SendSkinEditorData(item);
-            }
+            ListManager.Instance.SendList(screendata.Items,"MediaNavigationList");
+
             return true;
         }
         private bool ProcessMenuModel(object modelobject)
@@ -260,10 +245,8 @@ namespace MediaPortal2Plugin.InfoManagers
 
             _log.Message(LogLevel.Debug, "[ProcessMenuModel] - Processing {0} items", model.MenuItems.Count());
 
-            foreach (var item in model.MenuItems)
-            {
-                ListManager.Instance.SendSkinEditorData(item);
-            }
+            ListManager.Instance.SendList(model.MenuItems,"MenuList");
+
             return true;
         }
 
@@ -321,18 +304,18 @@ namespace MediaPortal2Plugin.InfoManagers
 
         private void InitTimerModels()
         {
-            _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: TimerModel");
-            // _timeModel = new TimeModel();
-            // RegisterTimedProperties(_timeModel?.CurrentTimeProperty, "Time");
-            // RegisterTimedProperties(_timeModel?.CurrentDateProperty, "Date");
+             _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: TimerModel");
+             _timeModel = new TimeModel();
+            RegisterTimedProperties(_timeModel?.CurrentTimeProperty, "Time");
+            RegisterTimedProperties(_timeModel?.CurrentDateProperty, "Date");
 
             _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: CurrentNewsModel");
-            // _currentNewsModel = new CurrentNewsModel();
-            // RegisterTimedProperties(_currentNewsModel?.CurrentNewsItemProperty, "CurrentNews");
+             _currentNewsModel = new CurrentNewsModel();
+            RegisterTimedProperties(_currentNewsModel?.CurrentNewsItemProperty, "CurrentNews");
 
             _log.Message(LogLevel.Debug, "[InitTimerModels] - Model: CurrentWeatherModel");
-            // _currentWeatherModel = new CurrentWeatherModel();
-            // RegisterTimedProperties(_currentWeatherModel?.CurrentLocationProperty, "CurrentWeather");
+            _currentWeatherModel = new CurrentWeatherModel();
+            RegisterTimedProperties(_currentWeatherModel?.CurrentLocationProperty, "CurrentWeather");
 
         }
 
@@ -451,7 +434,7 @@ namespace MediaPortal2Plugin.InfoManagers
 
             if (MessageService.Instance.IsSkinEditorConnected)
             {
-                if (!string.IsNullOrEmpty(tag) && value != null)
+                if (!string.IsNullOrEmpty(tag))
                 {
                     MessageService.Instance.SendSkinEditorDataMessage(new APISkinEditorData
                     {
@@ -591,9 +574,9 @@ namespace MediaPortal2Plugin.InfoManagers
                     //    var exifLatRef = _exifproperties.FirstOrDefault(x => x.ExifTag == PropertyTagId.GpsLatitudeRef);
                     //    var exifLngRef = _exifproperties.FirstOrDefault(x => x.ExifTag == PropertyTagId.GpsLongitudeRef);
                     //    if (exifLat != null && exifLng != null)
-                    //    {                            
+                    //    {
                     //        tagvalue = exifLatRef + "," + exifLat + "," + exifLngRef + "," + exifLng;
-                    //    }  
+                    //    }
                     //}
                     break;
 

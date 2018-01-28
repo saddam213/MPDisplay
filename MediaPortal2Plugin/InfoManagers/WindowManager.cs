@@ -78,13 +78,10 @@ namespace MediaPortal2Plugin.InfoManagers
 
 
             //GUIWindowManager.OnActivateWindow += GUIWindowManager_OnActivateWindow;
-            //g_Player.PlayBackStarted += Player_PlayBackStarted;
-            //g_Player.PlayBackStopped += Player_PlayBackStopped;
-            //g_Player.PlayBackEnded += Player_PlayBackEnded;
-            //g_Player.PlayBackChanged += Player_PlayBackChanged;
             //GUIWindowManager.OnNewAction += GUIWindowManager_OnNewAction;
 
           //  GUIWindowManager.Receivers += GUIGraphicsContext_Receivers;
+
             _secondTimer = new Timer( SecondTimerTick, null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
             _lastPlayBackChanged = DateTime.MinValue;
             _log.Message(LogLevel.Debug, "[Initialize] - Initialize complete");
@@ -98,11 +95,7 @@ namespace MediaPortal2Plugin.InfoManagers
             InputManager.Instance.KeyPreview -= OnMP2KeyPressed;
 
             //GUIWindowManager.OnActivateWindow -= GUIWindowManager_OnActivateWindow;
-            //g_Player.PlayBackStarted -= Player_PlayBackStarted;
-            //g_Player.PlayBackStopped -= Player_PlayBackStopped;
-            //g_Player.PlayBackEnded -= Player_PlayBackEnded;
-            //g_Player.PlayBackChanged -= Player_PlayBackChanged;
-            //GUIWindowManager.OnNewAction -= GUIWindowManager_OnNewAction;
+             //GUIWindowManager.OnNewAction -= GUIWindowManager_OnNewAction;
 
             //ListManager.Instance.Shutdown();
             PropertyManager.Instance.Shutdown();
@@ -412,7 +405,7 @@ namespace MediaPortal2Plugin.InfoManagers
                     //DialogManager.Instance.OnActionMessageReceived(message.ActionMessage);
                     break;
                 case APIActionMessageType.GuideAction:
-                    //TvServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
+                    TvServerManager.Instance.OnActionMessageReceived(message.ActionMessage);
                     break;
                 default:
                     if (message.ActionMessage.MediaPortalAction != null)
@@ -440,13 +433,14 @@ namespace MediaPortal2Plugin.InfoManagers
             _log.Message(LogLevel.Debug, "[SendFullUpdate] - Sending full information update");
             //SetCurrentWindow(GUIWindowManager.ActiveWindow);
             SendPlayerMessage();
-            //TvServerManager.Instance.SendTvGuide();
-            //TvServerManager.Instance.SendRecordings();
+            TvServerManager.Instance.SendTvGuide();
+            TvServerManager.Instance.SendRecordings();
         }
 
         private void SetCurrentWindow(string guid)
         {
             CurrentWindow = _mp2PluginSettings.GetWindowMapping(guid);
+           _log.Message(LogLevel.Debug, "[SetCurrentWindow] - WindowId: {0}", CurrentWindow.MPDid);
 
             //ListManager.Instance.ClearWindowListControls();
             //PropertyManager.Instance.Suspend(true);

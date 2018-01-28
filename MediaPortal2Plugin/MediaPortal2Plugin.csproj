@@ -70,6 +70,7 @@
     <Reference Include="News">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\News\News.dll</HintPath>
       <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="SkinBase">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\SkinBase\SkinBase.dll</HintPath>
@@ -93,6 +94,7 @@
     <Reference Include="Weather">
       <HintPath>..\..\..\..\Program Files (x86)\Team MediaPortal\MP2-Client\Plugins\Weather\Weather.dll</HintPath>
       <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
     </Reference>
     <Reference Include="WindowsBase" />
   </ItemGroup>
